@@ -15,7 +15,8 @@ export type Mode =
   | 'bt'
   | 'ai'
   | 'env'
-  | 'note';
+  | 'note'
+  | 'osd';
 
 const TRANSIENT_MS: Partial<Record<Mode, number>> = {
   notif: 2500,
@@ -23,6 +24,7 @@ const TRANSIENT_MS: Partial<Record<Mode, number>> = {
   volume: 1500,
   brightness: 1500,
   env: 1500,
+  osd: 1500,
 };
 
 /** `notif` de notificação de navegador (specs/04-notificacoes.md). */
@@ -84,6 +86,7 @@ export function getSize(mode: Mode, ctx: SizeContext = {}): Size {
     case 'volume':
       return { width: 320, height: 50, radius: 25 };
     case 'brightness':
+    case 'osd':
       return { width: 320, height: 50, radius: 25 };
     case 'calendar':
       return { width: 480, height: ctx.calendarView === 'month' ? 214 : 150, radius: 24 };
@@ -135,6 +138,7 @@ export class IslandState {
   private hovering = false;
   private notifSticky = false;
   private notifFromBrowser = false;
+  private osdMs: number | null = null;
   private timerId: number | null = null;
 
   constructor(scheduler: Scheduler, options: IslandStateOptions = {}) {
@@ -221,6 +225,16 @@ export class IslandState {
 
   brightnessKey(): void {
     this.openAutomatic('brightness');
+  }
+
+  /**
+   * Pedido de OSD do Omarchy que não é volume nem brilho (specs/08: microfone,
+   * toggles, desligar…): mesma regra 4, com a duração do pedido quando vem.
+   */
+  osdRequest(durationMs?: number): boolean {
+    // Recusado só com modo fixo ou cartão aberto: aí `osdMs` não é lido.
+    this.osdMs = durationMs !== undefined && durationMs > 0 ? durationMs : null;
+    return this.openAutomatic('osd');
   }
 
   /**
@@ -312,7 +326,7 @@ export class IslandState {
 
   private arm(mode: Mode): void {
     this.clearTimer();
-    const ms = mode === 'notif' && this.notifFromBrowser ? BROWSER_NOTIF_MS : TRANSIENT_MS[mode];
+    const ms = this.transientMs(mode);
     this.log(`arm ${mode} ms=${ms} hovering=${this.hovering} sticky=${this.notifSticky}`);
     if (ms === undefined || (this.hovering && mode !== 'env')) return;
     if (this.musicPinned) return;
@@ -325,6 +339,12 @@ export class IslandState {
         this.onChange();
       }
     }, ms);
+  }
+
+  private transientMs(mode: Mode): number | undefined {
+    if (mode === 'notif' && this.notifFromBrowser) return BROWSER_NOTIF_MS;
+    if (mode === 'osd' && this.osdMs !== null) return this.osdMs;
+    return TRANSIENT_MS[mode];
   }
 
   private clearTimer(): void {

@@ -21,12 +21,13 @@ A máquina de estados vive em `src/core/island.ts` (pura, testada). A UI só ren
 | `ai` | 480 × (24 + 32 + p·108 − 6), p = provedores | 24 | fixo | 12 |
 | `env` | 260 × 40 | 20 | transitório 1500ms | 15 |
 | `note` | 420 × 132 | 24 | fixo | 16 |
+| `osd` | 320 × 50 | 25 | transitório 1500ms ou a duração do pedido | 08 |
 
 Os tempos dos transitórios são mais curtos que o `TRANSIENT` do design (4200/4500/2600ms) por decisão do usuário. O `env` segue o design (1500ms).
 
 O cartão central (spec 05) também é um estado da ilha: 440 × altura do conteúdo, raio 26 (`SIZES.hub`).
 
-`brightness` não existe no design: é um clone de `volume` com ícone `ph ph-sun` e o valor do brilho.
+`brightness` não existe no design: é um clone de `volume` com ícone `ph ph-sun` e o valor do brilho. `osd` também não: é o mesmo layout para os demais pedidos de OSD do Omarchy (spec 08).
 
 ## Modo compacto
 
@@ -56,7 +57,7 @@ O cartão central (spec 05) também é um estado da ilha: 440 × altura do conte
    - notificação: regras da spec 04
    - troca de faixa: abre `music` só se a ilha estiver em `compact` ou num modo transitório; com `music` fixado aberto, só atualiza o conteúdo
    - troca de ambiente: abre `env` só se a ilha estiver em `compact` ou em `env` (spec 15)
-4. **Tecla de volume/brilho**: abre `volume`/`brightness` se a ilha estiver em `compact` ou num modo transitório. Com modo fixo aberto, só altera o valor (os sliders de `quick`/`wifi`/`bt` refletem na hora).
+4. **Tecla de volume/brilho** e demais pedidos de OSD: abrem `volume`/`brightness`/`osd` se a ilha estiver em `compact` ou num modo transitório. Com modo fixo aberto, só altera o valor (os sliders de `quick`/`wifi`/`bt` refletem na hora); um `osd` recusado não aparece.
 5. **Clique na ilha**: em `compact` executa a opção "Clique na ilha abre" (spec 13: cartão central, padrão, ou modo `calendar`), igual em todos os ambientes (o design v3 condiciona ao ambiente; a Island não); em `notif` abre `stack` e marca tudo como lido; em `env` não faz nada; nos outros modos, cliques são do conteúdo.
 6. **Timer transitório**: armado ao entrar no modo; ao vencer, volta a `compact` só se o modo ainda for o mesmo. `music` fixado não arma timer.
 7. **Hover** na ilha cancela o timer; sair do hover rearma o timer do modo atual.

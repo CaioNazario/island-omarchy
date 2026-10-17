@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   buildNetworkList,
   clickAction,
+  connectFailureMessage,
   headerStatus,
+  securityFromQuickshell,
   signalLevel,
   validatePassword,
   type AccessPointInfo,
@@ -129,5 +131,40 @@ describe('headerStatus', () => {
 
   it('shows "Desconectado" with the radio on and no connection', () => {
     expect(headerStatus(true, null)).toBe('Desconectado');
+  });
+});
+
+describe('securityFromQuickshell', () => {
+  it.each([
+    ['Open', 'open'],
+    ['Owe', 'open'],
+    ['WpaPsk', 'personal'],
+    ['Wpa2Psk', 'personal'],
+    ['Sae', 'personal'],
+    ['StaticWep', 'personal'],
+    ['WpaEap', 'enterprise'],
+    ['Wpa2Eap', 'enterprise'],
+    ['Wpa3SuiteB192', 'enterprise'],
+    ['Leap', 'enterprise'],
+    ['DynamicWep', 'enterprise'],
+  ])('%s → %s', (name, security) => {
+    expect(securityFromQuickshell(name)).toBe(security);
+  });
+
+  it('tipo desconhecido conta como pessoal: pede senha em vez de ativar às cegas', () => {
+    expect(securityFromQuickshell('Unknown')).toBe('personal');
+  });
+});
+
+describe('connectFailureMessage', () => {
+  it('falta de segredo ou handshake recusado → senha incorreta', () => {
+    expect(connectFailureMessage('NoSecrets')).toBe('Senha incorreta');
+    expect(connectFailureMessage('WifiClientDisconnected')).toBe('Senha incorreta');
+  });
+
+  it('outras falhas → não foi possível conectar', () => {
+    expect(connectFailureMessage('WifiAuthTimeout')).toBe('Não foi possível conectar');
+    expect(connectFailureMessage('WifiNetworkLost')).toBe('Não foi possível conectar');
+    expect(connectFailureMessage('Unknown')).toBe('Não foi possível conectar');
   });
 });

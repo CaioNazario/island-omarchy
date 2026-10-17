@@ -1,9 +1,26 @@
 // Regras das listas do modo `bt` (specs/08-controles-rapidos.md). A fonte
-// (`GnomeBluetooth.Client`) vive em src/system/bluetooth.ts e traduz cada
-// dispositivo para `BtDeviceInfo`; aqui só entra dado puro.
+// (`Quickshell.Bluetooth`) vive em plugin/system/BluetoothSource.qml e traduz
+// cada dispositivo para `BtDeviceInfo`; aqui só entra dado puro.
 
 export type DeviceKind =
   'headphones' | 'mouse' | 'keyboard' | 'speaker' | 'phone' | 'computer' | 'gamepad' | 'other';
+
+// Propriedade `Icon` do `org.bluez.Device1`, que o Quickshell expõe como
+// `BluetoothDevice.icon` (nomes freedesktop derivados da classe do aparelho).
+const KIND_BY_BLUEZ_ICON: Readonly<Record<string, DeviceKind>> = {
+  'audio-headset': 'headphones',
+  'audio-headphones': 'headphones',
+  'audio-card': 'speaker',
+  'input-mouse': 'mouse',
+  'input-keyboard': 'keyboard',
+  'input-gaming': 'gamepad',
+  phone: 'phone',
+  computer: 'computer',
+};
+
+export function kindFromBluezIcon(icon: string): DeviceKind {
+  return KIND_BY_BLUEZ_ICON[icon] ?? 'other';
+}
 
 export type BtOperationKind = 'connecting' | 'disconnecting' | 'pairing';
 

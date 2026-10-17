@@ -1,6 +1,6 @@
 // Regras da lista de redes do modo `wifi` (specs/08-controles-rapidos.md).
-// A fonte (`NM.Client`) vive em src/system/wifi.ts e traduz cada AP para
-// `AccessPointInfo`; aqui só entra dado puro.
+// A fonte (`Quickshell.Networking`) vive em plugin/system/WifiSource.qml e
+// traduz cada rede para `AccessPointInfo`; aqui só entra dado puro.
 
 export type WifiSecurity = 'open' | 'personal' | 'enterprise';
 
@@ -81,4 +81,24 @@ export function headerStatus(radioOn: boolean, active: ActiveNetwork | null): st
   if (!radioOn) return 'Desligado';
   if (!active) return 'Desconectado';
   return active.status === 'connecting' ? 'Conectando…' : `Conectado a ${active.ssid}`;
+}
+
+const OPEN_TYPES = new Set(['Open', 'Owe']);
+const ENTERPRISE_TYPES = new Set(['WpaEap', 'Wpa2Eap', 'Wpa3SuiteB192', 'Leap', 'DynamicWep']);
+
+/** Nome do `WifiSecurityType` do Quickshell (`WifiSecurityType.toString`). */
+export function securityFromQuickshell(name: string): WifiSecurity {
+  if (OPEN_TYPES.has(name)) return 'open';
+  if (ENTERPRISE_TYPES.has(name)) return 'enterprise';
+  return 'personal';
+}
+
+// O NM pede um segredo novo quando a PSK é recusada; sem agente que responda,
+// a conexão falha por falta dele (`NoSecrets`). `WifiClientDisconnected` é o
+// supplicant caindo no handshake de 4 vias. Não testado com rede real.
+const WRONG_PASSWORD_REASONS = new Set(['NoSecrets', 'WifiClientDisconnected']);
+
+/** Nome do `ConnectionFailReason` do Quickshell → texto do painel de senha. */
+export function connectFailureMessage(reason: string): string {
+  return WRONG_PASSWORD_REASONS.has(reason) ? 'Senha incorreta' : 'Não foi possível conectar';
 }

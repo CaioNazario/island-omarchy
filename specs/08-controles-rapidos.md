@@ -39,9 +39,23 @@ Origem: `design/markup.html` 92–101 (`volume`), 134–157 (`quick`), 158–215
 - Fonte: o mesmo mecanismo que o slider de brilho nativo do Shell 50.x usa (confirmar no código-fonte antes de implementar).
 - **Modo `brightness`** (320×50, 1500ms): clone do `volume` com `ph ph-sun`. Abre pela tecla de brilho.
 
-## Teclas de mídia
+## OSD do Omarchy
 
-O OSD nativo de volume e brilho não aparece: o pedido de OSD do Shell é redirecionado para a ilha (injeção no `OsdWindowManager` ou equivalente da 50.x, confirmado no código-fonte) e restaurado no `disable()`. OSDs de outros tipos (ex.: teclado) continuam nativos.
+As teclas de volume e brilho do Omarchy rodam `omarchy-audio-output-volume`/`omarchy-brightness-display`, que terminam em `omarchy-osd`. Com `omarchy.osd` desligado, a Island responde pelo alvo IPC `osd` (`show`, `close`, `state`, `ping`; spec 14, S7). Nenhum atalho muda.
+
+`src/core/osd.ts` traduz o payload (`{icon, message, value, progressText, max, duration}`, tudo string), com as regras de progresso do `OsdModel.stateForShow` do Omarchy:
+
+| Pedido | Exemplo | Ilha |
+|---|---|---|
+| ícone `volume*`/`mute` com progresso | tecla de volume | `volume` com o valor (regra 4 da spec 03) |
+| ícone `brightness` com progresso | tecla de brilho | `brightness` com o valor |
+| outro ícone com progresso | luz do teclado, download | `osd`: ícone 18px · barra · `NN%` |
+| mensagem | microfone mudo, toggles, "Shutting down", troca de saída de áudio | `osd`: ícone 18px · texto 12.5px |
+
+- `osd` usa o layout do modo `volume` (320×50, padding 0 18px, gap 14px). A barra é o trilho do slider, só leitura.
+- Duração: a do pedido (`-d`), senão 1500ms.
+- Ícone: o nome do Omarchy vira Phosphor (`osdGlyph`): microfone → `ph-microphone`/`ph-microphone-slash`, teclado → `ph-fill ph-keyboard`, reiniciar → `ph-arrow-clockwise`, desligar → `ph-bold ph-power`, sair → `ph-sign-out`, mídia → `ph-fill ph-play`/`pause`/`skip-*`, download → `ph-download-simple`, desconhecido → `ph-info`.
+- Payload sem mensagem nem progresso, ou JSON inválido: ignorado.
 
 ## Modo `quick` (520×58)
 

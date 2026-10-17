@@ -18,7 +18,8 @@ ICONS = ROOT / "icons"
 
 # Usados pelo código mas ausentes do design (specs/08-controles-rapidos.md:
 # ícone pelo tipo do dispositivo Bluetooth; specs/04-notificacoes.md: tabela
-# de sites; specs/05-musica.md: ícone da fonte; specs/07-clima.md: condição).
+# de sites; specs/05-musica.md: ícone da fonte; specs/07-clima.md: condição;
+# specs/08-controles-rapidos.md: OSD do Omarchy).
 EXTRA_ICONS = {
     ("fill", "laptop"),
     ("fill", "game-controller"),
@@ -33,6 +34,13 @@ EXTRA_ICONS = {
     ("fill", "cloud-rain"),
     ("fill", "cloud-lightning"),
     ("fill", "snowflake"),
+    # specs/08-controles-rapidos.md "OSD do Omarchy": ícones dos pedidos que
+    # não são volume nem brilho.
+    ("regular", "microphone"),
+    ("regular", "microphone-slash"),
+    ("regular", "download-simple"),
+    ("regular", "monitor"),
+    ("regular", "info"),
 }
 
 ICON_CLASS = re.compile(r"\bph(?:-(bold|fill))? ph-([a-z0-9-]+)")

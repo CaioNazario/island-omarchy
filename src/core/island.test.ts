@@ -599,3 +599,66 @@ describe('getSize', () => {
     expect(getSize('ai', { providerCount: 2 })).toEqual({ width: 480, height: 266, radius: 24 });
   });
 });
+
+describe('IslandState osd', () => {
+  it('abre osd como modo transitório com a duração padrão de 1500ms', () => {
+    const scheduler = new FakeScheduler();
+    const state = new IslandState(scheduler);
+    expect(state.osdRequest()).toBe(true);
+    expect(state.mode).toBe('osd');
+    scheduler.advance(1499);
+    expect(state.mode).toBe('osd');
+    scheduler.advance(1);
+    expect(state.mode).toBe('compact');
+  });
+
+  it('respeita a duração pedida pelo omarchy-osd', () => {
+    const scheduler = new FakeScheduler();
+    const state = new IslandState(scheduler);
+    state.osdRequest(5000);
+    scheduler.advance(4999);
+    expect(state.mode).toBe('osd');
+    scheduler.advance(1);
+    expect(state.mode).toBe('compact');
+  });
+
+  it('não substitui modo fixo nem cartão aberto (regra 3)', () => {
+    const state = new IslandState(new FakeScheduler());
+    state.openFromTrigger('wifi');
+    expect(state.osdRequest()).toBe(false);
+    expect(state.mode).toBe('wifi');
+
+    state.closeAll();
+    state.islandClick();
+    expect(state.osdRequest()).toBe(false);
+    expect(state.cardOpen).toBe(true);
+  });
+
+  it('substitui um transitório e rearma no hover', () => {
+    const scheduler = new FakeScheduler();
+    const state = new IslandState(scheduler);
+    state.volumeKey();
+    state.osdRequest(3000);
+    expect(state.mode).toBe('osd');
+    state.hoverStart();
+    scheduler.advance(5000);
+    expect(state.mode).toBe('osd');
+    state.hoverEnd();
+    scheduler.advance(3000);
+    expect(state.mode).toBe('compact');
+  });
+
+  it('a duração pedida não vaza para o próximo osd', () => {
+    const scheduler = new FakeScheduler();
+    const state = new IslandState(scheduler);
+    state.osdRequest(8000);
+    state.osdRequest();
+    scheduler.advance(1500);
+    expect(state.mode).toBe('compact');
+  });
+
+  it('não é modo fixo e tem o tamanho do volume', () => {
+    expect(isFixedMode('osd')).toBe(false);
+    expect(getSize('osd')).toEqual({ width: 320, height: 50, radius: 25 });
+  });
+});

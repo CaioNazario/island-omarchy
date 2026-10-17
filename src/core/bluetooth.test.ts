@@ -3,6 +3,7 @@ import {
   btClickAction,
   btHeaderStatus,
   buildDeviceLists,
+  kindFromBluezIcon,
   visibleBattery,
   type BtDevice,
   type BtDeviceInfo,
@@ -107,5 +108,22 @@ describe('btHeaderStatus', () => {
     expect(btHeaderStatus(true, 0)).toBe('0 conectados');
     expect(btHeaderStatus(true, 1)).toBe('1 conectado');
     expect(btHeaderStatus(true, 2)).toBe('2 conectados');
+  });
+});
+
+describe('kindFromBluezIcon', () => {
+  it.each([
+    ['audio-headset', 'headphones'],
+    ['audio-headphones', 'headphones'],
+    ['audio-card', 'speaker'],
+    ['input-mouse', 'mouse'],
+    ['input-keyboard', 'keyboard'],
+    ['input-gaming', 'gamepad'],
+    ['phone', 'phone'],
+    ['computer', 'computer'],
+    ['printer', 'other'],
+    ['', 'other'],
+  ])('%s → %s', (icon, kind) => {
+    expect(kindFromBluezIcon(icon)).toBe(kind);
   });
 });
