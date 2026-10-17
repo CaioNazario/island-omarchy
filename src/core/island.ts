@@ -65,8 +65,8 @@ export interface SizeContext {
   stackItemCount?: number;
   calendarView?: 'week' | 'month';
   quickEnergyOpen?: boolean;
-  wifiEnergyOpen?: boolean;
-  wifiPasswordField?: 'none' | 'normal' | 'error';
+  /** Altura do modo `wifi`, de `wifiPanelHeight` em wifiPanel.ts. */
+  wifiHeight?: number;
   btOn?: boolean;
   btEnergyOpen?: boolean;
   /** Altura do modo `ai`, de `aiPanelHeight` em agentUsage.ts. */
@@ -103,13 +103,8 @@ export function getSize(mode: Mode, ctx: SizeContext = {}): Size {
       return { width: 480, height: ctx.calendarView === 'month' ? 214 : 150, radius: 24 };
     case 'quick':
       return { width: 660, height: ctx.quickEnergyOpen ? 94 : 46, radius: 23 };
-    case 'wifi': {
-      let height = 280;
-      if (ctx.wifiEnergyOpen) height += 48;
-      if (ctx.wifiPasswordField === 'normal') height += 58;
-      else if (ctx.wifiPasswordField === 'error') height += 76;
-      return { width: 660, height, radius: 24 };
-    }
+    case 'wifi':
+      return { width: 660, height: ctx.wifiHeight ?? 280, radius: 24 };
     case 'bt': {
       let height = ctx.btOn === false ? 288 : 336;
       if (ctx.btEnergyOpen) height += 48;

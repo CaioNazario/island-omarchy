@@ -9,6 +9,8 @@ import "core/island.mjs" as IslandCore
 import "core/osd.mjs" as OsdCore
 import "core/mixer.mjs" as MixerCore
 import "core/agentUsage.mjs" as AgentCore
+import "core/wifi.mjs" as WifiCore
+import "core/wifiPanel.mjs" as WifiPanelCore
 import "core/environments.mjs" as EnvironmentsCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
@@ -39,6 +41,10 @@ Item {
   // Painel de senha do `wifi` (specs/08): um só, e muda a altura da ilha.
   property string wifiPasswordFor: ""
   property string wifiPasswordError: ""
+  // Vista abaixo do cabeçalho do `wifi` (`stats`, `qr`, `speed`) e o campo do
+  // DNS personalizado, que soma 38px à ilha (specs/08 "Modo `wifi`").
+  property string wifiView: "stats"
+  property bool wifiDnsEditing: false
 
   // Notificações (specs/04): conteúdo do `notif`, banner e destaque no `stack`.
   readonly property alias notifEntry: router.notifEntry
@@ -67,12 +73,20 @@ Item {
   // Conteúdo do modo `osd` (specs/08 "OSD do Omarchy").
   property var osd: ({ glyph: "info", text: "", percent: 0 })
 
+  readonly property var wifiGroups: WifiCore.splitNetworks(sources.wifi.list)
+
   readonly property var sizeContext: ({
       quickEnergyOpen: powerOpen,
-      wifiEnergyOpen: powerOpen,
       btEnergyOpen: powerOpen,
       stackItemCount: service && service.notifications ? service.notifications.entries.length : 0,
-      wifiPasswordField: wifiPasswordFor === "" ? "none" : wifiPasswordError === "" ? "normal" : "error",
+      wifiHeight: WifiPanelCore.wifiPanelHeight({
+        known: wifiGroups.known.length,
+        other: wifiGroups.other.length,
+        radioOn: sources.wifi.radioOn,
+        energyOpen: powerOpen,
+        customDns: wifiDnsEditing,
+        passwordField: wifiPasswordFor === "" ? "none" : wifiPasswordError === "" ? "normal" : "error"
+      }),
       btOn: sources.bluetooth.radioOn,
       calendarView: calendarView,
       aiHeight: AgentCore.aiPanelHeight({
@@ -99,6 +113,7 @@ Item {
     dictation.watching: ["quick", "wifi", "bt"].includes(root.mode)
     display.watching: root.mode === "display"
     battery.watching: root.mode === "battery"
+    wifiDetails.watching: root.mode === "wifi" && sources.wifi.radioOn
     display.screenName: root.targetScreen
     // Fontes só de widget rodam só com o widget no ambiente ativo (spec 16).
     hardware.sampling: root.activeWidgets.includes("hw")
@@ -126,8 +141,12 @@ Item {
     cardOpen = islandState.cardOpen;
     fixed = islandState.fixed || islandState.cardOpen;
     powerOpen = islandState.powerOpen;
-    // Regra 1 da spec 03: sair de `wifi` fecha o painel de senha.
-    if (mode !== "wifi") closePassword();
+    // Regra 1 da spec 03: sair de `wifi` fecha o painel de senha; a vista e o
+    // DNS personalizado voltam ao início e o teste de velocidade para.
+    if (mode !== "wifi") {
+      closePassword();
+      resetWifiView();
+    }
     // Abrir a lista marca tudo como lido (specs/04 "Modo `stack`").
     if (mode === "stack" && service) service.notifications.markAllRead();
     // Com a lista aberta, o banner repetiria o primeiro item dela.
@@ -190,6 +209,25 @@ Item {
   function togglePassword(ssid) {
     wifiPasswordError = "";
     wifiPasswordFor = wifiPasswordFor === ssid ? "" : ssid;
+  }
+
+  /** Botões QR e velocidade do cabeçalho do `wifi`: abrem a vista ou voltam às estatísticas. */
+  function toggleWifiView(view) {
+    if (wifiView === view) {
+      resetWifiView();
+      return;
+    }
+    if (wifiView === "speed") sources.speedTest.stop();
+    wifiView = view;
+    if (view === "qr") sources.wifiShare.load();
+    else if (view === "speed" && sources.speedTest.phase !== "done") sources.speedTest.run();
+  }
+
+  function resetWifiView() {
+    sources.speedTest.stop();
+    sources.wifiShare.reset();
+    wifiView = "stats";
+    wifiDnsEditing = false;
   }
 
   function closePassword() {

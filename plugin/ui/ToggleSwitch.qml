@@ -2,19 +2,21 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
-// Switch 32×18 raio 9 dos cabeçalhos de `wifi` e `bt`
-// (specs/08-controles-rapidos.md): ligado `accent-600`, desligado
-// `neutral-700`, bolinha 14px `neutral-100`, 180ms.
+// Switch dos cabeçalhos de `bt` (32×18, bolinha 14) e `wifi` (`large`, 36×20,
+// bolinha 16, design v5) (specs/08-controles-rapidos.md): ligado
+// `accent-600`, desligado `neutral-700`, bolinha `neutral-100`, 180ms.
 Rectangle {
   id: toggle
 
   property bool on: false
+  property bool large: false
+  readonly property int knob: large ? 16 : 14
 
   signal clicked
 
-  implicitWidth: 32
-  implicitHeight: 18
-  radius: 9
+  implicitWidth: large ? 36 : 32
+  implicitHeight: knob + 4
+  radius: height / 2
   color: on ? Tokens.accent600 : Tokens.neutral700
 
   Behavior on color {
@@ -24,11 +26,11 @@ Rectangle {
   }
 
   Rectangle {
-    x: toggle.on ? 16 : 2
+    x: toggle.on ? toggle.width - toggle.knob - 2 : 2
     y: 2
-    width: 14
-    height: 14
-    radius: 7
+    width: toggle.knob
+    height: toggle.knob
+    radius: toggle.knob / 2
     color: Tokens.neutral100
 
     Behavior on x {

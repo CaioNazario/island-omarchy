@@ -60,6 +60,18 @@ export function buildNetworkList(
   });
 }
 
+/**
+ * "Redes conhecidas" e "Outras redes" do design v5. A ativa conta como
+ * conhecida mesmo antes do NetworkManager marcar o perfil novo.
+ */
+export function splitNetworks(list: readonly WifiNetwork[]): {
+  known: WifiNetwork[];
+  other: WifiNetwork[];
+} {
+  const isKnown = (network: WifiNetwork) => network.hasProfile || network.status !== 'idle';
+  return { known: list.filter(isKnown), other: list.filter((network) => !isKnown(network)) };
+}
+
 export function signalLevel(strength: number): SignalLevel {
   if (strength >= 67) return 'high';
   if (strength >= 34) return 'medium';
@@ -77,10 +89,20 @@ export function validatePassword(password: string): 'too-short' | null {
   return password.length < MIN_PASSWORD_LENGTH ? 'too-short' : null;
 }
 
-export function headerStatus(radioOn: boolean, active: ActiveNetwork | null): string {
-  if (!radioOn) return 'Desligado';
-  if (!active) return 'Desconectado';
-  return active.status === 'connecting' ? 'Conectando…' : `Conectado a ${active.ssid}`;
+export interface WifiHeader {
+  title: string;
+  status: string;
+  glyph: string;
+  /** Ícone em `accent`; desligado, `neutral-500`. */
+  on: boolean;
+}
+
+/** Cabeçalho do design v5: a rede como título, o estado em maiúsculas embaixo. */
+export function wifiHeader(radioOn: boolean, active: ActiveNetwork | null): WifiHeader {
+  if (!radioOn) return { title: 'Wi‑Fi', status: 'Desligado', glyph: 'wifi-slash-fill', on: false };
+  if (!active) return { title: 'Wi‑Fi', status: 'Desconectado', glyph: 'wifi-high-fill', on: true };
+  const status = active.status === 'connecting' ? 'Conectando…' : 'Transmitindo pacotes';
+  return { title: active.ssid, status, glyph: 'wifi-high-fill', on: true };
 }
 
 const OPEN_TYPES = new Set(['Open', 'Owe']);

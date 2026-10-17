@@ -3,7 +3,8 @@ import {
   buildNetworkList,
   clickAction,
   connectFailureMessage,
-  headerStatus,
+  splitNetworks,
+  wifiHeader,
   securityFromQuickshell,
   signalLevel,
   validatePassword,
@@ -116,21 +117,52 @@ describe('validatePassword', () => {
   });
 });
 
-describe('headerStatus', () => {
-  it('shows "Desligado" with the radio off', () => {
-    expect(headerStatus(false, null)).toBe('Desligado');
+describe('splitNetworks', () => {
+  it('conhecidas (com perfil salvo) e outras, mantendo a ordem da lista', () => {
+    const list = buildNetworkList(
+      [
+        { ssid: 'Vizinho', strength: 90, security: 'personal', hasProfile: false },
+        { ssid: 'Casa', strength: 70, security: 'personal', hasProfile: true },
+        { ssid: 'Trabalho', strength: 40, security: 'personal', hasProfile: true },
+      ],
+      { ssid: 'Casa', status: 'connected' },
+    );
+    const { known, other } = splitNetworks(list);
+    expect(known.map((network) => network.ssid)).toEqual(['Casa', 'Trabalho']);
+    expect(other.map((network) => network.ssid)).toEqual(['Vizinho']);
   });
 
-  it('names the connected network', () => {
-    expect(headerStatus(true, { ssid: 'Casa', status: 'connected' })).toBe('Conectado a Casa');
+  it('a rede ativa é conhecida mesmo sem o perfil marcado ainda', () => {
+    const list = buildNetworkList(
+      [{ ssid: 'Nova', strength: 50, security: 'open', hasProfile: false }],
+      { ssid: 'Nova', status: 'connecting' },
+    );
+    expect(splitNetworks(list).known).toHaveLength(1);
+  });
+});
+
+describe('wifiHeader', () => {
+  it('radio off: "Wi‑Fi", "Desligado" and the slashed glyph', () => {
+    expect(wifiHeader(false, null)).toEqual({
+      title: 'Wi‑Fi',
+      status: 'Desligado',
+      glyph: 'wifi-slash-fill',
+      on: false,
+    });
   });
 
-  it('shows "Conectando…" while activating', () => {
-    expect(headerStatus(true, { ssid: 'Casa', status: 'connecting' })).toBe('Conectando…');
+  it('connected: the network as title (design v5 "Transmitindo pacotes")', () => {
+    expect(wifiHeader(true, { ssid: 'Casa', status: 'connected' })).toEqual({
+      title: 'Casa',
+      status: 'Transmitindo pacotes',
+      glyph: 'wifi-high-fill',
+      on: true,
+    });
   });
 
-  it('shows "Desconectado" with the radio on and no connection', () => {
-    expect(headerStatus(true, null)).toBe('Desconectado');
+  it('connecting and disconnected', () => {
+    expect(wifiHeader(true, { ssid: 'Casa', status: 'connecting' }).status).toBe('Conectando…');
+    expect(wifiHeader(true, null)).toMatchObject({ title: 'Wi‑Fi', status: 'Desconectado' });
   });
 });
 

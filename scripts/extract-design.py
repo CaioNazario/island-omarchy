@@ -46,9 +46,6 @@ EXTRA_ICONS = {
     ("regular", "download-simple"),
     ("regular", "monitor"),
     ("regular", "info"),
-    # Cabeçalho da lista de redes do v3 (plugin/ui/WifiView.qml), até o
-    # cabeçalho do v5 entrar.
-    ("regular", "wifi-high"),
 }
 
 ICON_CLASS = re.compile(r"\bph(?:-(bold|fill))? ph-([a-z0-9-]+)")

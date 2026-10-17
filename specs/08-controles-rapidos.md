@@ -98,13 +98,20 @@ As teclas de volume e brilho do Omarchy rodam `omarchy-audio-output-volume`/`oma
 
 Só a linha de controles. Com a linha de energia aberta: 94px (spec 09). Abre por `Super+I`, seta ou o widget Hardware (spec 16).
 
-## Modo `wifi` (660×280)
+## Modo `wifi` (660 × `wifiPanelHeight`)
 
-Linha de controles · linha de energia (opcional) · divisor · seção de redes (padding 0 12px):
+Painel do design v5. Linha de controles · linha de energia (opcional) · divisor em degradê (margin 0 0 8px) · cabeçalho · com o rádio ligado: vista de 80px, divisor, DNS, divisor, redes; desligado: área de 150px. Seção com padding 0 12px; cabeçalho, vista e DNS com mais 6px.
 
-- **Cabeçalho** 26px: `ph ph-wifi-high` 14px `neutral-300`, "Redes Wi‑Fi" 13px/500, status 11px `neutral-500` ("Conectado a Casa" / "Conectando…" / "Desconectado" com rádio ligado e sem conexão / "Desligado") e **switch** 32×18 raio 9 (ligado `accent-600`, desligado `neutral-700`, bolinha 14px `neutral-100`, 180ms) que liga/desliga o rádio.
-- **Redes** (fonte `Quickshell.Networking`, NetworkManager): redes visíveis deduplicadas por SSID (fica o sinal mais forte), conectada primeiro e depois por sinal. A busca (`scannerEnabled`) roda só com `wifi` aberto. Altura da ilha fixa: com mais de 5 redes, a lista rola.
-- Linha 36px raio 10, padding 0 8px, gap 10px, hover `neutral-900`: sinal (`ph-bold ph-wifi-high` ≥67%, `ph-wifi-medium` ≥34%, `ph-wifi-low` abaixo) 16px (`accent` se conectada, senão `neutral-300`) · SSID 12.5px · cadeado `ph-fill ph-lock-simple` 11px `neutral-500` se protegida · status 11px à direita ("Conectado" `accent-300`, "Conectando…" `neutral-400`). Conectada com fundo `accent-900`.
+- **Altura** (`wifiPanelHeight` em `src/core/wifiPanel.ts`, `renderVals()` do design): 46 (+48 energia) + 9 + 56 + ligado: 88 + 11 + 58 (+38 com o campo do DNS personalizado) + 11 + lista + 10; desligado: 160. Lista = (20 + 40 por rede conhecida, se houver) + (20 + 34 por outra rede, se houver) + senha (+58, +76 com erro), até 196 + senha; acima disso rola.
+- **Cabeçalho** 48px, gap 12 (`wifiHeader` em `src/core/wifi.ts`): `ph-fill ph-wifi-high` 24px `accent` (desligado `ph-fill ph-wifi-slash` `neutral-500`) · rede atual 14px/500 ("Wi‑Fi" sem conexão) + estado 10.5px maiúsculo `letter-spacing .1em` `neutral-400` ("Transmitindo pacotes", texto do design para conectado; "Conectando…", "Desconectado", "Desligado") · com conexão, botões 30×30 `ph ph-qr-code` e `ph ph-gauge` (ativo `accent-900`/`accent-200`, hover `neutral-800`) que alternam a vista · **switch** 36×20 raio 10 (bolinha 16px; o do `bt` continua 32×18) que liga/desliga o rádio.
+- **Vista** (80px, uma por vez, `bar.wifiView`; volta a estatísticas ao sair do modo):
+  - **Estatísticas**: duas colunas (gap 28) de linhas de 20px 12px, rótulo `neutral-500` e valor `neutral-200`: Ping, Ping do roteador, Recebendo, Enviando, Baixado, Enviado, Endereço IP, Gateway (`networkStats`). Fonte: `omarchy-network-status --verbose` a cada 1.5s com o modo aberto e o rádio ligado, como o painel de rede do Omarchy; taxas pelo delta de `rx_bytes`/`tx_bytes` entre duas leituras (KB/s, MB/s acima de 1024 KB/s), totais em MB/GB. O design mostra perda de pacotes, que o Omarchy não mede: no lugar entra o ping do roteador (`router_ping_ms`). Sem leitura, travessão.
+  - **QR**: quadrado 80×80 raio 8 `neutral-100` com a matriz de `omarchy-network-qr --meta` (já com a margem branca; módulos `bg`, desenhados num `Canvas`); ao lado "Compartilhar {rede}" 13px/500, linha 26px raio 8 `neutral-900` com `ph ph-key` 13px, a senha mascarada e botões 22×22 de mostrar (`ph ph-eye`/`ph-eye-slash`) e copiar (`ph ph-copy`, `ph-bold ph-check` `accent-300` por 1.4s depois de copiar), e "Aponte a câmera do celular para entrar na rede" 11px `neutral-500`. Rede aberta: "Rede aberta · sem senha", sem botões. A senha só é lida (`omarchy-network-password <iface>`) ao mostrar ou copiar, vai ao `wl-copy` pela entrada padrão e é esquecida ao sair da vista. Erro do script (rede corporativa, sem conexão) aparece no lugar do título.
+  - **Velocidade**: rótulo "Teste de velocidade" com o estado à direita ("Medindo download…", "Medindo upload…", "Concluído · ping 14 ms", "Falhou") e botão 20×20 `ph ph-arrow-clockwise` que roda de novo (opacidade .3 medindo); duas colunas de 44px com `ph-bold ph-arrow-down`/`arrow-up` 15px (`accent` na fase em curso), valor 24px/500 (`neutral-600` em zero) e "Mbps" 11px; barra de 3px `accent`: download até 55%, upload o resto. Como o painel de velocidade do Omarchy: `omarchy-network-speedtest down` e depois `up`, cada fase parada em 5s, cada linha da saída é a medida em Mbps. Abrir a vista roda o teste, salvo se já houver resultado; sair da vista ou do modo para o teste.
+- **Servidor DNS** (padding 0 6px, margin-bottom 10px): rótulo com os servidores à direita (`dnsDetail`: "Automático · {gateway}", "1.1.1.1 · 1.0.0.1", "8.8.8.8 · 8.8.4.4" ou os servidores IPv4 da linha `DNS=` do `/etc/systemd/resolved.conf`; "Aplicando…" enquanto o script roda) e quatro opções de 30px: DHCP, Cloudflare, Google, Personalizado. O provedor atual vem de `omarchy-dns` sem argumento. Escolher roda `omarchy-dns <provedor>` (que pede root pela regra do sudoers do Omarchy ou pelo polkit). Personalizado abre um campo de 32px (raio 9, fundo `bg`, anel `neutral-800`, `ph ph-globe-simple` 14px, placeholder "ex.: 9.9.9.9, 149.112.112.112") preenchido com os servidores atuais; Enter passa os servidores ao `omarchy-dns Custom` pela entrada padrão, Esc desiste. O painel do Omarchy abre um terminal para o Personalizado; a Island usa o campo do design.
+- **Redes** (fonte `Quickshell.Networking`, NetworkManager): redes visíveis deduplicadas por SSID (fica o sinal mais forte), conectada primeiro e depois por sinal, divididas em "Redes conhecidas" (com perfil salvo, ou a ativa) e "Outras redes" (`splitNetworks`); rótulos de 20px, 11px maiúsculos, que somem com o grupo vazio. A busca (`scannerEnabled`) roda só com `wifi` aberto.
+  - Conhecida: linha de 40px raio 10, padding 0 8px, gap 10px, hover `neutral-900`: sinal (`ph-bold ph-wifi-high` ≥67%, `ph-wifi-medium` ≥34%, `ph-wifi-low` abaixo) 16px (`accent` se conectada, senão `neutral-300`) · SSID 12.5px com "Conectado" (`accent-300`), "Conectando…" ou "Salva" (`neutral-400`) 11px embaixo · cadeado `ph-fill ph-lock-simple` 11px `neutral-500` se protegida. Conectada com fundo `accent-900`.
+  - Outra: linha de 34px: sinal · SSID · "Conectando…" 11px à direita enquanto ativa · cadeado.
 - **Rádio desligado**: área de 150px com `ph ph-wifi-slash` 22px + "Wi‑Fi desligado" 12.5px `neutral-500`.
 
 ### Clique numa rede
@@ -120,7 +127,7 @@ Captive portal não é detectável antes de conectar: a rede aparece como aberta
 
 ### Painel de senha
 
-- Margin 2px 0 6px, padding 10px, raio 12, `neutral-900`, anel interno 1px `neutral-800` (com erro `#bd413f`). A ilha cresce +58px (+76 com erro).
+- Margin 2px 0 6px, padding 10px, raio 12, `neutral-900`, anel interno 1px `neutral-800` (com erro `#bd413f`). A lista cresce +58px (+76 com erro), e o teto dela também.
 - Linha (gap 8px): campo 32px raio 9 fundo `bg` anel `neutral-800` padding 0 10px com `ph ph-key` 14px `neutral-400`, entrada 12.5px com placeholder "Senha de {SSID}" (texto mascarado) e olho 22×22 (`ph ph-eye` / `ph-eye-slash`) que alterna a visibilidade · **Cancelar** (`.btn-ghost`, 32px, 12px) · **Conectar** (`.btn-primary`, 32px, 12px, opacidade .45 com campo vazio).
 - O campo recebe foco ao abrir. Enter = Conectar; Esc = Cancelar (spec 03, regra 9). Digitar limpa o erro.
 - Erro (`ph ph-warning-circle` 13px + texto 11px `#fd736d`):
@@ -162,4 +169,9 @@ A operação termina quando o script sai. O Quickshell não expõe o erro do `Pa
 - [ ] Senha de 7 caracteres mostra o erro local sem tentativa de conexão.
 - [ ] Rede 802.1X abre o `nmtui` no terminal flutuante.
 - [ ] Parear um mouse Bluetooth sem PIN pela ilha funciona; a busca para ao fechar `bt`.
+- [x] `wifi` mostra estatísticas reais (ping, taxas, IP, gateway), o DNS atual e a rede conhecida (visto no `make dev`).
+- [x] A vista QR desenha a matriz do `omarchy-network-qr` com a senha mascarada (visto no `make dev`).
+- [ ] O teste de velocidade mede download e depois upload, 5s cada, e para ao sair da vista.
+- [ ] Trocar o DNS para Cloudflare pela ilha muda o `omarchy-dns`, e Personalizado aplica os servidores digitados.
+- [ ] Copiar a senha põe a senha certa na área de transferência sem ela aparecer em `ps`.
 - [x] `osd` de mensagem e de progresso abre com 320×50 e volta a `compact` no tempo do pedido (captura no `make dev`).

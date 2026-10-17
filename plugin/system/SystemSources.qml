@@ -27,6 +27,9 @@ Scope {
   readonly property alias screenRecord: screenRecord
   readonly property alias dictation: dictation
   readonly property alias display: display
+  readonly property alias wifiDetails: wifiDetails
+  readonly property alias wifiShare: wifiShare
+  readonly property alias speedTest: speedTest
 
   AudioSource {
     id: audio
@@ -82,5 +85,14 @@ Scope {
   }
   DisplaySource {
     id: display
+  }
+  WifiDetailsSource {
+    id: wifiDetails
+  }
+  WifiShareSource {
+    id: wifiShare
+  }
+  SpeedTestSource {
+    id: speedTest
   }
 }

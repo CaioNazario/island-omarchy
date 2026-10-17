@@ -568,28 +568,8 @@ describe('getSize', () => {
     });
   });
 
-  it('wifi: base, energia e senha (com e sem erro)', () => {
-    expect(getSize('wifi')).toEqual({ width: 660, height: 280, radius: 24 });
-    expect(getSize('wifi', { wifiEnergyOpen: true })).toEqual({
-      width: 660,
-      height: 328,
-      radius: 24,
-    });
-    expect(getSize('wifi', { wifiPasswordField: 'normal' })).toEqual({
-      width: 660,
-      height: 338,
-      radius: 24,
-    });
-    expect(getSize('wifi', { wifiPasswordField: 'error' })).toEqual({
-      width: 660,
-      height: 356,
-      radius: 24,
-    });
-    expect(getSize('wifi', { wifiEnergyOpen: true, wifiPasswordField: 'error' })).toEqual({
-      width: 660,
-      height: 404,
-      radius: 24,
-    });
+  it('wifi: a altura do painel vem de wifiPanelHeight (wifiPanel.ts)', () => {
+    expect(getSize('wifi', { wifiHeight: 456 })).toEqual({ width: 660, height: 456, radius: 24 });
   });
 
   it('bt: ligado/desligado e energia', () => {
