@@ -5,6 +5,9 @@ import {
   openMeteoUrl,
   parseOpenMeteoCurrent,
   parseWeatherLocation,
+  parseWeatherName,
+  parseWttrArea,
+  wttrUrl,
   READING_TTL_MS,
   type WeatherReading,
 } from './weather.js';
@@ -83,5 +86,36 @@ describe('openMeteoUrl', () => {
     expect(openMeteoUrl({ name: 'Recife', latitude: -8.05, longitude: -34.9 })).toBe(
       'https://api.open-meteo.com/v1/forecast?latitude=-8.05&longitude=-34.9&current=temperature_2m,weather_code,is_day&temperature_unit=celsius',
     );
+  });
+});
+
+describe('localização como o Omarchy', () => {
+  it('weather.json só com o nome vira consulta do wttr.in pelo nome', () => {
+    expect(wttrUrl(parseWeatherName('{"name": "São Paulo"}'))).toBe(
+      'https://wttr.in/S%C3%A3o%20Paulo?format=j1',
+    );
+  });
+
+  it('sem arquivo (ou sem nome), o wttr.in detecta pela IP', () => {
+    expect(wttrUrl(parseWeatherName(''))).toBe('https://wttr.in/?format=j1');
+    expect(wttrUrl(parseWeatherName('{"latitude": 1}'))).toBe('https://wttr.in/?format=j1');
+  });
+
+  it('a área do wttr.in dá as coordenadas para o Open-Meteo', () => {
+    const body = JSON.stringify({
+      nearest_area: [
+        { areaName: [{ value: 'Camaragibe' }], latitude: '-8.021', longitude: '-34.981' },
+      ],
+    });
+    expect(parseWttrArea(body)).toEqual({
+      name: 'Camaragibe',
+      latitude: -8.021,
+      longitude: -34.981,
+    });
+  });
+
+  it('resposta sem área ou inválida dá null', () => {
+    expect(parseWttrArea('{}')).toBeNull();
+    expect(parseWttrArea('<html>')).toBeNull();
   });
 });

@@ -6,17 +6,22 @@ import Quickshell.Io
 import "../core/weather.mjs" as WeatherCore
 import "../core/weatherIcon.mjs" as WeatherIcon
 
-// Clima da ilha compacta (specs/07-clima.md). Localização: a cidade das
-// preferências da Island, senão a do Omarchy (`omarchy-weather-location`,
-// em `~/.local/state/omarchy/settings/weather.json`), senão nada. Dados do
-// Open-Meteo, sem chave, pelo mesmo `curl` que o widget de clima do Omarchy.
+// Clima da ilha compacta (specs/07-clima.md), como o widget de clima do
+// Omarchy: a cidade das preferências da Island, senão o `weather.json` do
+// `omarchy-weather-location`; sem coordenadas, o wttr.in acha a área pelo
+// nome guardado ou pela IP (o padrão do Omarchy sem arquivo). O tempo vem do
+// Open-Meteo pelas coordenadas, sem chave, pelo mesmo `curl`.
 Scope {
   id: weather
 
   // Cidade das preferências da Island (spec 13); `null` usa a do Omarchy.
   property var preferredLocation: null
   property var omarchyLocation: null
-  readonly property var location: preferredLocation || omarchyLocation
+  // Nome do `weather.json` sem coordenadas ('' sem arquivo: detectar pela IP).
+  property string omarchyName: ""
+  // Área achada pelo wttr.in quando não há coordenadas.
+  property var detectedLocation: null
+  readonly property var location: preferredLocation || omarchyLocation || detectedLocation
   property var reading: null
   property real nowMs: Date.now()
   readonly property bool available: reading !== null && WeatherCore.isFresh(reading, nowMs)
@@ -31,6 +36,7 @@ Scope {
   }
 
   function refresh() {
+    if (!preferredLocation && !omarchyLocation) detectArea();
     if (!location || fetcher.running) return;
     fetcher.command = ["curl", "-fsS", "--max-time", "10", WeatherCore.openMeteoUrl(location)];
     fetcher.running = true;
@@ -50,8 +56,35 @@ Scope {
     watchChanges: true
     printErrors: false
     onFileChanged: reload()
-    onLoaded: weather.omarchyLocation = WeatherCore.parseWeatherLocation(text())
-    onLoadFailed: weather.omarchyLocation = null
+    onLoaded: {
+      weather.omarchyLocation = WeatherCore.parseWeatherLocation(text());
+      weather.omarchyName = WeatherCore.parseWeatherName(text());
+      weather.detectedLocation = null;
+      weather.refresh();
+    }
+    onLoadFailed: {
+      weather.omarchyLocation = null;
+      weather.omarchyName = "";
+      weather.refresh();
+    }
+  }
+
+  function detectArea() {
+    if (areaFetcher.running) return;
+    areaFetcher.command = ["curl", "-fsS", "--max-time", "10", WeatherCore.wttrUrl(omarchyName)];
+    areaFetcher.running = true;
+  }
+
+  // O wttr.in é lento ou instável às vezes: sem área, a próxima atualização tenta de novo.
+  Process {
+    id: areaFetcher
+
+    stdout: StdioCollector {
+      onStreamFinished: {
+        const area = WeatherCore.parseWttrArea(text);
+        if (area) weather.detectedLocation = area;
+      }
+    }
   }
 
   // Falha mantém a última leitura até ela vencer (3h, `isFresh`).

@@ -65,7 +65,8 @@ function coordinate(value: unknown, limit: number): number | null {
 /**
  * `{name, latitude, longitude}`: o formato do `weather.json` do Omarchy
  * (`omarchy-weather-location`) e da cidade das preferências da Island. Sem
- * coordenadas válidas → `null` (a Island não geolocaliza por IP).
+ * coordenadas válidas → `null`: aí vale o nome (`parseWeatherName`) ou a
+ * detecção pela IP do wttr.in, como no Omarchy.
  */
 export function parseWeatherLocation(text: string): WeatherLocation | null {
   const root = parseJson(text);
@@ -82,4 +83,33 @@ export function openMeteoUrl(location: WeatherLocation): string {
     `?latitude=${location.latitude}&longitude=${location.longitude}` +
     '&current=temperature_2m,weather_code,is_day&temperature_unit=celsius'
   );
+}
+
+/** O nome do `weather.json`, que sozinho também serve ao Omarchy; '' sem nome. */
+export function parseWeatherName(text: string): string {
+  const root = parseJson(text);
+  return isRecord(root) && typeof root.name === 'string' ? root.name.trim() : '';
+}
+
+/**
+ * Consulta do wttr.in como a do painel de clima do Omarchy: pelo nome, ou
+ * vazia para detectar o lugar pela IP (o que o Omarchy faz sem `weather.json`).
+ */
+export function wttrUrl(name: string): string {
+  return `https://wttr.in/${encodeURIComponent(name)}?format=j1`;
+}
+
+/** `nearest_area[0]` do `format=j1`: as coordenadas que o Omarchy passa ao Open-Meteo. */
+export function parseWttrArea(body: string): WeatherLocation | null {
+  const root = parseJson(body);
+  if (!isRecord(root) || !Array.isArray(root.nearest_area)) return null;
+  const area: unknown = root.nearest_area[0];
+  if (!isRecord(area)) return null;
+  const latitude = coordinate(area.latitude, 90);
+  const longitude = coordinate(area.longitude, 180);
+  if (latitude === null || longitude === null) return null;
+  const names = Array.isArray(area.areaName) ? area.areaName : [];
+  const first: unknown = names[0];
+  const name = isRecord(first) && typeof first.value === 'string' ? first.value : '';
+  return { name, latitude, longitude };
 }
