@@ -34,7 +34,7 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("hyprctl output create headless HEADLESS-ISLAND")
   -- Eventos automáticos da ilha vão para o monitor focado (specs/02-barra.md).
   hl.exec_cmd("sleep 0.5; hyprctl dispatch 'hl.dsp.focus({ monitor = \\"HEADLESS-ISLAND\\" })'")
-  hl.exec_cmd("ISLAND_PLUGIN_DIR=$PLUGIN_DIR qs -p $HARNESS >$LOG 2>&1")
+  hl.exec_cmd("$ROOT/dev/run-harness.sh $PLUGIN_DIR $HARNESS $LOG $DIST/bus")
 end)
 EOF
 }
@@ -54,15 +54,20 @@ start() {
   [[ -d "$PLUGIN_DIR" ]] || { echo "nested: $PLUGIN_DIR missing, run make build" >&2; exit 1; }
   write_config
   : >"$LOG"
-  local before
+  local before before_instances
   before="$(wayland_sockets)"
+  before_instances="$(ls "$XDG_RUNTIME_DIR/hypr" | sort)"
   # Pelo watchdog: sem ele, a Hyprland 0.56 cobre o canto da tela com um aviso.
   start-hyprland -- -c "$DIST/hyprland.lua" >"$DIST/hyprland.log" 2>&1 &
   local pid=$!
   wait_for '[[ -n "$(comm -13 <(echo "$before") <(wayland_sockets))" ]]' "the nested wayland socket"
   local socket
   socket="$(comm -13 <(echo "$before") <(wayland_sockets) | head -1)"
-  printf 'NESTED_PID=%s\nNESTED_SOCKET=%s\n' "$pid" "$socket" >"$STATE"
+  # O hyprctl fala com a instância de HYPRLAND_INSTANCE_SIGNATURE, que é a da
+  # sessão do usuário: guarda a do aninhado para falar com ele.
+  local instance
+  instance="$(comm -13 <(echo "$before_instances") <(ls "$XDG_RUNTIME_DIR/hypr" | sort) | head -1)"
+  printf 'NESTED_PID=%s\nNESTED_SOCKET=%s\nNESTED_INSTANCE=%s\n' "$pid" "$socket" "$instance" >"$STATE"
   echo "nested: Hyprland pid $pid on $socket, log in $LOG"
 }
 
@@ -130,6 +135,16 @@ dev() {
 serve() {
   start
   wait_for '[[ "$(harness_status)" == *"\"bar\":true"* ]]' "the bar to load"
+  # Eventos automáticos vão para o monitor focado: espera o foco na saída virtual.
+  # shellcheck source=/dev/null
+  source "$STATE"
+  wait_for 'HYPRLAND_INSTANCE_SIGNATURE="$NESTED_INSTANCE" hyprctl monitors | grep -A12 HEADLESS-ISLAND | grep -q "focused: yes"' "focus on the virtual output"
+}
+
+# Notificação de teste no D-Bus privado do harness:
+#   nested.sh notify [notify-send args...]
+notify() {
+  DBUS_SESSION_BUS_ADDRESS="$(cat "$DIST/bus")" notify-send "$@"
 }
 
 ipc() {
@@ -145,10 +160,11 @@ case "${1:-}" in
   serve) serve ;;
   stop) stop ;;
   ipc) shift; ipc "$@" ;;
+  notify) shift; notify "$@" ;;
   smoke) smoke ;;
   shot) shot "${2:-}" ;;
   *)
-    echo "usage: $0 dev|smoke|serve|ipc|shot|stop, got '${1:-}'" >&2
+    echo "usage: $0 dev|smoke|serve|ipc|notify|shot|stop, got '${1:-}'" >&2
     exit 1
     ;;
 esac
