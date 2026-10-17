@@ -75,37 +75,36 @@ export function getSize(mode: Mode, ctx: SizeContext = {}): Size {
     case 'compact':
       return { width: 240, height: 26, radius: 13 };
     case 'notif':
-      return { width: 400, height: 62, radius: 22 };
+      return { width: 400, height: 48, radius: 24 };
     case 'stack': {
       const n = ctx.stackItemCount ?? 0;
       const height = n === 0 ? 56 + 72 : 56 + Math.min(6, n) * 52;
       return { width: 400, height, radius: 24 };
     }
     case 'music':
-      return { width: 500, height: 82, radius: 26 };
+      return { width: 500, height: 58, radius: 29 };
     case 'volume':
-      return { width: 320, height: 50, radius: 25 };
     case 'brightness':
     case 'osd':
-      return { width: 320, height: 50, radius: 25 };
+      return { width: 320, height: 36, radius: 18 };
     case 'calendar':
       return { width: 480, height: ctx.calendarView === 'month' ? 214 : 150, radius: 24 };
     case 'quick':
-      return { width: 520, height: ctx.quickEnergyOpen ? 106 : 58, radius: 29 };
+      return { width: 520, height: ctx.quickEnergyOpen ? 94 : 46, radius: 23 };
     case 'wifi': {
-      let height = 292;
+      let height = 280;
       if (ctx.wifiEnergyOpen) height += 48;
       if (ctx.wifiPasswordField === 'normal') height += 58;
       else if (ctx.wifiPasswordField === 'error') height += 76;
-      return { width: 520, height, radius: 26 };
+      return { width: 520, height, radius: 24 };
     }
     case 'bt': {
-      let height = ctx.btOn === false ? 300 : 348;
+      let height = ctx.btOn === false ? 288 : 336;
       if (ctx.btEnergyOpen) height += 48;
-      return { width: 520, height, radius: 26 };
+      return { width: 520, height, radius: 24 };
     }
     case 'env':
-      return { width: 260, height: 40, radius: 20 };
+      return { width: 260, height: 32, radius: 16 };
     case 'note':
       return { width: 420, height: 132, radius: 24 };
     case 'ai': {

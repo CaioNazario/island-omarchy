@@ -26,12 +26,12 @@ O Phosphor não tem logo do Firefox, então ele fica com a nota.
 
 Música tocando em aba de navegador mostra título/artista/capa que o MPRIS entrega. A Island não sabe qual site é: sem companion de navegador.
 
-## Modo `music` (500×82, transitório 2500ms)
+## Modo `music` (500×58, transitório 2500ms)
 
 - **Gatilho**: troca de faixa (`mpris:trackid` ou título muda; o Firefox manda sempre o mesmo `trackid`) com o player atual tocando, respeitando a regra 3 da spec 03. Compara com a última faixa vista tocando naquele player: o Spotify web pausa, troca de faixa e só então volta a tocar, e retomar a mesma faixa não dispara. Descobrir um player já tocando na primeira leitura não dispara; um player novo que já chega tocando dispara.
-- Padding 0 14px, gap 14px: capa 56×56 raio 12 · bloco de texto · controles · ícone da fonte 22px `accent-400`.
-- Texto: artista 13px/500, título 12px `neutral-400`. Progresso (margin-top 6px, 10px `neutral-500`): posição · barra 3px (`accent` sobre `neutral-800`) · duração. Tempo em `m:ss`.
-- Controles: anterior 34×34 (`ph-fill ph-skip-back` 17px), tocar/pausar 38×38 (`ph-fill ph-play`/`ph-pause` 22px), próxima 34×34 (`ph-fill ph-skip-forward` 17px); hover `neutral-900`. Qualquer controle rearma o timer. Botão desabilitado quando `CanGo*` é falso.
+- Padding 0 14px 0 9px, gap 12px: capa 40×40 raio 20 (círculo) · bloco de texto · controles · ícone da fonte 19px `accent-400`.
+- Texto: artista 13px/500, título 12px `neutral-400`. Progresso (margin-top 3px, 10px `neutral-500`): posição · barra 3px (`accent` sobre `neutral-800`) · duração. Tempo em `m:ss`.
+- Controles: anterior 30×30 (`ph-fill ph-skip-back` 17px), tocar/pausar 34×34 (`ph-fill ph-play`/`ph-pause` 22px), próxima 30×30 (`ph-fill ph-skip-forward` 17px); hover `neutral-900`. Qualquer controle rearma o timer. Botão desabilitado quando `CanGo*` é falso.
 
 ### `music` fixado
 

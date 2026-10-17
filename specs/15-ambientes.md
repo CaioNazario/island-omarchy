@@ -70,10 +70,10 @@ Trocar de novo durante a animação cancela a anterior e parte do estado atual.
 - Ícone do ambiente 14px `accent-300` + pontos (gap 3px): um por ambiente, 4px de altura, raio 2; o ativo tem 12px de largura e é `accent`, os outros 4px e `neutral-700`. Largura e cor animam em 250ms.
 - Clique no botão abre/fecha o editor (spec 17, ainda não portado). Clique num ponto troca de ambiente e não abre o editor.
 
-## Modo `env` (260 × 40, raio 20, transitório 1500ms)
+## Modo `env` (260 × 32, raio 16, transitório 1500ms)
 
 - Aparece em toda troca pedida (rolagem, ponto, atalho, editor), **só** se a ilha estiver em `compact` ou já em `env` (rearma o timer). Com outro modo aberto, a troca acontece sem mexer na ilha. Mudança de índice que não foi pedida (a barra achando o serviço no hot-reload, o arquivo editado por fora) troca o conteúdo sem mostrar `env`.
-- Conteúdo centralizado, gap 10px: ícone do ambiente 16px `accent-300` · nome 13px/500 · pontos (mesma regra do botão, sempre horizontais).
+- Conteúdo centralizado, gap 9px: ícone do ambiente 16px `accent-300` · nome 13px/500 · pontos (mesma regra do botão, sempre horizontais).
 - Não recebe clique nem hover (no design, `pointer-events: none`). Clicar na ilha em `env` não faz nada.
 
 ## Critérios de aceite

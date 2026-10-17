@@ -9,19 +9,19 @@ A máquina de estados vive em `src/core/island.ts` (pura, testada). A UI só ren
 | Modo | L × A (px) | Raio | Tipo | Spec |
 |---|---|---|---|---|
 | `compact` | 240 × 26 | 13 | — | abaixo |
-| `notif` | 400 × 62 | 22 | transitório 2500ms (navegador 2100ms) | 04 |
+| `notif` | 400 × 48 | 24 | transitório 2500ms (navegador 2100ms) | 04 |
 | `stack` | 400 × (56 + min(6, n)·52), vazia 56 + 72 | 24 | fixo | 04 |
-| `music` | 500 × 82 | 26 | transitório 2500ms; fixo quando aberto pelo widget Música | 05, 16 |
-| `volume` | 320 × 50 | 25 | transitório 1500ms | 08 |
-| `brightness` | 320 × 50 | 25 | transitório 1500ms | 08 |
+| `music` | 500 × 58 | 29 | transitório 2500ms; fixo quando aberto pelo widget Música | 05, 16 |
+| `volume` | 320 × 36 | 18 | transitório 1500ms | 08 |
+| `brightness` | 320 × 36 | 18 | transitório 1500ms | 08 |
 | `calendar` | 480 × 150 (semana) / 214 (mês) | 24 | fixo | 06 |
-| `quick` | 520 × 58, com linha de energia 106 | 29 | fixo | 08, 09 |
-| `wifi` | 520 × 292 (+48 energia, +58 senha, +76 senha com erro) | 26 | fixo | 08 |
-| `bt` | 520 × 348 (BT ligado) / 300 (desligado), +48 energia | 26 | fixo | 08 |
+| `quick` | 520 × 46, com linha de energia 94 | 23 | fixo | 08, 09 |
+| `wifi` | 520 × 280 (+48 energia, +58 senha, +76 senha com erro) | 24 | fixo | 08 |
+| `bt` | 520 × 336 (BT ligado) / 288 (desligado), +48 energia | 24 | fixo | 08 |
 | `ai` | 480 × (24 + 32 + p·108 − 6), p = provedores | 24 | fixo | 12 |
-| `env` | 260 × 40 | 20 | transitório 1500ms | 15 |
+| `env` | 260 × 32 | 16 | transitório 1500ms | 15 |
 | `note` | 420 × 132 | 24 | fixo | 16 |
-| `osd` | 320 × 50 | 25 | transitório 1500ms ou a duração do pedido | 08 |
+| `osd` | 320 × 36 | 18 | transitório 1500ms ou a duração do pedido | 08 |
 
 Os tempos dos transitórios são mais curtos que o `TRANSIENT` do design (4200/4500/2600ms) por decisão do usuário. O `env` segue o design (1500ms).
 
@@ -31,7 +31,7 @@ O cartão central (spec 05) também é um estado da ilha: 440 × altura do conte
 
 ## Modo compacto
 
-240×26, conteúdo centralizado, gap 10px, 13px/500:
+240×26, conteúdo centralizado, gap 10px, 13px/500 (a hora em 600):
 
 `[clima] · [hora] · [dia]`
 

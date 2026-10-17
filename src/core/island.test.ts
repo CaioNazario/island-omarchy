@@ -512,11 +512,11 @@ describe('getSize', () => {
 
   it('retorna as medidas estáticas da tabela', () => {
     expect(getSize('compact')).toEqual({ width: 240, height: 26, radius: 13 });
-    expect(getSize('notif')).toEqual({ width: 400, height: 62, radius: 22 });
-    expect(getSize('music')).toEqual({ width: 500, height: 82, radius: 26 });
-    expect(getSize('volume')).toEqual({ width: 320, height: 50, radius: 25 });
-    expect(getSize('brightness')).toEqual({ width: 320, height: 50, radius: 25 });
-    expect(getSize('env')).toEqual({ width: 260, height: 40, radius: 20 });
+    expect(getSize('notif')).toEqual({ width: 400, height: 48, radius: 24 });
+    expect(getSize('music')).toEqual({ width: 500, height: 58, radius: 29 });
+    expect(getSize('volume')).toEqual({ width: 320, height: 36, radius: 18 });
+    expect(getSize('brightness')).toEqual({ width: 320, height: 36, radius: 18 });
+    expect(getSize('env')).toEqual({ width: 260, height: 32, radius: 16 });
   });
 
   it('stack: cresce por item até 6, com piso para lista vazia', () => {
@@ -556,42 +556,42 @@ describe('getSize', () => {
   });
 
   it('quick: com e sem linha de energia', () => {
-    expect(getSize('quick')).toEqual({ width: 520, height: 58, radius: 29 });
+    expect(getSize('quick')).toEqual({ width: 520, height: 46, radius: 23 });
     expect(getSize('quick', { quickEnergyOpen: true })).toEqual({
       width: 520,
-      height: 106,
-      radius: 29,
+      height: 94,
+      radius: 23,
     });
   });
 
   it('wifi: base, energia e senha (com e sem erro)', () => {
-    expect(getSize('wifi')).toEqual({ width: 520, height: 292, radius: 26 });
+    expect(getSize('wifi')).toEqual({ width: 520, height: 280, radius: 24 });
     expect(getSize('wifi', { wifiEnergyOpen: true })).toEqual({
       width: 520,
-      height: 340,
-      radius: 26,
+      height: 328,
+      radius: 24,
     });
     expect(getSize('wifi', { wifiPasswordField: 'normal' })).toEqual({
       width: 520,
-      height: 350,
-      radius: 26,
+      height: 338,
+      radius: 24,
     });
     expect(getSize('wifi', { wifiPasswordField: 'error' })).toEqual({
       width: 520,
-      height: 368,
-      radius: 26,
+      height: 356,
+      radius: 24,
     });
     expect(getSize('wifi', { wifiEnergyOpen: true, wifiPasswordField: 'error' })).toEqual({
       width: 520,
-      height: 416,
-      radius: 26,
+      height: 404,
+      radius: 24,
     });
   });
 
   it('bt: ligado/desligado e energia', () => {
-    expect(getSize('bt')).toEqual({ width: 520, height: 348, radius: 26 });
-    expect(getSize('bt', { btOn: false })).toEqual({ width: 520, height: 300, radius: 26 });
-    expect(getSize('bt', { btEnergyOpen: true })).toEqual({ width: 520, height: 396, radius: 26 });
+    expect(getSize('bt')).toEqual({ width: 520, height: 336, radius: 24 });
+    expect(getSize('bt', { btOn: false })).toEqual({ width: 520, height: 288, radius: 24 });
+    expect(getSize('bt', { btEnergyOpen: true })).toEqual({ width: 520, height: 384, radius: 24 });
   });
 
   it('ai: altura cresce por provedor', () => {
@@ -659,6 +659,6 @@ describe('IslandState osd', () => {
 
   it('não é modo fixo e tem o tamanho do volume', () => {
     expect(isFixedMode('osd')).toBe(false);
-    expect(getSize('osd')).toEqual({ width: 320, height: 50, radius: 25 });
+    expect(getSize('osd')).toEqual({ width: 320, height: 36, radius: 18 });
   });
 });

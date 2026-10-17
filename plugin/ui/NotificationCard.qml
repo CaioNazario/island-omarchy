@@ -4,31 +4,36 @@ import QtQuick
 import QtQuick.Layouts
 import "../core/notifications.mjs" as NotificationsCore
 
-// Conteúdo do `notif` (400×62) e do banner (specs/04-notificacoes.md):
-// padding 0 12px, gap 12px: bloco do ícone · nome 13px/500 + tempo 11px ·
-// texto 12px `neutral-400` numa linha · ×. O banner usa bloco 34, ícone 19 e
-// × 24; o `notif`, 36, 20 e 26.
+// Conteúdo do `notif` (400×48) e do banner (specs/04-notificacoes.md): bloco
+// do ícone · nome 13px/500 + tempo 11px · texto 12px `neutral-400` numa
+// linha · ×. O `notif` usa padding 0 10px 0 8px, gap 10, bloco 32 redondo,
+// ícone 17 e × 24; o banner, padding 0 12px, gap 12, bloco 34 raio 10,
+// ícone 19 e × 24.
 Item {
   id: card
 
   required property var entry
   required property real nowMs
-  property int blockSize: 36
-  property int iconSize: 20
-  property int closeSize: 26
+  property int blockSize: 32
+  property int blockRadius: 16
+  property int iconSize: 17
+  property int closeSize: 24
+  property int leftPadding: 8
+  property int rightPadding: 10
+  property int gap: 10
 
   signal closed
 
   RowLayout {
     anchors.fill: parent
-    anchors.leftMargin: 12
-    anchors.rightMargin: 12
-    spacing: 12
+    anchors.leftMargin: card.leftPadding
+    anchors.rightMargin: card.rightPadding
+    spacing: card.gap
 
     NotificationIcon {
       implicitWidth: card.blockSize
       implicitHeight: card.blockSize
-      radius: 10
+      radius: card.blockRadius
       entry: card.entry
       iconSize: card.iconSize
     }

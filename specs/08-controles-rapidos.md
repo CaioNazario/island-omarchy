@@ -6,11 +6,11 @@ Código: `plugin/ui/ControlsRow.qml`, `WifiView.qml`, `BtView.qml`, `LevelRow.qm
 
 ## Linha de controles (comum a `quick`, `wifi` e `bt`)
 
-58px de altura, padding 0 10px, gap 8px, da esquerda para a direita:
+46px de altura, padding 0 7px, gap 6px, da esquerda para a direita:
 
-1. **Brilho**: pílula `flex: 1`, 38px, raio 19, `neutral-900`, padding 0 12px, gap 8px; `ph ph-sun` 16px + slider. Some se não houver backlight controlável (o volume ocupa o espaço).
+1. **Brilho**: pílula `flex: 1`, 32px, raio 16, `neutral-900`, padding 0 11px, gap 8px; `ph ph-sun` 16px + slider. Some se não houver backlight controlável (o volume ocupa o espaço).
 2. **Volume**: igual, com o ícone de volume.
-3. **Tiles** 38×38 raio 19 (ligado: `accent-600` / ícone `neutral-100`; desligado: `neutral-800` / `neutral-300`; transição 180ms):
+3. **Tiles** 32×32 raio 16, ícone 15px (ligado: `accent-600` / ícone `neutral-100`; desligado: `neutral-800` / `neutral-300`; transição 180ms):
 
    | Tile | Ícone | Clique |
    |---|---|---|
@@ -33,7 +33,7 @@ Código: `plugin/ui/ControlsRow.qml`, `WifiView.qml`, `BtView.qml`, `LevelRow.qm
 
 - Fonte: `Pipewire.defaultAudioSink` (Quickshell). Máximo 100%, sem amplificação. Mexer no slider acima de 0 tira do mudo.
 - Ícone (`ph-fill`): mudo ou 0 → `ph-speaker-x`; <40 → `ph-speaker-low`; senão `ph-speaker-high`.
-- **Modo `volume`** (320×50, 1500ms): padding 0 18px, gap 14px: ícone 18px · slider · valor `70%` (34px, alinhado à direita, 12px `neutral-300`).
+- **Modo `volume`** (320×36, 1500ms): padding 0 16px, gap 12px: ícone 16px · slider (puxador 12px) · valor `70%` (34px, alinhado à direita, 12px `neutral-300`).
 - Abre pelo ícone de volume da barra ou pela tecla de volume/mudo (regra 4 da spec 03).
 
 ## Brilho
@@ -51,19 +51,19 @@ As teclas de volume e brilho do Omarchy rodam `omarchy-audio-output-volume`/`oma
 |---|---|---|
 | ícone `volume*`/`mute` com progresso | tecla de volume | `volume` com o valor (regra 4 da spec 03) |
 | ícone `brightness` com progresso | tecla de brilho | `brightness` com o valor |
-| outro ícone com progresso | luz do teclado, download | `osd`: ícone 18px · barra · `NN%` |
-| mensagem | microfone mudo, toggles, "Shutting down", troca de saída de áudio | `osd`: ícone 18px · texto 12.5px |
+| outro ícone com progresso | luz do teclado, download | `osd`: ícone 16px · barra · `NN%` |
+| mensagem | microfone mudo, toggles, "Shutting down", troca de saída de áudio | `osd`: ícone 16px · texto 12.5px |
 
-- `osd` usa o layout do modo `volume` (320×50, padding 0 18px, gap 14px). A barra é o trilho do slider, só leitura.
+- `osd` usa o layout do modo `volume` (320×36, padding 0 16px, gap 12px). A barra é o trilho do slider, só leitura.
 - Duração: a do pedido (`-d`), senão 1500ms.
 - Ícone: o nome do Omarchy vira Phosphor (`osdGlyph`): microfone → `ph-microphone`/`ph-microphone-slash`, teclado → `ph-fill ph-keyboard`, reiniciar → `ph-arrow-clockwise`, desligar → `ph-bold ph-power`, sair → `ph-sign-out`, mídia → `ph-fill ph-play`/`pause`/`skip-*`, download → `ph-download-simple`, desconhecido → `ph-info`.
 - Payload sem mensagem nem progresso, ou JSON inválido: ignorado.
 
-## Modo `quick` (520×58)
+## Modo `quick` (520×46)
 
-Só a linha de controles. Com a linha de energia aberta: 106px (spec 09). Abre por `Super+I`, bateria, seta ou o widget Hardware (spec 16).
+Só a linha de controles. Com a linha de energia aberta: 94px (spec 09). Abre por `Super+I`, bateria, seta ou o widget Hardware (spec 16).
 
-## Modo `wifi` (520×292)
+## Modo `wifi` (520×280)
 
 Linha de controles · linha de energia (opcional) · divisor · seção de redes (padding 0 12px):
 
@@ -95,7 +95,7 @@ Captive portal não é detectável antes de conectar: a rede aparece como aberta
 - **Conectar**: `WifiNetwork.connectWithPsk(senha)` (Quickshell); o painel fecha e a rede mostra "Conectando…".
 - **Falha** (`Network.connectionFailed`): `NoSecrets` ou `WifiAuthTimeout` → "Senha incorreta"; outro motivo ou 30s sem ativar → "Não foi possível conectar" (`connectFailureMessage`, mesma leitura do painel de rede do Omarchy). O perfil recém-criado sai (`forget()`) e o painel reabre com o erro. Sem agente de segredos na sessão, o NM não abre diálogo nenhum.
 
-## Modo `bt` (520×348, desligado 300)
+## Modo `bt` (520×336, desligado 288)
 
 Linha de controles · linha de energia (opcional) · divisor · seção (padding 0 12px):
 

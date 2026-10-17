@@ -48,12 +48,12 @@ O não perturbe é da Island (tile da spec 08 e IPC `notifications`), guardado e
 
 Notificação de urgência **baixa** vai só para a lista.
 
-## Modo `notif` (400×62)
+## Modo `notif` (400×48)
 
-Padding 0 12px, gap 12px:
-- Bloco do ícone 36×36, raio 10, fundo `accent-900`, ícone 20px `accent-300`.
+Padding 0 10px 0 8px, gap 10px:
+- Bloco do ícone 32×32, raio 16 (círculo), fundo `accent-900`, ícone 17px `accent-300`.
 - Linha 1: nome 13px/500 + tempo 11px `neutral-500` à direita. Linha 2: texto 12px `neutral-400`, uma linha com reticências.
-- × 26×26, raio 13, fundo `neutral-900`: fecha a ilha (a notificação continua na lista).
+- × 24×24, raio 12, fundo `neutral-900`: fecha a ilha (a notificação continua na lista).
 - Clicar no resto da ilha abre `stack`.
 
 ## Modo `stack` (lista)

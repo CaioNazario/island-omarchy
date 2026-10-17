@@ -5,7 +5,8 @@ import Quickshell
 import "../core/clock.mjs" as Clock
 
 // Modo compacto (specs/03-ilha.md "Modo compacto"): `[clima] · [hora] · [dia]`,
-// gap 10px, 13px/500. Sem clima (spec 07), o item e seu separador somem.
+// gap 10px, 13px/500, a hora em 600. Sem clima (spec 07), o item e seu
+// separador somem.
 Row {
   id: compact
 
@@ -45,6 +46,7 @@ Row {
   IslandText {
     anchors.verticalCenter: parent.verticalCenter
     text: Clock.formatClock(clock.date)
+    font.weight: Font.DemiBold
   }
 
   Dot {}

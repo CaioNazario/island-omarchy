@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 
 // Linha de energia (specs/09-sessao-energia.md): 48px (40 de linha + 8 de
-// respiro), padding 0 10px, cinco botões de mesma largura. O contêiner corta
+// respiro), padding 0 7px, cinco botões de mesma largura. O contêiner corta
 // a linha enquanto a altura anima na mola: em `quick` a ilha cresce junto; em
 // `wifi`/`bt` a lista ancorada embaixo desliza os 48px.
 Item {
@@ -35,8 +35,8 @@ Item {
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: parent.top
-    anchors.leftMargin: 10
-    anchors.rightMargin: 10
+    anchors.leftMargin: 7
+    anchors.rightMargin: 7
     height: 40
     spacing: 6
 

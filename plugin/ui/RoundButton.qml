@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
-// Configurações e Energia (specs/09-sessao-energia.md): 38×38 raio 19,
+// Configurações e Energia (specs/09-sessao-energia.md): 32×32 raio 16,
 // hover `neutral-700`/`text`, pressionado `accent-800`. `restingColor` e
 // `restingIconColor` mudam com a linha de energia aberta.
 Rectangle {
@@ -17,9 +17,9 @@ Rectangle {
   readonly property bool hovered: pointer.containsMouse
   readonly property bool pressed: pointer.pressed
 
-  implicitWidth: 38
-  implicitHeight: 38
-  radius: 19
+  implicitWidth: 32
+  implicitHeight: 32
+  radius: 16
   color: pressed ? Tokens.accent800 : hovered ? Tokens.neutral700 : restingColor
   border.width: activeFocus ? 2 : 0
   border.color: Tokens.accent
@@ -34,7 +34,7 @@ Rectangle {
   PhIcon {
     anchors.centerIn: parent
     glyph: button.glyph
-    size: 17
+    size: 15
     color: button.pressed || button.hovered ? Tokens.text : button.restingIconColor
   }
 

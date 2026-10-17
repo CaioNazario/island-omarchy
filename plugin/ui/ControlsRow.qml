@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import "../core/osd.mjs" as OsdCore
 
 // Linha de controles comum a `quick`, `wifi` e `bt` (specs/08-controles-rapidos.md):
-// 58px, padding 0 10px, gap 8px. Tile de rádio sem hardware some; sem
+// 46px, padding 0 7px, gap 6px. Tile de rádio sem hardware some; sem
 // backlight, o volume ocupa o espaço do brilho.
 Item {
   id: row
@@ -13,13 +13,13 @@ Item {
   required property var bar
   readonly property var system: bar.system
 
-  implicitHeight: 58
+  implicitHeight: 46
 
   RowLayout {
     anchors.fill: parent
-    anchors.leftMargin: 10
-    anchors.rightMargin: 10
-    spacing: 8
+    anchors.leftMargin: 7
+    anchors.rightMargin: 7
+    spacing: 6
 
     SliderPill {
       visible: row.system.brightness.available

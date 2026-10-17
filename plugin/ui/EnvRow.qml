@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
-// Modo `env` (specs/15-ambientes.md, 260×40): centralizado, gap 10px: ícone
+// Modo `env` (specs/15-ambientes.md, 260×32): centralizado, gap 9px: ícone
 // do ambiente 16px `accent-300` · nome 13px/500 · pontos. Sem clique.
 Item {
   id: view
@@ -11,7 +11,7 @@ Item {
 
   Row {
     anchors.centerIn: parent
-    spacing: 10
+    spacing: 9
 
     PhIcon {
       anchors.verticalCenter: parent.verticalCenter
