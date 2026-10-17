@@ -73,7 +73,7 @@ export const MAX_ISLAND_WIDTH = 520;
 export function getSize(mode: Mode, ctx: SizeContext = {}): Size {
   switch (mode) {
     case 'compact':
-      return { width: 240, height: 30, radius: 15 };
+      return { width: 240, height: 26, radius: 13 };
     case 'notif':
       return { width: 400, height: 62, radius: 22 };
     case 'stack': {

@@ -66,7 +66,7 @@ Trocar de novo durante a animação cancela a anterior e parte do estado atual.
 
 ## Botão de ambiente (início da pílula esquerda)
 
-- Altura 24, padding 0 8px, raio 12, gap 7px, hover `neutral-900` (fundo `neutral-900` com o editor aberto).
+- Altura 22, padding 0 8px, raio 11, gap 7px, hover `neutral-900` (fundo `neutral-900` com o editor aberto).
 - Ícone do ambiente 14px `accent-300` + pontos (gap 3px): um por ambiente, 4px de altura, raio 2; o ativo tem 12px de largura e é `accent`, os outros 4px e `neutral-700`. Largura e cor animam em 250ms.
 - Clique no botão abre/fecha o editor (spec 17, ainda não portado). Clique num ponto troca de ambiente e não abre o editor.
 

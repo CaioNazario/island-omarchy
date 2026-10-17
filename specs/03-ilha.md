@@ -8,7 +8,7 @@ A máquina de estados vive em `src/core/island.ts` (pura, testada). A UI só ren
 
 | Modo | L × A (px) | Raio | Tipo | Spec |
 |---|---|---|---|---|
-| `compact` | 240 × 30 | 15 | — | abaixo |
+| `compact` | 240 × 26 | 13 | — | abaixo |
 | `notif` | 400 × 62 | 22 | transitório 2500ms (navegador 2100ms) | 04 |
 | `stack` | 400 × (56 + min(6, n)·52), vazia 56 + 72 | 24 | fixo | 04 |
 | `music` | 500 × 82 | 26 | transitório 2500ms; fixo quando aberto pelo widget Música | 05, 16 |
@@ -31,7 +31,7 @@ O cartão central (spec 05) também é um estado da ilha: 440 × altura do conte
 
 ## Modo compacto
 
-240×30, conteúdo centralizado, gap 10px, 13px/500:
+240×26, conteúdo centralizado, gap 10px, 13px/500:
 
 `[clima] · [hora] · [dia]`
 

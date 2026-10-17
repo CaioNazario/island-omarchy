@@ -23,7 +23,7 @@ Item {
   readonly property real minWidth: loader.item && widgetId === "hw" ? Math.min(naturalWidth, (loader.item as HwWidget).minWidth) : naturalWidth
 
   implicitWidth: naturalWidth
-  implicitHeight: 24
+  implicitHeight: 22
 
   function open(mode) {
     bar.openFromBar(screenName, mode);

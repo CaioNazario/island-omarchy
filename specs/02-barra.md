@@ -5,7 +5,7 @@ Origem: `design/markup.html` container `barRef`, pílula esquerda (`dropLeft`) e
 ## Layout
 
 - Container no topo de cada monitor: `left: 12px`, `right: 12px`, `top: 2px` (era 0 até o design v3), três filhos em linha com `gap: 6px`, alinhados pelo topo (a ilha cresce para baixo sem mover as laterais).
-- **Pílulas laterais**: dividem igualmente o espaço que sobra da ilha (`flex: 1 1 0`); altura 30px, raio 15px, fundo `bg`, anel 1px `neutral-800`, padding horizontal 6px. Sem o blur do design por enquanto (spec 01).
+- **Pílulas laterais**: dividem igualmente o espaço que sobra da ilha (`flex: 1 1 0`); altura 26px, raio 13px, fundo `bg`, anel 1px `neutral-800`, padding horizontal 6px. Sem o blur do design por enquanto (spec 01).
 - **Ilha**: largura/altura/raio do modo atual (spec 03), centralizada entre as laterais.
 
 ### Pílula esquerda
@@ -23,7 +23,7 @@ Da esquerda para a direita:
 5. Bateria (desenho com o nível dentro, spec 11). Abre `quick`.
 6. Seta `ph ph-caret-down` 12px `neutral-300`. Abre `quick`.
 
-Botões: 30×24, raio 12px, fundo transparente, hover `neutral-900`, gap 2px entre eles.
+Botões: 30×22, raio 11px, fundo transparente, hover `neutral-900`, gap 2px entre eles.
 
 Clicar num gatilho cujo modo já está aberto fecha a ilha (`openFromBar`).
 
@@ -36,7 +36,7 @@ Clicar num gatilho cujo modo já está aberto fecha a ilha (`openFromBar`).
 
 Cada monitor tem duas superfícies layer-shell (`plugin/ui/ScreenBar.qml`):
 
-- **Faixa** (`island-strut`, camada `Bottom`): 32px no topo, transparente, sem entrada (`mask` vazia). Só reserva o espaço.
+- **Faixa** (`island-strut`, camada `Bottom`): 28px no topo, transparente, sem entrada (`mask` vazia). Só reserva o espaço.
 - **Camada** (`island`, camada `Top`): tela cheia, transparente, `ExclusionMode.Ignore`. Desenha pílulas, ilha e banner. A `mask` é a união dos retângulos das pílulas e da ilha, então o resto da tela recebe cliques normalmente.
 
 Uma superfície só não serve: ancorada nas quatro bordas (para a ilha crescer para baixo), o layer-shell ignora a zona exclusiva.
@@ -55,7 +55,7 @@ Uma superfície só não serve: ancorada nas quatro bordas (para a ilha crescer 
 
 ## Espaço reservado
 
-A faixa reserva 32px no topo de cada monitor (2px de margem + 30px); janela maximizada começa em y=32. Com auto-ocultar ligado, não reserva nada (spec 18).
+A faixa reserva 28px no topo de cada monitor (2px de margem + 26px); janela maximizada começa em y=28. Com auto-ocultar ligado, não reserva nada (spec 18).
 
 ## Clique fora
 
@@ -64,7 +64,7 @@ Com modo fixo (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `music`
 ## Critérios de aceite
 
 - [x] As duas laterais têm sempre a mesma largura e a ilha fica centralizada no monitor.
-- [ ] Maximizar uma janela a deixa encostada em y=32 sem sobrepor a barra.
+- [ ] Maximizar uma janela a deixa encostada em y=28 sem sobrepor a barra.
 - [ ] Em 1280px lógicos com a ilha em `wifi` (520px) e o ambiente Trabalho, nenhum texto da barra é cortado (widgets somem inteiros, spec 16).
 - [ ] Conectar/desconectar um segundo monitor cria/remove a barra dele sem reiniciar o shell.
 - [ ] Uma janela em tela cheia esconde a barra só no monitor dela.

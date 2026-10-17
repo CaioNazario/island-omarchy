@@ -511,7 +511,7 @@ describe('getSize', () => {
   });
 
   it('retorna as medidas estáticas da tabela', () => {
-    expect(getSize('compact')).toEqual({ width: 240, height: 30, radius: 15 });
+    expect(getSize('compact')).toEqual({ width: 240, height: 26, radius: 13 });
     expect(getSize('notif')).toEqual({ width: 400, height: 62, radius: 22 });
     expect(getSize('music')).toEqual({ width: 500, height: 82, radius: 26 });
     expect(getSize('volume')).toEqual({ width: 320, height: 50, radius: 25 });

@@ -34,11 +34,11 @@ API medida no spike S9 (Shell 50, um monitor 1920×1080):
 
 ## Desligado
 
-Comportamento da spec 02: a barra sempre visível e reservando 32px.
+Comportamento da spec 02: a barra sempre visível e reservando 28px.
 
 ## Critérios de aceite
 
-- [x] Ligar no editor tira o strut na hora: uma janela maximizada passa a começar em y=0. Desligar devolve os 32px.
+- [x] Ligar no editor tira o strut na hora: uma janela maximizada passa a começar em y=0. Desligar devolve os 28px.
 - [x] Clicar numa aba do navegador maximizado encostada no topo não revela a barra. Empurrar o ponteiro contra a borda revela.
 - [x] Notificação chegando com a barra escondida mostra a barra junto com o `notif` e esconde de novo depois.
 - [ ] `Super+I` com a barra escondida mostra a barra com `quick` aberto.

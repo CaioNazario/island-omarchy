@@ -10,7 +10,7 @@ Até a v1.1 a Island era uma extensão do GNOME Shell (último código no commit
 
 | Termo | Significado |
 |---|---|
-| **Barra** | Faixa no topo (2px de margem + 30px) com as três pílulas, uma por monitor |
+| **Barra** | Faixa no topo (2px de margem + 26px) com as três pílulas, uma por monitor |
 | **Pílula esquerda** | Botão de ambiente + widgets do ambiente ativo (specs 15, 16) |
 | **Pílula direita** | Widgets do ambiente ativo + notificações, Wi‑Fi, volume, bateria, seta (specs 04, 08, 11, 16) |
 | **Ambiente** | Conjunto nomeado de widgets para as duas pílulas; um ativo por vez (spec 15) |

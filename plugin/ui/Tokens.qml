@@ -57,13 +57,13 @@ QtObject {
   readonly property int weightLabel: Font.Medium
   readonly property int weightBody: Font.Normal
 
-  readonly property int barHeight: 30
+  readonly property int barHeight: 26
   readonly property int barTopMargin: 2
-  // 2px de margem + 30px de barra (specs/02-barra.md "Espaço reservado").
+  // 2px de margem + 26px de barra (specs/02-barra.md "Espaço reservado").
   readonly property int barReserved: barTopMargin + barHeight
   readonly property int sideMargin: 12
   readonly property int pillGap: 6
-  readonly property int pillRadius: 15
+  readonly property int pillRadius: 13
   readonly property int pillPaddingH: 6
 
   // Mola da ilha `cubic-bezier(.3,1.2,.4,1)` .46s. O par final (1,1) fecha a

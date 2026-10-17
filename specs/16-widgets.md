@@ -22,7 +22,7 @@ Widgets ocupam as pílulas laterais conforme o ambiente ativo (spec 15). Visual 
 
 - **Esquerda**: botão de ambiente (spec 15), gap 4px, e a área de widgets **encostada à direita** (junto da ilha).
 - **Direita**: área de widgets **encostada à esquerda** (junto da ilha) e depois os botões fixos (sino, Wi‑Fi, volume, bateria, seta; spec 02).
-- Widgets com gap 2px. Moldura de cada um: raio 12, fundo transparente, hover `neutral-900` (150ms), cursor de mão só se o widget tiver ação de clique.
+- Widgets com gap 2px. Moldura de cada um: raio 11, fundo transparente, hover `neutral-900` (150ms), cursor de mão só se o widget tiver ação de clique.
 
 ### Quando não cabe
 
@@ -33,7 +33,7 @@ A área de widgets nunca empurra a ilha nem os botões fixos. Decisão por medid
 
 ## Visual comum (`TopbarWidget`)
 
-Linha de 24px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem quebra. As partes aparecem nesta ordem, cada uma só se o widget usar:
+Linha de 22px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem quebra. As partes aparecem nesta ordem, cada uma só se o widget usar:
 
 | Parte | Visual |
 |---|---|
