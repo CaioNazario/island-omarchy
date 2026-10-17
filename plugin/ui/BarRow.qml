@@ -15,6 +15,7 @@ Item {
   readonly property alias leftPill: leftPill
   readonly property alias island: island
   readonly property alias rightPill: rightPill
+  readonly property alias banner: banner
   readonly property real pillWidth: Math.max(0, (width - island.width - 2 * Tokens.pillGap) / 2)
 
   height: island.height
@@ -33,6 +34,17 @@ Item {
     bar: row.bar
     displayMode: row.mode
     onClicked: row.bar.islandClick(row.screenName)
+  }
+
+  // Só o monitor-alvo mostra o banner (specs/02 "Monitores").
+  Banner {
+    id: banner
+
+    anchors.horizontalCenter: island.horizontalCenter
+    y: island.height + 8
+    bar: row.bar
+    entry: row.bar.targetScreen === row.screenName ? row.bar.bannerEntry : null
+    onOpened: row.bar.openFromBar(row.screenName, "stack")
   }
 
   Pill {

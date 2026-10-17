@@ -7,6 +7,7 @@ import "system"
 import "ui"
 import "core/island.mjs" as IslandCore
 import "core/osd.mjs" as OsdCore
+import "core/notifications.mjs" as NotificationsCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
 // este item a cada hot-reload; o que precisa sobreviver mora no Service.qml.
@@ -37,6 +38,13 @@ Item {
   property string wifiPasswordFor: ""
   property string wifiPasswordError: ""
 
+  // Notificações (specs/04): conteúdo do `notif`, banner e destaque no `stack`.
+  property var notifEntry: null
+  property var bannerEntry: null
+  property int flashKey: 0
+  // Relógio do tempo relativo ("há N min"), um tique por minuto.
+  property real nowMs: Date.now()
+
   // Conteúdo do modo `osd` (specs/08 "OSD do Omarchy").
   property var osd: ({ glyph: "info", text: "", percent: 0 })
 
@@ -44,6 +52,7 @@ Item {
       quickEnergyOpen: powerOpen,
       wifiEnergyOpen: powerOpen,
       btEnergyOpen: powerOpen,
+      stackItemCount: service && service.notifications ? service.notifications.entries.length : 0,
       wifiPasswordField: wifiPasswordFor === "" ? "none" : wifiPasswordError === "" ? "normal" : "error",
       btOn: sources.bluetooth.radioOn
     })
@@ -71,6 +80,10 @@ Item {
     powerOpen = islandState.powerOpen;
     // Regra 1 da spec 03: sair de `wifi` fecha o painel de senha.
     if (mode !== "wifi") closePassword();
+    // Abrir a lista marca tudo como lido (specs/04 "Modo `stack`").
+    if (mode === "stack" && service) service.notifications.markAllRead();
+    // Com a lista aberta, o banner repetiria o primeiro item dela.
+    if (mode === "stack") hideBanner();
   }
 
   // O host carrega serviços e barra em paralelo: o serviço pode chegar depois.
@@ -170,6 +183,74 @@ Item {
     }
     function onQuickToggleRequested() {
       root.toggleQuick();
+    }
+    function onStackRequested() {
+      root.targetFocusedScreen();
+      if (root.mode !== "stack") root.islandState.openFromTrigger("stack");
+    }
+  }
+
+  // Notificação nova (specs/04 "Roteamento"): a regra é do core.
+  function routeNotification(entry) {
+    const incoming = {
+      critical: entry.critical,
+      low: entry.low,
+      acknowledged: false,
+      bannersAllowed: !service.doNotDisturb,
+      fromBrowser: entry.fromBrowser
+    };
+    const route = NotificationsCore.routeNotification(incoming, { mode: mode, cardOpen: cardOpen });
+    if (route === "notif") return showNotif(entry);
+    if (route === "stack") return flash(entry);
+    if (route === "banner") return showBanner(entry);
+  }
+
+  function showNotif(entry) {
+    targetForAutomatic();
+    notifEntry = entry;
+    islandState.openNotification(entry.critical, entry.fromBrowser);
+  }
+
+  function flash(entry) {
+    flashKey = entry.key;
+    flashTimer.restart();
+  }
+
+  function showBanner(entry) {
+    bannerEntry = entry;
+    bannerTimer.restart();
+  }
+
+  function hideBanner() {
+    bannerEntry = null;
+  }
+
+  Timer {
+    id: flashTimer
+
+    interval: 2500
+    onTriggered: root.flashKey = 0
+  }
+
+  Timer {
+    id: bannerTimer
+
+    interval: 2600
+    onTriggered: root.hideBanner()
+  }
+
+  Timer {
+    interval: 60000
+    repeat: true
+    running: true
+    onTriggered: root.nowMs = Date.now()
+  }
+
+  Connections {
+    target: root.service ? root.service.notifications : null
+    function onArrived(entry) {
+      root.nowMs = Date.now();
+      root.routeNotification(entry);
     }
   }
 

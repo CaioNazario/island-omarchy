@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "system"
 
 // Entrada `service` do plugin (keepLoaded: specs/14-spikes.md, S6). Vive até
 // o shell reiniciar: guarda o estado visível que não pode se perder quando a
@@ -18,14 +19,78 @@ Item {
 
   readonly property string pluginId: "caionazario.island"
 
-  property bool doNotDisturb: false
+  readonly property alias notifications: feed
+  readonly property bool doNotDisturb: store.values.doNotDisturb
+  readonly property bool hasUnread: feed.hasUnread
 
   signal osdRequested(string payload)
   signal osdCloseRequested
   signal quickToggleRequested
+  signal stackRequested
 
   function setDoNotDisturb(on) {
-    doNotDisturb = on;
+    store.values.doNotDisturb = on;
+  }
+
+  StateStore {
+    id: store
+  }
+
+  NotificationFeed {
+    id: feed
+  }
+
+  // Mesmo contrato do `plugins/notifications/Service.qml` do Omarchy 4.0.4:
+  // os scripts `omarchy-*` e os atalhos `SUPER + vírgula` chamam estes nomes.
+  IpcHandler {
+    target: "notifications"
+
+    function dndState(): string {
+      return root.doNotDisturb ? "on" : "off";
+    }
+    function toggleDnd(): string {
+      root.setDoNotDisturb(!root.doNotDisturb);
+      return dndState();
+    }
+    function setDnd(value: string): string {
+      root.setDoNotDisturb(["true", "1", "on", "yes"].includes(String(value).toLowerCase()));
+      return dndState();
+    }
+    function isDnd(): string {
+      return dndState();
+    }
+    // O histórico da Island é a lista do `stack`.
+    function showHistory(): string {
+      root.stackRequested();
+      return "ok";
+    }
+    function clear(): string {
+      feed.clearAll();
+      return "ok";
+    }
+    function dismissAll(): string {
+      feed.clearAll();
+      return "ok";
+    }
+    function dismissOne(): string {
+      if (feed.entries.length === 0) return "none";
+      feed.dismiss(feed.entries[0].key);
+      return "ok";
+    }
+    function invokeLast(): string {
+      if (feed.entries.length === 0) return "none";
+      feed.activate(feed.entries[0].key);
+      return "ok";
+    }
+    function dismiss(summary: string): string {
+      const match = feed.entries.find(entry => entry.ref && String(entry.ref.summary).includes(summary));
+      if (!match) return "none";
+      feed.dismiss(match.key);
+      return "ok";
+    }
+    function ping(): string {
+      return "ok";
+    }
   }
 
   // Mesmo contrato do `plugins/osd/Osd.qml` do Omarchy 4.0.4.

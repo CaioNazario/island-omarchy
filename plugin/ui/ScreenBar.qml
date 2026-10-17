@@ -66,6 +66,9 @@ Scope {
       Region {
         item: barRow.rightPill
       }
+      Region {
+        item: barRow.banner.visible ? barRow.banner : null
+      }
     }
 
     MouseArea {

@@ -1,11 +1,16 @@
 # 04 · Notificações
 
-Origem: `design/logic.js` `pushNotif` (~136), `stack`/`latest`/`unreadDot`/`openPeek`; `design/markup.html` 40–72 (modos `notif` e `stack`) e 385–398 (banner).
+Origem: `design/logic.js` `pushNotif`, `stack`/`latest`/`unreadDot`/`openPeek`; `design/markup.html` modos `notif` e `stack` e o banner.
+
+Código: `plugin/system/NotificationFeed.qml` (no `Service.qml`), roteamento no `Bar.qml`, views `NotificationCard.qml`, `StackView.qml`, `Banner.qml`.
 
 ## Fonte
 
-- A fonte da verdade é o `Main.messageTray` do Shell (fontes + notificações). A Island é uma **view**: escuta a chegada e a remoção de notificações e nunca guarda cópia própria. Por isso o histórico sobrevive ao lock/unlock.
-- Os banners nativos do GNOME ficam bloqueados enquanto a extensão está habilitada e voltam no `disable()`. O mecanismo exato (propriedade/injeção no `MessageTray` da 50.x) deve ser confirmado no código-fonte do Shell antes de implementar.
+- A Island é o servidor de notificações da sessão: um `NotificationServer` (Quickshell) no `Service.qml` é dono de `org.freedesktop.Notifications`, com `omarchy.notifications` desligado (spec 14, S7). Os toasts do Omarchy não existem enquanto a Island está ativa.
+- A lista vive no serviço (`keepLoaded`): sobrevive ao hot-reload da barra e ao lock. Não sobrevive ao reinício do shell (o servidor some junto).
+- Cada notificação fica `tracked` (senão o objeto morre ao fim do handler). Atualização por `replaces_id` chega no mesmo objeto e atualiza o item. Quando o app fecha a notificação (`closed`), o item sai da lista.
+- Hint `transient`: aparece (`notif`/banner) mas não entra na lista.
+- O alvo IPC `notifications` tem o contrato do Omarchy (spec 14, S7): `toggleDnd`/`setDnd`/`isDnd`/`dndState`, `showHistory` (abre `stack`), `clear`/`dismissAll` (limpa a lista), `dismissOne` (a mais recente), `invokeLast` (ação padrão da mais recente), `dismiss <trecho do título>`, `ping`. Os atalhos `Super+vírgula` do Omarchy seguem funcionando.
 
 ## Identificação da origem
 
@@ -24,7 +29,7 @@ Regra pura em `src/core/notificationSource.ts`, com a tabela como constante no m
    A comparação ignora `www.` e casa o subdomínio mais específico primeiro.
 3. Domínio fora da tabela → nome = rótulo principal do domínio registrável, capitalizado (`twitch.tv` → "Twitch", `www.github.com` → "Github"); ícone `ph ph-globe`. Sem a Public Suffix List: uma lista curta de sufixos de segundo nível (`com.br`, `co.uk`…) evita que `globo.com.br` vire "Com".
 4. A linha do domínio é removida do texto exibido. Nunca mostrar "Brave" nem `www.youtube.com`.
-5. **App nativo**: nome do app; ícone simbólico do app (`<ícone>-symbolic`) tingido de `accent-300`, ou `ph-fill ph-bell` se não houver simbólico.
+5. **App nativo**: nome do app; ícone simbólico do tema (`<ícone>-symbolic`, por `Quickshell.iconPath`) tingido de `accent-300`, ou `ph-fill ph-bell` se o tema não tiver o simbólico ou o ícone for um caminho de arquivo.
 
 ## Roteamento de uma notificação nova
 
@@ -39,9 +44,9 @@ Toda notificação nova acende o ponto de não lido do sino.
 
 ### Não perturbe
 
-Com "Não perturbe" ligado (`org.gnome.desktop.notifications show-banners = false`), a notificação vai direto para a lista, sem abrir `notif` nem banner. A fonte é o `policy.showBanners` da notificação, que junta o DND com a opção "banners" por app das Configurações. Urgência **crítica** fura o DND e segue a tabela acima; `notif` de notificação crítica não fecha sozinho.
+O não perturbe é da Island (tile da spec 08 e IPC `notifications`), guardado em `$XDG_STATE_HOME/island/state.json` para sobreviver ao reinício do shell. Ligado, a notificação vai direto para a lista, sem abrir `notif` nem banner. Urgência **crítica** fura o DND e segue a tabela acima; `notif` de notificação crítica não fecha sozinho.
 
-Como no Shell (`_onNotificationRequestBanner`, `js/ui/messageTray.js`, 50.4), notificação de urgência **baixa** ou que já chega reconhecida (app residente com foco) vai só para a lista.
+Notificação de urgência **baixa** vai só para a lista.
 
 ## Modo `notif` (400×62)
 
@@ -74,7 +79,8 @@ Padding 0 12px, gap 12px:
 
 - [x] Testes de `notificationSource.ts` cobrem cada linha da tabela, domínio desconhecido, `www.`, subdomínio mais específico e app nativo.
 - [x] Testes do roteamento cobrem os quatro estados da tabela e o DND com e sem urgência crítica.
-- [x] Notificação de qualquer site no Brave aparece com o nome do site, sem a linha do domínio: site da tabela com o ícone dele, os outros com o globo (testado com o WhatsApp).
-- [x] Com `wifi` aberto, uma notificação vira banner e o modo `wifi` continua intacto.
-- [x] Nenhum banner nativo do GNOME aparece com a extensão ativa; ao desabilitar, voltam.
-- [x] Lock/unlock mantém a lista de notificações.
+- [ ] Notificação de qualquer site no Brave aparece com o nome do site, sem a linha do domínio: site da tabela com o ícone dele, os outros com o globo (testado com o WhatsApp).
+- [x] Com `wifi` aberto, uma notificação vira banner e o modo `wifi` continua intacto (captura no `make dev`).
+- [ ] Nenhum toast do Omarchy aparece com a Island ativa; `./install.sh --uninstall` os devolve.
+- [ ] Lock/unlock e hot-reload da barra mantêm a lista de notificações.
+- [x] Notificação do Brave com `web.whatsapp.com` abre `notif` com "WhatsApp" e o ícone dele, e fecha em 2100ms (captura no `make dev`).

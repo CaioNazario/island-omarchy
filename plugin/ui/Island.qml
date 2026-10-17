@@ -102,6 +102,25 @@ Item {
     }
 
     Layer {
+      layerId: "notif"
+
+      NotificationCard {
+        entry: island.bar.notifEntry || ({ name: "", text: "", timeMs: 0, glyph: "bell-fill", appIcon: "" })
+        nowMs: island.bar.nowMs
+        // × fecha a ilha; a notificação continua na lista.
+        onClosed: island.bar.closeAll()
+      }
+    }
+
+    Layer {
+      layerId: "stack"
+
+      StackView {
+        bar: island.bar
+      }
+    }
+
+    Layer {
       layerId: "volume"
 
       LevelRow {
