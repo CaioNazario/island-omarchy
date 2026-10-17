@@ -121,6 +121,8 @@ Problema já encontrado e sua solução. Adicione aqui toda vez que algo custar 
 - O V4 do QML recusa class fields (`Expected token '('`) , `catch {}` sem variável (`Syntax error`) e spread de objeto (`Unexpected token ...`): o core compila com `target: ES2017`.
 - O QML só trata como módulo ES arquivos `.mjs`: o build renomeia a saída do `tsc` e reescreve os imports `./x.js` → `./x.mjs`.
 - O V4 não tem `setTimeout`, `TextDecoder` nem `Intl`: timers do core recebem um `Scheduler` feito de `Timer` QML, e bytes chegam ao core já como string.
+- `FileView` com `preload: false` nunca emite `loaded` numa leitura assíncrona de `/proc` (tamanho 0): deixe o `preload` ligado e chame `reload()`.
+- `qs ipc -p` só acha instâncias do display atual, e métodos com nome de subcomando do `qs` (`show`) precisam de `call --`.
 - `Qt.quit()` não encerra o `qs` (sem receptor para `QQmlEngine::quit`): scripts usam `timeout` ou `Quickshell` IPC.
 
 ## Antes de dizer que terminou
