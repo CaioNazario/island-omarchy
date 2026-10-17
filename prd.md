@@ -2,7 +2,7 @@
 
 **Status:** design validado em protótipo · **Plataforma:** GNOME Shell 50+ (Linux, Wayland) · **Data:** set/2026
 
-Referência visual e de comportamento: `Desktop Island.html` (extraído em `design/`). Detalhe de implementação: `specs/`. Em conflito, vale design > specs > este PRD.
+Referência visual e de comportamento: `design-source/Desktop Island.dc.html` (extraído em `design/`). Detalhe de implementação: `specs/`. Em conflito, vale design > specs > este PRD.
 
 ---
 

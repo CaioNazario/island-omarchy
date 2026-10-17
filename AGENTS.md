@@ -12,7 +12,7 @@ Cada fonte manda num eixo:
 - **Comportamento e dados reais**: as specs vencem. Dado simulado ou item de protótipo no design (imagem de fundo, battery/charging como props, textos fixos) não é requisito.
 - **Contexto de produto**: `prd.md`. Não decide nada sozinho.
 
-Design: `design-source/Desktop Island.dc.html` (protótipo v5 do Claude Design, sem bundle, com `TopbarWidget.dc.html` e o CSS do Nocturne ao lado). `Desktop Island.html` é o bundle do v3, de antes do v5. Leia a versão extraída em `design/`:
+Design: `design-source/Desktop Island.dc.html` (protótipo v5 do Claude Design, com `TopbarWidget.dc.html` e o CSS do Nocturne ao lado). Leia a versão extraída em `design/`:
 
 - `design/markup.html`: estrutura, medidas, cores e ícones de cada estado
 - `design/logic.js`: máquina de estados, tamanhos (`SIZES`), timers (`TRANSIENT`), limiares e regras de roteamento
