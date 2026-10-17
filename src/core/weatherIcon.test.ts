@@ -1,27 +1,36 @@
 import { describe, expect, it } from 'vitest';
+
 import { weatherGlyph } from './weatherIcon.js';
 
-describe('weatherGlyph', () => {
+describe('weatherGlyph (código WMO do Open-Meteo)', () => {
   it.each([
-    ['weather-clear', 'sun-fill'],
-    ['weather-clear-night', 'moon-fill'],
-    ['weather-few-clouds', 'cloud-sun-fill'],
-    ['weather-few-clouds-night', 'cloud-moon-fill'],
-    ['weather-overcast', 'cloud-fill'],
-    ['weather-fog', 'cloud-fog-fill'],
-    ['weather-showers', 'cloud-rain-fill'],
-    ['weather-storm', 'cloud-lightning-fill'],
-    ['weather-snow', 'snowflake-fill'],
-  ])('maps %s to %s', (name, glyph) => {
-    expect(weatherGlyph(name)).toBe(glyph);
+    [0, true, 'sun-fill'],
+    [0, false, 'moon-fill'],
+    [1, true, 'cloud-sun-fill'],
+    [2, false, 'cloud-moon-fill'],
+    [3, true, 'cloud-fill'],
+    [3, false, 'cloud-fill'],
+    [45, true, 'cloud-fog-fill'],
+    [48, false, 'cloud-fog-fill'],
+    [51, true, 'cloud-rain-fill'],
+    [57, true, 'cloud-rain-fill'],
+    [61, true, 'cloud-rain-fill'],
+    [67, false, 'cloud-rain-fill'],
+    [80, true, 'cloud-rain-fill'],
+    [82, true, 'cloud-rain-fill'],
+    [71, true, 'snowflake-fill'],
+    [77, true, 'snowflake-fill'],
+    [85, true, 'snowflake-fill'],
+    [86, false, 'snowflake-fill'],
+    [95, true, 'cloud-lightning-fill'],
+    [99, false, 'cloud-lightning-fill'],
+  ])('%i (dia=%s) → %s', (code, isDay, glyph) => {
+    expect(weatherGlyph(code, isDay)).toBe(glyph);
   });
 
-  it('accepts the symbolic variant', () => {
-    expect(weatherGlyph('weather-clear-night-symbolic')).toBe('moon-fill');
-  });
-
-  it('returns null for an unknown condition', () => {
-    expect(weatherGlyph('weather-severe-alert')).toBeNull();
-    expect(weatherGlyph('')).toBeNull();
+  it('código desconhecido → null', () => {
+    expect(weatherGlyph(4, true)).toBeNull();
+    expect(weatherGlyph(100, true)).toBeNull();
+    expect(weatherGlyph(-1, true)).toBeNull();
   });
 });

@@ -1,50 +1,53 @@
 # 07 · Clima
 
-Origem: `design/markup.html` linha 33 (item de clima fixo `☀ 22°` na ilha compacta).
+Origem: `design/markup.html` item de clima fixo `☀ 22°` na ilha compacta.
+
+Código: `plugin/system/WeatherSource.qml`, regras em `src/core/weather.ts` e `weatherIcon.ts`.
 
 ## Fonte
 
-`GWeather-4.0` direto na extensão (dados MET Norway, sem chave de API). Não depende do app GNOME Weather.
+Open-Meteo (`api.open-meteo.com/v1/forecast`, bloco `current`: `temperature_2m`, `weather_code`, `is_day`), sem chave de API, por `curl` como o widget de clima do Omarchy.
 
 ### Cadeia de localização
 
 Resolvida na ordem, parando na primeira que der resultado:
 
-1. **Cidade das preferências da Island** (`weather-location`, spec 13; busca de cidade via `GWeather.Location`).
-2. **Cidades que o GNOME já conhece**: `org.gnome.shell.weather` `locations`, depois `org.gnome.Weather` `locations`, se os schemas existirem.
-3. **Geoclue**, só se a localização do sistema estiver ligada (`org.gnome.system.location enabled`).
-4. Nada → o clima **some** da ilha compacta (fica `hora · dia`).
+1. **Cidade das preferências da Island** (spec 13; nome + latitude/longitude).
+2. **Cidade do Omarchy**: `~/.local/state/omarchy/settings/weather.json` (`omarchy weather location`), vigiado: mudar a cidade no Omarchy atualiza a ilha.
+3. Nada → o clima **some** da ilha compacta (fica `hora · dia`).
 
-Sem geolocalização por IP nem outro serviço externo.
+Sem geolocalização por IP (o widget do Omarchy usa o wttr.in por IP quando não há cidade; a Island não). Sem coordenadas no `weather.json`, conta como sem cidade.
 
 ### Primeira execução sem localização
 
-Uma única vez (flag `weather-hint-shown` no GSettings), a Island emite uma notificação própria: "Configure sua cidade para ver o clima". Clicar nela abre as preferências na seção Clima.
+Uma única vez, a Island emite uma notificação própria: "Configure sua cidade para ver o clima". Entra com as preferências (spec 13), que é onde o clique leva.
 
 ## Exibição
 
 - Temperatura em **°C**, arredondada, sem casa decimal (`22°`).
-- Atualização a cada 30 min e ao retomar da suspensão.
+- Atualização a cada 30 min e ao retomar da suspensão (salto no relógio maior que dois tiques de 1 min).
 - Falha de rede: mantém o último valor por até 3h; depois some.
 - Clicar no clima não faz nada.
 
 ### Condição → ícone (`ph-fill`, cor `accent-300`, 15px)
 
-| Condição GWeather | Dia | Noite |
-|---|---|---|
-| céu limpo | `ph-sun` | `ph-moon` |
-| poucas nuvens | `ph-cloud-sun` | `ph-cloud-moon` |
-| nublado | `ph-cloud` | `ph-cloud` |
-| névoa / neblina | `ph-cloud-fog` | `ph-cloud-fog` |
-| chuva / garoa | `ph-cloud-rain` | `ph-cloud-rain` |
-| tempestade | `ph-cloud-lightning` | `ph-cloud-lightning` |
-| neve / granizo | `ph-snowflake` | `ph-snowflake` |
+Pelo código WMO do Open-Meteo e `is_day`:
 
-O mapeamento é uma função pura em `src/core/weatherIcon.ts`.
+| Condição (códigos WMO) | Dia | Noite |
+|---|---|---|
+| céu limpo (0) | `ph-sun` | `ph-moon` |
+| poucas nuvens (1, 2) | `ph-cloud-sun` | `ph-cloud-moon` |
+| nublado (3) | `ph-cloud` | `ph-cloud` |
+| névoa / neblina (45, 48) | `ph-cloud-fog` | `ph-cloud-fog` |
+| garoa / chuva / pancadas (51–67, 80–82) | `ph-cloud-rain` | `ph-cloud-rain` |
+| neve (71–77, 85, 86) | `ph-snowflake` | `ph-snowflake` |
+| tempestade (95, 96, 99) | `ph-cloud-lightning` | `ph-cloud-lightning` |
+
+Código desconhecido → o clima some. O mapeamento é uma função pura em `src/core/weatherIcon.ts`.
 
 ## Critérios de aceite
 
-- [x] Testes de `weatherIcon.ts` cobrem todas as condições e dia/noite.
-- [x] Com cidade nas preferências, a ilha mostra ícone + temperatura dessa cidade.
-- [x] Sem cidade, sem locations do GNOME e com localização desligada: a ilha mostra só hora e dia, e a notificação de dica aparece uma única vez.
-- [x] Trocar a cidade nas preferências atualiza a ilha sem reiniciar a extensão.
+- [x] Testes de `weatherIcon.ts` cobrem todos os grupos de código e dia/noite; testes de `weather.ts` cobrem a resposta do Open-Meteo e o `weather.json`.
+- [x] Com cidade nas preferências, a ilha mostra ícone + temperatura dessa cidade (captura no `make dev`).
+- [ ] Sem cidade na Island nem no Omarchy: a ilha mostra só hora e dia, e a notificação de dica aparece uma única vez.
+- [ ] Trocar a cidade (Island ou `omarchy weather location`) atualiza a ilha sem reiniciar o shell.

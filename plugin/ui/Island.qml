@@ -104,6 +104,7 @@ Item {
       Item {
         CompactContent {
           anchors.centerIn: parent
+          weather: island.bar.system.weather
         }
       }
     }

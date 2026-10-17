@@ -19,6 +19,7 @@ Scope {
   readonly property alias session: session
   readonly property alias music: music
   readonly property alias calendar: calendar
+  readonly property alias weather: weather
 
   AudioSource {
     id: audio
@@ -48,5 +49,8 @@ Scope {
   }
   CalendarEvents {
     id: calendar
+  }
+  WeatherSource {
+    id: weather
   }
 }

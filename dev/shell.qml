@@ -96,6 +96,14 @@ ShellRoot {
       return bar.cardOpen ? "card" : bar.mode; // qmllint disable missing-property
     }
 
+    // Cidade das preferências (spec 07) sem tocar no weather.json do Omarchy.
+    function weather(locationJson: string): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      bar.system.weather.preferredLocation = JSON.parse(locationJson); // qmllint disable missing-property
+      return "ok";
+    }
+
     function status(): string {
       return JSON.stringify({
         bar: barLoader.status === Loader.Ready,
