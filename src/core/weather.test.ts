@@ -7,6 +7,7 @@ import {
   parseWeatherLocation,
   parseWeatherName,
   parseWttrArea,
+  sameLocation,
   wttrUrl,
   READING_TTL_MS,
   type WeatherReading,
@@ -117,5 +118,15 @@ describe('localização como o Omarchy', () => {
   it('resposta sem área ou inválida dá null', () => {
     expect(parseWttrArea('{}')).toBeNull();
     expect(parseWttrArea('<html>')).toBeNull();
+  });
+});
+
+describe('sameLocation', () => {
+  it('mesmas coordenadas são o mesmo lugar, mesmo em objetos diferentes', () => {
+    const a = { name: 'Camaragibe', latitude: -8.021, longitude: -34.981 };
+    expect(sameLocation(a, { ...a })).toBe(true);
+    expect(sameLocation(a, { ...a, latitude: -8.03 })).toBe(false);
+    expect(sameLocation(null, a)).toBe(false);
+    expect(sameLocation(null, null)).toBe(true);
   });
 });

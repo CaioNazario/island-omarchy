@@ -113,3 +113,12 @@ export function parseWttrArea(body: string): WeatherLocation | null {
   const name = isRecord(first) && typeof first.value === 'string' ? first.value : '';
   return { name, latitude, longitude };
 }
+
+/**
+ * O wttr.in devolve a área a cada atualização: com as mesmas coordenadas, o
+ * lugar não mudou e a leitura atual continua valendo.
+ */
+export function sameLocation(a: WeatherLocation | null, b: WeatherLocation | null): boolean {
+  if (a === null || b === null) return a === b;
+  return a.latitude === b.latitude && a.longitude === b.longitude;
+}

@@ -82,7 +82,10 @@ Scope {
     stdout: StdioCollector {
       onStreamFinished: {
         const area = WeatherCore.parseWttrArea(text);
-        if (area) weather.detectedLocation = area;
+        // Só troca com coordenadas novas: trocar o objeto apagaria a leitura,
+        // buscaria de novo e detectaria a área outra vez, num laço que piscava
+        // o clima na ilha.
+        if (area && !WeatherCore.sameLocation(area, weather.detectedLocation)) weather.detectedLocation = area;
       }
     }
   }
