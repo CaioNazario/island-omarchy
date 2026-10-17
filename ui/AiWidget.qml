@@ -3,9 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import "../core/aiUsage.mjs" as AiCore
 
-// Widget `ai` (specs/12-uso-ia.md "Widget `ai`"): por provedor logado, ícone
-// 13px · mini barra 26×4 da sessão (600ms) · `62%` 11.5px/500, gap 12px entre
-// provedores. Nenhum logado: `ph-sparkle` + "IA" `neutral-400`.
+// Widget `ai` (specs/12-uso-ia.md "Widget `ai`"): por provedor com limites no
+// registro do Omarchy, ícone 13px · mini barra 26×4 da sessão (600ms) · `62%`
+// 11.5px/500, gap 12px entre provedores. Nenhum: `ph-sparkle` + "IA".
 WidgetFrame {
   id: widget
 
@@ -17,7 +17,7 @@ WidgetFrame {
   spacing: 12
 
   Row {
-    visible: widget.ai.loggedIn.length === 0
+    visible: widget.ai.withLimits.length === 0
     spacing: 6
 
     PhIcon {
@@ -36,13 +36,13 @@ WidgetFrame {
   }
 
   Repeater {
-    model: widget.ai.loggedIn
+    model: widget.ai.withLimits
 
     delegate: Row {
       id: provider
 
       required property var modelData
-      readonly property var session: modelData.usage ? modelData.usage.session : null
+      readonly property var session: modelData.session
       readonly property real percent: session ? session.percent : 0
       readonly property string level: AiCore.usageLevel(percent)
 

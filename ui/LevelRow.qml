@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 
 // Modos `volume`, `brightness` e `osd` (specs/08-controles-rapidos.md):
-// padding 0 18px, gap 14px: ícone 18px · slider · valor `70%` (34px, à
+// padding 0 16px, gap 12px: ícone 16px · slider · valor `70%` (34px, à
 // direita, 12px `neutral-300`). No `osd` de mensagem, o texto toma o lugar do
 // slider; no de progresso, a barra é só leitura.
 Item {
@@ -21,13 +21,13 @@ Item {
 
   RowLayout {
     anchors.fill: parent
-    anchors.leftMargin: 18
-    anchors.rightMargin: 18
-    spacing: 14
+    anchors.leftMargin: 16
+    anchors.rightMargin: 16
+    spacing: 12
 
     PhIcon {
       glyph: row.glyph
-      size: 18
+      size: 16
       color: Tokens.neutral300
     }
 
@@ -35,7 +35,7 @@ Item {
       Layout.fillWidth: true
       visible: row.message === ""
       value: row.value
-      thumbSize: 14
+      thumbSize: 12
       glow: true
       interactive: row.interactive
       onMoved: value => row.moved(value)

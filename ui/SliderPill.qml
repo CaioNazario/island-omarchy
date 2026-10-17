@@ -4,31 +4,54 @@ import QtQuick
 import QtQuick.Layouts
 
 // Pílula de brilho/volume da linha de controles (specs/08-controles-rapidos.md):
-// `flex: 1`, 38px, raio 19, `neutral-900`, padding 0 12px, gap 8px, ícone 16px.
+// `flex: 1`, 32px, raio 16, `neutral-900`, padding 0 11px, gap 8px, ícone 16px.
+// Com `glyphAction`, o ícone vira um botão 24×24 (hover `neutral-800`) que
+// abre o gerenciador de volume (design v4).
 Rectangle {
   id: pill
 
   required property string glyph
   required property int value
+  property bool glyphAction: false
 
   signal moved(int value)
+  signal glyphClicked
   signal dragStarted
   signal dragEnded
 
   Layout.fillWidth: true
-  implicitHeight: 38
-  radius: 19
+  implicitHeight: 32
+  radius: 16
   color: Tokens.neutral900
 
   RowLayout {
     anchors.fill: parent
-    anchors.leftMargin: 12
-    anchors.rightMargin: 12
+    anchors.leftMargin: 11
+    anchors.rightMargin: 11
     spacing: 8
 
-    PhIcon {
-      glyph: pill.glyph
-      color: Tokens.neutral300
+    Rectangle {
+      Layout.leftMargin: pill.glyphAction ? -5 : 0
+      implicitWidth: pill.glyphAction ? 24 : 16
+      implicitHeight: pill.glyphAction ? 24 : 16
+      radius: 12
+      color: pill.glyphAction && glyphPointer.containsMouse ? Tokens.neutral800 : "transparent"
+
+      PhIcon {
+        anchors.centerIn: parent
+        glyph: pill.glyph
+        color: pill.glyphAction ? Tokens.text : Tokens.neutral300
+      }
+
+      MouseArea {
+        id: glyphPointer
+
+        anchors.fill: parent
+        enabled: pill.glyphAction
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: pill.glyphClicked()
+      }
     }
 
     IslandSlider {

@@ -5,7 +5,7 @@ import Quickshell
 import Quickshell.Wayland
 
 // Barra de um monitor (specs/02-barra.md). Duas superfícies: uma faixa
-// invisível que reserva os 32px do topo, e uma camada transparente de tela
+// invisível que reserva os 28px do topo, e uma camada transparente de tela
 // cheia onde a ilha cresce para baixo. Uma superfície só não serve: ancorada
 // nas quatro bordas, o layer-shell ignora a zona exclusiva.
 Scope {

@@ -2,20 +2,22 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
-// Tile 38×38 raio 19 da linha de controles (specs/08-controles-rapidos.md):
-// ligado `accent-600`/`neutral-100`, desligado `neutral-800`/`neutral-300`, 180ms.
+// Tile 32×32 raio 16 da linha de controles (specs/08-controles-rapidos.md):
+// ligado `accent-600` (ou `onColor`)/`neutral-100`, desligado
+// `neutral-800`/`neutral-300`, 180ms.
 Rectangle {
   id: tile
 
   required property string glyph
   property bool on: false
+  property color onColor: Tokens.accent600
 
   signal clicked
 
-  implicitWidth: 38
-  implicitHeight: 38
-  radius: 19
-  color: on ? Tokens.accent600 : Tokens.neutral800
+  implicitWidth: 32
+  implicitHeight: 32
+  radius: 16
+  color: on ? onColor : Tokens.neutral800
   border.width: activeFocus ? 2 : 0
   border.color: Tokens.accent
   activeFocusOnTab: true
@@ -29,7 +31,7 @@ Rectangle {
   PhIcon {
     anchors.centerIn: parent
     glyph: tile.glyph
-    size: 17
+    size: 15
     color: tile.on ? Tokens.neutral100 : Tokens.neutral300
   }
 

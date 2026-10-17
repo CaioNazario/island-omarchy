@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 
 // Botão de ambiente no início da pílula esquerda (specs/15-ambientes.md):
-// 24px, padding 0 8px, raio 12, gap 7px: ícone do ambiente 14px `accent-300`
+// 22px, padding 0 8px, raio 11, gap 7px: ícone do ambiente 14px `accent-300`
 // + pontos. O botão abre o editor (spec 17); um ponto troca de ambiente.
 Rectangle {
   id: button
@@ -14,8 +14,8 @@ Rectangle {
   readonly property int active: bar.environmentIndex
 
   implicitWidth: row.implicitWidth + 16
-  implicitHeight: 24
-  radius: 12
+  implicitHeight: 22
+  radius: 11
   color: pointer.containsMouse || bar.editorOpen ? Tokens.neutral900 : "transparent"
 
   MouseArea {

@@ -6,8 +6,9 @@ import "../core/island.mjs" as IslandCore
 import "../core/osd.mjs" as OsdCore
 
 // Ilha central (specs/03-ilha.md). Só renderiza: o estado é o `IslandState`
-// do core, dono do Bar.qml. Fundo, anel e corte do conteúdo (`overflow:
-// hidden` no design) ficam na `surface`; cada modo é uma `ModeLayer`.
+// do core, dono do Bar.qml. Fundo e sombras ficam na `SoftSurface`, o corte
+// do conteúdo (`overflow: hidden` no design) na `surface`; cada modo é uma
+// `ModeLayer`.
 Item {
   id: island
 
@@ -67,15 +68,11 @@ Item {
     onHoveredChanged: island.bar.islandHovered(hovered)
   }
 
-  Rectangle {
-    id: surface
-
+  SoftSurface {
     anchors.fill: parent
-    radius: island.size.radius
-    color: Tokens.bg
-    border.width: 1
-    border.color: Tokens.neutral800
-    clip: true
+    radius: IslandCore.displayRadius(island.size)
+    island: true
+    expanded: island.displayMode !== "compact"
 
     // "Raio: 460ms ease" (specs/03-ilha.md "Animação").
     Behavior on radius {
@@ -84,6 +81,13 @@ Item {
         easing.type: Easing.InOutQuad
       }
     }
+  }
+
+  Item {
+    id: surface
+
+    anchors.fill: parent
+    clip: true
 
     component Layer: ModeLayer {
       anchors.top: parent.top
@@ -184,12 +188,46 @@ Item {
     Layer {
       layerId: "volume"
 
-      LevelRow {
-        glyph: OsdCore.volumeGlyph(island.bar.system.audio.percent, island.bar.system.audio.muted)
-        value: island.bar.system.audio.percent
-        onMoved: value => island.bar.system.audio.setPercent(value)
-        onDragStarted: island.bar.islandState.dragStart()
-        onDragEnded: island.bar.islandState.dragEnd()
+      // Clicar fora do slider abre o gerenciador de volume (design v4 `openMixer`).
+      Item {
+        MouseArea {
+          anchors.fill: parent
+          cursorShape: Qt.PointingHandCursor
+          onClicked: island.bar.openFromBar(island.bar.targetScreen, "mixer")
+        }
+
+        LevelRow {
+          anchors.fill: parent
+          glyph: OsdCore.volumeGlyph(island.bar.system.audio.percent, island.bar.system.audio.muted)
+          value: island.bar.system.audio.percent
+          onMoved: value => island.bar.system.audio.setPercent(value)
+          onDragStarted: island.bar.islandState.dragStart()
+          onDragEnded: island.bar.islandState.dragEnd()
+        }
+      }
+    }
+
+    Layer {
+      layerId: "mixer"
+
+      MixerView {
+        bar: island.bar
+      }
+    }
+
+    Layer {
+      layerId: "display"
+
+      DisplayView {
+        bar: island.bar
+      }
+    }
+
+    Layer {
+      layerId: "battery"
+
+      BatteryView {
+        bar: island.bar
       }
     }
 

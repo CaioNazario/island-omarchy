@@ -4,7 +4,7 @@ import QtQuick
 
 // Visual comum dos widgets (specs/16-widgets.md "Visual comum"): 24px, gap
 // 6px, 12px/500. Cada parte aparece só se o widget usar: anel · ícone ·
-// rótulo · barra · sub · ícone final.
+// rótulo · barra · sub · ondas · ícone final.
 WidgetFrame {
   id: widget
 
@@ -16,6 +16,8 @@ WidgetFrame {
   property int labelMaxWidth: 140
   property real bar: -1
   property string sub: ""
+  property bool waves: false
+  property bool wavesPlaying: false
   property string endGlyph: ""
 
   ProgressRing {
@@ -65,6 +67,17 @@ WidgetFrame {
     px: 12
     font.weight: Tokens.weightBody
     color: Tokens.neutral400
+  }
+
+  // `Waves` de 4 barras 2×13 com gap 2 (design/logic.js `widgetData` `music`).
+  MusicWaves {
+    anchors.verticalCenter: parent.verticalCenter
+    visible: widget.waves
+    count: 4
+    barHeight: 13
+    barWidth: 2
+    spacing: 2
+    playing: widget.wavesPlaying
   }
 
   PhIcon {

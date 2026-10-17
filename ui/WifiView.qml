@@ -5,15 +5,18 @@ import QtQuick.Layouts
 import "../core/wifi.mjs" as WifiCore
 import "../core/shellQuote.mjs" as ShellQuote
 
-// Modo `wifi` (specs/08-controles-rapidos.md): linha de controles · linha de
-// energia · divisor · seção de redes com cabeçalho + switch, lista rolável e
-// painel de senha abaixo da rede escolhida. O estado do painel mora no
-// Bar.qml: é um só para todos os monitores e muda a altura da ilha.
+// Modo `wifi` (specs/08-controles-rapidos.md "Modo `wifi`"; design v5): linha
+// de controles · linha de energia · divisor · cabeçalho da rede · estatísticas,
+// QR ou velocidade · DNS · redes conhecidas e outras, com o painel de senha
+// abaixo da rede escolhida. O estado do painel de senha, da vista e do DNS
+// personalizado mora no Bar.qml: é um só para todos os monitores e muda a
+// altura da ilha.
 ColumnLayout {
   id: view
 
   required property var bar
   readonly property var wifi: bar.system.wifi
+  readonly property var groups: WifiCore.splitNetworks(wifi.list)
 
   spacing: 0
 
@@ -27,23 +30,17 @@ ColumnLayout {
     bar: view.bar
   }
 
-  Rectangle {
+  FadeDivider {
     Layout.fillWidth: true
     Layout.bottomMargin: 8
-    implicitHeight: 1
-    color: Tokens.neutral800
   }
 
-  RadioHeader {
+  WifiHeader {
     Layout.fillWidth: true
-    Layout.leftMargin: 12
-    Layout.rightMargin: 12
-    Layout.bottomMargin: 4
-    glyph: "wifi-high"
-    title: "Redes Wi‑Fi"
-    status: WifiCore.headerStatus(view.wifi.radioOn, view.wifi.active)
-    radioOn: view.wifi.radioOn
-    onToggled: view.wifi.setRadio(!view.wifi.radioOn)
+    Layout.leftMargin: 18
+    Layout.rightMargin: 18
+    Layout.bottomMargin: 8
+    bar: view.bar
   }
 
   RadioOffArea {
@@ -54,42 +51,106 @@ ColumnLayout {
     text: "Wi‑Fi desligado"
   }
 
-  ListView {
+  ColumnLayout {
     Layout.fillWidth: true
     Layout.fillHeight: true
     Layout.leftMargin: 12
     Layout.rightMargin: 12
     visible: view.wifi.radioOn
-    clip: true
-    boundsBehavior: Flickable.StopAtBounds
-    model: view.wifi.list
+    spacing: 0
 
-    delegate: Column {
-      id: entry
+    WifiInfoArea {
+      Layout.fillWidth: true
+      Layout.leftMargin: 6
+      Layout.rightMargin: 6
+      Layout.bottomMargin: 8
+      bar: view.bar
+    }
 
-      required property var modelData
-      readonly property bool passwordOpen: view.bar.wifiPasswordFor === modelData.ssid
+    FadeDivider {
+      Layout.fillWidth: true
+      Layout.bottomMargin: 10
+    }
 
-      width: ListView.view.width
+    WifiDns {
+      Layout.fillWidth: true
+      Layout.leftMargin: 6
+      Layout.rightMargin: 6
+      Layout.bottomMargin: 10
+      bar: view.bar
+    }
 
-      NetworkRow {
+    FadeDivider {
+      Layout.fillWidth: true
+      Layout.bottomMargin: 10
+    }
+
+    Flickable {
+      Layout.fillWidth: true
+      Layout.fillHeight: true
+      clip: true
+      boundsBehavior: Flickable.StopAtBounds
+      contentHeight: lists.implicitHeight
+
+      Column {
+        id: lists
+
         width: parent.width
-        network: entry.modelData
-        onClicked: view.clickNetwork(entry.modelData)
-      }
 
-      Loader {
-        width: parent.width
-        active: entry.passwordOpen
-        sourceComponent: PasswordPanel {
-          ssid: entry.modelData.ssid
-          error: view.bar.wifiPasswordError
-          onSubmitted: password => view.submit(entry.modelData.ssid, password)
-          onCanceled: view.bar.closePassword()
-          onTyped: view.bar.wifiPasswordError = ""
-          Component.onCompleted: focusField()
+        GroupLabel {
+          visible: view.groups.known.length > 0
+          text: "Redes conhecidas"
+        }
+
+        Repeater {
+          model: view.groups.known
+
+          WifiNetworkEntry {
+            width: lists.width
+            bar: view.bar
+            known: true
+            onNetworkClicked: network => view.clickNetwork(network)
+            onPasswordSubmitted: (ssid, password) => view.submit(ssid, password)
+          }
+        }
+
+        GroupLabel {
+          visible: view.groups.other.length > 0
+          text: "Outras redes"
+        }
+
+        Repeater {
+          model: view.groups.other
+
+          WifiNetworkEntry {
+            width: lists.width
+            bar: view.bar
+            onNetworkClicked: network => view.clickNetwork(network)
+            onPasswordSubmitted: (ssid, password) => view.submit(ssid, password)
+          }
         }
       }
+    }
+  }
+
+  // Rótulo de 20px, padding 0 6px, 11px maiúsculo `letter-spacing .08em`.
+  component GroupLabel: Item {
+    id: groupLabel
+
+    property string text: ""
+
+    implicitWidth: lists.width
+    implicitHeight: 20
+
+    IslandText {
+      anchors.verticalCenter: parent.verticalCenter
+      x: 6
+      text: groupLabel.text
+      px: 11
+      font.weight: Tokens.weightBody
+      font.capitalization: Font.AllUppercase
+      font.letterSpacing: 0.88
+      color: Tokens.neutral500
     }
   }
 

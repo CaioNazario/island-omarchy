@@ -149,7 +149,7 @@ Item {
       root.quickToggleRequested();
       return "ok";
     }
-    // `Super+Ctrl+→`/`←` (spec 15), amarrados no Hyprland.
+    // `Super+Ctrl+Alt+→`/`←` (spec 15), amarrados no Hyprland.
     function nextEnvironment(): string {
       root.environmentStepRequested(1);
       return "ok";

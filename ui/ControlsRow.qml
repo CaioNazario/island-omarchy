@@ -5,7 +5,8 @@ import QtQuick.Layouts
 import "../core/osd.mjs" as OsdCore
 
 // Linha de controles comum a `quick`, `wifi` e `bt` (specs/08-controles-rapidos.md):
-// 58px, padding 0 10px, gap 8px. Tile de rádio sem hardware some; sem
+// 46px, padding 0 7px, gap 6px, com a ilha em 660px. Tile de rádio sem
+// hardware some, como os de serviço que faltam (Omarchy, voxtype); sem
 // backlight, o volume ocupa o espaço do brilho.
 Item {
   id: row
@@ -13,13 +14,13 @@ Item {
   required property var bar
   readonly property var system: bar.system
 
-  implicitHeight: 58
+  implicitHeight: 46
 
   RowLayout {
     anchors.fill: parent
-    anchors.leftMargin: 10
-    anchors.rightMargin: 10
-    spacing: 8
+    anchors.leftMargin: 7
+    anchors.rightMargin: 7
+    spacing: 6
 
     SliderPill {
       visible: row.system.brightness.available
@@ -32,6 +33,8 @@ Item {
 
     SliderPill {
       glyph: OsdCore.volumeGlyph(row.system.audio.percent, row.system.audio.muted)
+      glyphAction: true
+      onGlyphClicked: row.bar.openFromBar(row.bar.targetScreen, "mixer")
       value: row.system.audio.percent
       onMoved: value => row.system.audio.setPercent(value)
       onDragStarted: row.bar.islandState.dragStart()
@@ -65,6 +68,38 @@ Item {
       glyph: "bell-slash-fill"
       on: row.bar.service !== null && row.bar.service.doNotDisturb
       onClicked: if (row.bar.service) row.bar.service.setDoNotDisturb(!row.bar.service.doNotDisturb)
+    }
+
+    // Abre o modo `display` (brilho, tamanho do texto, escala).
+    Tile {
+      glyph: "monitor"
+      onClicked: row.bar.openFromBar(row.bar.targetScreen, "display")
+    }
+
+    Tile {
+      visible: row.system.idle.available
+      glyph: "coffee-fill"
+      on: row.system.idle.stayAwake
+      onClicked: row.system.idle.toggle()
+    }
+
+    // Começar abre o menu de captura do Omarchy: fecha a ilha antes, como
+    // Configurações, para o menu pegar o foco.
+    Tile {
+      glyph: row.system.screenRecord.recording ? "stop-fill" : "record-fill"
+      on: row.system.screenRecord.recording
+      onColor: Tokens.recordOnBg
+      onClicked: {
+        if (!row.system.screenRecord.recording) row.bar.closeAll();
+        row.system.screenRecord.toggle();
+      }
+    }
+
+    Tile {
+      visible: row.system.dictation.available
+      glyph: row.system.dictation.recording ? "microphone-fill" : "microphone"
+      on: row.system.dictation.recording
+      onClicked: row.system.dictation.toggle()
     }
 
     Rectangle {

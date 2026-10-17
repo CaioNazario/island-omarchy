@@ -1,6 +1,6 @@
 import QtQuick
 
-// Moldura de widget (specs/16-widgets.md "Pílulas"): 24px, raio 12, padding
+// Moldura de widget (specs/16-widgets.md "Pílulas"): 22px, raio 11, padding
 // 0 9px, hover `neutral-900` (150ms), mão só se o widget tiver clique.
 Rectangle {
   id: frame
@@ -12,8 +12,8 @@ Rectangle {
   signal clicked
 
   implicitWidth: row.implicitWidth + 18
-  implicitHeight: 24
-  radius: 12
+  implicitHeight: 22
+  radius: 11
   color: pointer.containsMouse && clickable ? Tokens.neutral900 : "transparent"
 
   Behavior on color {

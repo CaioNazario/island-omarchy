@@ -2,10 +2,10 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import "../core/aiUsage.mjs" as AiCore
 
-// Modo `ai` (specs/12-uso-ia.md, 480 × (24 + 32 + p·108 − 6)): cabeçalho e um
-// cartão por provedor ligado nas preferências. Abrir atualiza o cache velho.
+// Modo `ai` (specs/12-uso-ia.md "Modo `ai`"; design v5): cabeçalho, uma aba
+// por provedor ligado nas preferências (com mais de um) e o cartão do
+// provedor escolhido. Abrir atualiza o cache velho.
 Item {
   id: view
 
@@ -39,22 +39,42 @@ Item {
       }
 
       IslandText {
-        text: view.ai.loggedIn.length === 1 ? "1 conectado" : view.ai.loggedIn.length + " conectados"
+        text: view.ai.withLimits.length === 1 ? "1 conectado" : view.ai.withLimits.length + " conectados"
         px: 11
         font.weight: Tokens.weightBody
         color: Tokens.neutral500
       }
     }
 
-    Repeater {
-      model: view.ai.providers
+    RowLayout {
+      Layout.fillWidth: true
+      visible: view.ai.providers.length > 1
+      spacing: 6
 
-      delegate: AiProviderCard {
-        required property var modelData
+      Repeater {
+        model: view.ai.providers
 
-        Layout.fillWidth: true
-        provider: modelData
+        ChoiceButton {
+          required property var modelData
+
+          Layout.fillWidth: true
+          label: modelData.name
+          glyph: modelData.glyph
+          glyphSize: 13
+          active: modelData === view.ai.current
+          onClicked: view.ai.selectedId = modelData.providerId
+        }
       }
+    }
+
+    AiProviderCard {
+      Layout.fillWidth: true
+      visible: view.ai.current !== null
+      provider: view.ai.current
+    }
+
+    Item {
+      Layout.fillHeight: true
     }
   }
 }

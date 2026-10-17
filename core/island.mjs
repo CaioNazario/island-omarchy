@@ -1,6 +1,7 @@
 // Máquina de estados da ilha. specs/03-ilha.md é a fonte de verdade; a
 // semântica de transição replica design/logic.js (setMode/arm/closeAll/
 // openFromBar/islandClick, linhas 94-104, 230-250, 384-392).
+import { MIXER_MAX_HEIGHT } from './mixer.mjs';
 const TRANSIENT_MS = {
     notif: 2500,
     music: 2500,
@@ -16,60 +17,64 @@ const POWER_MODES = new Set(['quick', 'wifi', 'bt']);
 function isTransient(mode) {
     return mode in TRANSIENT_MS;
 }
-/** Modos fixos (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`) tomam o foco de teclado (specs/03-ilha.md). */
+/** Modos fixos (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `mixer`, `display`, `battery`) tomam o foco de teclado (specs/03-ilha.md). */
 export function isFixedMode(mode) {
     return mode !== 'compact' && !isTransient(mode);
 }
 /** Largura do maior modo; a barra mede o espaço das laterais com ela. */
-export const MAX_ISLAND_WIDTH = 520;
+export const MAX_ISLAND_WIDTH = 660;
 export function getSize(mode, ctx = {}) {
-    var _a, _b;
+    var _a, _b, _c, _d;
     switch (mode) {
         case 'compact':
-            return { width: 240, height: 30, radius: 15 };
+            return { width: 240, height: 26, radius: 13 };
         case 'notif':
-            return { width: 400, height: 62, radius: 22 };
+            return { width: 400, height: 48, radius: 24 };
         case 'stack': {
             const n = (_a = ctx.stackItemCount) !== null && _a !== void 0 ? _a : 0;
             const height = n === 0 ? 56 + 72 : 56 + Math.min(6, n) * 52;
             return { width: 400, height, radius: 24 };
         }
         case 'music':
-            return { width: 500, height: 82, radius: 26 };
+            return { width: 500, height: 58, radius: 29 };
         case 'volume':
-            return { width: 320, height: 50, radius: 25 };
         case 'brightness':
         case 'osd':
-            return { width: 320, height: 50, radius: 25 };
+            return { width: 320, height: 36, radius: 18 };
         case 'calendar':
             return { width: 480, height: ctx.calendarView === 'month' ? 214 : 150, radius: 24 };
         case 'quick':
-            return { width: 520, height: ctx.quickEnergyOpen ? 106 : 58, radius: 29 };
-        case 'wifi': {
-            let height = 292;
-            if (ctx.wifiEnergyOpen)
-                height += 48;
-            if (ctx.wifiPasswordField === 'normal')
-                height += 58;
-            else if (ctx.wifiPasswordField === 'error')
-                height += 76;
-            return { width: 520, height, radius: 26 };
-        }
+            return { width: 660, height: ctx.quickEnergyOpen ? 94 : 46, radius: 23 };
+        case 'wifi':
+            return { width: 660, height: (_b = ctx.wifiHeight) !== null && _b !== void 0 ? _b : 280, radius: 24 };
         case 'bt': {
-            let height = ctx.btOn === false ? 300 : 348;
+            let height = ctx.btOn === false ? 288 : 336;
             if (ctx.btEnergyOpen)
                 height += 48;
-            return { width: 520, height, radius: 26 };
+            return { width: 660, height, radius: 24 };
         }
         case 'env':
-            return { width: 260, height: 40, radius: 20 };
+            return { width: 260, height: 32, radius: 16 };
         case 'note':
             return { width: 420, height: 132, radius: 24 };
-        case 'ai': {
-            const providerCount = (_b = ctx.providerCount) !== null && _b !== void 0 ? _b : 0;
-            return { width: 480, height: 24 + 32 + providerCount * 108 - 6, radius: 24 };
-        }
+        case 'mixer':
+            return { width: 440, height: (_c = ctx.mixerHeight) !== null && _c !== void 0 ? _c : MIXER_MAX_HEIGHT, radius: 24 };
+        case 'display':
+            // Seção de brilho: rótulo 18 + 6 + slider 20 + divisor 1 + 2×10.
+            return { width: 440, height: ctx.displayBrightness === false ? 212 : 277, radius: 24 };
+        case 'battery':
+            // Seção de perfis: divisor 12 + 1 + 10, rótulo 18 + 6, botões 36.
+            return { width: 440, height: ctx.batteryProfiles === false ? 142 : 225, radius: 24 };
+        case 'ai':
+            return { width: 480, height: (_d = ctx.aiHeight) !== null && _d !== void 0 ? _d : 56, radius: 24 };
     }
+}
+/**
+ * Raio desenhado: o design v5 arredonda mais a ilha (`islandR: min(r + 10, h / 2)`),
+ * e as camadas de cada modo continuam medidas pela tabela de `getSize`.
+ */
+export function displayRadius(size) {
+    return Math.min(size.radius + 10, size.height / 2);
 }
 export class IslandState {
     constructor(scheduler, options = {}) {

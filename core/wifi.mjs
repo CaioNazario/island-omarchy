@@ -31,6 +31,14 @@ export function buildNetworkList(accessPoints, active) {
         return b.strength - a.strength;
     });
 }
+/**
+ * "Redes conhecidas" e "Outras redes" do design v5. A ativa conta como
+ * conhecida mesmo antes do NetworkManager marcar o perfil novo.
+ */
+export function splitNetworks(list) {
+    const isKnown = (network) => network.hasProfile || network.status !== 'idle';
+    return { known: list.filter(isKnown), other: list.filter((network) => !isKnown(network)) };
+}
 export function signalLevel(strength) {
     if (strength >= 67)
         return 'high';
@@ -50,12 +58,14 @@ export function clickAction(network) {
 export function validatePassword(password) {
     return password.length < MIN_PASSWORD_LENGTH ? 'too-short' : null;
 }
-export function headerStatus(radioOn, active) {
+/** Cabeçalho do design v5: a rede como título, o estado em maiúsculas embaixo. */
+export function wifiHeader(radioOn, active) {
     if (!radioOn)
-        return 'Desligado';
+        return { title: 'Wi‑Fi', status: 'Desligado', glyph: 'wifi-slash-fill', on: false };
     if (!active)
-        return 'Desconectado';
-    return active.status === 'connecting' ? 'Conectando…' : `Conectado a ${active.ssid}`;
+        return { title: 'Wi‑Fi', status: 'Desconectado', glyph: 'wifi-high-fill', on: true };
+    const status = active.status === 'connecting' ? 'Conectando…' : 'Transmitindo pacotes';
+    return { title: active.ssid, status, glyph: 'wifi-high-fill', on: true };
 }
 const OPEN_TYPES = new Set(['Open', 'Owe']);
 const ENTERPRISE_TYPES = new Set(['WpaEap', 'Wpa2Eap', 'Wpa3SuiteB192', 'Leap', 'DynamicWep']);

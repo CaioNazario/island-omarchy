@@ -61,8 +61,12 @@ Item {
         entry: banner.shownEntry
         nowMs: banner.bar.nowMs
         blockSize: 34
+        blockRadius: 10
         iconSize: 19
         closeSize: 24
+        leftPadding: 12
+        rightPadding: 12
+        gap: 12
         onClosed: banner.bar.hideBanner()
       }
     }

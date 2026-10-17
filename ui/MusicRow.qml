@@ -3,8 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
-// Modo `music` (specs/05-musica.md, 500×82): padding 0 14px, gap 14px: capa
-// 56 · artista/título/progresso · controles · ícone da fonte 22px `accent-400`.
+// Modo `music` (specs/05-musica.md, 500×58): padding 0 14px 0 9px, gap 12px:
+// capa redonda 40 · artista/título/progresso · ondas · controles 30/34 ·
+// ícone da fonte 19px `accent-400`.
 Item {
   id: row
 
@@ -13,13 +14,15 @@ Item {
 
   RowLayout {
     anchors.fill: parent
-    anchors.leftMargin: 14
+    anchors.leftMargin: 9
     anchors.rightMargin: 14
-    spacing: 14
+    spacing: 12
 
     AlbumArt {
-      implicitWidth: 56
-      implicitHeight: 56
+      implicitWidth: 40
+      implicitHeight: 40
+      radius: 20
+      glyphSize: 18
       url: row.music.artUrl
     }
 
@@ -44,20 +47,28 @@ Item {
 
       MusicProgress {
         Layout.fillWidth: true
-        Layout.topMargin: 6
+        Layout.topMargin: 3
         music: row.music
       }
     }
 
+    MusicWaves {
+      count: 5
+      barHeight: 20
+      playing: row.music.playing
+    }
+
     MusicControls {
       music: row.music
+      small: 30
+      big: 34
       // Qualquer controle rearma o timer do modo.
       onUsed: row.bar.islandState.keepAlive()
     }
 
     PhIcon {
       glyph: row.music.sourceGlyph
-      size: 22
+      size: 19
       color: Tokens.accent400
     }
   }
