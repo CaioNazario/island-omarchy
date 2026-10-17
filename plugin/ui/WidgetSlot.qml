@@ -118,6 +118,8 @@ Item {
       labelColor: music.active ? Tokens.text : Tokens.neutral400
       labelMaxWidth: 120
       sub: music.active ? music.artist : ""
+      waves: music.active
+      wavesPlaying: music.playing
       endGlyph: music.active ? (music.playing ? "pause-fill" : "play-fill") : ""
       onClicked: {
         slot.bar.targetScreen = slot.screenName;

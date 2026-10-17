@@ -58,6 +58,12 @@ Item {
         }
       }
 
+      MusicWaves {
+        count: 7
+        barHeight: 26
+        playing: card.music.playing
+      }
+
       PhIcon {
         Layout.alignment: Qt.AlignTop
         glyph: card.music.sourceGlyph

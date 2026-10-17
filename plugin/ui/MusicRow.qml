@@ -4,8 +4,8 @@ import QtQuick
 import QtQuick.Layouts
 
 // Modo `music` (specs/05-musica.md, 500×58): padding 0 14px 0 9px, gap 12px:
-// capa redonda 40 · artista/título/progresso · controles 30/34 · ícone da
-// fonte 19px `accent-400`.
+// capa redonda 40 · artista/título/progresso · ondas · controles 30/34 ·
+// ícone da fonte 19px `accent-400`.
 Item {
   id: row
 
@@ -50,6 +50,12 @@ Item {
         Layout.topMargin: 3
         music: row.music
       }
+    }
+
+    MusicWaves {
+      count: 5
+      barHeight: 20
+      playing: row.music.playing
     }
 
     MusicControls {

@@ -42,6 +42,7 @@ Linha de 22px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 | rótulo | largura máxima do widget (padrão 140px), reticências |
 | barra | 34×4 raio 2, `accent` sobre `neutral-800` |
 | sub | peso 400, `neutral-400` |
+| ondas | 4 barras 2×13, gap 2 (spec 05 "Ondas") |
 | ícone final | 13px `neutral-300` |
 
 `ai` e `hw` têm visual próprio, descrito nas specs 12 e 10. As partes `ticks` do componente não são usadas por nenhum widget e não existem.
@@ -83,7 +84,7 @@ Linha de 22px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 
 ### `music`
 
-- Dados do player atual (spec 05).
+- Dados do player atual (spec 05), com as ondas entre o artista e o ícone final; elas pulsam só tocando.
 - Sem player atual, o widget continua na barra: ícone `ph-music-note` e rótulo "Nada tocando", ambos `neutral-400`, sem sub, sem ícone final e sem clique.
 - Clique abre o modo `music` **fixado** (spec 05); clicar de novo com ele aberto fecha.
 
