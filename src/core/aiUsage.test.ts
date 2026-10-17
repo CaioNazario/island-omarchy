@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   credentialState,
+  fetchOutcome,
   formatPercent,
   formatSessionReset,
   formatWeeklyReset,
@@ -13,6 +14,7 @@ import {
   parseCodexCredentials,
   parseCodexUsage,
   usageLevel,
+  usageRequest,
   type FetchOutcome,
   type PollSchedule,
 } from './aiUsage.js';
@@ -346,5 +348,46 @@ describe('nextSchedule', () => {
 
   it('does not count 401 or a malformed body as a network failure', () => {
     expect(run(['failure', 'unauthorized', 'malformed'])).toEqual({ intervalS: 300, failures: 1 });
+  });
+});
+
+describe('fetchOutcome', () => {
+  const usage = { session: null, weekly: null, plan: null };
+  it.each([
+    [200, usage, 'ok'],
+    [200, null, 'malformed'],
+    [429, null, 'rate-limited'],
+    [401, null, 'unauthorized'],
+    [403, null, 'unauthorized'],
+    [500, null, 'failure'],
+    [0, null, 'failure'],
+  ] as const)('%i → %s', (status, parsed, outcome) => {
+    expect(fetchOutcome(status, parsed)).toBe(outcome);
+  });
+});
+
+describe('usageRequest', () => {
+  const credential = { token: 't0k', accountId: 'acc', expiresAt: null, plan: null };
+
+  it('Claude: endpoint oauth, beta e User-Agent do claude-cli', () => {
+    expect(usageRequest('claude', credential)).toEqual({
+      url: 'https://api.anthropic.com/api/oauth/usage',
+      headers: {
+        Authorization: 'Bearer t0k',
+        'anthropic-beta': 'oauth-2025-04-20',
+        'User-Agent': 'claude-cli/2.1.281 (external, cli)',
+      },
+    });
+  });
+
+  it('Codex: conta no cabeçalho só quando existe', () => {
+    expect(usageRequest('codex', credential).headers).toEqual({
+      Authorization: 'Bearer t0k',
+      'ChatGPT-Account-Id': 'acc',
+      'User-Agent': 'codex-cli',
+    });
+    expect(usageRequest('codex', { ...credential, accountId: null }).headers).not.toHaveProperty(
+      'ChatGPT-Account-Id',
+    );
   });
 });

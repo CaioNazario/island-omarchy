@@ -65,7 +65,7 @@ export interface Environment {
   right: WidgetId[];
 }
 
-/** Forma persistida em GSettings `environments`, `a(ssasas)` (specs/13-preferencias.md). */
+/** Forma persistida em `settings.json` `environments` (specs/13-preferencias.md); a mesma `a(ssasas)` do GSettings da v1. */
 export type StoredEnvironment = readonly [string, string, readonly string[], readonly string[]];
 
 export const MAX_ENVIRONMENTS = 6;
@@ -122,6 +122,30 @@ export function sanitizeEnvironments(stored: readonly StoredEnvironment[]): Envi
     };
   });
   return envs.length > 0 ? envs : defaultEnvironments();
+}
+
+function isStringList(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string');
+}
+
+function isStoredEnvironment(value: unknown): value is StoredEnvironment {
+  if (!Array.isArray(value) || value.length !== 4) return false;
+  const [name, icon, left, right] = value;
+  return (
+    typeof name === 'string' &&
+    typeof icon === 'string' &&
+    isStringList(left) &&
+    isStringList(right)
+  );
+}
+
+/**
+ * Valor lido do `settings.json` (specs/13-preferencias.md), em qualquer forma:
+ * entradas fora de `[nome, ícone, [esquerda], [direita]]` saem antes do
+ * saneamento.
+ */
+export function environmentsFromJson(value: unknown): Environment[] {
+  return sanitizeEnvironments(Array.isArray(value) ? value.filter(isStoredEnvironment) : []);
 }
 
 export function toStored(envs: readonly Environment[]): [string, string, string[], string[]][] {

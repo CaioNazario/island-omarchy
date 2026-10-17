@@ -287,3 +287,38 @@ export function nextSchedule(schedule: PollSchedule, outcome: FetchOutcome): Pol
 export function isOffline(schedule: PollSchedule): boolean {
   return schedule.failures >= OFFLINE_AFTER_FAILURES;
 }
+
+/** Status HTTP + resposta lida → resultado que move a agenda (`nextSchedule`). */
+export function fetchOutcome(status: number, usage: Usage | null): FetchOutcome {
+  if (status === 200) return usage ? 'ok' : 'malformed';
+  if (status === 429) return 'rate-limited';
+  if (status === 401 || status === 403) return 'unauthorized';
+  return 'failure';
+}
+
+// O endpoint do Claude lê o formato `claude-cli/<versão> (external, cli)` do
+// User-Agent (ai-usagebar, src/anthropic/fetch.rs); a versão é uma publicada.
+const CLAUDE_USER_AGENT = 'claude-cli/2.1.281 (external, cli)';
+
+export interface UsageRequest {
+  url: string;
+  headers: Record<string, string>;
+}
+
+/** GET do uso de cada provedor (specs/12-uso-ia.md "Provedores"). */
+export function usageRequest(provider: ProviderId, credential: Credential): UsageRequest {
+  if (provider === 'claude') {
+    return {
+      url: 'https://api.anthropic.com/api/oauth/usage',
+      headers: {
+        Authorization: `Bearer ${credential.token}`,
+        'anthropic-beta': 'oauth-2025-04-20',
+        'User-Agent': CLAUDE_USER_AGENT,
+      },
+    };
+  }
+  const headers: Record<string, string> = { Authorization: `Bearer ${credential.token}` };
+  if (credential.accountId) headers['ChatGPT-Account-Id'] = credential.accountId;
+  headers['User-Agent'] = 'codex-cli';
+  return { url: 'https://chatgpt.com/backend-api/wham/usage', headers };
+}

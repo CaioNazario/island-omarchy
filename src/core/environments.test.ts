@@ -3,6 +3,7 @@ import {
   addEnvironment,
   defaultEnvironments,
   EnvironmentScroll,
+  environmentsFromJson,
   findWidget,
   placeWidget,
   removeWidget,
@@ -295,5 +296,29 @@ describe('EnvironmentScroll', () => {
     expect(scroll.handle({ kind: 'discrete', direction: 'down', fromWheel: true })).toEqual({
       handled: false,
     });
+  });
+});
+
+describe('environmentsFromJson', () => {
+  it('lê a forma guardada e saneia como sanitizeEnvironments', () => {
+    const stored = [['Foco', 'code', ['ai', 'xyz'], ['hw']]];
+    expect(environmentsFromJson(stored)).toEqual([
+      { name: 'Foco', icon: 'code', left: ['ai'], right: ['hw'] },
+    ]);
+  });
+
+  it('valor que não é lista, ou sem nenhum ambiente válido → ambientes iniciais', () => {
+    expect(environmentsFromJson(null)).toEqual(defaultEnvironments());
+    expect(environmentsFromJson('x')).toEqual(defaultEnvironments());
+    expect(environmentsFromJson([42, ['só nome'], { name: 'x' }])).toEqual(defaultEnvironments());
+  });
+
+  it('descarta só as entradas fora da forma', () => {
+    const result = environmentsFromJson([
+      ['A', 'house', [], ['note']],
+      'lixo',
+      ['B', 'coffee', 'x', []],
+    ]);
+    expect(result.map((env) => env.name)).toEqual(['A']);
   });
 });
