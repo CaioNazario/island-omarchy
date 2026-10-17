@@ -157,13 +157,13 @@ describe('securityFromQuickshell', () => {
 });
 
 describe('connectFailureMessage', () => {
-  it('falta de segredo ou handshake recusado → senha incorreta', () => {
+  it('falta de segredo ou autenticação expirada → senha incorreta', () => {
     expect(connectFailureMessage('NoSecrets')).toBe('Senha incorreta');
-    expect(connectFailureMessage('WifiClientDisconnected')).toBe('Senha incorreta');
+    expect(connectFailureMessage('WifiAuthTimeout')).toBe('Senha incorreta');
   });
 
   it('outras falhas → não foi possível conectar', () => {
-    expect(connectFailureMessage('WifiAuthTimeout')).toBe('Não foi possível conectar');
+    expect(connectFailureMessage('WifiClientDisconnected')).toBe('Não foi possível conectar');
     expect(connectFailureMessage('WifiNetworkLost')).toBe('Não foi possível conectar');
     expect(connectFailureMessage('Unknown')).toBe('Não foi possível conectar');
   });

@@ -93,10 +93,10 @@ export function securityFromQuickshell(name: string): WifiSecurity {
   return 'personal';
 }
 
-// O NM pede um segredo novo quando a PSK é recusada; sem agente que responda,
-// a conexão falha por falta dele (`NoSecrets`). `WifiClientDisconnected` é o
-// supplicant caindo no handshake de 4 vias. Não testado com rede real.
-const WRONG_PASSWORD_REASONS = new Set(['NoSecrets', 'WifiClientDisconnected']);
+// Mesma leitura do painel de rede do Omarchy (plugins/panels/network/Model.js
+// `shouldRepromptPassphrase`, 4.0.4): numa rede com senha, PSK recusada chega
+// como falta de segredo ou como autenticação expirada.
+const WRONG_PASSWORD_REASONS = new Set(['NoSecrets', 'WifiAuthTimeout']);
 
 /** Nome do `ConnectionFailReason` do Quickshell → texto do painel de senha. */
 export function connectFailureMessage(reason: string): string {
