@@ -66,22 +66,21 @@ O cartão central (spec 05) também é um estado da ilha: 440 × altura do conte
 
 ## Foco de teclado
 
-Modos fixos (inclusive `note` e `music` fixado) e o cartão central tomam o foco de teclado (grab modal, como os menus do Shell) enquanto abertos. É isso que permite Esc, setas nos sliders, digitar a senha de Wi‑Fi e a nota. O grab é liberado ao fechar e no `disable()`. Modos transitórios não tomam foco.
+Modos fixos (inclusive `note` e `music` fixado) e o cartão central tomam o foco de teclado enquanto abertos: a camada do monitor-alvo passa a `WlrKeyboardFocus.Exclusive` (spec 02). É isso que permite Esc, setas nos sliders, digitar a senha de Wi‑Fi e a nota. Ao fechar, volta a `None`. Modos transitórios não tomam foco.
 
 ## Atalho `Super+S`
 
 - Alterna `quick`: de qualquer modo vai para `quick`; de `quick` volta a `compact`.
-- Ignora repetição ao segurar a tecla.
-- A Island assume o atalho `toggle-quick-settings` do Shell no `enable()` (o painel nativo está escondido) e devolve o comportamento original no `disable()`.
+- A Island expõe o alvo IPC `island` com `toggleQuick` (`Service.qml`). O atalho é do Hyprland: `o.bind("SUPER + S", "Island", "omarchy-shell island toggleQuick")` em `~/.config/hypr/bindings.lua`, sem `repeating` (segurar a tecla não repete). O `install.sh` mostra a linha; não edita a config do usuário.
 
 ## Critérios de aceite
 
 - [x] `src/core/island.ts` tem teste para cada regra de transição acima, incluindo timers com relógio falso.
-- [x] Cada modo abre com as medidas da tabela (±1px).
-- [x] Uma notificação chegando com `wifi` aberto não altera a ilha (vira banner, spec 04).
-- [x] Trocar de faixa com `calendar` aberto não abre `music`.
-- [x] Segurar `Super+S` não faz a ilha piscar.
-- [x] Com o mouse sobre a ilha em `notif`, ela não fecha; ao sair, fecha 2500ms depois.
-- [x] Esc com o campo de senha focado fecha só o painel de senha; um segundo Esc fecha a ilha.
+- [ ] Cada modo abre com as medidas da tabela (±1px).
+- [ ] Uma notificação chegando com `wifi` aberto não altera a ilha (vira banner, spec 04).
+- [ ] Trocar de faixa com `calendar` aberto não abre `music`.
+- [ ] Segurar `Super+S` não faz a ilha piscar.
+- [ ] Com o mouse sobre a ilha em `notif`, ela não fecha; ao sair, fecha 2500ms depois.
+- [ ] Esc com o campo de senha focado fecha só o painel de senha; um segundo Esc fecha a ilha.
 - [x] Testes de `island.ts` para `env` (só abre de `compact`/`env`, rearma), `note` como modo fixo e `music` fixado (sem timer, troca de faixa não fecha).
-- [x] `env`, `note` e o cartão central (440) abrem com as medidas da tabela (±1px).
+- [ ] `env`, `note` e o cartão central (440) abrem com as medidas da tabela (±1px).

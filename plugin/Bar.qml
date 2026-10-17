@@ -6,6 +6,7 @@ import Quickshell.Hyprland
 import "system"
 import "ui"
 import "core/island.mjs" as IslandCore
+import "core/osd.mjs" as OsdCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
 // este item a cada hot-reload; o que precisa sobreviver mora no Service.qml.
@@ -21,6 +22,7 @@ Item {
 
   readonly property string pluginId: "caionazario.island"
   property var service: null
+  readonly property alias system: sources
 
   // Um estado de ilha para todos os monitores (specs/02-barra.md
   // "Monitores"); `targetScreen` diz qual deles mostra o modo aberto.
@@ -28,7 +30,29 @@ Item {
   property string mode: "compact"
   property bool cardOpen: false
   property bool fixed: false
+  property bool powerOpen: false
   property string targetScreen: ""
+
+  // Painel de senha do `wifi` (specs/08): um só, e muda a altura da ilha.
+  property string wifiPasswordFor: ""
+  property string wifiPasswordError: ""
+
+  // Conteúdo do modo `osd` (specs/08 "OSD do Omarchy").
+  property var osd: ({ glyph: "info", text: "", percent: 0 })
+
+  readonly property var sizeContext: ({
+      quickEnergyOpen: powerOpen,
+      wifiEnergyOpen: powerOpen,
+      btEnergyOpen: powerOpen,
+      wifiPasswordField: wifiPasswordFor === "" ? "none" : wifiPasswordError === "" ? "normal" : "error",
+      btOn: sources.bluetooth.radioOn
+    })
+
+  SystemSources {
+    id: sources
+
+    shell: root.shell
+  }
 
   QmlScheduler {
     id: scheduler
@@ -44,6 +68,9 @@ Item {
     mode = islandState.mode;
     cardOpen = islandState.cardOpen;
     fixed = islandState.fixed || islandState.cardOpen;
+    powerOpen = islandState.powerOpen;
+    // Regra 1 da spec 03: sair de `wifi` fecha o painel de senha.
+    if (mode !== "wifi") closePassword();
   }
 
   // O host carrega serviços e barra em paralelo: o serviço pode chegar depois.
@@ -80,13 +107,79 @@ Item {
     else if (Quickshell.screens.length > 0) targetScreen = Quickshell.screens[0].name;
   }
 
+  /** Evento automático: só troca de monitor se a ilha puder abrir (regra 3). */
+  function targetForAutomatic() {
+    if (!fixed) targetFocusedScreen();
+  }
+
   function closeAll() {
     islandState.closeAll();
   }
 
-  /** Regra 9 da spec 03; o painel de senha do `wifi` entra com a spec 08. */
+  /** Regra 9 da spec 03: com o painel de senha aberto, Esc fecha só ele. */
   function pressEscape() {
-    islandState.escape(false);
+    if (islandState.escape(wifiPasswordFor !== "") === "closed-password") closePassword();
+  }
+
+  function islandHovered(hovered) {
+    if (hovered) islandState.hoverStart();
+    else islandState.hoverEnd();
+  }
+
+  function togglePassword(ssid) {
+    wifiPasswordError = "";
+    wifiPasswordFor = wifiPasswordFor === ssid ? "" : ssid;
+  }
+
+  function closePassword() {
+    wifiPasswordFor = "";
+    wifiPasswordError = "";
+  }
+
+  /** `Super+S` (specs/03 "Atalho"): de qualquer modo vai a `quick`; de `quick`, fecha. */
+  function toggleQuick() {
+    if (mode !== "quick") targetFocusedScreen();
+    islandState.openFromTrigger("quick");
+  }
+
+  // Pedido de OSD (specs/08 "OSD do Omarchy"), já traduzido pelo core.
+  function showOsd(payload) {
+    const request = OsdCore.parseOsdPayload(payload);
+    if (!request) return;
+    targetForAutomatic();
+    if (request.kind === "volume") return islandState.volumeKey();
+    if (request.kind === "brightness") {
+      sources.brightness.reportPercent(request.percent);
+      return islandState.brightnessKey();
+    }
+    osd = {
+      glyph: request.glyph,
+      text: request.kind === "message" ? request.text : "",
+      percent: request.kind === "progress" ? request.percent : 0
+    };
+    islandState.osdRequest(request.durationMs === null ? undefined : request.durationMs);
+  }
+
+  Connections {
+    target: root.service
+    function onOsdRequested(payload) {
+      root.showOsd(payload);
+    }
+    function onOsdCloseRequested() {
+      if (root.mode === "osd" || root.mode === "volume" || root.mode === "brightness") root.closeAll();
+    }
+    function onQuickToggleRequested() {
+      root.toggleQuick();
+    }
+  }
+
+  // Falha ao conectar com senha: o painel reabre com a mensagem (specs/08).
+  Connections {
+    target: sources.wifi
+    function onConnectFailed(ssid, message) {
+      root.wifiPasswordFor = ssid;
+      root.wifiPasswordError = message;
+    }
   }
 
   Variants {

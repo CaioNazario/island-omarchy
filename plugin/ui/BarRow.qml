@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 
 // Três filhos em linha, alinhados pelo topo: a ilha cresce para baixo sem
@@ -28,7 +30,8 @@ Item {
     id: island
 
     anchors.horizontalCenter: parent.horizontalCenter
-    mode: row.mode
+    bar: row.bar
+    displayMode: row.mode
     onClicked: row.bar.islandClick(row.screenName)
   }
 
@@ -37,5 +40,13 @@ Item {
 
     anchors.right: parent.right
     width: row.pillWidth
+
+    RightButtons {
+      anchors.right: parent.right
+      anchors.rightMargin: Tokens.pillPaddingH
+      anchors.verticalCenter: parent.verticalCenter
+      bar: row.bar
+      screenName: row.screenName
+    }
   }
 }

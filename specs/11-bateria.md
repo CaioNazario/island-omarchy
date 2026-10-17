@@ -4,7 +4,7 @@ Origem: `design/markup.html` botão `openSystem` na pílula direita; `design/log
 
 ## Fonte
 
-`UPower` (dispositivo de exibição `DisplayDevice`), via o proxy que o Shell já usa. Sem bateria (desktop) → o botão some.
+`UPower.displayDevice` do Quickshell (`plugin/system/BatterySource.qml`; `percentage` vem em 0–1). Sem bateria de laptop (`isLaptopBattery`) → o botão some.
 
 ## Exibição
 
@@ -31,4 +31,4 @@ A tabela de ícones `ph-battery-*` por nível saiu: a barra não usa mais ícone
 ## Critérios de aceite
 
 - [x] Testes de `battery.ts` atualizados para o desenho: largura do preenchimento, faixas de cor e raio de carga.
-- [x] Ligar/desligar o carregador mostra/esconde o raio em até 2s; o preenchimento acompanha o nível.
+- [ ] Ligar/desligar o carregador mostra/esconde o raio em até 2s; o preenchimento acompanha o nível.

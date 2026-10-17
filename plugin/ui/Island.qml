@@ -1,18 +1,33 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
+import QtQuick.Layouts
 import "../core/island.mjs" as IslandCore
+import "../core/osd.mjs" as OsdCore
 
 // Ilha central (specs/03-ilha.md). Só renderiza: o estado é o `IslandState`
 // do core, dono do Bar.qml. Fundo, anel e corte do conteúdo (`overflow:
-// hidden` no design) ficam na `surface`.
+// hidden` no design) ficam na `surface`; cada modo é uma `ModeLayer`.
 Item {
   id: island
 
-  required property string mode
-  property var sizeContext: ({})
+  required property var bar
+  // O que este monitor mostra: o modo do alvo, ou `compact` nos demais.
+  required property string displayMode
 
   signal clicked
 
-  readonly property var size: IslandCore.getSize(mode, sizeContext)
+  readonly property var size: IslandCore.getSize(displayMode, bar.sizeContext)
+  // Entre `quick`, `wifi` e `bt` a troca de camada é instantânea: os três
+  // repetem a fileira de tiles no topo e só a ilha anima a altura.
+  property string shownLayer: displayMode
+  property bool instantSwitch: false
+  readonly property var tileModes: ["quick", "wifi", "bt"]
+
+  onDisplayModeChanged: {
+    instantSwitch = tileModes.includes(shownLayer) && tileModes.includes(displayMode);
+    shownLayer = displayMode;
+  }
 
   width: size.width
   height: size.height
@@ -30,6 +45,19 @@ Item {
       easing.type: Easing.BezierSpline
       easing.bezierCurve: Tokens.springCurve
     }
+  }
+
+  // Dentro da ilha o cursor é de mão só em `compact` e `notif`; nos outros
+  // modos os cliques são do conteúdo.
+  MouseArea {
+    anchors.fill: parent
+    enabled: island.displayMode === "compact" || island.displayMode === "notif"
+    cursorShape: Qt.PointingHandCursor
+    onClicked: island.clicked()
+  }
+
+  HoverHandler {
+    onHoveredChanged: island.bar.islandHovered(hovered)
   }
 
   Rectangle {
@@ -50,9 +78,100 @@ Item {
       }
     }
 
-    CompactContent {
-      anchors.centerIn: parent
-      visible: island.mode === "compact"
+    component Layer: ModeLayer {
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      // Cada camada tem o tamanho do seu modo, dentro do anel de 1px.
+      width: IslandCore.getSize(layerId, island.bar.sizeContext).width - 2
+      height: IslandCore.getSize(layerId, island.bar.sizeContext).height - 2
+      anchors.topMargin: 1
+      shownLayer: island.shownLayer
+      instant: island.instantSwitch
+    }
+
+    Layer {
+      layerId: "compact"
+
+      // O Loader da camada estica o filho direto: o Item recebe o tamanho e
+      // o conteúdo fica centralizado nele.
+      Item {
+        CompactContent {
+          anchors.centerIn: parent
+        }
+      }
+    }
+
+    Layer {
+      layerId: "volume"
+
+      LevelRow {
+        glyph: OsdCore.volumeGlyph(island.bar.system.audio.percent, island.bar.system.audio.muted)
+        value: island.bar.system.audio.percent
+        onMoved: value => island.bar.system.audio.setPercent(value)
+        onDragStarted: island.bar.islandState.dragStart()
+        onDragEnded: island.bar.islandState.dragEnd()
+      }
+    }
+
+    Layer {
+      layerId: "brightness"
+
+      LevelRow {
+        glyph: "sun"
+        value: island.bar.system.brightness.percent
+        onMoved: value => island.bar.system.brightness.setPercent(value)
+        onDragStarted: island.bar.islandState.dragStart()
+        onDragEnded: island.bar.islandState.dragEnd()
+      }
+    }
+
+    Layer {
+      layerId: "osd"
+
+      LevelRow {
+        glyph: island.bar.osd.glyph
+        value: island.bar.osd.percent
+        message: island.bar.osd.text
+        interactive: false
+      }
+    }
+
+    Layer {
+      layerId: "quick"
+
+      ColumnLayout {
+        spacing: 0
+
+        ControlsRow {
+          Layout.fillWidth: true
+          bar: island.bar
+        }
+
+        PowerRow {
+          Layout.fillWidth: true
+          bar: island.bar
+        }
+
+        Item {
+          Layout.fillHeight: true
+        }
+      }
+    }
+
+    Layer {
+      layerId: "wifi"
+
+      WifiView {
+        bar: island.bar
+      }
+    }
+
+    Layer {
+      layerId: "bt"
+
+      BtView {
+        bar: island.bar
+      }
     }
   }
 
@@ -62,22 +181,15 @@ Item {
     anchors.horizontalCenter: parent.horizontalCenter
     width: 36
     height: 2
+    bottomLeftRadius: 2
+    bottomRightRadius: 2
     color: Tokens.accent
-    opacity: island.mode === "compact" ? 0 : 1
+    opacity: island.displayMode === "compact" ? 0 : 1
 
     Behavior on opacity {
       NumberAnimation {
         duration: Tokens.chromeMs
       }
     }
-  }
-
-  MouseArea {
-    anchors.fill: parent
-    // "Cursor de mão só em `compact` e `notif`": nos outros modos os cliques
-    // são do conteúdo.
-    enabled: island.mode === "compact" || island.mode === "notif"
-    cursorShape: Qt.PointingHandCursor
-    onClicked: island.clicked()
   }
 }

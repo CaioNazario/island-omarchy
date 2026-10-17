@@ -4,7 +4,7 @@
 
 A Island é um plugin de barra do Omarchy (Quickshell sobre Hyprland) que substitui a barra padrão por três pílulas flutuantes. A do meio, a **ilha**, muda de tamanho conforme o contexto (estilo Dynamic Island) e concentra estados transitórios e controles. Usuário-alvo: dev em Omarchy que quer ver estado do sistema e uso de IA sem clicar, e alcançar volume, brilho, Wi‑Fi, Bluetooth e energia em um clique ou atalho.
 
-Até a v1.1 a Island era uma extensão do GNOME Shell (tag `v1.1.0`). A v2 é o porte para o Omarchy: mesmo design e mesmas regras do `src/core`, UI reescrita em QML.
+Até a v1.1 a Island era uma extensão do GNOME Shell (último código no commit `5cb704a`). A v2 é o porte para o Omarchy: mesmo design e mesmas regras do `src/core`, UI reescrita em QML.
 
 ## Glossário
 
@@ -67,7 +67,7 @@ Cada spec é reescrita para o Omarchy no mesmo commit que porta a feature dela. 
 - Atalhos numerados de ambiente (`Alt+1–N` do design)
 - Extensão de navegador companion (a música de navegador mostra ícone genérico)
 - Ubuntu/outras distros testadas (o código não assume Arch, mas só o Arch é validado)
-- Outros ambientes além do Omarchy (Hyprland puro, outros compositores). O GNOME fica na tag `v1.1.0`
+- Outros ambientes além do Omarchy (Hyprland puro, outros compositores). O GNOME fica no commit `5cb704a`
 - Publicação no repositório de plugins do Omarchy (instalação via `install.sh`)
 - Tema claro, botões de ação em notificações, bandeja AppIndicator, troca de layout de teclado
 - GPU NVIDIA no bloco de hardware (sem máquina para validar o `nvidia-smi`)

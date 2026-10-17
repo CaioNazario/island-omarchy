@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 
 // Pílula lateral (specs/02-barra.md "Layout"): 30px de altura, raio 15, fundo
