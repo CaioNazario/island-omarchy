@@ -2,18 +2,15 @@
 // Os dados vêm dos mesmos comandos do painel de energia do Omarchy:
 // `omarchy-battery-status --shell` e `omarchy-powerprofiles-list --active-state`.
 
+import { parseKeyValues } from './keyValue.js';
+
 export type BatteryStatus = Partial<
   Record<'percentage' | 'state' | 'rate' | 'size' | 'time' | 'cycles' | 'threshold', string>
 >;
 
-/** Linhas `chave<TAB>valor`; linha sem TAB é ignorada. */
+/** Linhas `chave<TAB>valor` de `omarchy-battery-status --shell`. */
 export function parseBatteryStatus(raw: string): BatteryStatus {
-  const status: Record<string, string> = {};
-  for (const line of raw.split('\n')) {
-    const tab = line.indexOf('\t');
-    if (tab > 0) status[line.slice(0, tab).trim()] = line.slice(tab + 1).trim();
-  }
-  return status;
+  return parseKeyValues(raw);
 }
 
 export interface BatteryStat {
