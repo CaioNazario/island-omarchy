@@ -2,7 +2,7 @@
 
 Plugin de barra do Omarchy (shell em Quickshell, sobre Hyprland) que substitui a barra padrão por três pílulas flutuantes (uso de IA · ilha · sistema). A ilha central se expande estilo Dynamic Island para notificações, música, volume/brilho, calendário, controles rápidos, Wi‑Fi, Bluetooth e uso de IA.
 
-Até a v1.1 a Island era uma extensão do GNOME Shell. Esse código está na tag `v1.1.0` e não é mais mantido.
+Até a v1.1 a Island era uma extensão do GNOME Shell. O último código GNOME é o commit `5cb704a` (tag `v1.1.0` + correções da bateria) e não é mais mantido.
 
 ## Fonte da verdade
 
@@ -29,7 +29,7 @@ Quando o design mudar, rode `python3 scripts/extract-design.py` e atualize as sp
 - Omarchy 4+ (`omarchy-shell`), Quickshell 0.3+, Qt 6.11+, Hyprland. Nenhum código assume caminho, pacote ou driver do Arch fora do que o próprio Omarchy instala.
 - A Island é um plugin `kind: "bar"` + `kind: "service"` carregado de `~/.config/omarchy/plugins/caionazario.island/`. O contrato de plugin está em `/usr/share/omarchy/shell/README.md` e `services/PluginRegistry.qml`. Leia, nunca edite `/usr/share/omarchy/`.
 - UI em QML (QtQuick + módulos `Quickshell.*`). Antes de usar uma API do Quickshell, confira em `/usr/lib/qt6/qml/Quickshell/**/*.qmltypes` ou em quickshell.org/docs na versão instalada (`qs --version`).
-- Lógica em TypeScript (`src/core`), compilada com `tsc` para módulos ES (`.mjs`) que o QML importa (`import "../core/island.mjs" as IslandCore`). O motor JS do QML (V4) não é navegador nem Node: sem DOM, `fetch`, `setTimeout`, `TextDecoder`, `Intl` nem class fields do ES2022. Por isso o core compila com `target: ES2020` (spec 14, S5).
+- Lógica em TypeScript (`src/core`), compilada com `tsc` para módulos ES (`.mjs`) que o QML importa (`import "../core/island.mjs" as IslandCore`). O motor JS do QML (V4) não é navegador nem Node: sem DOM, `fetch`, `setTimeout`, `TextDecoder`, `Intl` nem class fields do ES2022. Por isso o core compila com `target: ES2017` (spec 14, S5).
 - HTTP via `XMLHttpRequest` do QML, arquivos via `FileView`, processos via `Process` (`Quickshell.Io`). D-Bus sem módulo dedicado no Quickshell vai por `busctl`/`gdbus` em `Process`.
 - UI em pt-BR; código, identificadores e commits em inglês. O Omarchy não usa gettext, então os textos ficam em pt-BR no código.
 
@@ -118,7 +118,7 @@ O host recria o `Bar.qml` a cada hot-reload de plugin (qualquer arquivo salvo em
 
 Problema já encontrado e sua solução. Adicione aqui toda vez que algo custar mais de uma tentativa.
 
-- O V4 do QML recusa class fields (`Expected token '('`): o core compila com `target: ES2020`.
+- O V4 do QML recusa class fields (`Expected token '('`) , `catch {}` sem variável (`Syntax error`) e spread de objeto (`Unexpected token ...`): o core compila com `target: ES2017`.
 - O QML só trata como módulo ES arquivos `.mjs`: o build renomeia a saída do `tsc` e reescreve os imports `./x.js` → `./x.mjs`.
 - O V4 não tem `setTimeout`, `TextDecoder` nem `Intl`: timers do core recebem um `Scheduler` feito de `Timer` QML, e bytes chegam ao core já como string.
 - `Qt.quit()` não encerra o `qs` (sem receptor para `QQmlEngine::quit`): scripts usam `timeout` ou `Quickshell` IPC.

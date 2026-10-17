@@ -2,9 +2,11 @@
 // Monta o plugin em `<dest>`: copia `plugin/` e `icons/` e gera um `qmldir`
 // por pasta de QML. Com `qmldir`, uma importação de diretório só enxerga os
 // tipos listados nele; gerar evita esquecer um componente novo. Arquivos com
-// `pragma Singleton` entram como `singleton`.
+// `pragma Singleton` entram como `singleton`. Os ícones saem brancos: o
+// `MultiEffect` só tinge com a cor exata a partir do branco (preto continua
+// preto), e os SVGs extraídos do design não têm `fill`.
 
-import { cpSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOT = new URL('..', import.meta.url).pathname;
@@ -35,9 +37,19 @@ function writeQmldirs(dir) {
   }
 }
 
+function writeWhiteIcons(from, to) {
+  mkdirSync(to, { recursive: true });
+  for (const name of readdirSync(from).filter((file) => file.endsWith('.svg'))) {
+    const svg = readFileSync(join(from, name), 'utf8');
+    if (!svg.startsWith('<svg '))
+      throw new Error(`${name}: expected to start with "<svg ", got "${svg.slice(0, 20)}"`);
+    writeFileSync(join(to, name), svg.replace('<svg ', '<svg fill="#ffffff" '));
+  }
+}
+
 const DEST = process.argv[2];
 if (!DEST) throw new Error('usage: build-plugin.mjs <dest dir>, got no argument');
 cpSync(join(ROOT, 'plugin'), DEST, { recursive: true });
-cpSync(join(ROOT, 'icons'), join(DEST, 'icons'), { recursive: true });
+writeWhiteIcons(join(ROOT, 'icons'), join(DEST, 'icons'));
 writeQmldirs(DEST);
 console.log(`build-plugin: plugin assembled in ${DEST}`);

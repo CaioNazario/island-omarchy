@@ -63,12 +63,29 @@ ShellRoot {
     reloads++;
   }
 
+  // A saída virtual do `nested.sh`, que é a capturada; senão a primeira.
+  function captureScreen() {
+    const screens = Quickshell.screens;
+    for (let i = 0; i < screens.length; i++)
+      if (screens[i].name === "HEADLESS-ISLAND") return screens[i].name;
+    return screens[0].name;
+  }
+
   IpcHandler {
     target: "dev"
 
     function reload(): string {
       host.reloadBar();
       return "ok";
+    }
+
+    // Abre um modo no primeiro monitor, como um clique na barra dele.
+    function open(mode: string): string {
+      // O Bar.qml é carregado por URL: o qmllint não conhece os membros dele.
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      bar.openFromBar(host.captureScreen(), mode); // qmllint disable missing-property
+      return bar.mode; // qmllint disable missing-property
     }
 
     function status(): string {

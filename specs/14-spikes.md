@@ -14,7 +14,7 @@ Os spikes S5–S7 abriram o porte para o Omarchy (v2). Ficam aqui como registro 
 - **Experimento**: `tsc` de `src/core` para ES modules, extensão renomeada para `.mjs`, imports `./x.js` reescritos para `./x.mjs`, e um `ShellRoot` com `import "core/island.mjs" as Island` rodando em `qs -p` (Quickshell 0.3.1, Qt 6.11.2).
 - **Resultado**: funciona. `Island.getSize("compact")`, `Clock.formatClock(...)` e as funções de `notifications` respondem igual ao Vitest.
 - **Restrições do V4** (motor JS do QML):
-  - Class fields (ES2022) não parseiam (`Expected token '('`): o core compila com `target: ES2020`, que move os campos para o construtor.
+  - Class fields (ES2022), `catch {}` sem variável (ES2019) e spread de objeto (ES2018) não parseiam: o core compila com `target: ES2017`. `make lint` carrega todos os módulos no motor QML (`scripts/check-core.mjs`) para pegar a próxima sintaxe que faltar.
   - Sem `TextDecoder`, `Intl`, `setTimeout`/`clearTimeout`: o core não usa nenhum deles em runtime. Timers entram por injeção (`Scheduler` do `island.ts`), e o QML fornece um feito de `Timer`.
   - Só arquivos `.mjs` são tratados como módulo ES.
 

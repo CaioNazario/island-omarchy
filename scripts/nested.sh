@@ -27,7 +27,13 @@ hl.config({
   misc = { disable_hyprland_logo = true, disable_splash_rendering = true },
   debug = { suppress_errors = true },
 })
+-- Saída virtual com tamanho e escala fixos: a janela do aninhado tem o
+-- tamanho que o tiling da sessão do usuário der, e escala automática.
+hl.monitor({ output = "HEADLESS-ISLAND", mode = "1600x900@60", position = "auto", scale = 1 })
 hl.on("hyprland.start", function()
+  hl.exec_cmd("hyprctl output create headless HEADLESS-ISLAND")
+  -- Eventos automáticos da ilha vão para o monitor focado (specs/02-barra.md).
+  hl.exec_cmd("sleep 0.5; hyprctl dispatch 'hl.dsp.focus({ monitor = \\"HEADLESS-ISLAND\\" })'")
   hl.exec_cmd("ISLAND_PLUGIN_DIR=$PLUGIN_DIR qs -p $HARNESS >$LOG 2>&1")
 end)
 EOF
@@ -50,7 +56,8 @@ start() {
   : >"$LOG"
   local before
   before="$(wayland_sockets)"
-  Hyprland -c "$DIST/hyprland.lua" >"$DIST/hyprland.log" 2>&1 &
+  # Pelo watchdog: sem ele, a Hyprland 0.56 cobre o canto da tela com um aviso.
+  start-hyprland -- -c "$DIST/hyprland.lua" >"$DIST/hyprland.log" 2>&1 &
   local pid=$!
   wait_for '[[ -n "$(comm -13 <(echo "$before") <(wayland_sockets))" ]]' "the nested wayland socket"
   local socket
@@ -82,7 +89,7 @@ harness_status() {
 shot() {
   # shellcheck source=/dev/null
   source "$STATE"
-  WAYLAND_DISPLAY="$NESTED_SOCKET" grim "${1:-$DIST/shot.png}"
+  WAYLAND_DISPLAY="$NESTED_SOCKET" grim -o HEADLESS-ISLAND "${1:-$DIST/shot.png}"
 }
 
 log_errors() {
@@ -118,12 +125,30 @@ dev() {
   wait "$NESTED_PID" || true
 }
 
+# Fica de pé em segundo plano até `nested.sh stop`: para scripts que dirigem
+# a ilha por IPC (`nested.sh ipc dev open quick`) e capturam a tela.
+serve() {
+  start
+  wait_for '[[ "$(harness_status)" == *"\"bar\":true"* ]]' "the bar to load"
+}
+
+ipc() {
+  # shellcheck source=/dev/null
+  source "$STATE"
+  # `--`: métodos com nome de subcomando do qs (`show`) seguem como posicionais,
+  # como no `omarchy-shell`.
+  WAYLAND_DISPLAY="$NESTED_SOCKET" qs ipc -p "$HARNESS" call -- "$@"
+}
+
 case "${1:-}" in
   dev) dev ;;
+  serve) serve ;;
+  stop) stop ;;
+  ipc) shift; ipc "$@" ;;
   smoke) smoke ;;
   shot) shot "${2:-}" ;;
   *)
-    echo "usage: $0 dev|smoke|shot, got '${1:-}'" >&2
+    echo "usage: $0 dev|smoke|serve|ipc|shot|stop, got '${1:-}'" >&2
     exit 1
     ;;
 esac
