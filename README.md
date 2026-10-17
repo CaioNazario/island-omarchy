@@ -1,8 +1,9 @@
-
 # Island
-Uma extensão do **GNOME Shell** que substitui a top bar(barra superior) por três pílulas flutuantes.
+Um plugin de barra do **[Omarchy](https://omarchy.org/)** (Hyprland + Quickshell) que substitui a barra padrão por três pílulas flutuantes.
 A pílula central — a **Island** — funciona como uma Dynamic Island para o desktop: muda de tamanho conforme o contexto e concentra notificações, música, volume, brilho, calendário, controles rápidos e outras informações do sistema.
 As pílulas laterais mostram widgets, organizados em **ambientes** que você troca com um gesto ou atalho.
+
+> Até a v1.1 a Island era uma extensão do GNOME Shell. O último código GNOME está no commit `5cb704a`.
 ***
 ## ✦ Recursos
 ### Island
@@ -36,7 +37,7 @@ Vêm quatro prontos:
 É possível ter até 6. O Padrão pode ser editado, mas não excluído.
 Para trocar de ambiente:
 - Rolagem horizontal sobre a barra (dois dedos no touchpad ou roda inclinada)
-- `Super+Ctrl+→` / `Super+Ctrl+←`
+- `Super+Ctrl+→` / `Super+Ctrl+←` (binds do Hyprland que o `install.sh` mostra)
 - Clique num dos pontos do botão de ambiente
 
 ### Widgets
@@ -54,6 +55,8 @@ Para trocar de ambiente:
 
 Quando falta espaço, o Hardware perde blocos (rede, GPU, temperatura) e depois somem widgets inteiros, a começar pelo mais longe da Island.
 ### Editor de ambientes
+> Ainda não portado para o Omarchy (spec 17). Por enquanto, os ambientes se editam em `~/.config/island/settings.json`.
+
 Clique no botão de ambiente, no início da pílula esquerda, para abrir o editor. Nele dá para:
 - Criar, renomear, trocar o ícone e excluir ambientes
 - Adicionar widgets clicando ou arrastando do catálogo para uma pílula
@@ -61,13 +64,14 @@ Clique no botão de ambiente, no início da pílula esquerda, para abrir o edito
 - Ligar o auto-ocultar
 
 ### Auto-ocultar
-Desligado por padrão. Quando ligado, a barra não reserva espaço no topo e sobe para fora da tela.
-Ela reaparece quando você empurra o ponteiro contra a borda de cima (só encostar não basta, para não atrapalhar as abas de um navegador maximizado), quando a Island abre qualquer modo e quando o overview ou o editor estão abertos.
+> Ainda não portado para o Omarchy (spec 18).
+
+Desligado por padrão. Quando ligado, a barra não reserva espaço no topo e sobe para fora da tela, e reaparece quando a Island abre qualquer modo.
 ### Notificações
-As notificações aparecem diretamente na Island e também podem ser consultadas em uma lista.
+A Island é o servidor de notificações da sessão (no lugar dos toasts do Omarchy). As notificações aparecem na Island e ficam numa lista.
 No Chrome, Brave e outros navegadores Chromium, notificações web exibem o serviço de origem — por exemplo, WhatsApp, Discord ou YouTube.
-Isso não funciona no Firefox porque o navegador não fornece essa informação ao GNOME Shell.
-Também há suporte a **Não perturbe**.
+Isso não funciona no Firefox, que não manda a origem na notificação.
+Também há **Não perturbe**, e os atalhos e scripts de notificação do Omarchy (`Super+vírgula`, `omarchy toggle notification-silencing`…) continuam funcionando.
 ### Música
 Compatível com qualquer player que implemente **MPRIS**, incluindo Spotify e players executados no navegador.
 Exibe:
@@ -80,24 +84,28 @@ Exibe:
 O cartão central combina:
 - Música em reprodução
 - Calendário da semana ou do mês
-- Eventos das contas configuradas no GNOME
+- Eventos de hoje (ainda sem fonte no Omarchy: veja Limitações)
 
 O calendário pode ser aberto ao clicar na Island compacta, dependendo da preferência configurada.
 ### Clima
-O clima pode ser obtido a partir de:
-- Cidade definida nas preferências da extensão
-- Localizações configuradas no GNOME
-- Geoclue, quando nenhuma cidade estiver configurada
+Dados do Open-Meteo, sem chave de API. A cidade vem de:
+- `weatherLocation` em `~/.config/island/settings.json`
+- A cidade do Omarchy (`omarchy weather location`)
+
+Sem cidade, o clima some da Island (sem geolocalização por IP).
 
 ### Controles rápidos
-Abra com `Super+S`.
+Abra pela seta ou pela bateria da pílula direita, ou com `Super+S` (bind do Hyprland que o `install.sh` mostra).
 Inclui:
 - Volume
 - Brilho
 - Wi-Fi
 - Bluetooth
-- Modo noturno
+- Modo noturno (hyprsunset do Omarchy)
 - Não perturbe
+- Energia: suspender, reiniciar, desligar, sair e bloquear, pelos comandos do Omarchy
+
+As teclas de volume e brilho do Omarchy abrem a Island no lugar do OSD dele. Outros avisos de OSD (microfone, desligando…) aparecem num modo próprio da Island.
 - Configurações
 - Linha de energia:
   - Suspender
@@ -164,50 +172,26 @@ Isso evita que a interface fique pulando de um estado para outro enquanto você 
 
 ***
 ## Arquitetura
-O projeto separa estado, integração com o sistema e interface:
 ```
-src/
-├── core/       # Máquina de estados e regras de comportamento
-├── system/     # Integrações com o sistema
-└── ui/         # Renderização da interface
+src/core/   # Regras em TypeScript puro (estados da ilha, roteamento, limiares, formatação), testadas com Vitest
+plugin/     # O plugin: manifest.json, Bar.qml, Service.qml
+  system/   # Fontes de dados (Pipewire, Mpris, UPower, NetworkManager, BlueZ, /proc, HTTP de IA)
+  ui/       # Componentes QML: pílulas, ilha, modos, cartão central, widgets
+dev/        # Harness que hospeda o plugin num Hyprland aninhado
 ```
-### `src/core/`
-Contém a máquina de estados da Island.
-É escrita em **TypeScript puro** e testada com **Vitest**.
-### `src/system/`
-Responsável pela comunicação com serviços e APIs do sistema, incluindo:
-- MPRIS
-- NetworkManager
-- BlueZ
-- UPower
-- Evolution Data Server
-- GWeather
-
-### `src/ui/`
-Responsável apenas pela apresentação do estado usando **St/Clutter** do GNOME Shell.
+O `src/core` é compilado para módulos ES (`.mjs`) que o QML importa direto.
 ***
 ## Requisitos
-- **GNOME Shell 50**
-- **Wayland**
-- Node.js 22
-- npm
-- `glib-compile-schemas`
+- **Omarchy 4** (Quickshell 0.3, Hyprland 0.56)
+- Node.js 22 e npm, para o build
 
-A extensão é validada no **Arch Linux**, mas o código não depende de componentes específicos do Arch.
 ### Recursos opcionais
-**Calendário**
-Requer o Evolution Data Server com uma conta configurada no GNOME.
-**Clima**
-Requer `libgweather-4`.
-Se nenhuma cidade estiver configurada, a extensão pode usar o Geoclue, desde que a localização esteja habilitada.
-**Uso de IA**
-Requer login em um ou ambos:
+**Clima**: uma cidade (veja Clima acima).
+**Uso de IA**: login em um ou ambos:
 - Claude Code — `~/.claude/.credentials.json`
 - Codex CLI — `~/.codex/auth.json`
 
-**GitHub**
-Requer o [`gh`](https://cli.github.com/) com login feito (`gh auth login`). A extensão só lê o token com `gh auth token` e o mantém em memória.
-
+**GitHub**: o [`gh`](https://cli.github.com/) com login feito (`gh auth login`). A Island só lê o token com `gh auth token` e o mantém em memória.
 ***
 ## Instalação
 ```
@@ -217,27 +201,11 @@ cd island-desktop
 npm ci
 ./install.sh
 ```
-O `install.sh` compila a extensão e a instala em:
-```
-~/.local/share/gnome-shell/extensions/island@caionazario.dev
-```
-No Wayland, o GNOME Shell não recarrega extensões em quente. Depois da instalação, faça **logout e login**.
-Em seguida, ative a extensão:
-```
-gnome-extensions enable island@caionazario.dev
-```
-Para abrir as preferências:
-```
-gnome-extensions prefs island@caionazario.dev
-```
-Nas preferências é possível configurar, entre outras coisas:
-- A ação do clique na Island
-- Cidade do clima
-- Provedores de IA
-- Nome e data da contagem regressiva
+O `install.sh` compila o plugin, copia para `~/.config/omarchy/plugins/caionazario.island/`, desliga as notificações e o OSD do Omarchy (a Island assume os dois) e troca a barra. O shell recarrega sozinho, sem logout.
 
-Ambientes, auto-ocultar e a nota são editados direto na barra, não nas preferências.
+No fim, ele mostra as linhas de atalho para colar em `~/.config/hypr/bindings.lua` (`Super+S` e `Super+Ctrl+←/→`).
 
+As preferências ficam em `~/.config/island/settings.json` (a janela de preferências ainda não foi portada). Mudanças no arquivo valem na hora.
 ***
 ## Atualização
 ```
@@ -245,90 +213,55 @@ git pull
 npm ci
 ./install.sh
 ```
-Depois, faça logout e login novamente.
 ***
 ## Desinstalação
 ```
-gnome-extensions disable island@caionazario.dev
 ./install.sh --uninstall
 ```
-Ao desativar a extensão, o painel padrão do GNOME Shell volta a funcionar normalmente.
+Volta para a barra do Omarchy e religa as notificações e o OSD dele.
 ***
 ## Uso de IA: leia antes
 O widget de uso de IA **não utiliza APIs oficiais de uso**.
 Quando ativados, os provedores funcionam da seguinte maneira:
-1. A extensão lê o token OAuth existente em:
+1. A Island lê o token OAuth existente em:
    - `~/.claude/.credentials.json`
    - `~/.codex/auth.json`
-2. Utiliza esse token para consultar endpoints de uso **não documentados** da Anthropic e da OpenAI.
-3. O endpoint do Claude exige o User-Agent do Claude CLI, então a extensão se identifica como o CLI.
+2. Utiliza esse token para consultar endpoints de uso **não documentados** da Anthropic e da OpenAI. O token vai para o `curl` pela entrada padrão, nunca pela linha de comando.
+3. O endpoint do Claude exige o User-Agent do Claude CLI, então a Island se identifica como o CLI.
 
-A extensão:
+A Island:
 - **Nunca modifica** os arquivos de credenciais.
 - **Nunca renova** os tokens.
 - Relê as credenciais quando o CLI atualiza o arquivo.
 
 Esses endpoints não são APIs públicas e podem mudar ou deixar de existir a qualquer momento.
-Se a resposta recebida estiver em um formato inesperado, o cartão de IA mostra um erro sem afetar o restante da extensão.
+Se a resposta recebida estiver em um formato inesperado, o cartão de IA mostra um erro sem afetar o restante da Island.
 Se preferir não utilizar esse recurso, desative os provedores de IA nas preferências.
 Sem uma credencial válida, o widget continua disponível, mas mostra apenas **"IA"**.
 ***
 ## Limitações
 Atualmente:
-- Apenas GNOME Shell 50.
-- Apenas Wayland.
-- Validado oficialmente apenas no Arch Linux.
+- Apenas Omarchy (o GNOME ficou no commit `5cb704a`).
+- Ainda não portados: editor de ambientes, auto-ocultar e a janela de preferências.
+- O calendário não tem fonte de eventos no Omarchy (spike S8 em `specs/14-spikes.md`).
 - GPUs NVIDIA não aparecem no bloco de hardware.
 - Notificações do Firefox não mostram o serviço web de origem.
-- Não há tema claro.
-- Notificações ainda não possuem botões de ação.
-- Não há suporte a AppIndicator/System Tray.
-- Não há troca de layout do teclado pela barra.
-- O botão **Atividades** não faz parte da barra.
-- A barra fica só no topo.
-- Monitores com menos de 1280px lógicos de largura não são suportados.
-- A extensão ainda não está disponível no extensions.gnome.org.
-- A instalação é feita pelo `install.sh`.
-
+- Não há tema claro nem botões de ação nas notificações.
+- A barra fica só no topo, e monitores com menos de 1280px lógicos não são suportados.
 ***
 ## Desenvolvimento
-Instale as dependências:
 ```
 npm ci
+make test    # Vitest em src/core
+make lint    # ESLint, Prettier, tsc, módulos do core no motor QML e qmllint
+make build   # dist/caionazario.island/
+make dev     # Hyprland aninhado numa janela, rodando o plugin pelo harness dev/
+make smoke   # o mesmo sem interação: 5 hot-reloads e falha com erro no log
 ```
-### Testes
-```
-make test
-```
-Executa os testes do Vitest.
-### Lint e tipos
-```
-make lint
-```
-Executa:
-- ESLint
-- Prettier
-- TypeScript (`tsc`)
-
-### Build
-```
-make build
-```
-Gera a versão compilada em:
-```
-dist/
-```
-### GNOME Shell aninhado
-```
-make dev
-```
-Abre um GNOME Shell aninhado usando o modo `--devkit`.
-> O Shell aninhado carrega a versão **instalada** da extensão, e não diretamente o conteúdo de `dist/`.
-> Depois de alterar o código, rode `./install.sh` antes de executar `make dev`.
-
+O harness roda num D-Bus próprio e com `XDG_CONFIG_HOME`/`XDG_STATE_HOME` em `dist/xdg`: não disputa as notificações da sua sessão nem grava nas suas preferências. Para dirigir a Island de fora: `scripts/nested.sh serve`, `scripts/nested.sh ipc dev open quick`, `scripts/nested.sh notify "Título" "Corpo"`, `scripts/nested.sh shot` e `scripts/nested.sh stop`.
 ***
 ## Especificações e design
-O comportamento da extensão está documentado em `specs/`.
+O comportamento da Island está documentado em `specs/`.
 Comece por:
 ```
 specs/00-visao-geral.md
@@ -343,20 +276,11 @@ AGENTS.md
 ```
 ***
 ## Debug
-O log de debug é desativado por padrão.
-Para ativá-lo:
+Logs do shell do Omarchy, onde o plugin roda:
 ```
-touch ~/.cache/island-debug
+qs log -p /usr/share/omarchy/shell
 ```
-É necessário fazer logout e login para que a alteração seja aplicada.
-Depois, consulte os logs:
-```
-journalctl -b -o cat /usr/bin/gnome-shell | grep ISLANDDBG
-```
-Para desativar:
-```
-rm ~/.cache/island-debug
-```
+Logs do harness: `dist/dev.log`.
 ***
 ## Licença
 GPL-3.0-or-later
