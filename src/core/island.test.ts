@@ -508,6 +508,7 @@ describe('getSize', () => {
       'note',
       'mixer',
       'display',
+      'battery',
     ];
     const widths = modes.map((mode) => getSize(mode).width);
     expect(Math.max(...widths)).toBe(MAX_ISLAND_WIDTH);
@@ -632,6 +633,14 @@ describe('display', () => {
       height: 212,
       radius: 24,
     });
+  });
+});
+
+describe('battery', () => {
+  it('é modo fixo, 440 × 225 com perfis de energia e 142 sem', () => {
+    expect(isFixedMode('battery')).toBe(true);
+    expect(getSize('battery')).toEqual({ width: 440, height: 225, radius: 24 });
+    expect(getSize('battery', { batteryProfiles: false }).height).toBe(142);
   });
 });
 

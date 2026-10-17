@@ -76,9 +76,10 @@ Row {
     }
   }
 
+  // Abre o modo `battery` (specs/11); o desenho do botão não muda.
   BatteryButton {
     battery: buttons.system.battery
-    onClicked: buttons.bar.openFromBar(buttons.screenName, "quick")
+    onClicked: buttons.bar.openFromBar(buttons.screenName, "battery")
   }
 
   BarButton {

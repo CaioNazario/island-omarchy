@@ -224,6 +224,14 @@ Item {
     }
 
     Layer {
+      layerId: "battery"
+
+      BatteryView {
+        bar: island.bar
+      }
+    }
+
+    Layer {
       layerId: "brightness"
 
       LevelRow {

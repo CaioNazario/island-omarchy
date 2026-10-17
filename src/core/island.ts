@@ -20,7 +20,8 @@ export type Mode =
   | 'note'
   | 'osd'
   | 'mixer'
-  | 'display';
+  | 'display'
+  | 'battery';
 
 const TRANSIENT_MS: Partial<Record<Mode, number>> = {
   notif: 2500,
@@ -41,7 +42,7 @@ function isTransient(mode: Mode): boolean {
   return mode in TRANSIENT_MS;
 }
 
-/** Modos fixos (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `mixer`, `display`) tomam o foco de teclado (specs/03-ilha.md). */
+/** Modos fixos (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `mixer`, `display`, `battery`) tomam o foco de teclado (specs/03-ilha.md). */
 export function isFixedMode(mode: Mode): boolean {
   return mode !== 'compact' && !isTransient(mode);
 }
@@ -73,6 +74,8 @@ export interface SizeContext {
   mixerHeight?: number;
   /** Sem backlight controlável, o `display` perde a seção de brilho. */
   displayBrightness?: boolean;
+  /** Sem power-profiles-daemon, o `battery` perde a seção de perfis. */
+  batteryProfiles?: boolean;
 }
 
 /** Largura do maior modo; a barra mede o espaço das laterais com ela. */
@@ -120,6 +123,9 @@ export function getSize(mode: Mode, ctx: SizeContext = {}): Size {
     case 'display':
       // Seção de brilho: rótulo 18 + 6 + slider 20 + divisor 1 + 2×10.
       return { width: 440, height: ctx.displayBrightness === false ? 212 : 277, radius: 24 };
+    case 'battery':
+      // Seção de perfis: divisor 12 + 1 + 10, rótulo 18 + 6, botões 36.
+      return { width: 440, height: ctx.batteryProfiles === false ? 142 : 225, radius: 24 };
     case 'ai': {
       const providerCount = ctx.providerCount ?? 0;
       return { width: 480, height: 24 + 32 + providerCount * 108 - 6, radius: 24 };

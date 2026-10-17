@@ -76,6 +76,7 @@ Item {
       calendarView: calendarView,
       providerCount: sources.ai.providers.length,
       displayBrightness: sources.brightness.available,
+      batteryProfiles: sources.battery.profiles.length > 0,
       mixerHeight: MixerCore.mixerHeight({
         outputs: sources.audio.outputs.length,
         apps: sources.audio.streams.length,
@@ -92,6 +93,7 @@ Item {
     screenRecord.watching: ["quick", "wifi", "bt"].includes(root.mode)
     dictation.watching: ["quick", "wifi", "bt"].includes(root.mode)
     display.watching: root.mode === "display"
+    battery.watching: root.mode === "battery"
     display.screenName: root.targetScreen
     // Fontes só de widget rodam só com o widget no ambiente ativo (spec 16).
     hardware.sampling: root.activeWidgets.includes("hw")

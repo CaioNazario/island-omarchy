@@ -24,6 +24,7 @@ A máquina de estados vive em `src/core/island.ts` (pura, testada). A UI só ren
 | `osd` | 320 × 36 | 18 | transitório 1500ms ou a duração do pedido | 08 |
 | `mixer` | 440 × altura do conteúdo (`mixerHeight`), até 560 | 24 | fixo | 08 |
 | `display` | 440 × 277, sem backlight 212 | 24 | fixo | 08 |
+| `battery` | 440 × 225, sem perfis de energia 142 | 24 | fixo | 11 |
 
 Os tempos dos transitórios são mais curtos que o `TRANSIENT` do design (4200/4500/2600ms) por decisão do usuário. O `env` segue o design (1500ms).
 
