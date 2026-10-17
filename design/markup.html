@@ -1,0 +1,537 @@
+<div ref="{{ rootRef }}" style="position:relative;width:1440px;height:900px;overflow:hidden;font-family:var(--font-body);color:var(--color-text);user-select:none;font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#0e1122 0%,#171a33 30%,#2a2340 46%,#5a3440 55%,#8a4a3e 59%,#2a2236 64%,#12142a 100%)">
+
+  <img src="1f131951-ca86-4df0-b786-c0b65cf18d39" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none">
+  
+  <div sc-camel-on-click="{{ closeAll }}" style="position:absolute;inset:0;pointer-events:{{ backdropEvents }}"></div>
+  <div sc-camel-on-mouse-enter="{{ reveal }}" style="position:absolute;inset:{{ rvInset }};width:{{ rvW }};height:{{ rvH }};z-index:40"></div>
+
+  <div ref="{{ barRef }}" sc-camel-on-mouse-leave="{{ unreveal }}" style="position:absolute;left:{{ barL }};right:{{ barR }};top:{{ barT }};bottom:{{ barB }};width:{{ barW }};z-index:30;display:flex;flex-direction:{{ barDir }};align-items:{{ barAlign }};gap:6px;transform:{{ barTf }};transition:transform .32s cubic-bezier(.2,.8,.2,1)">
+
+    <div sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ dropLeft }}" sc-camel-on-click="{{ pickLeft }}" style="flex:1 1 0;min-width:0;min-height:0;width:{{ laneW }};height:{{ laneH }};box-sizing:border-box;border-radius:{{ laneR }};background:color-mix(in srgb, var(--color-bg) 82%, transparent);backdrop-filter:blur(16px);box-shadow:{{ laneLeftShadow }};display:flex;flex-direction:{{ laneDir }};align-items:center;gap:4px;padding:{{ lanePad }};transition:box-shadow .2s ease">
+      <button type="button" sc-camel-on-click="{{ openEditor }}" title="{{ envTitle }}" style="flex:0 0 auto;display:flex;flex-direction:{{ laneDir }};align-items:center;gap:7px;height:{{ envBtnH }};padding:{{ envBtnPad }};border:0;border-radius:12px;background:{{ envBtnBg }};color:var(--color-text);cursor:pointer" style-hover="background:var(--color-neutral-900)">
+        <i class="{{ envIcon }}" style="font-size:14px;color:var(--color-accent-300)"></i>
+        <span style="display:flex;flex-direction:{{ laneDir }};align-items:center;gap:3px">
+          <sc-for list="{{ envDots }}" as="ed" hint-placeholder-count="3"><span sc-camel-on-click="{{ ed.go }}" style="display:block;width:{{ ed.bw }};height:{{ ed.bh }};border-radius:2px;background:{{ ed.bg }};transition:width .25s ease, height .25s ease, background .25s ease"></span></sc-for>
+        </span>
+      </button>
+      <div style="flex:1 1 auto;min-width:0;min-height:0;width:{{ laneInnerW }};height:{{ laneInnerH }};overflow:hidden;display:flex;flex-direction:{{ laneDir }};align-items:center;justify-content:flex-end">
+        <div style="flex:0 0 auto;display:flex;flex-direction:{{ laneDir }};align-items:center;gap:2px;transform:{{ slideTf }};opacity:{{ slideO }};transition:{{ slideT }}">
+          <sc-for list="{{ leftW }}" as="w" hint-placeholder-count="2">
+            <div draggable="{{ w.draggable }}" sc-camel-on-drag-start="{{ w.dragStart }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ w.drop }}" sc-camel-on-click="{{ w.click }}" title="{{ w.title }}" style="flex:0 0 auto;border-radius:12px;background:{{ w.bg }};box-shadow:{{ w.edge }};cursor:{{ w.cursor }};transition:background .15s ease, box-shadow .15s ease" style-hover="background:var(--color-neutral-900)">
+              <sc-if value="{{ w.horiz }}" hint-placeholder-val="{{ true }}"><dc-import name="TopbarWidget" w="{{ w }}" hint-size="72px,24px"></dc-import></sc-if><sc-if value="{{ w.vert }}" hint-placeholder-val="{{ false }}"><span style="display:flex;flex-direction:column;align-items:center;gap:3px;width:30px;padding:6px 0"><i class="{{ w.vIcon }}" style="font-size:15px;color:{{ w.vColor }}"></i><span style="display:{{ w.miniD }};font-size:9.5px;font-weight:500;line-height:1;color:var(--color-neutral-300)">{{ w.mini }}</span></span></sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ leftEmpty }}" hint-placeholder-val="{{ false }}"><span style="padding:{{ emptyPad }};font-size:11.5px;white-space:nowrap;writing-mode:{{ emptyWM }};color:var(--color-neutral-500)">Solte widgets aqui</span></sc-if>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative;z-index:2;flex:0 0 {{ islandBasis }};width:{{ islandBoxW }};height:{{ islandBoxH }};transition:flex-basis .46s cubic-bezier(.3,1.2,.4,1)">
+      <div sc-camel-on-click="{{ islandClick }}" sc-camel-on-mouse-enter="{{ islandEnter }}" sc-camel-on-mouse-leave="{{ islandLeave }}" style="position:absolute;top:{{ iT }};bottom:{{ iB }};left:{{ iL }};right:{{ iR }};transform:{{ iTf }};width:{{ islandW }};height:{{ islandH }};border-radius:{{ islandR }};overflow:hidden;background:var(--color-bg);box-shadow:{{ islandShadow }};cursor:{{ islandCursor }};transition:width .46s cubic-bezier(.3,1.2,.4,1), height .46s cubic-bezier(.3,1.2,.4,1), border-radius .46s ease, box-shadow .3s ease">
+
+      <div style="position:absolute;top:{{ alT }};bottom:{{ alB }};left:{{ alL }};right:{{ alR }};margin:{{ alM }};width:{{ alW }};height:{{ alH }};border-radius:2px;background:var(--color-accent);opacity:{{ accentLine }};transition:opacity .3s ease"></div>
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-120px;width:240px;height:30px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;font-weight:500;opacity:{{ L.compact.o }};transform:{{ L.compact.t }};pointer-events:{{ L.compact.pe }};transition:opacity .22s ease, transform .3s ease">
+        <span style="display:flex;align-items:center;gap:4px;color:var(--color-neutral-300)"><i class="ph-fill ph-sun" style="font-size:15px;color:var(--color-accent-300)"></i>22°</span>
+        <span style="width:3px;height:3px;border-radius:50%;background:var(--color-neutral-600)"></span>
+        <span>{{ timeLabel }}</span>
+        <span style="width:3px;height:3px;border-radius:50%;background:var(--color-neutral-600)"></span>
+        <span>{{ dateLabel }}</span>
+      </div>
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-19px;width:38px;height:124px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:12.5px;font-weight:500;opacity:{{ L.compactV.o }};transform:{{ L.compactV.t }};pointer-events:{{ L.compactV.pe }};transition:opacity .22s ease, transform .3s ease">
+        <i class="ph-fill ph-sun" style="font-size:15px;color:var(--color-accent-300)"></i>
+        <span style="font-size:10.5px;color:var(--color-neutral-300)">22°</span>
+        <span style="width:3px;height:3px;border-radius:50%;background:var(--color-neutral-600)"></span>
+        <span style="display:flex;flex-direction:column;align-items:center;line-height:1.15"><span>{{ hourLabel }}</span><span>{{ minLabel }}</span></span>
+        <span style="width:3px;height:3px;border-radius:50%;background:var(--color-neutral-600)"></span>
+        <span style="display:flex;flex-direction:column;align-items:center;line-height:1.2;font-size:11px"><span style="color:var(--color-neutral-400)">{{ wdLabel }}</span><span>{{ dayLabel }}</span></span>
+      </div>
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-200px;width:400px;height:62px;box-sizing:border-box;padding:0 12px;display:flex;align-items:center;gap:12px;opacity:{{ L.notif.o }};transform:{{ L.notif.t }};pointer-events:{{ L.notif.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--color-accent-900);display:flex;align-items:center;justify-content:center;flex:0 0 auto"><i class="{{ latest.icon }}" style="font-size:20px;color:var(--color-accent-300)"></i></div>
+        <div style="flex:1 1 auto;min-width:0">
+          <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:13px;font-weight:500">{{ latest.app }}</span><span style="margin-left:auto;font-size:11px;color:var(--color-neutral-500)">{{ latest.time }}</span></div>
+          <div style="font-size:12px;color:var(--color-neutral-400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ latest.text }}</div>
+        </div>
+        <button type="button" sc-camel-on-click="{{ dismiss }}" style="width:26px;height:26px;flex:0 0 auto;border:0;border-radius:13px;background:var(--color-neutral-900);color:var(--color-neutral-300);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-800)"><i class="ph ph-x" style="font-size:12px"></i></button>
+      </div>
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-200px;width:400px;height:{{ stackH }};box-sizing:border-box;padding:12px 12px;display:flex;flex-direction:column;opacity:{{ L.stack.o }};transform:{{ L.stack.t }};pointer-events:{{ L.stack.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <div style="display:flex;align-items:center;gap:8px;height:28px;padding:0 6px;margin-bottom:4px;flex:0 0 auto">
+          <i class="ph-fill ph-bell" style="font-size:14px;color:var(--color-neutral-300)"></i>
+          <span style="font-size:13px;font-weight:500">Notificações</span>
+          <span style="font-size:11px;padding:1px 7px;border-radius:9px;background:var(--color-neutral-900);color:var(--color-neutral-300)">{{ notifCount }}</span>
+          <button type="button" sc-camel-on-click="{{ clearAll }}" style="margin-left:auto;height:24px;padding:0 10px;border:0;border-radius:12px;background:var(--color-neutral-900);color:var(--color-neutral-300);font-family:var(--font-body);font-size:11px;cursor:pointer;display:{{ clearD }}" style-hover="background:var(--color-neutral-800)">Limpar tudo</button>
+        </div>
+        <div style="flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:2px;scrollbar-width:thin;scrollbar-color:var(--color-neutral-800) transparent">
+          <sc-for list="{{ stack }}" as="n" hint-placeholder-count="3">
+            <div style="flex:0 0 auto;display:flex;align-items:center;gap:12px;height:50px;padding:0 6px;border-radius:12px;background:{{ n.bg }};transition:background .6s ease" style-hover="background:var(--color-neutral-900)">
+              <div style="width:32px;height:32px;border-radius:9px;background:var(--color-accent-900);display:flex;align-items:center;justify-content:center;flex:0 0 auto"><i class="{{ n.icon }}" style="font-size:18px;color:var(--color-accent-300)"></i></div>
+              <div style="flex:1 1 auto;min-width:0">
+                <div style="display:flex;align-items:baseline"><span style="font-size:13px;font-weight:500">{{ n.app }}</span><span style="margin-left:auto;font-size:11px;color:var(--color-neutral-500)">{{ n.time }}</span></div>
+                <div style="font-size:12px;color:var(--color-neutral-400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ n.text }}</div>
+              </div>
+              <button type="button" sc-camel-on-click="{{ n.close }}" title="Dispensar" style="flex:0 0 auto;width:22px;height:22px;border:0;border-radius:11px;background:transparent;color:var(--color-neutral-500);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-800);color:var(--color-text)"><i class="ph ph-x" style="font-size:11px"></i></button>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noNotifs }}" hint-placeholder-val="{{ false }}">
+            <div style="height:72px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;color:var(--color-neutral-500)"><i class="ph ph-bell-slash" style="font-size:16px"></i>Nenhuma notificação</div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-250px;width:500px;height:82px;box-sizing:border-box;padding:0 14px;display:flex;align-items:center;gap:14px;opacity:{{ L.music.o }};transform:{{ L.music.t }};pointer-events:{{ L.music.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <image-slot id="album-art-sm" style="width:56px;height:56px;flex:0 0 auto" shape="rounded" radius="12" placeholder="Capa"></image-slot>
+        <div style="flex:1 1 auto;min-width:0">
+          <div style="font-size:13px;font-weight:500">{{ track.artist }}</div>
+          <div style="font-size:12px;color:var(--color-neutral-400)">{{ track.title }}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px;font-size:10px;color:var(--color-neutral-500)">
+            <span>{{ posLabel }}</span>
+            <div style="flex:1;height:3px;border-radius:2px;background:var(--color-neutral-800)"><div style="width:{{ posPct }};height:100%;border-radius:2px;background:var(--color-accent)"></div></div>
+            <span>{{ track.len }}</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button type="button" sc-camel-on-click="{{ prevTrack }}" style="width:34px;height:34px;border:0;border-radius:17px;background:transparent;color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-900)"><i class="ph-fill ph-skip-back" style="font-size:17px"></i></button>
+          <button type="button" sc-camel-on-click="{{ togglePlay }}" style="width:38px;height:38px;border:0;border-radius:19px;background:transparent;color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-900)"><i class="{{ playIcon }}" style="font-size:22px"></i></button>
+          <button type="button" sc-camel-on-click="{{ nextTrack }}" style="width:34px;height:34px;border:0;border-radius:17px;background:transparent;color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-900)"><i class="ph-fill ph-skip-forward" style="font-size:17px"></i></button>
+        </div>
+        <i class="ph-fill ph-spotify-logo" style="font-size:22px;color:var(--color-accent-400)"></i>
+      </div>
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-160px;width:320px;height:50px;box-sizing:border-box;padding:0 18px;display:flex;align-items:center;gap:14px;opacity:{{ L.volume.o }};transform:{{ L.volume.t }};pointer-events:{{ L.volume.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <i class="{{ volIcon }}" style="font-size:18px"></i>
+        <div sc-camel-on-pointer-down="{{ volDown }}" style="flex:1;height:20px;display:flex;align-items:center;cursor:pointer;touch-action:none">
+          <div style="position:relative;width:100%;height:4px;border-radius:2px;background:var(--color-neutral-800)">
+            <div style="width:{{ volPct }};height:100%;border-radius:2px;background:var(--color-accent)"></div>
+            <div style="position:absolute;top:50%;left:{{ volPct }};width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--color-neutral-100);box-shadow:0 0 12px color-mix(in srgb, var(--color-accent) 60%, transparent)"></div>
+          </div>
+        </div>
+        <span style="width:34px;text-align:right;font-size:12px;color:var(--color-neutral-300)">{{ volPct }}</span>
+      </div>
+
+            <div sc-camel-on-click="{{ stop }}" style="position:absolute;top:0;left:50%;margin-left:-220px;width:440px;opacity:{{ L.hub.o }};transform:{{ L.hub.t }};transform-origin:{{ hubOrigin }};pointer-events:{{ L.hub.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <div ref="{{ hubRef }}" style="padding:18px 18px;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;gap:14px">
+          <image-slot id="album-art" style="width:56px;height:56px;flex:0 0 auto" shape="rounded" radius="12" placeholder="Capa"></image-slot>
+          <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500">{{ track.artist }}</div><div style="font-size:12.5px;color:var(--color-neutral-400)">{{ track.title }}</div></div>
+          <i class="ph-fill ph-spotify-logo" style="font-size:22px;color:var(--color-accent-400);align-self:flex-start"></i>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:12px;font-size:10.5px;color:var(--color-neutral-500)">
+          <div style="flex:1;height:3px;border-radius:2px;background:var(--color-neutral-800)"><div style="width:{{ posPct }};height:100%;border-radius:2px;background:var(--color-accent)"></div></div>
+          <span>{{ posLabel }} / {{ track.len }}</span>
+        </div>
+        <div style="display:flex;justify-content:center;gap:18px;margin-top:6px">
+          <button type="button" sc-camel-on-click="{{ prevTrack }}" style="width:36px;height:36px;border:0;border-radius:18px;background:transparent;color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-900)"><i class="ph-fill ph-skip-back" style="font-size:17px"></i></button>
+          <button type="button" sc-camel-on-click="{{ togglePlay }}" style="width:40px;height:40px;border:0;border-radius:20px;background:transparent;color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-900)"><i class="{{ playIcon }}" style="font-size:24px"></i></button>
+          <button type="button" sc-camel-on-click="{{ nextTrack }}" style="width:36px;height:36px;border:0;border-radius:18px;background:transparent;color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-900)"><i class="ph-fill ph-skip-forward" style="font-size:17px"></i></button>
+        </div>
+        <div style="height:1px;margin:14px -18px;background:linear-gradient(90deg, transparent, var(--color-neutral-800) 15%, var(--color-neutral-800) 85%, transparent)"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><i class="ph ph-calendar-blank" style="font-size:16px;color:var(--color-neutral-300)"></i><span style="font-size:14px;font-weight:500">Calendário</span><button type="button" sc-camel-on-click="{{ toggleCal }}" title="{{ calToggleLabel }}" style="margin-left:auto;display:flex;align-items:center;gap:4px;height:24px;padding:0 8px;border:0;border-radius:12px;background:var(--color-neutral-900);color:var(--color-neutral-300);font-family:var(--font-body);font-size:11px;cursor:pointer" style-hover="background:var(--color-neutral-800)"><span>{{ calToggleLabel }}</span><i class="{{ calToggleIcon }}" style="font-size:11px"></i></button></div>
+        <div style="display:flex;align-items:center;margin-bottom:8px">
+          <span style="font-size:13px">{{ cal.title }}</span>
+          <button type="button" sc-camel-on-click="{{ prevMonth }}" style="margin-left:auto;width:26px;height:26px;border:0;border-radius:13px;background:transparent;color:var(--color-neutral-300);cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-neutral-900)"><i class="ph ph-caret-left" style="font-size:13px"></i></button>
+          <button type="button" sc-camel-on-click="{{ nextMonth }}" style="width:26px;height:26px;border:0;border-radius:13px;background:transparent;color:var(--color-neutral-300);cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-neutral-900)"><i class="ph ph-caret-right" style="font-size:13px"></i></button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);font-size:11px;color:var(--color-neutral-500);text-align:center;margin-bottom:4px">
+          <sc-for list="{{ dows }}" as="w" hint-placeholder-count="7"><span>{{ w }}</span></sc-for>
+        </div>
+        <sc-for list="{{ calWeeks }}" as="wk" hint-placeholder-count="5">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);font-size:12.5px;text-align:center">
+            <sc-for list="{{ wk.days }}" as="d" hint-placeholder-count="7">
+              <div style="height:26px;display:flex;align-items:center;justify-content:center"><span style="min-width:26px;height:22px;line-height:22px;border-radius:11px;color:{{ d.color }};background:{{ d.bg }};font-weight:{{ d.weight }}">{{ d.n }}</span></div>
+            </sc-for>
+          </div>
+        </sc-for>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+          <sc-for list="{{ events }}" as="ev" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:10px;font-size:12.5px">
+              <span style="width:8px;height:8px;border-radius:50%;background:{{ ev.dot }}"></span>
+              <span>{{ ev.name }}</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-500)">{{ ev.time }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </div>
+
+      <div sc-camel-on-click="{{ stop }}" style="position:absolute;top:0;left:50%;margin-left:-210px;width:420px;height:132px;box-sizing:border-box;padding:12px 14px;display:flex;flex-direction:column;gap:8px;opacity:{{ L.note.o }};transform:{{ L.note.t }};pointer-events:{{ L.note.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <div style="display:flex;align-items:center;gap:8px;height:22px">
+          <i class="ph-fill ph-note" style="font-size:15px;color:var(--color-accent-300)"></i>
+          <span style="font-size:13px;font-weight:500">Nota</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-500)">{{ noteCount }}/80 · Enter para salvar</span>
+        </div>
+        <textarea ref="{{ noteRef }}" value="{{ noteText }}" sc-camel-on-change="{{ onNote }}" sc-camel-on-key-down="{{ noteKey }}" placeholder="Escreva um recado para a barra" maxlength="80" style="flex:1;min-height:0;resize:none;box-sizing:border-box;padding:8px 10px;border:0;outline:none;border-radius:10px;background:var(--color-neutral-900);box-shadow:inset 0 0 0 1px var(--color-neutral-800);color:var(--color-text);font-family:var(--font-body);font-size:13px;line-height:1.4" style-focus="box-shadow:inset 0 0 0 1px var(--color-accent)"></textarea>
+      </div>
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-240px;width:480px;height:214px;box-sizing:border-box;padding:14px 16px;display:flex;gap:16px;opacity:{{ L.calendar.o }};transform:{{ L.calendar.t }};pointer-events:{{ L.calendar.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <div style="width:264px;flex:0 0 auto">
+          <div style="display:flex;align-items:center;height:22px;margin-bottom:6px">
+            <span style="font-size:13px;font-weight:500">{{ cal.title }}</span>
+            <button type="button" sc-camel-on-click="{{ toggleCal }}" title="{{ calToggleLabel }}" style="margin-left:auto;display:flex;align-items:center;gap:4px;height:22px;padding:0 8px;border:0;border-radius:11px;background:var(--color-neutral-900);color:var(--color-neutral-300);font-family:var(--font-body);font-size:11px;cursor:pointer" style-hover="background:var(--color-neutral-800)"><span>{{ calToggleLabel }}</span><i class="{{ calToggleIcon }}" style="font-size:11px"></i></button>
+            <button type="button" sc-camel-on-click="{{ prevMonth }}" style="width:22px;height:22px;border:0;border-radius:11px;background:transparent;color:var(--color-neutral-300);cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-neutral-900)"><i class="ph ph-caret-left" style="font-size:12px"></i></button>
+            <button type="button" sc-camel-on-click="{{ nextMonth }}" style="width:22px;height:22px;border:0;border-radius:11px;background:transparent;color:var(--color-neutral-300);cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-neutral-900)"><i class="ph ph-caret-right" style="font-size:12px"></i></button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);font-size:10.5px;color:var(--color-neutral-500);text-align:center;margin-bottom:2px">
+            <sc-for list="{{ dows }}" as="w" hint-placeholder-count="7"><span>{{ w }}</span></sc-for>
+          </div>
+          <sc-for list="{{ calWeeks }}" as="wk" hint-placeholder-count="5">
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);font-size:12px;text-align:center">
+              <sc-for list="{{ wk.days }}" as="d" hint-placeholder-count="7">
+                <div style="height:22px;display:flex;align-items:center;justify-content:center"><span style="min-width:24px;height:20px;line-height:20px;border-radius:10px;color:{{ d.color }};background:{{ d.bg }};font-weight:{{ d.weight }}">{{ d.n }}</span></div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+        <div style="width:1px;background:linear-gradient(transparent, var(--color-neutral-800) 20%, var(--color-neutral-800) 80%, transparent)"></div>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px">
+          <div style="font-size:13px;font-weight:500;height:22px;display:flex;align-items:center">{{ todayLabel }}</div>
+          <sc-for list="{{ events }}" as="ev" hint-placeholder-count="3">
+            <div style="display:flex;gap:8px">
+              <span style="width:8px;height:8px;border-radius:50%;margin-top:4px;background:{{ ev.dot }};flex:0 0 auto"></span>
+              <div style="min-width:0;white-space:nowrap"><div style="font-size:12px">{{ ev.name }}</div><div style="font-size:10.5px;color:var(--color-neutral-500)">{{ ev.time }}</div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-260px;width:520px;height:58px;box-sizing:border-box;padding:0 10px;display:flex;align-items:center;gap:8px;opacity:{{ L.quick.o }};transform:{{ L.quick.t }};pointer-events:{{ L.quick.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <div style="flex:1;min-width:0;height:38px;border-radius:19px;background:var(--color-neutral-900);display:flex;align-items:center;gap:8px;padding:0 12px">
+          <i class="ph ph-sun" style="font-size:16px"></i>
+          <div sc-camel-on-pointer-down="{{ brightDown }}" style="flex:1;height:20px;display:flex;align-items:center;cursor:pointer;touch-action:none"><div style="position:relative;width:100%;height:4px;border-radius:2px;background:var(--color-neutral-800)"><div style="width:{{ brightPct }};height:100%;border-radius:2px;background:var(--color-accent)"></div><div style="position:absolute;top:50%;left:{{ brightPct }};width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--color-neutral-100)"></div></div></div>
+        </div>
+        <div style="flex:1;min-width:0;height:38px;border-radius:19px;background:var(--color-neutral-900);display:flex;align-items:center;gap:8px;padding:0 12px">
+          <i class="{{ volIcon }}" style="font-size:16px"></i>
+          <div sc-camel-on-pointer-down="{{ volDown }}" style="flex:1;height:20px;display:flex;align-items:center;cursor:pointer;touch-action:none"><div style="position:relative;width:100%;height:4px;border-radius:2px;background:var(--color-neutral-800)"><div style="width:{{ volPct }};height:100%;border-radius:2px;background:var(--color-accent)"></div><div style="position:absolute;top:50%;left:{{ volPct }};width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--color-neutral-100)"></div></div></div>
+        </div>
+        <sc-for list="{{ tiles }}" as="tl" hint-placeholder-count="4">
+          <button type="button" sc-camel-on-click="{{ tl.toggle }}" title="{{ tl.name }}" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:{{ tl.circle }};color:{{ tl.fg }};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease"><i class="{{ tl.icon }}" style="font-size:17px"></i></button>
+        </sc-for>
+        <span style="flex:0 0 auto;width:1px;height:22px;margin:0 2px;background:var(--color-neutral-800)"></span>
+        <button type="button" sc-camel-on-click="{{ acToggle }}" title="Cor de realce" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:{{ acBtnBg }};color:{{ acBtnFg }};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease" style-hover="background:var(--color-neutral-700);color:var(--color-text)" style-active="background:var(--color-accent-800)"><i class="ph-fill ph-palette" style="font-size:17px"></i></button>
+        <button type="button" sc-camel-on-click="{{ openSettings }}" title="Configurações" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:var(--color-neutral-800);color:var(--color-neutral-300);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease" style-hover="background:var(--color-neutral-700);color:var(--color-text)" style-active="background:var(--color-accent-800)"><i class="ph ph-gear-six" style="font-size:17px"></i></button>
+        <button type="button" sc-camel-on-click="{{ openPower }}" title="Desligar" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:{{ powerBg }};color:{{ powerFg }};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease" style-hover="background:var(--color-neutral-700);color:var(--color-text)" style-active="background:var(--color-accent-800)"><i class="ph-bold ph-power" style="font-size:17px"></i></button>
+      
+        <sc-if value="{{ acOpen }}" hint-placeholder-val="{{ false }}">
+          <div sc-camel-on-click="{{ stop }}" style="position:absolute;left:10px;right:10px;top:58px;box-sizing:border-box;padding:12px;border-radius:16px;background:var(--color-neutral-900);display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:12.5px;font-weight:500;white-space:nowrap;flex:0 0 auto">Cor de realce</span>
+              <div style="display:flex;align-items:center;gap:5px;margin-left:auto">
+                <sc-for list="{{ acPresets }}" as="ap" hint-placeholder-count="8">
+                  <button type="button" sc-camel-on-click="{{ ap.pick }}" title="{{ ap.name }}" style="width:20px;height:20px;flex:0 0 auto;border:0;border-radius:10px;background:{{ ap.color }};box-shadow:{{ ap.ring }};cursor:pointer"></button>
+                </sc-for>
+              </div>
+              <button type="button" sc-camel-on-click="{{ acReset }}" style="flex:0 0 auto;white-space:nowrap;height:22px;padding:0 8px;border:0;border-radius:11px;background:var(--color-neutral-800);color:var(--color-neutral-300);font-family:var(--font-body);font-size:11px;cursor:pointer" style-hover="background:var(--color-neutral-700)">Resetar</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <label style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--color-neutral-400)"><span style="display:flex">Matiz<span style="margin-left:auto;color:var(--color-text)">{{ acHueLabel }}</span></span><input type="range" min="0" max="360" step="1" value="{{ acHue }}" sc-camel-on-change="{{ acOnHue }}" style="width:100%;margin:0;accent-color:var(--color-accent)"></label>
+              <label style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--color-neutral-400)"><span style="display:flex">Saturação<span style="margin-left:auto;color:var(--color-text)">{{ acChromaLabel }}</span></span><input type="range" min="0" max="200" step="1" value="{{ acChroma }}" sc-camel-on-change="{{ acOnChroma }}" style="width:100%;margin:0;accent-color:var(--color-accent)"></label>
+            </div>
+            <div style="display:flex;gap:3px;height:8px">
+              <sc-for list="{{ acRamp }}" as="rs" hint-placeholder-count="9"><span style="flex:1;border-radius:3px;background:{{ rs }}"></span></sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showPower }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:10px;right:10px;top:58px;height:40px;display:flex;align-items:center;gap:6px">
+            <sc-for list="{{ powerActions }}" as="pa" hint-placeholder-count="5">
+              <button type="button" sc-camel-on-click="{{ pa.run }}" style="flex:1;height:36px;border:0;border-radius:12px;background:var(--color-neutral-900);color:{{ pa.fg }};font-family:var(--font-body);font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer" style-hover="background:var(--color-neutral-800)"><i class="{{ pa.icon }}" style="font-size:14px"></i>{{ pa.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <div style="position:absolute;top:0;left:50%;margin-left:-260px;width:520px;height:{{ btH }};opacity:{{ L.bt.o }};transform:{{ L.bt.t }};pointer-events:{{ L.bt.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <div style="height:58px;box-sizing:border-box;padding:0 10px;display:flex;align-items:center;gap:8px">
+        <div style="flex:1;min-width:0;height:38px;border-radius:19px;background:var(--color-neutral-900);display:flex;align-items:center;gap:8px;padding:0 12px">
+          <i class="ph ph-sun" style="font-size:16px"></i>
+          <div sc-camel-on-pointer-down="{{ brightDown }}" style="flex:1;height:20px;display:flex;align-items:center;cursor:pointer;touch-action:none"><div style="position:relative;width:100%;height:4px;border-radius:2px;background:var(--color-neutral-800)"><div style="width:{{ brightPct }};height:100%;border-radius:2px;background:var(--color-accent)"></div><div style="position:absolute;top:50%;left:{{ brightPct }};width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--color-neutral-100)"></div></div></div>
+        </div>
+        <div style="flex:1;min-width:0;height:38px;border-radius:19px;background:var(--color-neutral-900);display:flex;align-items:center;gap:8px;padding:0 12px">
+          <i class="{{ volIcon }}" style="font-size:16px"></i>
+          <div sc-camel-on-pointer-down="{{ volDown }}" style="flex:1;height:20px;display:flex;align-items:center;cursor:pointer;touch-action:none"><div style="position:relative;width:100%;height:4px;border-radius:2px;background:var(--color-neutral-800)"><div style="width:{{ volPct }};height:100%;border-radius:2px;background:var(--color-accent)"></div><div style="position:absolute;top:50%;left:{{ volPct }};width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--color-neutral-100)"></div></div></div>
+        </div>
+        <sc-for list="{{ tiles }}" as="tl" hint-placeholder-count="4">
+          <button type="button" sc-camel-on-click="{{ tl.toggle }}" title="{{ tl.name }}" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:{{ tl.circle }};color:{{ tl.fg }};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease"><i class="{{ tl.icon }}" style="font-size:17px"></i></button>
+        </sc-for>
+        <span style="flex:0 0 auto;width:1px;height:22px;margin:0 2px;background:var(--color-neutral-800)"></span>
+        <button type="button" sc-camel-on-click="{{ acToggle }}" title="Cor de realce" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:{{ acBtnBg }};color:{{ acBtnFg }};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease" style-hover="background:var(--color-neutral-700);color:var(--color-text)" style-active="background:var(--color-accent-800)"><i class="ph-fill ph-palette" style="font-size:17px"></i></button>
+        <button type="button" sc-camel-on-click="{{ openSettings }}" title="Configurações" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:var(--color-neutral-800);color:var(--color-neutral-300);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease" style-hover="background:var(--color-neutral-700);color:var(--color-text)" style-active="background:var(--color-accent-800)"><i class="ph ph-gear-six" style="font-size:17px"></i></button>
+        <button type="button" sc-camel-on-click="{{ openPower }}" title="Desligar" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:{{ powerBg }};color:{{ powerFg }};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease" style-hover="background:var(--color-neutral-700);color:var(--color-text)" style-active="background:var(--color-accent-800)"><i class="ph-bold ph-power" style="font-size:17px"></i></button>
+        </div>
+        <sc-if value="{{ showPower }}" hint-placeholder-val="{{ false }}">
+          <div style="height:48px;box-sizing:border-box;padding:0 10px 8px;display:flex;align-items:center;gap:6px">
+            <sc-for list="{{ powerActions }}" as="pa" hint-placeholder-count="5">
+              <button type="button" sc-camel-on-click="{{ pa.run }}" style="flex:1;height:36px;border:0;border-radius:12px;background:var(--color-neutral-900);color:{{ pa.fg }};font-family:var(--font-body);font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer" style-hover="background:var(--color-neutral-800)"><i class="{{ pa.icon }}" style="font-size:14px"></i>{{ pa.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="height:1px;margin:0 0 8px;background:linear-gradient(90deg, transparent, var(--color-neutral-800) 15%, var(--color-neutral-800) 85%, transparent)"></div>
+        <div style="padding:0 12px">
+          <div style="display:flex;align-items:center;gap:8px;height:26px;padding:0 6px;margin-bottom:4px">
+            <i class="ph-bold ph-bluetooth" style="font-size:14px;color:var(--color-neutral-300)"></i>
+            <span style="font-size:13px;font-weight:500">Bluetooth</span>
+            <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-500)">{{ btStatus }}</span>
+            <button type="button" sc-camel-on-click="{{ toggleBt }}" title="Ligar/desligar Bluetooth" style="position:relative;width:32px;height:18px;flex:0 0 auto;border:0;border-radius:9px;background:{{ btSwBg }};cursor:pointer;transition:background .18s ease"><span style="position:absolute;top:2px;left:{{ btSwX }};width:14px;height:14px;border-radius:7px;background:var(--color-neutral-100);transition:left .18s ease"></span></button>
+          </div>
+          <sc-if value="{{ btOn }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-500);padding:4px 8px 2px">Meus dispositivos</div>
+            <sc-for list="{{ btPaired }}" as="bd" hint-placeholder-count="2">
+              <div sc-camel-on-click="{{ bd.connect }}" style="display:flex;align-items:center;gap:10px;height:38px;padding:0 8px;border-radius:10px;background:{{ bd.bg }};cursor:pointer" style-hover="background:var(--color-neutral-900)">
+                <i class="{{ bd.icon }}" style="font-size:17px;color:{{ bd.iconColor }}"></i>
+                <span style="font-size:12.5px;color:var(--color-text)">{{ bd.name }}</span>
+                <span style="display:{{ bd.batD }};align-items:center;gap:4px;font-size:11px;color:var(--color-neutral-400)"><i class="ph-fill ph-battery-medium" style="font-size:13px"></i>{{ bd.bat }}</span>
+                <span style="margin-left:auto;font-size:11px;color:{{ bd.statusColor }}">{{ bd.status }}</span>
+              </div>
+            </sc-for>
+            <div style="display:flex;align-items:center;gap:6px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-500);padding:8px 8px 2px">Disponíveis<i class="ph ph-circle-notch" style="font-size:11px;animation:btspin 1.2s linear infinite"></i></div>
+            <sc-for list="{{ btNearby }}" as="bd" hint-placeholder-count="2">
+              <div sc-camel-on-click="{{ bd.connect }}" style="display:flex;align-items:center;gap:10px;height:38px;padding:0 8px;border-radius:10px;background:{{ bd.bg }};cursor:pointer" style-hover="background:var(--color-neutral-900)">
+                <i class="{{ bd.icon }}" style="font-size:17px;color:{{ bd.iconColor }}"></i>
+                <span style="font-size:12.5px;color:var(--color-text)">{{ bd.name }}</span>
+                <span style="display:{{ bd.batD }};align-items:center;gap:4px;font-size:11px;color:var(--color-neutral-400)"><i class="ph-fill ph-battery-medium" style="font-size:13px"></i>{{ bd.bat }}</span>
+                <span style="margin-left:auto;font-size:11px;color:{{ bd.statusColor }}">{{ bd.status }}</span>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ btOff }}" hint-placeholder-val="{{ false }}">
+            <div style="height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--color-neutral-500);font-size:12.5px"><i class="ph ph-bluetooth-slash" style="font-size:22px"></i>Bluetooth desligado</div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-260px;width:520px;height:{{ wifiH }};opacity:{{ L.wifi.o }};transform:{{ L.wifi.t }};pointer-events:{{ L.wifi.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <div style="height:58px;box-sizing:border-box;padding:0 10px;display:flex;align-items:center;gap:8px">
+        <div style="flex:1;min-width:0;height:38px;border-radius:19px;background:var(--color-neutral-900);display:flex;align-items:center;gap:8px;padding:0 12px">
+          <i class="ph ph-sun" style="font-size:16px"></i>
+          <div sc-camel-on-pointer-down="{{ brightDown }}" style="flex:1;height:20px;display:flex;align-items:center;cursor:pointer;touch-action:none"><div style="position:relative;width:100%;height:4px;border-radius:2px;background:var(--color-neutral-800)"><div style="width:{{ brightPct }};height:100%;border-radius:2px;background:var(--color-accent)"></div><div style="position:absolute;top:50%;left:{{ brightPct }};width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--color-neutral-100)"></div></div></div>
+        </div>
+        <div style="flex:1;min-width:0;height:38px;border-radius:19px;background:var(--color-neutral-900);display:flex;align-items:center;gap:8px;padding:0 12px">
+          <i class="{{ volIcon }}" style="font-size:16px"></i>
+          <div sc-camel-on-pointer-down="{{ volDown }}" style="flex:1;height:20px;display:flex;align-items:center;cursor:pointer;touch-action:none"><div style="position:relative;width:100%;height:4px;border-radius:2px;background:var(--color-neutral-800)"><div style="width:{{ volPct }};height:100%;border-radius:2px;background:var(--color-accent)"></div><div style="position:absolute;top:50%;left:{{ volPct }};width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--color-neutral-100)"></div></div></div>
+        </div>
+        <sc-for list="{{ tiles }}" as="tl" hint-placeholder-count="4">
+          <button type="button" sc-camel-on-click="{{ tl.toggle }}" title="{{ tl.name }}" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:{{ tl.circle }};color:{{ tl.fg }};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease"><i class="{{ tl.icon }}" style="font-size:17px"></i></button>
+        </sc-for>
+        <span style="flex:0 0 auto;width:1px;height:22px;margin:0 2px;background:var(--color-neutral-800)"></span>
+        <button type="button" sc-camel-on-click="{{ acToggle }}" title="Cor de realce" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:{{ acBtnBg }};color:{{ acBtnFg }};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease" style-hover="background:var(--color-neutral-700);color:var(--color-text)" style-active="background:var(--color-accent-800)"><i class="ph-fill ph-palette" style="font-size:17px"></i></button>
+        <button type="button" sc-camel-on-click="{{ openSettings }}" title="Configurações" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:var(--color-neutral-800);color:var(--color-neutral-300);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease" style-hover="background:var(--color-neutral-700);color:var(--color-text)" style-active="background:var(--color-accent-800)"><i class="ph ph-gear-six" style="font-size:17px"></i></button>
+        <button type="button" sc-camel-on-click="{{ openPower }}" title="Desligar" style="width:38px;height:38px;flex:0 0 auto;border:0;border-radius:19px;background:{{ powerBg }};color:{{ powerFg }};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s ease" style-hover="background:var(--color-neutral-700);color:var(--color-text)" style-active="background:var(--color-accent-800)"><i class="ph-bold ph-power" style="font-size:17px"></i></button>
+        </div>
+        <sc-if value="{{ showPower }}" hint-placeholder-val="{{ false }}">
+          <div style="height:48px;box-sizing:border-box;padding:0 10px 8px;display:flex;align-items:center;gap:6px">
+            <sc-for list="{{ powerActions }}" as="pa" hint-placeholder-count="5">
+              <button type="button" sc-camel-on-click="{{ pa.run }}" style="flex:1;height:36px;border:0;border-radius:12px;background:var(--color-neutral-900);color:{{ pa.fg }};font-family:var(--font-body);font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer" style-hover="background:var(--color-neutral-800)"><i class="{{ pa.icon }}" style="font-size:14px"></i>{{ pa.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="height:1px;margin:0 0 8px;background:linear-gradient(90deg, transparent, var(--color-neutral-800) 15%, var(--color-neutral-800) 85%, transparent)"></div>
+        <div style="padding:0 12px">
+          <div style="display:flex;align-items:center;gap:8px;height:26px;padding:0 6px;margin-bottom:4px">
+            <i class="ph ph-wifi-high" style="font-size:14px;color:var(--color-neutral-300)"></i>
+            <span style="font-size:13px;font-weight:500">Redes Wi‑Fi</span>
+            <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-500)">{{ wifiStatus }}</span>
+            <button type="button" sc-camel-on-click="{{ toggleWifi }}" title="Ligar/desligar Wi‑Fi" style="position:relative;width:32px;height:18px;flex:0 0 auto;border:0;border-radius:9px;background:{{ wifiSwBg }};cursor:pointer;transition:background .18s ease"><span style="position:absolute;top:2px;left:{{ wifiSwX }};width:14px;height:14px;border-radius:7px;background:var(--color-neutral-100);transition:left .18s ease"></span></button>
+          </div>
+          <sc-if value="{{ wifiOn }}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{ nets }}" as="nt" hint-placeholder-count="5">
+              <div sc-camel-on-click="{{ nt.connect }}" style="display:flex;align-items:center;gap:10px;height:36px;padding:0 8px;border-radius:10px;background:{{ nt.bg }};cursor:pointer" style-hover="background:var(--color-neutral-900)">
+                <i class="{{ nt.icon }}" style="font-size:16px;color:{{ nt.iconColor }}"></i>
+                <span style="font-size:12.5px;color:var(--color-text)">{{ nt.ssid }}</span>
+                <i class="{{ nt.lock }}" style="font-size:11px;color:var(--color-neutral-500)"></i>
+                <span style="margin-left:auto;font-size:11px;color:{{ nt.statusColor }}">{{ nt.status }}</span>
+              </div>
+              <sc-if value="{{ nt.askPw }}" hint-placeholder-val="{{ false }}">
+                <div sc-camel-on-click="{{ stop }}" style="display:flex;flex-direction:column;gap:6px;margin:2px 0 6px;padding:10px;border-radius:12px;background:var(--color-neutral-900);box-shadow:inset 0 0 0 1px {{ pwEdge }}">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="flex:1;min-width:0;height:32px;display:flex;align-items:center;gap:8px;padding:0 10px;border-radius:9px;background:var(--color-bg);box-shadow:inset 0 0 0 1px var(--color-neutral-800)">
+                      <i class="ph ph-key" style="font-size:14px;color:var(--color-neutral-400)"></i>
+                      <input ref="{{ pwRef }}" type="{{ pwType }}" value="{{ pw }}" sc-camel-on-change="{{ onPw }}" sc-camel-on-key-down="{{ onPwKey }}" placeholder="Senha de {{ nt.ssid }}" style="flex:1;min-width:0;height:100%;border:0;outline:none;background:transparent;color:var(--color-text);font-family:var(--font-body);font-size:12.5px">
+                      <button type="button" sc-camel-on-click="{{ togglePwVis }}" title="Mostrar senha" style="width:22px;height:22px;flex:0 0 auto;border:0;border-radius:11px;background:transparent;color:var(--color-neutral-400);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-800);color:var(--color-text)"><i class="{{ pwEye }}" style="font-size:14px"></i></button>
+                    </div>
+                    <button type="button" sc-camel-on-click="{{ cancelPw }}" class="btn btn-ghost" style="height:32px;padding:0 10px;font-size:12px">Cancelar</button>
+                    <button type="button" sc-camel-on-click="{{ submitPw }}" class="btn btn-primary" style="height:32px;padding:0 12px;font-size:12px;opacity:{{ pwBtnO }}">Conectar</button>
+                  </div>
+                  <sc-if value="{{ pwErr }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:oklch(0.72 0.17 25)"><i class="ph ph-warning-circle" style="font-size:13px"></i>Senha precisa ter pelo menos 8 caracteres</div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ wifiOff }}" hint-placeholder-val="{{ false }}">
+            <div style="height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--color-neutral-500);font-size:12.5px"><i class="ph ph-wifi-slash" style="font-size:22px"></i>Wi‑Fi desligado</div>
+          </sc-if>
+        </div>
+      </div>
+
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-240px;width:480px;height:{{ aiH }};box-sizing:border-box;padding:12px 14px;display:flex;flex-direction:column;gap:6px;opacity:{{ L.ai.o }};transform:{{ L.ai.t }};pointer-events:{{ L.ai.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <div style="display:flex;align-items:center;gap:8px;height:26px;padding:0 4px">
+          <i class="ph ph-sparkle" style="font-size:14px;color:var(--color-neutral-300)"></i>
+          <span style="font-size:13px;font-weight:500">Uso de IA</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-500)">{{ aiSummary }}</span>
+        </div>
+        <sc-for list="{{ aiOn }}" as="p" hint-placeholder-count="2">
+          <div style="padding:10px 10px 12px;border-radius:14px;background:var(--color-neutral-900)">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <span style="width:28px;height:28px;border-radius:8px;background:var(--color-accent-900);display:flex;align-items:center;justify-content:center"><i class="{{ p.icon }}" style="font-size:16px;color:var(--color-accent-300)"></i></span>
+              <span style="font-size:13px;font-weight:500">{{ p.name }}</span>
+              <span style="font-size:10.5px;padding:1px 7px;border-radius:8px;box-shadow:0 0 0 1px var(--color-neutral-700);color:var(--color-neutral-300)">{{ p.plan }}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div>
+                <div style="display:flex;font-size:11px;margin-bottom:5px"><span style="color:var(--color-neutral-400)">Sessão · 5h</span><span style="margin-left:auto;font-weight:500;color:{{ p.sText }}">{{ p.sPct }}</span></div>
+                <div style="height:4px;border-radius:2px;background:var(--color-neutral-800)"><div style="width:{{ p.sPct }};height:100%;border-radius:2px;background:{{ p.sColor }};transition:width .6s ease"></div></div>
+                <div style="font-size:10.5px;color:var(--color-neutral-500);margin-top:5px">Reinicia {{ p.sReset }}</div>
+              </div>
+              <div>
+                <div style="display:flex;font-size:11px;margin-bottom:5px"><span style="color:var(--color-neutral-400)">Semanal</span><span style="margin-left:auto;font-weight:500;color:{{ p.wText }}">{{ p.wPct }}</span></div>
+                <div style="height:4px;border-radius:2px;background:var(--color-neutral-800)"><div style="width:{{ p.wPct }};height:100%;border-radius:2px;background:{{ p.wColor }}"></div></div>
+                <div style="font-size:10.5px;color:var(--color-neutral-500);margin-top:5px">Reinicia {{ p.wReset }}</div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-130px;width:260px;height:40px;display:flex;align-items:center;justify-content:center;gap:10px;opacity:{{ L.env.o }};transform:{{ L.env.t }};pointer-events:none;transition:opacity .22s ease .08s, transform .3s ease">
+        <i class="{{ envIcon }}" style="font-size:16px;color:var(--color-accent-300)"></i>
+        <span style="font-size:13px;font-weight:500">{{ envName }}</span>
+        <span style="display:flex;align-items:center;gap:3px">
+          <sc-for list="{{ envDots }}" as="ed" hint-placeholder-count="3"><span style="display:block;width:{{ ed.w }};height:4px;border-radius:2px;background:{{ ed.bg }};transition:width .25s ease, background .25s ease"></span></sc-for>
+        </span>
+      </div>
+
+      <div style="position:absolute;top:0;left:50%;margin-left:-220px;width:440px;height:62px;box-sizing:border-box;padding:0 16px;display:flex;align-items:center;gap:14px;opacity:{{ L.system.o }};transform:{{ L.system.t }};pointer-events:{{ L.system.pe }};transition:opacity .22s ease .08s, transform .3s ease">
+        <sc-for list="{{ sysCompact }}" as="s" hint-placeholder-count="4">
+          <div style="flex:1;display:flex;align-items:center;gap:8px">
+            <i class="{{ s.icon }}" style="font-size:20px;color:var(--color-accent-300)"></i>
+            <div><div style="font-size:10.5px;color:var(--color-neutral-500)">{{ s.name }}</div><div style="font-size:12.5px;font-weight:500">{{ s.value }}</div></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </div>
+
+    <div sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ dropRight }}" sc-camel-on-click="{{ pickRight }}" style="flex:1 1 0;min-width:0;min-height:0;width:{{ laneW }};height:{{ laneH }};box-sizing:border-box;border-radius:{{ laneR }};background:color-mix(in srgb, var(--color-bg) 82%, transparent);backdrop-filter:blur(16px);box-shadow:{{ laneRightShadow }};display:flex;flex-direction:{{ laneDir }};align-items:center;gap:2px;padding:{{ lanePad }};transition:box-shadow .2s ease">
+      <div style="flex:1 1 auto;min-width:0;min-height:0;width:{{ laneInnerW }};height:{{ laneInnerH }};overflow:hidden;display:flex;flex-direction:{{ laneDir }};align-items:center">
+        <div style="flex:0 0 auto;display:flex;flex-direction:{{ laneDir }};align-items:center;gap:2px;transform:{{ slideTf }};opacity:{{ slideO }};transition:{{ slideT }}">
+          <sc-for list="{{ rightW }}" as="w" hint-placeholder-count="2">
+            <div draggable="{{ w.draggable }}" sc-camel-on-drag-start="{{ w.dragStart }}" sc-camel-on-drag-over="{{ allowDrop }}" sc-camel-on-drop="{{ w.drop }}" sc-camel-on-click="{{ w.click }}" title="{{ w.title }}" style="flex:0 0 auto;border-radius:12px;background:{{ w.bg }};box-shadow:{{ w.edge }};cursor:{{ w.cursor }};transition:background .15s ease, box-shadow .15s ease" style-hover="background:var(--color-neutral-900)">
+              <sc-if value="{{ w.horiz }}" hint-placeholder-val="{{ true }}"><dc-import name="TopbarWidget" w="{{ w }}" hint-size="72px,24px"></dc-import></sc-if><sc-if value="{{ w.vert }}" hint-placeholder-val="{{ false }}"><span style="display:flex;flex-direction:column;align-items:center;gap:3px;width:30px;padding:6px 0"><i class="{{ w.vIcon }}" style="font-size:15px;color:{{ w.vColor }}"></i><span style="display:{{ w.miniD }};font-size:9.5px;font-weight:500;line-height:1;color:var(--color-neutral-300)">{{ w.mini }}</span></span></sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ rightEmpty }}" hint-placeholder-val="{{ false }}"><span style="padding:{{ emptyPad }};font-size:11.5px;white-space:nowrap;writing-mode:{{ emptyWM }};color:var(--color-neutral-500)">Solte widgets aqui</span></sc-if>
+        </div>
+      </div>
+      <button type="button" sc-camel-on-click="{{ openStack }}" style="position:relative;width:30px;height:24px;border:0;border-radius:12px;background:transparent;color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-900)"><i class="ph-fill ph-bell" style="font-size:16px"></i><span style="position:absolute;top:5px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--color-accent);box-shadow:0 0 0 2px var(--color-bg);opacity:{{ unreadDot }}"></span></button>
+      <button type="button" sc-camel-on-click="{{ openWifi }}" style="width:30px;height:24px;border:0;border-radius:12px;background:transparent;color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-900)"><i class="{{ wifiIcon }}" style="font-size:16px"></i></button>
+      <button type="button" sc-camel-on-click="{{ openVolume }}" style="width:30px;height:24px;border:0;border-radius:12px;background:transparent;color:var(--color-text);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-900)"><i class="{{ volIcon }}" style="font-size:16px"></i></button>
+      <button type="button" sc-camel-on-click="{{ openSystem }}" style="display:flex;flex-direction:{{ laneDir }};align-items:center;gap:{{ batGap }};height:{{ batH }};padding:{{ batPad }};border:0;border-radius:12px;background:transparent;color:var(--color-text);font-family:var(--font-body);font-size:{{ batFs }};font-weight:500;cursor:pointer" style-hover="background:var(--color-neutral-900)"><span style="display:flex;align-items:center;gap:1px"><span style="position:relative;display:flex;width:28px;height:15px;box-sizing:border-box;padding:1.5px;border:1.5px solid {{ batColor }};border-radius:4px;overflow:hidden"><span style="width:{{ batFillW }};height:100%;border-radius:2px;background:{{ batFillBg }};transition:width .3s ease"></span><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:600;line-height:1;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;color:{{ batText }}">{{ batNum }}</span></span><span style="width:2px;height:6px;border-radius:0 1px 1px 0;background:{{ batColor }}"></span></span><i class="ph-fill ph-lightning" style="display:{{ chgD }};font-size:11px;color:{{ batColor }}"></i></button>
+      <button type="button" sc-camel-on-click="{{ openDash }}" style="width:30px;height:24px;border:0;border-radius:12px;background:transparent;color:var(--color-neutral-300);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-900)"><i class="{{ caretIcon }}" style="font-size:12px"></i></button>
+    </div>
+  </div>
+
+  
+
+  <div sc-camel-on-click="{{ openPeek }}" style="position:absolute;left:{{ pkL }};right:{{ pkR }};top:{{ pkT }};bottom:{{ pkB }};z-index:35;width:380px;margin:{{ pkM }};opacity:{{ peekO }};transform:{{ pkTf }};pointer-events:{{ peekPE }};cursor:pointer;transition:opacity .22s ease, transform .4s cubic-bezier(.3,1.25,.4,1), top .46s cubic-bezier(.3,1.2,.4,1), bottom .46s cubic-bezier(.3,1.2,.4,1), left .46s cubic-bezier(.3,1.2,.4,1), right .46s cubic-bezier(.3,1.2,.4,1)">
+    <div style="display:flex;align-items:center;gap:12px;height:58px;padding:0 12px;border-radius:22px;background:var(--color-bg);box-shadow:0 0 0 1px var(--color-neutral-800), 0 18px 40px rgba(0,0,0,.6), 0 0 24px color-mix(in srgb, var(--color-accent) 18%, transparent)">
+      <div style="width:34px;height:34px;border-radius:10px;background:var(--color-accent-900);display:flex;align-items:center;justify-content:center;flex:0 0 auto"><i class="{{ latest.icon }}" style="font-size:19px;color:var(--color-accent-300)"></i></div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:baseline"><span style="font-size:13px;font-weight:500">{{ latest.app }}</span><span style="margin-left:auto;font-size:11px;color:var(--color-neutral-500)">{{ latest.time }}</span></div>
+        <div style="font-size:12px;color:var(--color-neutral-400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ latest.text }}</div>
+      </div>
+      <button type="button" sc-camel-on-click="{{ closePeek }}" style="width:24px;height:24px;flex:0 0 auto;border:0;border-radius:12px;background:var(--color-neutral-900);color:var(--color-neutral-300);display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:var(--color-neutral-800)"><i class="ph ph-x" style="font-size:11px"></i></button>
+    </div>
+  </div>
+
+  <sc-if value="{{ editing }}" hint-placeholder-val="{{ false }}">
+    <div sc-camel-on-click="{{ closeEditor }}" style="position:absolute;inset:0;z-index:27;background:color-mix(in srgb, var(--color-bg) 50%, transparent);backdrop-filter:blur(2px)"></div>
+    <div sc-camel-on-click="{{ stop }}" style="position:absolute;left:50%;top:{{ edT }};bottom:{{ edB }};z-index:29;width:880px;margin-left:-440px;box-sizing:border-box;padding:16px;border-radius:20px;background:color-mix(in srgb, var(--color-bg) 94%, transparent);backdrop-filter:blur(20px);box-shadow:0 0 0 1px var(--color-neutral-800), 0 24px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:14px;font-weight:500;margin-right:8px">Ambientes</span>
+        <sc-for list="{{ envTabs }}" as="et" hint-placeholder-count="3">
+          <button type="button" sc-camel-on-click="{{ et.go }}" style="display:flex;align-items:center;gap:7px;height:30px;padding:0 12px;border:0;font-family:var(--font-body);cursor:pointer;border-radius:15px;background:{{ et.bg }};box-shadow:{{ et.ring }};color:{{ et.fg }};font-size:12.5px" style-hover="background:var(--color-neutral-800)"><i class="{{ et.icon }}" style="font-size:14px"></i>{{ et.name }}<span style="font-size:10.5px;color:var(--color-neutral-500)">{{ et.key }}</span></button>
+        </sc-for>
+        <button type="button" sc-camel-on-click="{{ addEnv }}" style="display:{{ addEnvD }};align-items:center;gap:6px;height:30px;padding:0 12px;border:0;font-family:var(--font-body);cursor:pointer;border-radius:15px;background:transparent;box-shadow:inset 0 0 0 1px var(--color-neutral-800);color:var(--color-neutral-300);font-size:12.5px" style-hover="background:var(--color-neutral-900)"><i class="ph ph-plus" style="font-size:13px"></i>Novo</button>
+        <button type="button" sc-camel-on-click="{{ closeEditor }}" class="btn btn-primary" style="margin-left:auto;height:30px;padding:0 14px;font-size:12.5px">Concluir</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:240px;height:34px;display:flex;align-items:center;gap:8px;padding:0 10px;box-sizing:border-box;border-radius:10px;background:var(--color-neutral-900);box-shadow:inset 0 0 0 1px var(--color-neutral-800)">
+          <i class="ph ph-pencil-simple" style="font-size:14px;color:var(--color-neutral-400)"></i>
+          <input value="{{ envNameVal }}" sc-camel-on-change="{{ onEnvName }}" placeholder="Nome do ambiente" style="flex:1;min-width:0;height:100%;border:0;outline:none;background:transparent;color:var(--color-text);font-family:var(--font-body);font-size:12.5px">
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <sc-for list="{{ envIcons }}" as="ic" hint-placeholder-count="8">
+            <button type="button" sc-camel-on-click="{{ ic.pick }}" style="width:32px;height:32px;border:0;font-family:var(--font-body);cursor:pointer;border-radius:10px;background:{{ ic.bg }};box-shadow:{{ ic.edge }};color:{{ ic.fg }};display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-neutral-900)"><i class="{{ ic.icon }}" style="font-size:16px"></i></button>
+          </sc-for>
+        </div>
+        <button type="button" sc-camel-on-click="{{ delEnv }}" style="margin-left:auto;display:{{ delEnvD }};align-items:center;gap:6px;height:30px;padding:0 12px;border:0;font-family:var(--font-body);cursor:pointer;border-radius:15px;background:transparent;color:oklch(0.78 0.13 25);font-size:12px" style-hover="background:var(--color-neutral-900)"><i class="ph ph-trash" style="font-size:14px"></i>Excluir ambiente</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;height:40px;padding:0 8px 0 12px;border-radius:12px;background:var(--color-neutral-900)">
+        <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+          <i class="{{ selIcon }}" style="font-size:16px;color:var(--color-accent-300)"></i>
+          <span style="font-size:12.5px;font-weight:500">{{ selName }}</span>
+          <span style="font-size:11.5px;color:var(--color-neutral-500)">{{ selWhere }}</span>
+          <span style="margin-left:auto;display:flex;align-items:center;gap:4px">
+            <button type="button" sc-camel-on-click="{{ selPrev }}" title="Mover para trás" style="width:28px;height:28px;border:0;font-family:var(--font-body);cursor:pointer;border-radius:14px;background:transparent;color:var(--color-text);opacity:{{ selPrevO }};display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-neutral-800)"><i class="ph ph-caret-left" style="font-size:13px"></i></button>
+            <button type="button" sc-camel-on-click="{{ selNext }}" title="Mover para frente" style="width:28px;height:28px;border:0;font-family:var(--font-body);cursor:pointer;border-radius:14px;background:transparent;color:var(--color-text);opacity:{{ selNextO }};display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-neutral-800)"><i class="ph ph-caret-right" style="font-size:13px"></i></button>
+            <button type="button" sc-camel-on-click="{{ selMove }}" style="height:28px;padding:0 10px;border:0;font-family:var(--font-body);cursor:pointer;border-radius:14px;background:var(--color-neutral-800);color:var(--color-text);font-size:11.5px;display:flex;align-items:center;gap:6px" style-hover="background:var(--color-neutral-700)"><i class="ph ph-arrows-left-right" style="font-size:13px"></i>{{ selMoveLabel }}</button>
+            <button type="button" sc-camel-on-click="{{ selRemove }}" style="height:28px;padding:0 10px;border:0;font-family:var(--font-body);cursor:pointer;border-radius:14px;background:transparent;color:oklch(0.78 0.13 25);font-size:11.5px;display:flex;align-items:center;gap:6px" style-hover="background:var(--color-neutral-800)"><i class="ph ph-minus-circle" style="font-size:13px"></i>Remover</button>
+          </span>
+        </sc-if>
+        <sc-if value="{{ noSel }}" hint-placeholder-val="{{ true }}">
+          <i class="ph ph-cursor-click" style="font-size:15px;color:var(--color-neutral-400)"></i>
+          <span style="font-size:12px;color:var(--color-neutral-400)">Clique num widget da topbar para mover ou remover. Arraste da lista para uma pílula, ou reordene arrastando na própria barra.</span>
+        </sc-if>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:13px;font-weight:500">Widgets</span>
+        <span style="font-size:11px;padding:1px 7px;border-radius:9px;background:var(--color-neutral-900);color:var(--color-neutral-300)">{{ usedCount }} em uso</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--color-neutral-400)">Adicionar em
+          <div style="display:flex;padding:2px;border-radius:13px;background:var(--color-neutral-900)">
+            <button type="button" sc-camel-on-click="{{ setTargetLeft }}" style="height:22px;padding:0 10px;border:0;font-family:var(--font-body);cursor:pointer;border-radius:11px;background:{{ tLBg }};color:{{ tLFg }};font-size:11.5px">{{ laneAName }}</button>
+            <button type="button" sc-camel-on-click="{{ setTargetRight }}" style="height:22px;padding:0 10px;border:0;font-family:var(--font-body);cursor:pointer;border-radius:11px;background:{{ tRBg }};color:{{ tRFg }};font-size:11.5px">{{ laneBName }}</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px">
+        <sc-for list="{{ catalog }}" as="c" hint-placeholder-count="12">
+          <div draggable="{{ c.draggable }}" sc-camel-on-drag-start="{{ c.dragStart }}" sc-camel-on-click="{{ c.add }}" title="{{ c.desc }}" style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;background:var(--color-neutral-900);opacity:{{ c.o }};cursor:{{ c.cursor }}" style-hover="background:var(--color-neutral-800)">
+            <span style="width:30px;height:30px;flex:0 0 auto;border-radius:9px;background:var(--color-accent-900);display:flex;align-items:center;justify-content:center"><i class="{{ c.icon }}" style="font-size:16px;color:var(--color-accent-300)"></i></span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name }}</div>
+              <div style="font-size:11px;color:var(--color-neutral-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.desc }}</div>
+            </div>
+            <i class="{{ c.mark }}" style="font-size:13px;color:{{ c.markColor }}"></i>
+          </div>
+        </sc-for>
+      </div>
+      <div sc-camel-on-click="{{ toggleAutoHide }}" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:var(--color-neutral-900);cursor:pointer" style-hover="background:var(--color-neutral-800)">
+        <i class="ph ph-eye-slash" style="font-size:16px;color:var(--color-neutral-300)"></i>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12.5px;font-weight:500">Ocultar barra automaticamente</div>
+          <div style="font-size:11px;color:var(--color-neutral-500)">{{ ahDesc }}</div>
+        </div>
+        <span style="position:relative;display:block;width:32px;height:18px;flex:0 0 auto;border-radius:9px;background:{{ ahTrack }};box-shadow:{{ ahEdge }};transition:background .2s ease"><span style="position:absolute;top:2px;left:{{ ahKnobX }};width:14px;height:14px;border-radius:50%;background:{{ ahKnob }};transition:left .2s ease, background .2s ease"></span></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:var(--color-neutral-900)">
+        <i class="ph ph-frame-corners" style="font-size:16px;color:var(--color-neutral-300)"></i>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12.5px;font-weight:500">Posição da barra</div>
+          <div style="font-size:11px;color:var(--color-neutral-500)">O Island fica no centro da borda escolhida e se abre em direção à tela</div>
+        </div>
+        <div style="display:flex;gap:2px;padding:2px;border-radius:14px;background:var(--color-neutral-800)">
+          <sc-for list="{{ edges }}" as="eg" hint-placeholder-count="4">
+            <button type="button" sc-camel-on-click="{{ eg.pick }}" style="display:flex;align-items:center;gap:6px;height:26px;padding:0 10px;border:0;font-family:var(--font-body);cursor:pointer;border-radius:12px;background:{{ eg.bg }};color:{{ eg.fg }};font-size:11.5px" style-hover="color:var(--color-text)"><i class="{{ eg.icon }}" style="font-size:14px"></i>{{ eg.name }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--color-neutral-500)"><i class="ph ph-hand-swipe-left" style="font-size:15px"></i>Deslize com dois dedos sobre a topbar para trocar de ambiente. No teclado: Alt+← / Alt+→ ou Alt+1–{{ envCount }}.</div>
+    </div>
+  </sc-if>
+
+
+</div>
+</x-dc>

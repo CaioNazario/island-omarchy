@@ -1,0 +1,6 @@
+dist/
+node_modules/
+design/
+Desktop Island.html
+*.md
+specs/

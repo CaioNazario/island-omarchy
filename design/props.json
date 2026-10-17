@@ -1,0 +1,41 @@
+{
+  "$preview": {
+    "width": 1440,
+    "height": 900
+  },
+  "clickAction": {
+    "editor": "enum",
+    "options": [
+      "Calendário e música",
+      "Calendário compacto"
+    ],
+    "section": "Ambientes não-padrão",
+    "default": "Calendário compacto",
+    "tsType": "string"
+  },
+  "battery": {
+    "editor": "range",
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "unit": "%",
+    "default": 78,
+    "tsType": "number"
+  },
+  "barPosition": {
+    "editor": "enum",
+    "options": [
+      "Topo",
+      "Base",
+      "Esquerda",
+      "Direita"
+    ],
+    "default": "Topo",
+    "tsType": "string"
+  },
+  "charging": {
+    "editor": "boolean",
+    "default": true,
+    "tsType": "boolean"
+  }
+}

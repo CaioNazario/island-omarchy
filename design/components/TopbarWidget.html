@@ -1,0 +1,31 @@
+<div style="display:flex;align-items:center;gap:6px;height:24px;padding:0 9px;white-space:nowrap;font-family:var(--font-body);font-size:12px;font-weight:500;line-height:1;color:var(--color-text);font-variant-numeric:tabular-nums">
+  <sc-if value="{{ w.isAi }}" hint-placeholder-val="{{ false }}">
+    <span style="display:flex;align-items:center;gap:12px">
+      <sc-for list="{{ w.ai }}" as="p" hint-placeholder-count="2">
+        <span title="{{ p.tip }}" style="display:flex;align-items:center;gap:6px">
+          <i class="{{ p.icon }}" style="font-size:13px;color:var(--color-neutral-300)"></i>
+          <span style="display:block;width:26px;height:4px;border-radius:2px;background:var(--color-neutral-800)"><span style="display:block;width:{{ p.sPct }};height:100%;border-radius:2px;background:{{ p.sColor }};transition:width .6s ease"></span></span>
+          <span style="font-size:11.5px;min-width:3.2ch;text-align:right;color:{{ p.sText }}">{{ p.sPct }}</span>
+        </span>
+      </sc-for>
+    </span>
+    <sc-if value="{{ w.aiNone }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;color:var(--color-neutral-400)"><i class="ph ph-sparkle" style="font-size:14px"></i>IA</span></sc-if>
+  </sc-if>
+  <sc-if value="{{ w.isHw }}" hint-placeholder-val="{{ false }}">
+    <span style="display:flex;align-items:center;gap:10px">
+      <sc-for list="{{ w.hw }}" as="h" hint-placeholder-count="5">
+        <span title="{{ h.name }}" style="display:flex;flex-direction:column;gap:2px;min-width:{{ h.w }}">
+          <span style="font-size:8.5px;letter-spacing:.08em;color:var(--color-neutral-500)">{{ h.short }}</span>
+          <span style="font-size:11.5px;color:{{ h.color }}">{{ h.value }}</span>
+        </span>
+      </sc-for>
+    </span>
+  </sc-if>
+  <sc-if value="{{ w.hasRing }}" hint-placeholder-val="{{ false }}"><span style="position:relative;display:block;width:13px;height:13px;border-radius:50%;background:conic-gradient(var(--color-accent) {{ w.ringPct }}, var(--color-neutral-800) 0)"><span style="position:absolute;inset:3px;border-radius:50%;background:var(--color-bg)"></span></span></sc-if>
+  <sc-if value="{{ w.hasIcon }}" hint-placeholder-val="{{ true }}"><i class="{{ w.icon }}" style="font-size:14px;color:{{ w.iconColor }}"></i></sc-if>
+  <sc-if value="{{ w.hasLabel }}" hint-placeholder-val="{{ true }}"><span style="max-width:{{ w.labelMax }};overflow:hidden;text-overflow:ellipsis;padding:1px 0">{{ w.label }}</span></sc-if>
+  <sc-if value="{{ w.hasBar }}" hint-placeholder-val="{{ false }}"><span style="display:block;width:34px;height:4px;border-radius:2px;background:var(--color-neutral-800)"><span style="display:block;width:{{ w.pct }};height:100%;border-radius:2px;background:var(--color-accent)"></span></span></sc-if>
+  <sc-if value="{{ w.hasTicks }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:2px"><sc-for list="{{ w.ticks }}" as="tk" hint-placeholder-count="8"><span style="display:block;width:3px;height:10px;border-radius:1px;background:{{ tk }}"></span></sc-for></span></sc-if>
+  <sc-if value="{{ w.hasSub }}" hint-placeholder-val="{{ false }}"><span style="font-weight:400;color:var(--color-neutral-400)">{{ w.sub }}</span></sc-if>
+  <sc-if value="{{ w.hasTrail }}" hint-placeholder-val="{{ false }}"><i class="{{ w.trail }}" style="font-size:13px;color:var(--color-neutral-300)"></i></sc-if>
+</div>
