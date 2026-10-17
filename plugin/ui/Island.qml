@@ -216,6 +216,14 @@ Item {
     }
 
     Layer {
+      layerId: "display"
+
+      DisplayView {
+        bar: island.bar
+      }
+    }
+
+    Layer {
       layerId: "brightness"
 
       LevelRow {

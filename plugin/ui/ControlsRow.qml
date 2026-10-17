@@ -70,6 +70,12 @@ Item {
       onClicked: if (row.bar.service) row.bar.service.setDoNotDisturb(!row.bar.service.doNotDisturb)
     }
 
+    // Abre o modo `display` (brilho, tamanho do texto, escala).
+    Tile {
+      glyph: "monitor"
+      onClicked: row.bar.openFromBar(row.bar.targetScreen, "display")
+    }
+
     Tile {
       visible: row.system.idle.available
       glyph: "coffee-fill"

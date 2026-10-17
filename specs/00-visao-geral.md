@@ -16,9 +16,9 @@ Até a v1.1 a Island era uma extensão do GNOME Shell (último código no commit
 | **Ambiente** | Conjunto nomeado de widgets para as duas pílulas; um ativo por vez (spec 15) |
 | **Widget** | Bloco de informação numa pílula lateral: IA, hardware, evento, pomodoro etc. (spec 16) |
 | **Ilha** | Pílula central; tem um **modo** por vez |
-| **Modo** | Estado da ilha: `compact`, `notif`, `stack`, `music`, `volume`, `brightness`, `env`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `mixer`, `osd` |
+| **Modo** | Estado da ilha: `compact`, `notif`, `stack`, `music`, `volume`, `brightness`, `env`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `mixer`, `display`, `osd` |
 | **Modo transitório** | Fecha sozinho após um timer: `notif`, `music`, `volume`, `brightness`, `env` |
-| **Modo fixo** | Fica até clique fora, Esc ou novo gatilho: `stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `mixer` e `music` fixado |
+| **Modo fixo** | Fica até clique fora, Esc ou novo gatilho: `stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `mixer`, `display` e `music` fixado |
 | **Cartão central** | Ilha expandida com música + calendário (spec 05; `hub` no design) |
 | **Banner** | Notificação que desce abaixo da ilha quando ela está ocupada (spec 04) |
 | **Linha de energia** | Fileira Suspender/Reiniciar/Desligar/Sair/Bloquear (spec 09) |

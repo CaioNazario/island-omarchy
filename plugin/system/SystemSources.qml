@@ -26,6 +26,7 @@ Scope {
   readonly property alias idle: idle
   readonly property alias screenRecord: screenRecord
   readonly property alias dictation: dictation
+  readonly property alias display: display
 
   AudioSource {
     id: audio
@@ -78,5 +79,8 @@ Scope {
   }
   DictationSource {
     id: dictation
+  }
+  DisplaySource {
+    id: display
   }
 }

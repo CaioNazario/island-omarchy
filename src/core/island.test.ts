@@ -507,6 +507,7 @@ describe('getSize', () => {
       'env',
       'note',
       'mixer',
+      'display',
     ];
     const widths = modes.map((mode) => getSize(mode).width);
     expect(Math.max(...widths)).toBe(MAX_ISLAND_WIDTH);
@@ -619,6 +620,18 @@ describe('mixer', () => {
     expect(state.fixed).toBe(true);
     state.openFromTrigger('mixer');
     expect(state.mode).toBe('compact');
+  });
+});
+
+describe('display', () => {
+  it('é modo fixo, 440 × 277 com brilho e 212 sem backlight', () => {
+    expect(isFixedMode('display')).toBe(true);
+    expect(getSize('display')).toEqual({ width: 440, height: 277, radius: 24 });
+    expect(getSize('display', { displayBrightness: false })).toEqual({
+      width: 440,
+      height: 212,
+      radius: 24,
+    });
   });
 });
 

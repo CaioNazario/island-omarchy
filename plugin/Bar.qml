@@ -75,6 +75,7 @@ Item {
       btOn: sources.bluetooth.radioOn,
       calendarView: calendarView,
       providerCount: sources.ai.providers.length,
+      displayBrightness: sources.brightness.available,
       mixerHeight: MixerCore.mixerHeight({
         outputs: sources.audio.outputs.length,
         apps: sources.audio.streams.length,
@@ -90,6 +91,8 @@ Item {
     // Tiles de gravação e ditado só consultam com a linha de controles à vista.
     screenRecord.watching: ["quick", "wifi", "bt"].includes(root.mode)
     dictation.watching: ["quick", "wifi", "bt"].includes(root.mode)
+    display.watching: root.mode === "display"
+    display.screenName: root.targetScreen
     // Fontes só de widget rodam só com o widget no ambiente ativo (spec 16).
     hardware.sampling: root.activeWidgets.includes("hw")
     ai.polling: root.activeWidgets.includes("ai")

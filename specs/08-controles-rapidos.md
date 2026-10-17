@@ -18,6 +18,7 @@ Código: `plugin/ui/ControlsRow.qml`, `WifiView.qml`, `BtView.qml`, `LevelRow.qm
    | Bluetooth | `ph-bold ph-bluetooth` | abre `bt`; em `bt`, volta a `quick` |
    | Modo noturno | `ph-fill ph-moon` | alterna o serviço `omarchy.nightlight` (hyprsunset), pelo proxy `firstPartyServiceFor`; sem o serviço, o tile some |
    | Não perturbe | `ph-fill ph-bell-slash` | alterna o não perturbe da própria Island (`Service.qml`), que é o servidor de notificações (spec 04) |
+   | Tela | `ph ph-monitor` | abre o modo `display`; nunca fica ligado |
    | Manter tela acesa | `ph-fill ph-coffee` | alterna o `stayAwake` do serviço `omarchy.idle` (`setIdleEnabled`, pelo proxy `firstPartyServiceFor`), o mesmo estado de `omarchy toggle idle`; sem o serviço, o tile some |
    | Gravar tela | `ph-fill ph-record`; gravando `ph-fill ph-stop` | ligado = `gpu-screen-recorder` vivo (`pgrep`, a cada 2s com a linha de controles à vista), fundo `oklch(0.58 0.2 25)` (`#d73337`). Gravando, para com `omarchy-capture-screenrecording --stop-recording`; parado, fecha a ilha e abre o menu de captura do Omarchy (`omarchy-menu toggle trigger.capture.screenrecord`), como o indicador de gravação do Omarchy |
    | Ditado | `ph ph-microphone`; gravando `ph-fill ph-microphone` | ligado = Voxtype gravando (`omarchy-voxtype-status`, seguido com a linha de controles à vista); clique `voxtype record toggle`, o mesmo do atalho `Super+Ctrl+X`; sem `voxtype`, o tile some |
@@ -39,6 +40,15 @@ Código: `plugin/ui/ControlsRow.qml`, `WifiView.qml`, `BtView.qml`, `LevelRow.qm
 - **Modo `volume`** (320×36, 1500ms): padding 0 16px, gap 12px: ícone 16px · slider (puxador 12px) · valor `70%` (34px, alinhado à direita, 12px `neutral-300`).
 - Abre pela tecla de volume/mudo (regra 4 da spec 03) ou pela rolagem no botão de volume da barra. Clicar no modo `volume` fora do slider abre o `mixer`.
 - Na linha de controles, o ícone da pílula de volume é um botão 24×24 raio 12 (margin-left −5px, ícone `text`, hover `neutral-800`) que abre o `mixer`.
+
+## Modo `display`
+
+Painel do design v5 (`display`), fixo, 440×277 (212 sem backlight, sem a seção de brilho). Abre pelo tile Tela. Padding 14px 16px; entre as seções, divisor em degradê (margin 10px 0). Os rótulos de seção são 11px maiúsculos `letter-spacing .08em` `neutral-500`, com o valor à direita em `neutral-300` (18px + 6px até o controle).
+
+- **Cabeçalho** 44px, gap 12: `ph ph-monitor` 26px `accent`; "Tela" 14px/500; legenda 10.5px maiúscula `letter-spacing .1em` `neutral-400` com descrição · resolução · taxa do monitor desta ilha (`monitorSubtitle`, pelo IPC do Hyprland; `lastIpcObject.refreshRate` depois de um `refreshMonitors`).
+- **Brilho**: rótulo + `70%`, slider de 20px (puxador 12px) no backlight da spec 08 "Brilho". Sem backlight, a seção e o divisor dela somem.
+- **Tamanho do texto**: rótulo + `12px`; sete segmentos de 10 a 16px (gap 3, trilho 4px raio 2), preenchidos com `accent` até o atual e o puxador 12px `neutral-100` na ponta do atual. Clicar roda `omarchy-display-text-size N`, que muda junto o texto do shell, do GTK e dos terminais; o segmento muda na hora e a leitura (`omarchy-display-text-size` sem argumento, `text size: 12 px`) confirma 1.2s depois. Tamanho fora de 10–16 (o Omarchy aceita 9–20) não mostra puxador.
+- **Escala**: seis opções `1x 1.25x 1.6x 2x 3x 4x` (30px, raio 9, gap 6; ativa `accent-900` com anel `accent-700` e texto `accent-100`). Clicar foca o monitor desta ilha e roda `omarchy-hyprland-monitor-scaling ESCALA`, que só age no monitor focado e grava a escala no `monitors.lua`. O script ajusta a escala a um divisor da resolução (1.6 em 1920×1080 vira 1.666667), então a opção ativa é a mais próxima da escala do monitor, até 0.1 de distância (`activeScale`). Nome de monitor fora de `[A-Za-z0-9._-]` não é passado ao Hyprland.
 
 ## Modo `mixer`
 
