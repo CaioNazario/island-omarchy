@@ -2,13 +2,13 @@
 
 Origem: `design/markup.html` bloco `editing` (`envTabs`, `envNameVal`, `envIcons`, `delEnv`, `hasSel`/`noSel`, `catalog`, `setTargetLeft`/`setTargetRight`, `toggleAutoHide`); `design/logic.js` `placeW`, `openEditor`/`closeEditor`, `selPrev`/`selNext`/`selMove`/`selRemove`, `addEnv`, `delEnv`, `laneSh`.
 
-Painel dentro do Shell para criar, editar e excluir ambientes e escolher os widgets (specs 15 e 16). As regras de mover e inserir widget ficam em `src/core/environments.ts` (`placeWidget` segue `placeW`).
+Painel na camada da barra (a mesma `PanelWindow` de tela cheia onde a ilha cresce) para criar, editar e excluir ambientes e escolher os widgets (specs 15 e 16). As regras de mover e inserir widget ficam em `src/core/environments.ts` (`placeWidget` segue `placeW`) e `src/core/environmentEditor.ts` (renomear, ícone, ‹ ›, trocar de pílula, rótulo da seleção, índice do soltar). O estado (aberto, pílula-alvo, selecionado) mora no `Bar.qml`; a UI em `EditorPanel.qml`, `EditorSelection.qml`, `EditorCatalog.qml`, `EditorDragArea.qml` e `EditorDragProxy.qml`.
 
 ## Abrir e fechar
 
 - Abre pelo clique no botão de ambiente (spec 15), no monitor daquela barra. Ao abrir, a ilha volta a `compact` e fecha tudo que estiver aberto.
 - Fecha por "Concluir", Esc, clique no fundo escurecido ou novo clique no botão de ambiente.
-- Toma o foco de teclado (grab modal) enquanto aberto. A barra continua clicável por cima do fundo.
+- Toma o foco de teclado (`WlrKeyboardFocus.Exclusive` e a camada inteira como máscara, como um modo fixo) enquanto aberto. A barra continua clicável por cima do fundo. Esc com um modo da ilha aberto fecha o modo; com a ilha em `compact`, fecha o editor.
 
 ## Fundo e painel
 
@@ -53,13 +53,10 @@ Faixa de 40px, raio 12, `neutral-900`, padding 0 8px 0 12px.
 
 ## Linha 5: auto-ocultar
 
-Linha clicável inteira, padding 10px 12px, raio 12, `neutral-900`, hover `neutral-800`:
+Ainda não existe: o auto-ocultar (spec 18) não está implementado na barra, e a linha só entra junto com ele. Quando entrar:
 
-- `ph ph-eye-slash` 16px `neutral-300`.
-- "Ocultar barra automaticamente" 12.5px/500 + "A barra some e reaparece quando o ponteiro encosta na borda de cima da tela" 11px `neutral-500`.
-- Switch 32×18: ligado com trilho `accent-800`, anel `accent` e bolinha `accent-200` em 16px; desligado com trilho `neutral-800` e bolinha `neutral-400` em 2px; 200ms.
-
-Comportamento na spec 18. A linha "Posição da barra" do design não existe: a barra fica só no topo (spec 00).
+- Linha clicável inteira, padding 10px 12px, raio 12, `neutral-900`, hover `neutral-800`: `ph ph-eye-slash` 16px `neutral-300`; "Ocultar barra automaticamente" 12.5px/500 + "A barra some e reaparece quando o ponteiro encosta na borda de cima da tela" 11px `neutral-500`; switch 32×18 (ligado: trilho `accent-800`, anel `accent`, bolinha `accent-200` em 16px; desligado: trilho `neutral-800`, bolinha `neutral-400` em 2px; 200ms).
+- A linha "Posição da barra" do design não existe: a barra fica só no topo (spec 00).
 
 ## Rodapé
 
@@ -74,26 +71,21 @@ Comportamento na spec 18. A linha "Posição da barra" do design não existe: a 
 
 ## Arrastar e soltar
 
-Com o `dnd.js` do Shell (spike S5):
-
 - Do catálogo para uma pílula: solto sobre um widget, entra na posição dele; solto no espaço livre, vai para o fim.
 - Da barra para a barra: reordena ou troca de pílula, pelas mesmas regras.
 - Mover ou adicionar seleciona o widget movido e torna alvo a pílula de destino.
 - Soltar fora de uma pílula cancela.
 
-API medida no spike S5 (Shell 50):
+Em QML, sem o arraste do sistema (o layer-shell não tem onde soltar fora da janela):
 
-- Origem: `DND.makeDraggable(actor, {})` em cada widget da barra e em cada cartão do catálogo. O `actor._delegate` leva o id e a pílula de origem (ou catálogo), mais `getDragActor()` (um ator leve novo, não o widget) e `getDragActorSource()` (o próprio ator).
-- Alvo: o `WidgetArea` de cada pílula, com `_delegate.handleDragOver(source, actor, x, y)` devolvendo `DND.DragMotionResult.MOVE_DROP` e `_delegate.acceptDrop(source, actor, x, y)` devolvendo `true`. O `x` vem local à área.
-- Camadas: editor em `Main.layoutManager.modalDialogGroup` com `Main.pushModal(Main.uiGroup, { actionMode: Shell.ActionMode.POPUP })`. O drop acha o `WidgetArea` dentro de `Pill`/`RightPill` na barra, e arrastar a partir da barra funciona com o grab ativo.
-- Gravar o ambiente dentro do `acceptDrop` reconstrói os widgets da área e destrói a origem no meio do arraste: a gravação vai para um `GLib.idle_add`.
-- Índice de destino: o do widget sob o ponteiro (pela caixa alocada); fora de qualquer widget, o fim. Calcular pelo meio do widget mais próximo manda o espaço livre da pílula esquerda (que fica antes dos widgets) para o começo, contra a regra acima. O índice é sempre na lista de ids do ambiente, contando os widgets cortados por falta de espaço.
-- Não medido: se o `clicked` do `St.Button` continua chegando com o `makeDraggable` no mesmo ator (o clique seleciona/adiciona).
+- Origem: `EditorDragArea` (um `MouseArea`) em cada widget da barra e em cada cartão livre do catálogo. Toma o clique (o widget não executa a ação dele); passando de 6px, liga o `Drag` do `EditorDragProxy`, um chip `accent-900` com ícone e nome do widget que segue o ponteiro em coordenadas da janela. O widget da barra não se move: a origem pode ser recriada quando o ambiente for gravado.
+- Alvo: uma `DropArea` (chave `island-widget`) em cada `WidgetArea`. O índice é o do widget sob o ponteiro, pela caixa de cada slot na área (`dropIndex`); fora de qualquer widget, o fim. Widget cortado por falta de espaço tem caixa vazia e nunca é alvo, mas conta na lista de ids do ambiente.
+- A gravação depois de um soltar vai para um `Qt.callLater`: gravar dentro do `onDropped` reconstrói a área e destrói a origem no meio do sinal.
 
 ## Critérios de aceite
 
-- [x] Testes de `placeWidget`: inserir no fim, antes de um widget, reordenar para frente/para trás na mesma pílula (ajuste de índice), trocar de pílula, widget já presente não duplica.
-- [x] Criar, renomear, trocar ícone e excluir ambiente reflete na barra na hora e sobrevive a lock/unlock.
+- [x] Testes de `placeWidget` e de `environmentEditor.ts`: inserir no fim, antes de um widget, reordenar para frente/para trás, trocar de pílula, widget já presente não duplica, ‹ › no limite, índice do soltar no espaço livre.
+- [x] Criar, renomear, trocar ícone e excluir ambiente, e adicionar, mover e remover widget gravam no `settings.json` e refletem na barra (visto no `make dev` pelo IPC `dev editorDo`).
 - [x] O Padrão não mostra "Excluir ambiente"; com 6 ambientes, "Novo" some.
-- [x] Arrastar um widget do catálogo para a pílula direita e reordenar na barra funcionam sem deixar ator órfão (Looking Glass).
-- [x] Esc e clique no fundo fecham o editor; clique no fundo não chega à janela embaixo.
+- [ ] Clicar num widget da barra seleciona; arrastar um widget do catálogo para a pílula direita e reordenar na barra funcionam (o aninhado não simula ponteiro: conferir na sessão).
+- [ ] Esc e clique no fundo fecham o editor; clique no fundo não chega à janela embaixo.

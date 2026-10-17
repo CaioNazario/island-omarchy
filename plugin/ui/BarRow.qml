@@ -11,6 +11,8 @@ Item {
   required property var bar
   required property string mode
   required property string screenName
+  // Proxy de arraste do editor de ambientes (spec 17), da camada da barra.
+  property var dragProxy: null
 
   readonly property alias leftPill: leftPill
   readonly property alias island: island
@@ -44,6 +46,9 @@ Item {
 
     anchors.left: parent.left
     width: row.pillWidth
+    editing: row.bar.editingOn(row.screenName)
+    editTarget: row.bar.editorTarget === "left"
+    onTargetPicked: row.bar.editorPickTarget("left")
 
     WheelHandler {
       acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
@@ -57,6 +62,7 @@ Item {
       anchors.leftMargin: Tokens.pillPaddingH
       anchors.verticalCenter: parent.verticalCenter
       bar: row.bar
+      screenName: row.screenName
     }
 
     WidgetArea {
@@ -67,6 +73,7 @@ Item {
       height: parent.height
       bar: row.bar
       screenName: row.screenName
+      dragProxy: row.dragProxy
       ids: row.bar.environment.left
       side: "left"
     }
@@ -97,6 +104,9 @@ Item {
 
     anchors.right: parent.right
     width: row.pillWidth
+    editing: row.bar.editingOn(row.screenName)
+    editTarget: row.bar.editorTarget === "right"
+    onTargetPicked: row.bar.editorPickTarget("right")
 
     WheelHandler {
       acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
@@ -111,6 +121,7 @@ Item {
       height: parent.height
       bar: row.bar
       screenName: row.screenName
+      dragProxy: row.dragProxy
       ids: row.bar.environment.right
       side: "right"
     }

@@ -19,7 +19,8 @@ Scope {
   // Modo aberto neste monitor: os demais ficam em `compact`.
   // O cartão central é a ilha expandida (specs/05): também só no alvo.
   readonly property string mode: !isTarget ? "compact" : bar.cardOpen ? "card" : bar.mode
-  readonly property bool holdsFocus: isTarget && bar.fixed
+  readonly property bool holdsFocus: isTarget && (bar.fixed || bar.editorOpen)
+  readonly property bool editing: isTarget && bar.editorOpen
 
   PanelWindow {
     screen: screenBar.screen
@@ -78,6 +79,19 @@ Scope {
       onPressed: screenBar.bar.closeAll()
     }
 
+    // Editor de ambientes (spec 17): fundo `bg` 50% que fecha o editor; a
+    // barra fica por cima e continua clicável.
+    Rectangle {
+      anchors.fill: parent
+      visible: screenBar.editing
+      color: Tokens.editorDim
+
+      MouseArea {
+        anchors.fill: parent
+        onPressed: screenBar.bar.closeEditor()
+      }
+    }
+
     BarRow {
       id: barRow
 
@@ -90,6 +104,20 @@ Scope {
       bar: screenBar.bar
       mode: screenBar.mode
       screenName: screenBar.screenName
+      dragProxy: dragProxy
+    }
+
+    EditorPanel {
+      anchors.horizontalCenter: parent.horizontalCenter
+      y: 48
+      width: 880
+      visible: screenBar.editing
+      bar: screenBar.bar
+      dragProxy: dragProxy
+    }
+
+    EditorDragProxy {
+      id: dragProxy
     }
 
     Shortcut {

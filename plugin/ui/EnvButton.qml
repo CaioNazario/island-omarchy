@@ -9,6 +9,7 @@ Rectangle {
   id: button
 
   required property var bar
+  property string screenName: ""
 
   readonly property var environments: bar.environments
   readonly property int active: bar.environmentIndex
@@ -24,7 +25,7 @@ Rectangle {
     anchors.fill: parent
     hoverEnabled: true
     cursorShape: Qt.PointingHandCursor
-    onClicked: button.bar.toggleEditor()
+    onClicked: button.bar.toggleEditor(button.screenName)
   }
 
   Row {

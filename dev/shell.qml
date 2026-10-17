@@ -88,6 +88,38 @@ ShellRoot {
       return bar.mode; // qmllint disable missing-property
     }
 
+    // Botão de ambiente do monitor capturado: abre/fecha o editor (spec 17).
+    function editor(): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      bar.toggleEditor(host.captureScreen()); // qmllint disable missing-property
+      return bar.editorOpen ? "open" : "closed"; // qmllint disable missing-property
+    }
+
+    // Ação do editor sem ponteiro (o aninhado não simula mouse): `place
+    // <id> <left|right> [índice]`, `select <id>`, `step <-1|1>`, `move`,
+    // `remove`, `add`, `delete`, `rename <nome>`, `icon <glifo>`, `switch <i>`.
+    function editorDo(action: string, arg: string): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      const parts = arg.split(" ");
+      const actions = {
+        place: () => bar.editorPlace(parts[0], parts[1], parts[2] === undefined ? null : Number(parts[2])),
+        select: () => bar.editorSelected = arg,
+        step: () => bar.editorStepSelected(Number(arg)),
+        move: () => bar.editorMoveSelected(),
+        remove: () => bar.editorRemoveSelected(),
+        add: () => bar.editorAddEnvironment(),
+        "delete": () => bar.editorRemoveEnvironment(),
+        rename: () => bar.editorRename(arg),
+        icon: () => bar.editorSetIcon(arg),
+        "switch": () => bar.editorSwitch(Number(arg))
+      }; // qmllint disable missing-property
+      if (!actions[action]) return "unknown action " + action;
+      actions[action]();
+      return JSON.stringify(bar.environment); // qmllint disable missing-property
+    }
+
     // Clique na ilha do monitor capturado (regra 5 da spec 03).
     function click(): string {
       const bar = barLoader.item; // qmllint disable missing-property

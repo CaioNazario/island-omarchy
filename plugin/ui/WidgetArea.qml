@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import "../core/widgetFit.mjs" as WidgetFit
+import "../core/environmentEditor.mjs" as EditorCore
 
 // Área de widgets de uma pílula (specs/16-widgets.md "Pílulas" e "Quando não
 // cabe"): encostada na ilha, gap 2px, nunca empurra a ilha nem os botões
@@ -16,6 +17,9 @@ Item {
   required property var ids
   // `left`: alinhada à direita (junto da ilha), corta do começo da lista.
   required property string side
+  // Proxy de arraste do editor (spec 17), da camada da barra.
+  property var dragProxy: null
+  readonly property bool editing: bar.editingOn(screenName)
 
   property var shownIds: ids
   property var fit: []
@@ -63,11 +67,41 @@ Item {
           widgetId: modelData
           bar: area.bar
           screenName: area.screenName
+          side: area.side
+          dragProxy: area.dragProxy
           budget: area.fit[index] || 0
           visible: area.fit[index] !== null && area.fit[index] !== undefined
           onNaturalWidthChanged: Qt.callLater(area.relayout)
         }
       }
+    }
+  }
+
+  // Pílula vazia na edição (spec 17).
+  IslandText {
+    anchors.verticalCenter: parent.verticalCenter
+    x: area.side === "left" ? parent.width - width - 10 : 10
+    visible: area.editing && area.ids.length === 0
+    text: "Solte widgets aqui"
+    px: 11.5
+    font.weight: Tokens.weightBody
+    color: Tokens.neutral500
+  }
+
+  // Soltar do catálogo ou da própria barra: sobre um widget entra na posição
+  // dele; no espaço livre, no fim (`dropIndex`).
+  DropArea {
+    anchors.fill: parent
+    enabled: area.editing
+    keys: ["island-widget"]
+    onDropped: drop => {
+      const boxes = [];
+      for (let i = 0; i < slots.count; i++) {
+        const slot = slots.itemAt(i);
+        boxes.push(slot && slot.visible ? { x: slot.mapToItem(area, 0, 0).x, width: slot.width } : { x: -1, width: 0 });
+      }
+      area.bar.editorPlace((drop.source as EditorDragProxy).widgetId, area.side, EditorCore.dropIndex(boxes, drop.x));
+      drop.accept();
     }
   }
 
