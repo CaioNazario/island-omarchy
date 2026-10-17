@@ -47,6 +47,7 @@ Atalhos numerados (`Alt+1–N` do design) não existem. `Alt+←/→` do design 
 
 Só conta rolagem com componente horizontal maior que a vertical; o resto passa adiante. A regra é o `EnvironmentScroll` do core, com a unidade "clique de roda": um passo ≈ 10px de dedo, e a troca acontece acima de **11** (os 110px do design).
 
+- O `WheelHandler` de cada pílula tem `orientation: Qt.Horizontal`: o padrão do Qt é vertical, e com ele o deslize horizontal de dois dedos nunca chegava ao código.
 - No Qt, o touchpad chega com `pixelDelta` e fase (`phase`); cada evento vira `{dx: −pixelDelta.x/10, dy: −pixelDelta.y/10}` e `ScrollEnd` é o fim do gesto, que zera o acumulado e destrava.
 - Enquanto não troca, o conteúdo das duas pílulas acompanha o dedo: deslocamento `−acumulado × 5`px, limitado a ±56px, sem animação.
 - Passou de 11: troca e trava até o fim do gesto. Ir e voltar sem soltar troca só uma vez.

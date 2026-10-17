@@ -50,8 +50,11 @@ Item {
     editTarget: row.bar.editorTarget === "left"
     onTargetPicked: row.bar.editorPickTarget("left")
 
+    // A orientação padrão do `WheelHandler` é vertical: sem isto, o deslize
+    // horizontal de dois dedos nunca chega ao `wheel` (specs/15 "Rolagem suave").
     WheelHandler {
       acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+      orientation: Qt.Horizontal
       onWheel: event => row.wheel(event)
     }
 
@@ -108,8 +111,11 @@ Item {
     editTarget: row.bar.editorTarget === "right"
     onTargetPicked: row.bar.editorPickTarget("right")
 
+    // A orientação padrão do `WheelHandler` é vertical: sem isto, o deslize
+    // horizontal de dois dedos nunca chega ao `wheel` (specs/15 "Rolagem suave").
     WheelHandler {
       acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+      orientation: Qt.Horizontal
       onWheel: event => row.wheel(event)
     }
 
