@@ -8,6 +8,7 @@ import "ui"
 import "core/island.mjs" as IslandCore
 import "core/osd.mjs" as OsdCore
 import "core/mixer.mjs" as MixerCore
+import "core/agentUsage.mjs" as AgentCore
 import "core/environments.mjs" as EnvironmentsCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
@@ -74,7 +75,11 @@ Item {
       wifiPasswordField: wifiPasswordFor === "" ? "none" : wifiPasswordError === "" ? "normal" : "error",
       btOn: sources.bluetooth.radioOn,
       calendarView: calendarView,
-      providerCount: sources.ai.providers.length,
+      aiHeight: AgentCore.aiPanelHeight({
+        providers: sources.ai.providers.length,
+        days: sources.ai.current !== null && sources.ai.current.record !== null && sources.ai.current.record.days.length > 0,
+        models: sources.ai.current !== null && sources.ai.current.record !== null ? sources.ai.current.record.models.length : 0
+      }),
       displayBrightness: sources.brightness.available,
       batteryProfiles: sources.battery.profiles.length > 0,
       mixerHeight: MixerCore.mixerHeight({

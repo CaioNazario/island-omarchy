@@ -598,9 +598,9 @@ describe('getSize', () => {
     expect(getSize('bt', { btEnergyOpen: true })).toEqual({ width: 660, height: 384, radius: 24 });
   });
 
-  it('ai: altura cresce por provedor', () => {
-    expect(getSize('ai', { providerCount: 1 })).toEqual({ width: 480, height: 158, radius: 24 });
-    expect(getSize('ai', { providerCount: 2 })).toEqual({ width: 480, height: 266, radius: 24 });
+  it('ai: altura do painel calculada por aiPanelHeight (agentUsage.ts)', () => {
+    expect(getSize('ai', { aiHeight: 528 })).toEqual({ width: 480, height: 528, radius: 24 });
+    expect(getSize('ai')).toEqual({ width: 480, height: 56, radius: 24 });
   });
 });
 

@@ -71,7 +71,7 @@ O design passou do protótipo v3 para o v5 (`design-source/`). As diferenças en
 5. Controles rápidos com 660px e os tiles Tela, Manter tela acesa, Gravar tela e Ditado (spec 08)
 6. Modo `display`: brilho, tamanho do texto e escala do monitor (spec 08)
 7. Wi‑Fi: estatísticas, QR, teste de velocidade, DNS, redes conhecidas e outras (spec 08)
-8. IA: uma aba por provedor, tokens por dia e por modelo, lidos dos registros do `omarchy.agents` (spec 12)
+8. IA: uma aba por provedor, tokens por dia e por modelo, lidos dos registros do `omarchy-agent-usage-update` (spec 12)
 9. Modo `battery`, aberto pelo botão da bateria; o ícone da bateria na barra não muda (spec 11)
 
 Ficam de fora do v5: o seletor de cor de realce e o tema Claro em azul (temas do design não existem na Island).

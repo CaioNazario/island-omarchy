@@ -69,7 +69,8 @@ export interface SizeContext {
   wifiPasswordField?: 'none' | 'normal' | 'error';
   btOn?: boolean;
   btEnergyOpen?: boolean;
-  providerCount?: number;
+  /** Altura do modo `ai`, de `aiPanelHeight` em agentUsage.ts. */
+  aiHeight?: number;
   /** Altura do conteúdo do `mixer`, de `mixerHeight` em mixer.ts. */
   mixerHeight?: number;
   /** Sem backlight controlável, o `display` perde a seção de brilho. */
@@ -126,10 +127,8 @@ export function getSize(mode: Mode, ctx: SizeContext = {}): Size {
     case 'battery':
       // Seção de perfis: divisor 12 + 1 + 10, rótulo 18 + 6, botões 36.
       return { width: 440, height: ctx.batteryProfiles === false ? 142 : 225, radius: 24 };
-    case 'ai': {
-      const providerCount = ctx.providerCount ?? 0;
-      return { width: 480, height: 24 + 32 + providerCount * 108 - 6, radius: 24 };
-    }
+    case 'ai':
+      return { width: 480, height: ctx.aiHeight ?? 56, radius: 24 };
   }
 }
 

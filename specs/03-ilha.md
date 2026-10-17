@@ -18,7 +18,7 @@ A máquina de estados vive em `src/core/island.ts` (pura, testada). A UI só ren
 | `quick` | 660 × 46, com linha de energia 94 | 23 | fixo | 08, 09 |
 | `wifi` | 660 × 280 (+48 energia, +58 senha, +76 senha com erro) | 24 | fixo | 08 |
 | `bt` | 660 × 336 (BT ligado) / 288 (desligado), +48 energia | 24 | fixo | 08 |
-| `ai` | 480 × (24 + 32 + p·108 − 6), p = provedores | 24 | fixo | 12 |
+| `ai` | 480 × `aiPanelHeight` (abas, cartão do provedor escolhido, tokens) | 24 | fixo | 12 |
 | `env` | 260 × 32 | 16 | transitório 1500ms | 15 |
 | `note` | 420 × 132 | 24 | fixo | 16 |
 | `osd` | 320 × 36 | 18 | transitório 1500ms ou a duração do pedido | 08 |

@@ -4,10 +4,12 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import "../core/aiUsage.mjs" as AiCore
+import "../core/agentUsage.mjs" as AgentCore
 
 // Um provedor de uso de IA (specs/12-uso-ia.md): credencial do CLI vigiada e
 // só lida (nunca escrita nem renovada), polling na agenda do core, cache do
-// último uso. Só busca com `polling` (widget `ai` no ambiente ativo).
+// último uso. Só busca com `polling` (widget `ai` no ambiente ativo). Os
+// tokens por dia e por modelo vêm do registro do `omarchy-agent-usage-update`.
 Scope {
   id: provider
 
@@ -21,13 +23,17 @@ Scope {
   property var schedule: AiCore.INITIAL_SCHEDULE
   // 401 com o token do arquivo: só sai quando o CLI renovar o arquivo.
   property bool unauthorized: false
+  // Registro do omarchy.agents (`parseAgentRecord`), ou null sem arquivo.
+  property var record: null
 
   readonly property string name: providerId === "claude" ? "Claude" : "Codex"
   readonly property string glyph: providerId === "claude" ? "asterisk-fill" : "open-ai-logo-fill"
   readonly property bool loggedIn: enabled && credential !== null
   readonly property bool expired: loggedIn && (unauthorized || AiCore.isExpired(credential, Date.now()))
   readonly property bool offline: AiCore.isOffline(schedule)
-  readonly property string plan: usage && usage.plan ? usage.plan : credential && credential.plan ? credential.plan : ""
+  readonly property string plan: usage && usage.plan ? usage.plan
+    : credential && credential.plan ? credential.plan
+    : record && record.plan ? record.plan : ""
 
   function refresh() {
     if (!loggedIn || expired || http.running) return;
@@ -65,6 +71,23 @@ Scope {
     onFileChanged: reload()
     onLoaded: provider.readCredential(text())
     onLoadFailed: provider.credential = null
+  }
+
+  // `watchChanges` não vê o arquivo nascer: a fonte chama isto quando o
+  // coletor termina.
+  function reloadRecord() {
+    recordFile.reload();
+  }
+
+  FileView {
+    id: recordFile
+
+    path: (Quickshell.env("XDG_STATE_HOME") || Quickshell.env("HOME") + "/.local/state") + "/omarchy/agents/usage/" + provider.providerId + ".json"
+    watchChanges: true
+    printErrors: false
+    onFileChanged: reload()
+    onLoaded: provider.record = AgentCore.parseAgentRecord(text())
+    onLoadFailed: provider.record = null
   }
 
   HttpGet {

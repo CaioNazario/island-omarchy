@@ -11,6 +11,7 @@ Rectangle {
 
   required property string label
   property string glyph: ""
+  property int glyphSize: 14
   property bool active: false
 
   signal clicked
@@ -35,7 +36,7 @@ Rectangle {
       anchors.verticalCenter: parent.verticalCenter
       visible: choice.glyph !== ""
       glyph: choice.glyph || "info"
-      size: 14
+      size: choice.glyphSize
       color: text.color
     }
 
