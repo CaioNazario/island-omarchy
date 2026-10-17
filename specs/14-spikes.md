@@ -9,6 +9,12 @@ Os spikes S5–S7 abriram o porte para o Omarchy (v2). Ficam aqui como registro 
 - **Pergunta**: o repositório de plugins do Omarchy aceita um plugin que lê credenciais de CLIs de terceiros e chama endpoints não documentados com User-Agent de outro cliente?
 - **Pronto quando**: há uma resposta dos mantenedores; enquanto isso, a instalação é só via `install.sh`.
 
+## S8 · Fonte de eventos do calendário (aberto)
+
+- **Pergunta**: de onde vêm os eventos de hoje (spec 06) e do widget Próximo evento (spec 16) no Omarchy? A v1.1 usava o Evolution Data Server do GNOME, que o Omarchy não instala.
+- **Candidatos**: URL ICS privada (Google/Outlook/iCloud) baixada por HTTP com parser no core; Evolution Data Server quando instalado (helper via `gdbus`); `khal`/vdirsyncer.
+- **Pronto quando**: o usuário escolhe a fonte e um experimento mostra os eventos de hoje de uma conta real.
+
 ## S5 · O QML importa o `src/core` compilado? (resolvido)
 
 - **Experimento**: `tsc` de `src/core` para ES modules, extensão renomeada para `.mjs`, imports `./x.js` reescritos para `./x.mjs`, e um `ShellRoot` com `import "core/island.mjs" as Island` rodando em `qs -p` (Quickshell 0.3.1, Qt 6.11.2).

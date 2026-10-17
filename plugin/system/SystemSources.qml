@@ -17,6 +17,8 @@ Scope {
   readonly property alias bluetooth: bluetooth
   readonly property alias battery: battery
   readonly property alias session: session
+  readonly property alias music: music
+  readonly property alias calendar: calendar
 
   AudioSource {
     id: audio
@@ -40,5 +42,11 @@ Scope {
   }
   SessionActions {
     id: session
+  }
+  MusicSource {
+    id: music
+  }
+  CalendarEvents {
+    id: calendar
   }
 }

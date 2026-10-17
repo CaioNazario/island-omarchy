@@ -57,6 +57,8 @@ ColumnLayout {
   }
 
   Flickable {
+    id: deviceArea
+
     Layout.fillWidth: true
     Layout.fillHeight: true
     Layout.leftMargin: 12
@@ -69,7 +71,8 @@ ColumnLayout {
     Column {
       id: lists
 
-      width: parent.width
+      // No Flickable, `parent` é o contentItem, de largura 0.
+      width: deviceArea.width
 
       GroupLabel {
         text: "Meus dispositivos"

@@ -17,7 +17,14 @@ Item {
 
   signal clicked
 
-  readonly property var size: IslandCore.getSize(displayMode, bar.sizeContext)
+  readonly property var size: sizeOf(displayMode)
+  // Altura do cartão central: a do conteúdo (specs/05 "Cartão central").
+  property real cardHeight: 0
+
+  function sizeOf(id) {
+    if (id === "card") return { width: 440, height: cardHeight + 2, radius: 26 };
+    return IslandCore.getSize(id, bar.sizeContext);
+  }
   // Entre `quick`, `wifi` e `bt` a troca de camada é instantânea: os três
   // repetem a fileira de tiles no topo e só a ilha anima a altura.
   property string shownLayer: displayMode
@@ -82,8 +89,8 @@ Item {
       anchors.top: parent.top
       anchors.horizontalCenter: parent.horizontalCenter
       // Cada camada tem o tamanho do seu modo, dentro do anel de 1px.
-      width: IslandCore.getSize(layerId, island.bar.sizeContext).width - 2
-      height: IslandCore.getSize(layerId, island.bar.sizeContext).height - 2
+      width: island.sizeOf(layerId).width - 2
+      height: island.sizeOf(layerId).height - 2
       anchors.topMargin: 1
       shownLayer: island.shownLayer
       instant: island.instantSwitch
@@ -117,6 +124,35 @@ Item {
 
       StackView {
         bar: island.bar
+      }
+    }
+
+    Layer {
+      layerId: "music"
+
+      MusicRow {
+        bar: island.bar
+      }
+    }
+
+    Layer {
+      layerId: "calendar"
+
+      CalendarModeView {
+        bar: island.bar
+      }
+    }
+
+    Layer {
+      layerId: "card"
+
+      Item {
+        CenterCard {
+          width: parent.width
+          bar: island.bar
+          onImplicitHeightChanged: island.cardHeight = implicitHeight
+          Component.onCompleted: island.cardHeight = implicitHeight
+        }
       }
     }
 

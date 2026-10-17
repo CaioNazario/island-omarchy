@@ -45,6 +45,11 @@ Item {
   // Relógio do tempo relativo ("há N min"), um tique por minuto.
   property real nowMs: Date.now()
 
+  // Calendário (specs/06): Semana/Mês e o mês exibido; abre sempre em
+  // Semana no mês atual.
+  property string calendarView: "week"
+  property int calendarOffset: 0
+
   // Conteúdo do modo `osd` (specs/08 "OSD do Omarchy").
   property var osd: ({ glyph: "info", text: "", percent: 0 })
 
@@ -54,7 +59,8 @@ Item {
       btEnergyOpen: powerOpen,
       stackItemCount: service && service.notifications ? service.notifications.entries.length : 0,
       wifiPasswordField: wifiPasswordFor === "" ? "none" : wifiPasswordError === "" ? "normal" : "error",
-      btOn: sources.bluetooth.radioOn
+      btOn: sources.bluetooth.radioOn,
+      calendarView: calendarView
     })
 
   SystemSources {
@@ -74,6 +80,8 @@ Item {
   }
 
   function syncIsland() {
+    const opening = islandState.mode !== mode || islandState.cardOpen !== cardOpen;
+    if (opening && (islandState.mode === "calendar" || islandState.cardOpen)) resetCalendar();
     mode = islandState.mode;
     cardOpen = islandState.cardOpen;
     fixed = islandState.fixed || islandState.cardOpen;
@@ -187,6 +195,34 @@ Item {
     function onStackRequested() {
       root.targetFocusedScreen();
       if (root.mode !== "stack") root.islandState.openFromTrigger("stack");
+    }
+  }
+
+  function resetCalendar() {
+    calendarView = "week";
+    calendarOffset = 0;
+  }
+
+  function toggleCalendarView() {
+    calendarView = calendarView === "week" ? "month" : "week";
+  }
+
+  function stepMonth(direction) {
+    calendarOffset += direction;
+  }
+
+  // Troca de faixa (specs/05 "Modo `music`"): automática, regra 3 da spec 03.
+  // Com `music` fixado aberto, o conteúdo só atualiza.
+  Connections {
+    target: sources.music
+    function onTrackChanged() {
+      if (root.islandState.musicPinned) return;
+      root.targetForAutomatic();
+      root.islandState.openAutomatic("music");
+    }
+    function onActiveChanged() {
+      // O player sumir fecha o `music` fixado.
+      if (!sources.music.active && root.islandState.musicPinned) root.closeAll();
     }
   }
 

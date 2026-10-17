@@ -15,11 +15,11 @@ Regra pura em `src/core/calendar.ts`:
 
 ## Eventos
 
-- Fonte: `CalendarServer` do Shell (Evolution Data Server, ou seja, contas online do GNOME), a mesma que o menu de data nativo usa.
+- Fonte: em aberto (spec 14, S8). O Omarchy não traz Evolution Data Server nem outra fonte de eventos; até o spike decidir, `plugin/system/CalendarEvents.qml` devolve lista vazia e a UI mostra só o título.
 - Mostra os eventos de **hoje** em ordem de início, no máximo 10: ponto 8px colorido + nome + intervalo `HH:MM – HH:MM` (dia inteiro: "Dia inteiro").
 - Cor do ponto: da paleta da ilha, não a do calendário de origem. Cada calendário ganha `accent-500`, `accent-300`, `neutral-400` em rotação, na ordem em que aparece na lista.
 - Sem eventos: a coluna de eventos mostra só o título "Hoje, …".
-- Clicar em evento não faz nada na v1.
+- Clicar em evento não faz nada.
 
 ## Modo `calendar` (ilha, 480 × 150/214)
 
@@ -39,5 +39,5 @@ Aberto quando "Clique na ilha abre" = **Calendário compacto**, ou pelo clique n
 ## Critérios de aceite
 
 - [x] Testes de `calendar.ts`: meses começando em cada dia da semana, fevereiro bissexto, semana de hoje, navegação entre anos.
-- [x] Evento criado no GNOME Calendar aparece na lista de hoje sem reiniciar a extensão.
-- [x] Alternar Mês/Semana no modo `calendar` anima a altura 150 ↔ 214.
+- [ ] Evento da fonte escolhida no S8 aparece na lista de hoje sem reiniciar o shell.
+- [ ] Alternar Mês/Semana no modo `calendar` anima a altura 150 ↔ 214.

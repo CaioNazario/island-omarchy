@@ -4,12 +4,13 @@ Origem: `design/markup.html` camadas `L.music` e `L.hub` (cartão central); `des
 
 ## Fonte: MPRIS
 
-- Serviço em `src/system/mpris.ts`: acompanha nomes `org.mpris.MediaPlayer2.*` no barramento de sessão (entrada, saída, `PropertiesChanged`, `Seeked`).
-- **Player atual**: o último que entrou em `Playing`. Pausado continua atual até outro tocar ou ele sair do barramento. `Stopped` ou sem título não é atual (o Brave fica no barramento em `Stopped` com metadados vazios quando o vídeo acaba) e volta a valer se tocar de novo. Na primeira leitura (o `enable()` roda a cada desbloqueio), os que já tocam têm prioridade sobre os pausados.
-- Dados: `xesam:artist` (array, junto com ", "), `xesam:title`, `mpris:length`, `mpris:artUrl`, `Position`, `PlaybackStatus`, `CanGoPrevious`/`CanGoNext`.
-- `Position` não gera sinal: ler ao abrir e avançar localmente a cada 1s enquanto tocando; ressincronizar em `Seeked` e em troca de faixa.
-- Capa: `file://` (o que Brave, Chrome e Firefox mandam) vira fundo recortado no raio; `http(s)://` (Spotify nativo) carrega como no Shell (`Gio.FileIcon` na URI, o GVfs baixa), sem cache próprio e sem o raio. Sem capa: bloco `accent-900` com `ph-fill ph-music-note` 24px `accent-300`.
+- `plugin/system/MusicSource.qml`, pelo `Mpris` do Quickshell (players, `PlaybackStatus`, metadados, `CanGo*`). O `PlayerTracker` do core decide o player atual e a troca de faixa.
+- **Player atual**: o último que entrou em `Playing`. Pausado continua atual até outro tocar ou ele sair do barramento. `Stopped` ou sem título não é atual (o Brave fica no barramento em `Stopped` com metadados vazios quando o vídeo acaba) e volta a valer se tocar de novo. Na primeira leitura (cada carga da barra, inclusive no hot-reload), os que já tocam têm prioridade sobre os pausados.
+- Dados: artista, título, `mpris:trackid`, duração, capa, posição, `CanGoPrevious`/`CanGoNext`. O Quickshell dá tempo em segundos; o core trabalha em microssegundos.
+- A posição não se atualiza sozinha: enquanto toca, `positionChanged()` uma vez por segundo (padrão da doc do `MprisPlayer`). Seek e troca de faixa entram na leitura seguinte.
+- Capa: `file://` e `http(s)://` carregam pela `Image` do Qt (rede pelo `QNetworkAccessManager`), recortadas no raio, sem cache próprio. Sem capa: bloco `accent-900` com `ph-fill ph-music-note` 24px `accent-300`.
 - Artista vazio: mostra o nome do player (`Identity`).
+- Teste local: `dev/fake-mpris.py` no D-Bus privado do harness (`SIGUSR1` troca de faixa).
 
 ### Ícone da fonte
 
@@ -23,7 +24,7 @@ Pelo `Identity` do player, sem diferenciar maiúsculas:
 
 O Phosphor não tem logo do Firefox, então ele fica com a nota.
 
-Música tocando em aba de navegador mostra título/artista/capa que o MPRIS entrega. A Island não sabe qual site é: sem companion de navegador na v1.
+Música tocando em aba de navegador mostra título/artista/capa que o MPRIS entrega. A Island não sabe qual site é: sem companion de navegador.
 
 ## Modo `music` (500×82, transitório 2500ms)
 
@@ -50,10 +51,10 @@ Música tocando em aba de navegador mostra título/artista/capa que o MPRIS entr
 
 ## Critérios de aceite
 
-- [x] Com Brave tocando um vídeo, o cartão mostra título, artista e capa do MPRIS e o ícone `ph-music-note`.
-- [x] Trocar de faixa no player abre `music` com a faixa nova; com um modo fixo aberto (ex.: calendário), não abre.
-- [x] Barra de progresso avança a cada segundo e corrige após seek no player.
-- [x] Fechar o player remove a seção de música do cartão.
-- [x] Dois players: o último a tocar é o exibido.
-- [x] O cartão central abre com 440px de largura e raio 26.
-- [x] Clicar no widget Música abre `music` sem timer; trocar de faixa atualiza sem fechar; clicar de novo fecha.
+- [ ] Com Brave tocando um vídeo, o cartão mostra título, artista e capa do MPRIS e o ícone `ph-music-note`.
+- [ ] Trocar de faixa no player abre `music` com a faixa nova (visto no `make dev` com o player falso); com um modo fixo aberto (ex.: calendário), não abre.
+- [ ] Barra de progresso avança a cada segundo e corrige após seek no player.
+- [x] Fechar o player remove a seção de música do cartão (captura no `make dev`).
+- [ ] Dois players: o último a tocar é o exibido.
+- [x] O cartão central abre com 440px de largura e raio 26 (captura no `make dev`).
+- [ ] Clicar no widget Música abre `music` sem timer; trocar de faixa atualiza sem fechar; clicar de novo fecha.

@@ -17,7 +17,8 @@ Scope {
   readonly property string screenName: screen ? screen.name : ""
   readonly property bool isTarget: bar.targetScreen === screenName
   // Modo aberto neste monitor: os demais ficam em `compact`.
-  readonly property string mode: isTarget ? bar.mode : "compact"
+  // O cartão central é a ilha expandida (specs/05): também só no alvo.
+  readonly property string mode: !isTarget ? "compact" : bar.cardOpen ? "card" : bar.mode
   readonly property bool holdsFocus: isTarget && bar.fixed
 
   PanelWindow {
