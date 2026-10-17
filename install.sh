@@ -45,6 +45,10 @@ install() {
 
   for id in "${REPLACED_PLUGINS[@]}"; do omarchy plugin disable "$id"; done
   omarchy plugin enable "$PLUGIN_ID"
+  # Sem `Qt.clearComponentCache` (Qt 6.11), o hot-reload do shell recria a
+  # barra com os componentes da instalação anterior: só um shell novo carrega
+  # o build copiado.
+  omarchy-restart-shell >/dev/null
   echo "Instalado em: $TARGET_DIR"
   echo "Atalhos (specs 03 e 15): adicione em ~/.config/hypr/bindings.lua:"
   echo '  o.bind("SUPER + I", "Island: controles", "omarchy-shell island toggleQuick")'
