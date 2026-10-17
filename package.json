@@ -1,6 +1,6 @@
 {
   "name": "island",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Omarchy bar plugin: three floating pills with a Dynamic Island",
   "private": true,
   "type": "module",
