@@ -61,7 +61,7 @@ As teclas de volume e brilho do Omarchy rodam `omarchy-audio-output-volume`/`oma
 
 ## Modo `quick` (520×58)
 
-Só a linha de controles. Com a linha de energia aberta: 106px (spec 09). Abre por `Super+S`, bateria, seta ou o widget Hardware (spec 16).
+Só a linha de controles. Com a linha de energia aberta: 106px (spec 09). Abre por `Super+I`, bateria, seta ou o widget Hardware (spec 16).
 
 ## Modo `wifi` (520×292)
 

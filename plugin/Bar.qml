@@ -177,7 +177,7 @@ Item {
     wifiPasswordError = "";
   }
 
-  /** `Super+S` (specs/03 "Atalho"): de qualquer modo vai a `quick`; de `quick`, fecha. */
+  /** `Super+I` (specs/03 "Atalho"): de qualquer modo vai a `quick`; de `quick`, fecha. */
   function toggleQuick() {
     if (mode !== "quick") targetFocusedScreen();
     islandState.openFromTrigger("quick");

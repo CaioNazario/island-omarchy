@@ -37,7 +37,7 @@ Vêm quatro prontos:
 É possível ter até 6. O Padrão pode ser editado, mas não excluído.
 Para trocar de ambiente:
 - Rolagem horizontal sobre a barra (dois dedos no touchpad ou roda inclinada)
-- `Super+Ctrl+→` / `Super+Ctrl+←` (binds do Hyprland que o `install.sh` mostra)
+- `Super+Ctrl+Alt+→` / `Super+Ctrl+Alt+←` (binds do Hyprland que o `install.sh` mostra)
 - Clique num dos pontos do botão de ambiente
 
 ### Widgets
@@ -95,7 +95,7 @@ Dados do Open-Meteo, sem chave de API. A cidade vem de:
 Sem cidade, o clima some da Island (sem geolocalização por IP).
 
 ### Controles rápidos
-Abra pela seta ou pela bateria da pílula direita, ou com `Super+S` (bind do Hyprland que o `install.sh` mostra).
+Abra pela seta ou pela bateria da pílula direita, ou com `Super+I` (bind do Hyprland que o `install.sh` mostra).
 Inclui:
 - Volume
 - Brilho
@@ -166,8 +166,8 @@ Isso evita que a interface fique pulando de um estado para outro enquanto você 
 - **Clique na Island compacta:** abre o cartão central ou o calendário, conforme configurado.
 - **Clique em uma notificação:** abre a lista de notificações.
 - **Clique no botão de ambiente:** abre o editor de ambientes.
-- **`Super+S`:** abre os controles rápidos.
-- **`Super+Ctrl+←/→`:** troca de ambiente.
+- **`Super+I`:** abre os controles rápidos.
+- **`Super+Ctrl+Alt+←/→`:** troca de ambiente.
 - **`Esc`:** fecha o modo fixo atual.
 
 ***
@@ -203,7 +203,7 @@ npm ci
 ```
 O `install.sh` compila o plugin, copia para `~/.config/omarchy/plugins/caionazario.island/`, desliga as notificações e o OSD do Omarchy (a Island assume os dois) e troca a barra. O shell recarrega sozinho, sem logout.
 
-No fim, ele mostra as linhas de atalho para colar em `~/.config/hypr/bindings.lua` (`Super+S` e `Super+Ctrl+←/→`).
+No fim, ele mostra as linhas de atalho para colar em `~/.config/hypr/bindings.lua` (`Super+I` e `Super+Ctrl+Alt+←/→`).
 
 As preferências ficam em `~/.config/island/settings.json` (a janela de preferências ainda não foi portada). Mudanças no arquivo valem na hora.
 ***

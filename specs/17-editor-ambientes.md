@@ -63,7 +63,7 @@ Comportamento na spec 18. A linha "Posição da barra" do design não existe: a 
 
 ## Rodapé
 
-`ph ph-hand-swipe-left` 15px + "Deslize com dois dedos sobre a barra para trocar de ambiente. No teclado: Super+Ctrl+← / Super+Ctrl+→." 11.5px `neutral-500`.
+`ph ph-hand-swipe-left` 15px + "Deslize com dois dedos sobre a barra para trocar de ambiente. No teclado: Super+Ctrl+Alt+← / Super+Ctrl+Alt+→." 11.5px `neutral-500`.
 
 ## Barra durante a edição
 

@@ -37,11 +37,11 @@ Troca circular: depois do último vem o primeiro.
 |---|---|
 | Rolagem horizontal (dois dedos no touchpad) sobre a barra | próximo/anterior conforme o sentido |
 | Roda inclinada (`SCROLL_LEFT`/`SCROLL_RIGHT` com origem `WHEEL`) sobre a barra | próximo/anterior, um passo por clique |
-| `Super+Ctrl+→` / `Super+Ctrl+←` | próximo / anterior, de qualquer lugar |
+| `Super+Ctrl+Alt+→` / `Super+Ctrl+Alt+←` | próximo / anterior, de qualquer lugar |
 | Clique num ponto do botão de ambiente | vai direto para aquele ambiente |
 | Aba no editor (spec 17) | vai direto para aquele ambiente |
 
-Atalhos numerados (`Alt+1–N` do design) não existem. `Alt+←/→` do design também não: roubaria o "voltar" do navegador. Os atalhos são binds do Hyprland para o alvo IPC `island` (`nextEnvironment`/`previousEnvironment`), em `~/.config/hypr/bindings.lua`; o `install.sh` mostra as linhas. `Super+Ctrl+←/→` não tem bind padrão no Omarchy 4.0.4 (`default/hypr/bindings/*.lua`).
+Atalhos numerados (`Alt+1–N` do design) não existem. `Alt+←/→` do design também não: roubaria o "voltar" do navegador. Os atalhos são binds do Hyprland para o alvo IPC `island` (`nextEnvironment`/`previousEnvironment`), em `~/.config/hypr/bindings.lua`; o `install.sh` mostra as linhas. `Super+Ctrl+←/→` da v1.1 não serve: no Omarchy 4.0.4 troca a janela do grupo (`default/hypr/bindings/tiling.lua`), e `Super+Alt+←/→` move a janela para o grupo. `Super+Ctrl+Alt+←/→` não tem bind padrão.
 
 ### Rolagem suave
 
@@ -81,6 +81,6 @@ Trocar de novo durante a animação cancela a anterior e parte do estado atual.
 - [x] Testes de `environments.ts`: saneamento (widget desconhecido, repetido, ícone inválido, lista vazia, mais de 6, nome longo, forma inválida no JSON), troca circular nos dois sentidos, índice inválido, Padrão não excluível.
 - [ ] Dois dedos para a esquerda no touchpad trocam **um** ambiente por gesto, com o conteúdo acompanhando o dedo antes da troca.
 - [ ] Rolagem vertical sobre a barra não troca de ambiente.
-- [ ] `Super+Ctrl+→` troca de ambiente com uma janela do navegador focada, e `Alt+←` continua voltando a página.
+- [ ] `Super+Ctrl+Alt+→` troca de ambiente com uma janela do navegador focada, e `Alt+←` continua voltando a página.
 - [x] Trocar de ambiente pelo IPC com a ilha compacta abre `env` e anima as pílulas (captura no `make dev`).
 - [ ] O ambiente ativo e as mudanças sobrevivem ao hot-reload e a reiniciar o shell.
