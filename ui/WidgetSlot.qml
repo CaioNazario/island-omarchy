@@ -16,6 +16,8 @@ Item {
   required property var bar
   required property string screenName
   property real budget: 100000
+  property string side: ""
+  property var dragProxy: null
 
   readonly property var system: bar.system
   readonly property var service: bar.service
@@ -183,6 +185,31 @@ Item {
       label: text === "" ? "Nota vazia" : text
       labelMaxWidth: 150
       onClicked: slot.open("note")
+    }
+  }
+
+  // Edição (spec 17): anel 1px `neutral-800` (selecionado `accent-900` + anel
+  // `accent`) e cursor de arrastar; clique seleciona em vez de executar.
+  EditorDragArea {
+    id: editArea
+
+    readonly property bool selected: slot.bar.editorSelected === slot.widgetId
+
+    anchors.fill: parent
+    visible: slot.bar.editingOn(slot.screenName)
+    widgetId: slot.widgetId
+    dragProxy: slot.dragProxy
+    onTapped: {
+      slot.bar.editorSelected = slot.widgetId;
+      slot.bar.editorTarget = slot.side;
+    }
+
+    Rectangle {
+      anchors.fill: parent
+      radius: 11
+      color: editArea.selected ? Qt.alpha(Tokens.accent900, 0.55) : "transparent"
+      border.width: 1
+      border.color: editArea.selected ? Tokens.accent : Tokens.neutral800
     }
   }
 }

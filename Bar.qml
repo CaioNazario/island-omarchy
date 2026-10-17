@@ -12,6 +12,7 @@ import "core/agentUsage.mjs" as AgentCore
 import "core/wifi.mjs" as WifiCore
 import "core/wifiPanel.mjs" as WifiPanelCore
 import "core/environments.mjs" as EnvironmentsCore
+import "core/environmentEditor.mjs" as EditorCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
 // este item a cada hot-reload; o que precisa sobreviver mora no Service.qml.
@@ -68,7 +69,11 @@ Item {
   // Deslocamento do conteúdo das pílulas acompanhando a rolagem.
   property real envDrag: 0
   property var envScroll: new EnvironmentsCore.EnvironmentScroll()
+  // Editor de ambientes (specs/17): aberto no monitor-alvo, com a pílula onde
+  // o catálogo adiciona e o widget selecionado na barra.
   property bool editorOpen: false
+  property string editorTarget: "left"
+  property string editorSelected: ""
 
   // Conteúdo do modo `osd` (specs/08 "OSD do Omarchy").
   property var osd: ({ glyph: "info", text: "", percent: 0 })
@@ -126,6 +131,17 @@ Item {
 
   QmlScheduler {
     id: scheduler
+  }
+
+  // Tema da preferência (spec 01 "Temas"): todas as cores leem o `Tokens`.
+  Binding {
+    target: Tokens
+    property: "theme"
+    value: root.service ? root.service.settings.values.theme : "Nocturne"
+  }
+
+  function setTheme(id) {
+    if (service) service.settings.values.theme = id;
   }
 
   Component.onCompleted: {
@@ -194,10 +210,15 @@ Item {
 
   function closeAll() {
     islandState.closeAll();
+    editorOpen = false;
   }
 
   /** Regra 9 da spec 03: com o painel de senha aberto, Esc fecha só ele. */
   function pressEscape() {
+    if (editorOpen && mode === "compact" && !cardOpen) {
+      closeEditor();
+      return;
+    }
     if (islandState.escape(wifiPasswordFor !== "") === "closed-password") closePassword();
   }
 
@@ -312,7 +333,98 @@ Item {
   }
 
   // O editor de ambientes é a spec 17; até lá o botão não abre nada.
-  function toggleEditor() {
+  /** Botão de ambiente (spec 17 "Abrir e fechar"): a ilha volta a `compact`. */
+  function toggleEditor(screenName) {
+    if (editorOpen) {
+      closeEditor();
+      return;
+    }
+    if (screenName) targetScreen = screenName;
+    islandState.closeAll();
+    editorTarget = "left";
+    editorSelected = "";
+    editorOpen = true;
+  }
+
+  /** A barra deste monitor está em edição (widgets selecionáveis, pílula-alvo). */
+  function editingOn(screenName) {
+    return editorOpen && targetScreen === screenName;
+  }
+
+  function closeEditor() {
+    editorOpen = false;
+    editorSelected = "";
+  }
+
+  function saveEnvironments(list) {
+    if (service) service.setEnvironments(list);
+  }
+
+  /** Troca o ambiente ativo por um novo objeto, mantendo os outros. */
+  function saveActive(env) {
+    saveEnvironments(environments.map((item, i) => i === environmentIndex ? env : item));
+  }
+
+  function editorSwitch(index) {
+    editorSelected = "";
+    goEnvironment(index);
+  }
+
+  function editorAddEnvironment() {
+    const list = EnvironmentsCore.addEnvironment(environments);
+    if (list.length === environments.length) return;
+    saveEnvironments(list);
+    editorSwitch(list.length - 1);
+  }
+
+  /** Exclui na hora e vai para o ambiente anterior; o Padrão não sai. */
+  function editorRemoveEnvironment() {
+    const index = environmentIndex;
+    if (index === 0) return;
+    editorSelected = "";
+    switchEnvironment(index - 1, -1);
+    saveEnvironments(EnvironmentsCore.removeEnvironment(environments, index));
+  }
+
+  function editorRename(name) {
+    saveEnvironments(EditorCore.renameEnvironment(environments, environmentIndex, name));
+  }
+
+  function editorSetIcon(icon) {
+    saveEnvironments(EditorCore.setEnvironmentIcon(environments, environmentIndex, icon));
+  }
+
+  /**
+   * Põe o widget na pílula (catálogo ou arraste); seleciona-o e torna alvo a
+   * pílula de destino. Vem de um soltar: grava depois, para a área não
+   * destruir a origem do arraste no meio do sinal.
+   */
+  function editorPlace(id, side, at) {
+    editorSelected = id;
+    editorTarget = side;
+    Qt.callLater(() => saveActive(EnvironmentsCore.placeWidget(environment, id, side, at)));
+  }
+
+  function editorPickTarget(side) {
+    editorTarget = side;
+    editorSelected = "";
+  }
+
+  function editorStepSelected(delta) {
+    if (editorSelected !== "") saveActive(EditorCore.stepWidget(environment, editorSelected, delta));
+  }
+
+  function editorMoveSelected() {
+    if (editorSelected === "") return;
+    const moved = EditorCore.moveToOtherSide(environment, editorSelected);
+    editorTarget = EnvironmentsCore.findWidget(moved, editorSelected).side;
+    saveActive(moved);
+  }
+
+  function editorRemoveSelected() {
+    if (editorSelected === "") return;
+    saveActive(EnvironmentsCore.removeWidget(environment, editorSelected));
+    editorSelected = "";
   }
 
   // As preferências (spec 13) entram depois; até lá não abrem nada.

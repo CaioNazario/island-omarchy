@@ -44,7 +44,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     radius: 22
-    color: Tokens.bg
+    color: Tokens.islandBg
     border.width: 1
     border.color: Tokens.neutral800
 

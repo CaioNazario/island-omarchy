@@ -17,6 +17,11 @@ CompactContent 1.0 CompactContent.qml
 ControlsRow 1.0 ControlsRow.qml
 DeviceRow 1.0 DeviceRow.qml
 DisplayView 1.0 DisplayView.qml
+EditorCatalog 1.0 EditorCatalog.qml
+EditorDragArea 1.0 EditorDragArea.qml
+EditorDragProxy 1.0 EditorDragProxy.qml
+EditorPanel 1.0 EditorPanel.qml
+EditorSelection 1.0 EditorSelection.qml
 EnvButton 1.0 EnvButton.qml
 EnvDots 1.0 EnvDots.qml
 EnvRow 1.0 EnvRow.qml

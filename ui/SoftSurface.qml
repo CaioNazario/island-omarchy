@@ -7,8 +7,8 @@ import Quickshell.Widgets
 
 // Acabamento do design v5 (specs/01-design-tokens.md "Superfícies") das
 // pílulas e da ilha: brilho de cima para baixo, halo do acento embaixo,
-// `SOFT_IN` por dentro e `SOFT_OUT` por fora. Na ilha expandida, o `SOFT_OUT`
-// dá lugar à sombra escura e ao brilho maior do acento (`islandShadow`).
+// `SOFT_IN` por dentro e só a sombra escura por fora (os brilhos `accent`
+// externos do design saíram: vazavam roxo em volta da barra).
 // O brilho interno de 4% do acento do `SOFT_IN` fica de fora: não aparece
 // sobre o `bg`.
 Item {
@@ -41,18 +41,8 @@ Item {
     }
   }
 
-  // SOFT_OUT
-  Glow {
-    offset: Qt.vector2d(0, 10)
-    blur: 30
-    spreadIn: 6
-    color: Qt.alpha(Tokens.accent, 0.34)
-  }
-  Glow {
-    blur: 22
-    spreadIn: 4
-    color: Qt.alpha(Tokens.accent, 0.22)
-  }
+  // SOFT_OUT sem os dois brilhos `accent` do design: em volta da barra eles
+  // viravam um vazamento roxo (pedido do usuário). Fica a sombra escura.
   Glow {
     offset: Qt.vector2d(0, 16)
     blur: 36
@@ -60,25 +50,12 @@ Item {
     color: Qt.rgba(0, 0, 0, 0.5)
   }
 
-  // Ilha expandida: `--isl-drop` + brilho do acento.
+  // Ilha expandida: `--isl-drop`, também sem o brilho `accent` em volta.
   Glow {
     forExpanded: true
     offset: Qt.vector2d(0, 18)
     blur: 44
     color: Qt.rgba(0, 0, 0, 0.6)
-  }
-  Glow {
-    forExpanded: true
-    offset: Qt.vector2d(0, 14)
-    blur: 48
-    spreadIn: 8
-    color: Qt.alpha(Tokens.accent, 0.38)
-  }
-  Glow {
-    forExpanded: true
-    blur: 34
-    spreadIn: 6
-    color: Qt.alpha(Tokens.accent, 0.26)
   }
 
   // `inset 0 1px 0 rgba(255,255,255,.07)`: o fundo deixa 1px do brilho à
@@ -92,7 +69,7 @@ Item {
       anchors.fill: parent
       anchors.topMargin: 1
       radius: soft.radius
-      color: Tokens.bg
+      color: soft.island ? Tokens.islandBg : Tokens.laneBg
     }
 
     // O halo é um círculo de raio `haloRx` esticado na vertical até `haloRy`.

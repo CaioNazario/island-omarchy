@@ -52,6 +52,8 @@ Scope {
       property var environments: []
       property int environmentIndex: 0
       property bool autoHide: false
+      // Tema do design (spec 01 "Temas"; `THEME_IDS` em themes.ts).
+      property string theme: "Nocturne"
       property string noteText: ""
       property string countdownName: ""
       // `AAAA-MM-DD` ou vazio.
