@@ -27,5 +27,6 @@
   <sc-if value="{{ w.hasBar }}" hint-placeholder-val="{{ false }}"><span style="display:block;width:34px;height:4px;border-radius:2px;background:var(--color-neutral-800)"><span style="display:block;width:{{ w.pct }};height:100%;border-radius:2px;background:var(--color-accent)"></span></span></sc-if>
   <sc-if value="{{ w.hasTicks }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:2px"><sc-for list="{{ w.ticks }}" as="tk" hint-placeholder-count="8"><span style="display:block;width:3px;height:10px;border-radius:1px;background:{{ tk }}"></span></sc-for></span></sc-if>
   <sc-if value="{{ w.hasSub }}" hint-placeholder-val="{{ false }}"><span style="font-weight:400;color:var(--color-neutral-400)">{{ w.sub }}</span></sc-if>
+  <sc-if value="{{ w.hasWaves }}" hint-placeholder-val="{{ false }}">{{ w.waves }}</sc-if>
   <sc-if value="{{ w.hasTrail }}" hint-placeholder-val="{{ false }}"><i class="{{ w.trail }}" style="font-size:13px;color:var(--color-neutral-300)"></i></sc-if>
 </div>

@@ -33,6 +33,18 @@
     "default": "Topo",
     "tsType": "string"
   },
+  "theme": {
+    "editor": "enum",
+    "options": [
+      "Nocturne",
+      "Vidro fosco",
+      "Sólido",
+      "Claro",
+      "Alto contraste"
+    ],
+    "default": "Nocturne",
+    "tsType": "string"
+  },
   "charging": {
     "editor": "boolean",
     "default": true,

@@ -60,6 +60,22 @@ A v1.x (GNOME) seguiu as specs 01–18 nessa ordem. O porte v2 (Omarchy) refaz a
 
 Cada spec é reescrita para o Omarchy no mesmo commit que porta a feature dela. Até lá, o texto descreve a v1.1 (GNOME): o comportamento continua valendo, os nomes de API não.
 
+### Design v5
+
+O design passou do protótipo v3 para o v5 (`design-source/`). As diferenças entram nesta ordem, cada uma no commit que atualiza a spec dela:
+
+1. Expansões de uma linha mais baixas (v4): `notif`, `music`, `volume`, `quick`, `wifi`, `bt`, `env` (specs 03, 04, 05, 08, 15)
+2. Acabamento: brilho e gradiente das pílulas e da ilha, sombras `SOFT_IN`/`SOFT_OUT`, raio da ilha expandida (specs 01, 02, 03)
+3. Ondas da música (`Waves`) no modo `music`, no cartão central e no widget de música (spec 05)
+4. Gerenciador de volume (modo `mixer`) e rolagem no botão de volume (spec 08)
+5. Controles rápidos com 660px e os tiles Tela, Manter tela acesa, Gravar tela e Ditado (spec 08)
+6. Modo `display`: brilho, tamanho do texto e escala do monitor (spec 08)
+7. Wi‑Fi: estatísticas, QR, teste de velocidade, DNS, redes conhecidas e outras (spec 08)
+8. IA: uma aba por provedor, tokens por dia e por modelo, lidos dos registros do `omarchy.agents` (spec 12)
+9. Modo `battery`, aberto pelo botão da bateria; o ícone da bateria na barra não muda (spec 11)
+
+Ficam de fora do v5: o seletor de cor de realce e o tema Claro em azul (temas do design não existem na Island).
+
 ## Fora de escopo (v1.x)
 
 - Botão Atividades, terminais/Ghostty, modo Download e modo `system` (existem ou existiram no design e foram cortados)

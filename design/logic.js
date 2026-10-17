@@ -1,8 +1,10 @@
+const SOFT_IN = 'inset 0 1px 0 rgba(255,255,255,.07), inset 0 -2px 6px rgba(0,0,0,.14), inset 0 0 14px color-mix(in srgb, var(--color-accent) 4%, transparent), inset 0 0 0 1px rgba(255,255,255,.05)';
+const SOFT_OUT = '0 10px 30px -6px color-mix(in srgb, var(--color-accent) 34%, transparent), 0 0 22px -4px color-mix(in srgb, var(--color-accent) 22%, transparent), 0 16px 36px -14px rgba(0,0,0,.5)';
 const SIZES = {
   note: [420, 132, 24],
   hub: [440, 470, 26],
-  compact: [240, 30, 15], compactV: [38, 124, 19], notif: [400, 62, 22], stack: [400, 178, 24], music: [500, 82, 26],
-  volume: [320, 50, 25], calendar: [480, 214, 24], calendarWeek: [480, 150, 24], quick: [520, 58, 29], ai: [480, 300, 24], wifi: [520, 292, 26], bt: [520, 348, 26], system: [440, 62, 22], env: [260, 40, 20]
+  compact: [240, 30, 15], compactV: [38, 124, 19], notif: [400, 48, 24], stack: [400, 178, 24], music: [500, 58, 29],
+  volume: [320, 36, 18], mixer: [440, 560, 24], calendar: [480, 214, 24], calendarWeek: [480, 150, 24], quick: [660, 46, 23], ai: [480, 300, 24], wifi: [660, 280, 24], bt: [660, 336, 24], system: [440, 46, 23], battery: [440, 225, 24], display: [440, 277, 24], env: [260, 32, 16]
 };
 const TRANSIENT = { notif: 4200, music: 4500, volume: 2600, env: 1500 };
 const INCOMING = [
@@ -19,14 +21,76 @@ const BASE_NOTIFS = [
   { icon: 'ph-fill ph-code', app: 'VS Code', text: 'Build bem-sucedido (0 erros)', time: 'há 1 h' }
 ];
 const TRACKS = [
-  { artist: 'Daft Punk', title: 'Get Lucky', dur: 248 },
-  { artist: 'Spice Girls', title: '2 Become 1', dur: 241 },
-  { artist: 'Tame Impala', title: 'The Less I Know the Better', dur: 216 }
+  { artist: 'Daft Punk', title: 'Get Lucky', dur: 248, bpm: 116 },
+  { artist: 'Spice Girls', title: '2 Become 1', dur: 241, bpm: 72 },
+  { artist: 'Tame Impala', title: 'The Less I Know the Better', dur: 216, bpm: 117 }
 ];
+function Waves({ bpm, playing, n = 5, h = 22, bw = 3, gap = 3 }) {
+  const refs = React.useRef([]);
+  const live = React.useRef({ bpm, playing });
+  live.current = { bpm, playing };
+  React.useEffect(() => {
+    let raf, ph = 0, last = performance.now();
+    const cur = Array(n).fill(0.15);
+    const seed = Array.from({ length: n }, (_, i) => 1.3 + i * 0.77);
+    const tick = now => {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      const { bpm: b, playing: p } = live.current;
+      if (p) ph += dt * b / 60;
+      const beat = ph % 1, kick = Math.exp(-beat * 6), hat = Math.exp(-((ph + 0.5) % 1) * 9);
+      const bar = Math.floor(ph) % 4, accent = bar === 0 ? 1 : 0.82;
+      for (let i = 0; i < n; i++) {
+        const lowW = 1 - i / (n - 1), mid = Math.exp(-Math.pow((i - (n - 1) / 2) / 1.2, 2));
+        const wob = 0.5 + 0.5 * Math.sin(now / 1000 * seed[i] * 3.1 + i * 2);
+        const tgt = p ? Math.min(1, 0.16 + accent * (kick * (0.35 + 0.5 * lowW) + hat * 0.35 * (1 - lowW)) + mid * 0.2 * wob + 0.12 * wob) : 0.15;
+        cur[i] += (tgt - cur[i]) * Math.min(1, dt * (tgt > cur[i] ? 28 : 9));
+        const el = refs.current[i]; if (el) el.style.transform = 'scaleY(' + cur[i].toFixed(3) + ')';
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [n]);
+  return React.createElement('div', { 'aria-hidden': true, style: { display: 'flex', alignItems: 'center', gap, height: h, flex: '0 0 auto' } },
+    Array.from({ length: n }, (_, i) => React.createElement('span', { key: i, ref: el => (refs.current[i] = el), style: { display: 'block', width: bw, height: h, borderRadius: bw, background: 'var(--color-accent)', boxShadow: '0 0 8px color-mix(in srgb, var(--color-accent) 45%, transparent)', transform: 'scaleY(0.15)', transformOrigin: 'center' } })));
+}
 const AC_L = [0.97, 0.93, 0.87, 0.78, 0.67, 0.57, 0.47, 0.37, 0.28];
 const AC_C = [0.02, 0.04, 0.07, 0.11, 0.125, 0.12, 0.1, 0.075, 0.045];
 const AC_PRESETS = [['Blurple', 289], ['Azul', 255], ['Ciano', 215], ['Verde', 155], ['Lima', 125], ['Âmbar', 75], ['Coral', 35], ['Rosa', 350]];
 const acRamp = (h, k) => AC_L.map((l, i) => 'oklch(' + l + ' ' + (AC_C[i] * k).toFixed(3) + ' ' + h + ')');
+const THEMES = {
+  'Nocturne': {},
+  'Vidro fosco': {
+    '--isl-surface': 'color-mix(in srgb, var(--color-bg) 52%, transparent)', '--isl-panel': 'color-mix(in srgb, var(--color-bg) 60%, transparent)',
+    '--isl-lane': 'color-mix(in srgb, var(--color-bg) 38%, transparent)', '--isl-blur': 'blur(28px) saturate(1.7)', '--isl-lane-blur': 'blur(24px) saturate(1.7)',
+    '--isl-ring': 'inset 0 1px 0 0 color-mix(in srgb, var(--color-neutral-100) 16%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-neutral-100) 9%, transparent)',
+    '--isl-drop': '0 18px 44px rgba(0,0,0,.32)', '--shadow-sm': '0 6px 20px rgba(0,0,0,.18)',
+    '--color-neutral-900': 'color-mix(in srgb, var(--color-neutral-100) 10%, transparent)', '--color-neutral-800': 'color-mix(in srgb, var(--color-neutral-100) 18%, transparent)'
+  },
+  'Sólido': {
+    '--isl-surface': 'var(--color-surface)', '--isl-panel': 'var(--color-surface)', '--isl-lane': 'var(--color-surface)', '--isl-blur': 'none', '--isl-lane-blur': 'none',
+    '--isl-ring': 'inset 0 1px 0 0 #34374a', '--isl-drop': '0 18px 44px rgba(0,0,0,.55)', '--shadow-sm': '0 0 0 1px #121420, 0 4px 14px rgba(0,0,0,.45)',
+    '--color-neutral-900': '#30334a', '--color-neutral-800': '#41455c'
+  },
+  'Claro': {
+    light: true,
+    '--color-bg': '#f5f6fb', '--color-surface': '#ffffff', '--color-text': '#1b1d28',
+    '--color-neutral-100': '#1f2129', '--color-neutral-200': '#2f323c', '--color-neutral-300': '#434756', '--color-neutral-400': '#585c6c',
+    '--color-neutral-500': '#6b6f81', '--color-neutral-600': '#8e92a6', '--color-neutral-700': '#b4b8ca', '--color-neutral-800': '#d9dce8', '--color-neutral-900': '#e9ebf3',
+    '--isl-surface': 'color-mix(in srgb, #f8f9fc 94%, transparent)', '--isl-panel': 'color-mix(in srgb, #f8f9fc 96%, transparent)', '--isl-lane': 'color-mix(in srgb, #f8f9fc 80%, transparent)',
+    '--isl-blur': 'blur(20px) saturate(1.4)', '--isl-lane-blur': 'blur(20px) saturate(1.4)',
+    '--isl-ring': 'inset 0 1px 0 0 #ffffff', '--isl-drop': '0 18px 44px rgba(20,22,48,.28)', '--shadow-sm': '0 0 0 1px rgba(20,22,48,.08), 0 4px 14px rgba(20,22,48,.18)'
+  },
+  'Alto contraste': {
+    contrast: true,
+    '--color-bg': '#0b0c12', '--color-surface': '#14161f', '--color-text': '#f7f8fc',
+    '--color-neutral-100': '#f7f8fc', '--color-neutral-200': '#eef0f7', '--color-neutral-300': '#e3e6f0', '--color-neutral-400': '#d3d7e5',
+    '--color-neutral-500': '#bcc1d4', '--color-neutral-600': '#9aa0b8', '--color-neutral-700': '#7c829c', '--color-neutral-800': '#6a7089', '--color-neutral-900': '#262938',
+    '--isl-surface': '#0b0c12', '--isl-panel': '#0b0c12', '--isl-lane': '#0b0c12', '--isl-blur': 'none', '--isl-lane-blur': 'none',
+    '--isl-ring': 'inset 0 0 0 1px #6a7089', '--isl-drop': '0 18px 44px rgba(0,0,0,.7)', '--shadow-sm': '0 0 0 1px #6a7089'
+  }
+};
+const THEME_KEYS = [...new Set(Object.values(THEMES).flatMap(o => Object.keys(o).filter(k => k.startsWith('--'))))];
 const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
 
 const WIDGETS = {
@@ -56,7 +120,8 @@ const loadIdx = () => { try { const i = +localStorage.getItem(LS + '-i'); return
 class Component extends DCLogic {
   state = {
     envs: loadEnvs(), env: loadIdx(), edge: loadEdge(), note: (() => { try { const v = localStorage.getItem(LS + '-note'); return v == null ? 'Comprar café e pão' : v; } catch (e) { return 'Comprar café e pão'; } })(), autoHideOn: (() => { try { const v = localStorage.getItem(LS + '-ah'); return v == null ? undefined : v === '1'; } catch (e) { return undefined; } })(), slideX: 0, slideO: 1, slideT: 'transform .3s cubic-bezier(.2,.9,.25,1), opacity .22s ease', drag: 0, editing: false, sel: null, target: 'left', pomo: 1122, pomoRun: true, water: 3,
-    acHue: 289, acChroma: 100, acOpen: false, mode: 'compact', panel: null, calOpen: false, powerOpen: false, pwFor: null, pw: '', pwVis: false, pwErr: false, btBusy: null,
+    wifiView: 'stats', qrPwVis: false, qrCopied: false, dns: 'dhcp', dnsCustom: '9.9.9.9', net: { ping: 30, loss: 0, rx: 1.3, tx: 1.4, dl: 1.58e9, ul: 76.2e6 }, sp: { phase: 'idle', down: 0, up: 0, ping: 0, prog: 0 },
+    powerProfile: 'balanced', textSize: 12, uiScale: 1.25, acHue: 289, acChroma: 100, acOpen: false, mode: 'compact', panel: null, calOpen: false, powerOpen: false, pwFor: null, pw: '', pwVis: false, pwErr: false, btBusy: null,
     bt: [
       { id: 'airpods', name: 'AirPods Pro', icon: 'ph-fill ph-headphones', paired: true, on: true, bat: '72%' },
       { id: 'mouse', name: 'MX Master 3S', icon: 'ph-fill ph-mouse', paired: true, on: true, bat: '58%' },
@@ -70,12 +135,12 @@ class Component extends DCLogic {
       { title: 'YouTube', url: 'youtube.com', icon: 'ph-fill ph-youtube-logo' }
     ], peek: false, flashAt: 0,
     ai: [
-      { id: 'claude', name: 'Claude', icon: 'ph-fill ph-asterisk', plan: 'Max', s: 62, w: 41, sReset: 'em 2h 14min', wReset: 'seg, 09:00', on: true },
-      { id: 'gpt', name: 'ChatGPT', icon: 'ph-fill ph-open-ai-logo', plan: 'Plus', s: 34, w: 18, sReset: 'em 3h 40min', wReset: 'qua, 14:00', on: true },
-      { id: 'gemini', name: 'Gemini', icon: 'ph-fill ph-google-logo', plan: 'Pro', s: 12, w: 6, sReset: 'em 4h 05min', wReset: 'dom, 00:00', on: false }
+      { id: 'claude', name: 'Claude', icon: 'ph-fill ph-asterisk', plan: 'Max', s: 62, w: 41, sReset: 'em 2h 14min', wReset: 'seg, 09:00', on: true, days: [2.1, 0, 6.4, 8.8, 3.2, 10.5, 10.0], models: [{ n: 'Opus 4.5', t: 28.6 }, { n: 'Sonnet 4.5', t: 9.8 }, { n: 'Haiku 4.5', t: 2.6 }] },
+      { id: 'gpt', name: 'ChatGPT', icon: 'ph-fill ph-open-ai-logo', plan: 'Plus', s: 34, w: 18, sReset: 'em 3h 40min', wReset: 'qua, 14:00', on: true, days: [1.2, 3.4, 0, 2.2, 4.1, 1.8, 2.6], models: [{ n: 'GPT-5', t: 9.1 }, { n: 'GPT-5 mini', t: 6.2 }] },
+      { id: 'gemini', name: 'Gemini', icon: 'ph-fill ph-google-logo', plan: 'Pro', s: 12, w: 6, sReset: 'em 4h 05min', wReset: 'dom, 00:00', on: false, days: [0, 0.4, 1.1, 0, 0.6, 0.2, 0.9], models: [{ n: 'Gemini 2.5 Pro', t: 2.8 }, { n: 'Gemini 2.5 Flash', t: 0.4 }] }
     ], connected: 'Casa', connecting: null,
     nets: [
-      { ssid: 'Casa', sig: 3, lock: true, known: true }, { ssid: 'Casa_5G', sig: 3, lock: true }, { ssid: 'Escritório', sig: 2, lock: true },
+      { ssid: 'Casa', sig: 3, lock: true, known: true, pw: 'cafe-com-pao-2026' }, { ssid: 'Casa_5G', sig: 3, lock: true }, { ssid: 'Escritório', sig: 2, lock: true },
       { ssid: 'Café Aberto', sig: 2, lock: false }, { ssid: 'NET_VIRTUA_88', sig: 1, lock: true }
     ], cpu: 12, gpu: 8, temp: 54, down: 1.2, up: 86, activeTerm: 0,
     sessions: [
@@ -83,10 +148,16 @@ class Component extends DCLogic {
       { cmd: 'pnpm dev', cwd: '~/dev/island', branch: 'main', state: 'run', start: Date.now() - 2 * 3600000 },
       { cmd: 'zsh', cwd: '~', branch: '—', state: 'idle', start: Date.now() - 5 * 60000 },
       { cmd: 'ssh homelab', cwd: '~/infra', branch: 'k3s', state: 'run', start: Date.now() - 18 * 60000 }
-    ], now: new Date(), vol: 70, bright: 60, playing: true, pos: 92, track: 0,
+    ], now: new Date(), vol: 70, bright: 60, out: 'airpods', muted: false, mic: 55, micMute: false,
+    apps: [
+      { id: 'spotify', name: 'Spotify', icon: 'ph-fill ph-spotify-logo', vol: 80, mute: false },
+      { id: 'discord', name: 'Discord', icon: 'ph-fill ph-discord-logo', sub: 'Chamada de voz', vol: 65, mute: false },
+      { id: 'youtube', name: 'YouTube', icon: 'ph-fill ph-youtube-logo', sub: 'Firefox · aba ativa', vol: 50, mute: false },
+      { id: 'system', name: 'Sons do sistema', icon: 'ph-fill ph-bell-simple', sub: 'Alertas e notificações', vol: 40, mute: false }
+    ], playing: true, pos: 92, track: 0,
     unread: true, inc: 0, monthOff: 0, hover: false, revealed: false,
     notifs: [{ icon: 'ph-fill ph-discord-logo', app: 'Discord', text: 'Caio: “Olha isso aqui!”', time: 'há 5 min' }, ...BASE_NOTIFS],
-    toggles: { wifi: true, bt: true, night: false, dnd: false }
+    toggles: { wifi: true, bt: true, night: false, dnd: false, caffeine: false, rec: false, dictate: false }, recAt: 0
   };
 
   componentDidMount() {
@@ -119,6 +190,13 @@ class Component extends DCLogic {
     const autoNotif = () => this.pushNotif();
     this.autoFirst = setTimeout(autoNotif, 5000);
     this.autoN = setInterval(autoNotif, 22000);
+    this.netT = setInterval(() => {
+      const s = this.state; if (s.mode !== 'wifi' || !s.toggles.wifi) return;
+      const j = (v, d, lo, hi) => Math.max(lo, Math.min(hi, v + (Math.random() * 2 - 1) * d));
+      this.setState(p => { const n = p.net, rx = j(n.rx, 0.7, 0.2, 9), tx = j(n.tx, 0.5, 0.2, 6);
+        return { net: { ping: Math.round(j(n.ping, 4, 14, 62)), loss: Math.random() < 0.05 ? 1 : 0, rx, tx, dl: n.dl + rx * 1024, ul: n.ul + tx * 1024 } }; });
+    }, 1000);
+    this.applyAccent();
     if (window.__islandKey) document.removeEventListener('keydown', window.__islandKey);
     window.__islandKey = this.onKey;
     document.addEventListener('keydown', this.onKey);
@@ -126,25 +204,32 @@ class Component extends DCLogic {
     const bar = this.barRef && this.barRef.current;
     if (bar) { this._bar = bar; bar.addEventListener('wheel', this.onWheel, { passive: false }); }
   }
-  componentDidUpdate() { this.applyAccent(); }
   applyAccent() {
     const el = this.rootRef && this.rootRef.current; if (!el) return;
-    const s = this.state, key = s.acHue + '/' + s.acChroma;
+    const s = this.state, tn = THEMES[this.props.theme] ? this.props.theme : 'Nocturne', th = THEMES[tn], key = s.acHue + '/' + s.acChroma + '/' + tn;
     if (this._ac === key) return; this._ac = key;
-    const r = acRamp(s.acHue, s.acChroma / 100);
+    THEME_KEYS.forEach(k => el.style.removeProperty(k));
+    Object.keys(th).forEach(k => { if (k.startsWith('--')) el.style.setProperty(k, th[k]); });
+    const hue = th.hue != null && s.acHue === 289 ? th.hue : s.acHue;
+    let r = acRamp(hue, (s.acChroma / 100) * (th.contrast ? 1.25 : 1));
+    if (th.light) r = r.slice().reverse();
+    if (th.contrast) r = r.map((c, i) => i >= 4 ? r[Math.max(2, i - 2)] : c).map((c, i) => i >= 7 ? acRamp(hue, s.acChroma / 100)[i] : c);
     r.forEach((c, i) => el.style.setProperty('--color-accent-' + (i + 1) * 100, c));
-    el.style.setProperty('--color-accent', r[4]);
+    el.style.setProperty('--color-accent', th.light ? r[4] : th.contrast ? r[3] : r[4]);
   }
   componentWillUnmount() {
-    clearInterval(this.clock); clearTimeout(this.peekT); clearInterval(this.autoN); clearTimeout(this.autoFirst); clearTimeout(this.hideT);
+    clearInterval(this.clock); clearInterval(this.netT); clearInterval(this.spT); clearTimeout(this.peekT); clearInterval(this.autoN); clearTimeout(this.autoFirst); clearTimeout(this.hideT);
     document.removeEventListener('keydown', this.onKey);
     if (this._bar) this._bar.removeEventListener('wheel', this.onWheel); clearTimeout(this.envT1); clearTimeout(this.wheelEnd);
   }
 
   componentDidUpdate(pp) {
+    this.applyAccent();
     if (pp && pp.barPosition !== this.props.barPosition && this.state.edge) { try { localStorage.removeItem('island-v3-edge'); } catch (e) {} this.setState({ edge: null }); }
     const el = this.hubRef && this.hubRef.current;
     if (el) { const hh = el.offsetHeight; if (hh && Math.abs(hh - (this.state.hubH || 0)) > 1) this.setState({ hubH: hh }); }
+    const mx = this.mixRef && this.mixRef.current;
+    if (mx) { const mh = mx.offsetHeight; if (mh && Math.abs(mh - (this.state.mixH || 0)) > 1) this.setState({ mixH: mh }); }
   }
   setMode(mode) {
     clearTimeout(this.hideT);
@@ -178,13 +263,47 @@ class Component extends DCLogic {
     };
   }
 
+  dragFn(apply, after) {
+    return e => {
+      e.stopPropagation();
+      const el = e.currentTarget;
+      const set = x => { const r = el.getBoundingClientRect(); apply(Math.round(Math.max(0, Math.min(1, (x - r.left) / r.width)) * 100)); };
+      set(e.clientX);
+      clearTimeout(this.hideT);
+      const move = ev => set(ev.clientX);
+      const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); if (after) after(); };
+      window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+    };
+  }
+
+  runSpeed() {
+    clearInterval(this.spT);
+    const D = 360 + Math.random() * 140, U = 70 + Math.random() * 40, P = 9 + Math.round(Math.random() * 8), w = () => 0.94 + Math.random() * 0.08;
+    let t = 0;
+    this.setState({ wifiView: 'speed', sp: { phase: 'down', down: 0, up: 0, ping: P, prog: 0 } });
+    this.spT = setInterval(() => {
+      t += 100;
+      if (t <= 3000) { const k = t / 3000; this.setState(s => ({ sp: { ...s.sp, phase: 'down', down: D * (1 - Math.pow(1 - k, 3)) * w(), prog: k } })); }
+      else if (t <= 5500) { const k = (t - 3000) / 2500; this.setState(s => ({ sp: { ...s.sp, phase: 'up', down: D, up: U * (1 - Math.pow(1 - k, 3)) * w(), prog: k } })); }
+      else { clearInterval(this.spT); this.setState(s => ({ sp: { ...s.sp, phase: 'done', down: D, up: U, prog: 1 } })); }
+    }, 100);
+  }
+  qrCells(key) {
+    if (this._qrK === key) return this._qr;
+    let seed = 7; for (const ch of key) seed = (seed * 31 + ch.charCodeAt(0)) & 0x7fffffff;
+    const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+    const fin = (r, c) => { for (const [R, C] of [[0, 0], [0, 14], [14, 0]]) { const y = r - R, x = c - C; if (y >= -1 && y <= 7 && x >= -1 && x <= 7) { if (y < 0 || y > 6 || x < 0 || x > 6) return 0; if (y === 0 || y === 6 || x === 0 || x === 6) return 1; return y >= 2 && y <= 4 && x >= 2 && x <= 4 ? 1 : 0; } } return -1; };
+    const out = [];
+    for (let r = 0; r < 21; r++) for (let c = 0; c < 21; c++) { const f = fin(r, c); const d = f >= 0 ? f : (r === 6 || c === 6) ? (r + c) % 2 === 0 : rnd() < 0.5; out.push({ bg: d ? 'var(--color-bg)' : 'transparent' }); }
+    this._qrK = key; this._qr = out; return out;
+  }
   submitPw() {
     const s = this.state;
     if (!s.pwFor) return;
     if (s.pw.length < 8) { this.setState({ pwErr: true }); return; }
     const ssid = s.pwFor;
     clearTimeout(this.connT);
-    this.setState(p => ({ pwFor: null, pw: '', pwErr: false, connecting: ssid, nets: p.nets.map(n => n.ssid === ssid ? { ...n, known: true } : n) }));
+    this.setState(p => ({ pwFor: null, pw: '', pwErr: false, connecting: ssid, nets: p.nets.map(n => n.ssid === ssid ? { ...n, known: true, pw: p.pw } : n) }));
     this.connT = setTimeout(() => this.setState({ connected: ssid, connecting: null }), 1200);
   }
 
@@ -246,6 +365,7 @@ class Component extends DCLogic {
     });
   }
   wheel(e) {
+    if (e.target && e.target.closest && e.target.closest('[data-vol]')) return;
     const sd = this._edge === 'left' || this._edge === 'right';
     const d0 = sd ? e.deltaY : e.deltaX, d1 = sd ? e.deltaX : e.deltaY;
     if (Math.abs(d0) <= Math.abs(d1)) return;
@@ -281,13 +401,17 @@ class Component extends DCLogic {
     const clickAction = this.props.clickAction ?? 'Calendário compacto';
     let [w, h, r] = SIZES[s.mode === 'calendar' && !s.calOpen ? 'calendarWeek' : s.mode];
     if (side && s.mode === 'compact') [w, h, r] = SIZES.compactV;
-    if (s.mode === 'quick' && s.powerOpen) h = 106;
-    if (s.mode === 'quick' && s.acOpen) h = 58 + 116;
+    if (s.mode === 'quick' && s.powerOpen) h = 94;
+    if (s.mode === 'quick' && s.acOpen) h = 46 + 116;
     if (s.mode === 'hub' && s.hubH) h = s.hubH;
-    if (s.mode === 'wifi') h = 292 + (s.powerOpen ? 48 : 0) + (s.pwFor ? (s.pwErr ? 76 : 58) : 0);
-    if (s.mode === 'bt') h = (s.toggles.bt ? 348 : 300) + (s.powerOpen ? 48 : 0);
+    if (s.mode === 'mixer' && s.mixH) h = s.mixH;
+    if (s.mode === 'wifi') { const kn = s.nets.filter(n => n.known).length, ot = s.nets.length - kn, pwx = s.pwFor ? (s.pwErr ? 76 : 58) : 0;
+      const list = Math.min(20 + kn * 40 + (ot ? 20 + ot * 34 : 0) + pwx, 196 + pwx);
+      h = 46 + (s.powerOpen ? 48 : 0) + 9 + 56 + (s.toggles.wifi ? 88 + 11 + 58 + (s.dns === 'custom' ? 38 : 0) + 11 + list + 10 : 160); }
+    if (s.mode === 'bt') h = (s.toggles.bt ? 336 : 288) + (s.powerOpen ? 48 : 0);
     const aiOnList = s.ai.filter(p => p.on), aiOffList = s.ai.filter(p => !p.on);
-    const aiHpx = 24 + 32 + aiOnList.length * 108 - 6;
+    const aiCur = aiOnList.find(p => p.id === s.aiSel) || aiOnList[0];
+    const aiHpx = aiCur ? 24 + 32 + (aiOnList.length > 1 ? 36 : 0) + 346 + aiCur.models.length * 34 - 4 : 56;
     if (s.mode === 'ai') h = aiHpx;
     const lvl = v => v >= 90 ? 'oklch(0.68 0.19 25)' : v >= 70 ? 'var(--color-accent-300)' : 'var(--color-accent)';
     const lvlText = v => v >= 90 ? 'oklch(0.72 0.17 25)' : 'var(--color-text)';
@@ -315,15 +439,19 @@ class Component extends DCLogic {
       { k: 'wifi', name: 'Wi-Fi', icon: 'ph-bold ph-wifi-high', on: s.connected, off: 'Desligado' },
       { k: 'bt', name: 'Bluetooth', icon: 'ph-bold ph-bluetooth', on: 'Ativo', off: 'Desligado' },
       { k: 'night', name: 'Modo noturno', icon: 'ph-fill ph-moon', on: 'Ativado', off: 'Desativado' },
-      { k: 'dnd', name: 'Não perturbe', icon: 'ph-fill ph-bell-slash', on: 'Ativado', off: 'Desativado' }
+      { k: 'dnd', name: 'Não perturbe', icon: 'ph-fill ph-bell-slash', on: 'Ativado', off: 'Desativado' },
+      { k: 'display', name: 'Tela', icon: 'ph ph-monitor', on: '', off: '' },
+      { k: 'caffeine', name: tg.caffeine ? 'Tela sempre acesa · ativado' : 'Manter tela acesa', icon: 'ph-fill ph-coffee', on: 'Ativado', off: 'Desativado' },
+      { k: 'rec', name: tg.rec ? (() => { const t = Math.max(0, Math.floor((s.now - s.recAt) / 1000)); return 'Gravando tela · ' + String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0') + ' · clique para parar'; })() : 'Gravar tela', icon: tg.rec ? 'ph-fill ph-stop' : 'ph-fill ph-record', on: 'Gravando', off: 'Parado', onBg: 'oklch(0.58 0.2 25)' },
+      { k: 'dictate', name: tg.dictate ? 'Ditado · ouvindo' : 'Ditado', icon: tg.dictate ? 'ph-fill ph-microphone' : 'ph ph-microphone', on: 'Ouvindo', off: 'Desligado' }
     ];
     const tiles = tileDefs.map(d => ({
       name: d.name, icon: d.icon, sub: tg[d.k] ? d.on : d.off,
-      circle: tg[d.k] ? 'var(--color-accent-600)' : 'var(--color-neutral-800)',
+      circle: tg[d.k] ? (d.onBg || 'var(--color-accent-600)') : 'var(--color-neutral-800)',
       fg: tg[d.k] ? 'var(--color-neutral-100)' : 'var(--color-neutral-300)',
       tileBg: tg[d.k] ? 'var(--color-accent-900)' : 'var(--color-neutral-900)',
       tileEdge: tg[d.k] ? '0 0 0 1px var(--color-accent-800)' : 'none',
-      toggle: e => { e.stopPropagation(); if (d.k === 'bt' || d.k === 'wifi') { const m = d.k; if (this.state.mode === m) this.setMode('quick'); else this.setMode(m); return; } this.setState(p => ({ toggles: { ...p.toggles, [d.k]: !p.toggles[d.k] } })); this.arm(this.state.mode); }
+      toggle: e => { e.stopPropagation(); if (d.k === 'bt' || d.k === 'wifi' || d.k === 'display') { const m = d.k; if (this.state.mode === m) this.setMode('quick'); else this.setMode(m); return; } this.setState(p => ({ toggles: { ...p.toggles, [d.k]: !p.toggles[d.k] }, ...(d.k === 'rec' && !p.toggles.rec ? { recAt: Date.now() } : {}) })); this.arm(this.state.mode); }
     }));
     const sys = [
       { icon: 'ph ph-cpu', name: 'CPU', value: s.cpu + '%', pct: s.cpu + '%', bar: 'var(--color-accent-500)' },
@@ -331,7 +459,43 @@ class Component extends DCLogic {
       { icon: 'ph ph-arrows-down-up', name: 'Rede', value: '↓ 1.2 MB/s', pct: '30%', bar: 'var(--color-accent-300)' },
       { icon: batIcon, name: 'Bateria', value: bat + '%', pct: bat + '%', bar: batColor }
     ];
-    const volIcon = s.vol === 0 ? 'ph-fill ph-speaker-x' : s.vol < 40 ? 'ph-fill ph-speaker-low' : 'ph-fill ph-speaker-high';
+    const outs = [
+      { id: 'speakers', name: 'Alto-falantes', sub: 'Integrado', icon: 'ph ph-laptop' },
+      ...s.bt.filter(d => tg.bt && d.on && (d.id === 'airpods' || d.id === 'jbl')).map(d => ({ id: d.id, name: d.name, sub: 'Bluetooth' + (d.bat ? ' · ' + d.bat : ''), icon: d.icon })),
+      { id: 'hdmi', name: 'Monitor LG', sub: 'HDMI', icon: 'ph ph-monitor' }
+    ];
+    const out = outs.find(o => o.id === s.out) || outs[0];
+    const volIcon = s.muted || s.vol === 0 ? 'ph-fill ph-speaker-x' : out.id === 'airpods' ? 'ph-fill ph-headphones' : s.vol < 40 ? 'ph-fill ph-speaker-low' : 'ph-fill ph-speaker-high';
+    const muteBtn = m => ({ muteIcon: m ? 'ph-fill ph-speaker-x' : 'ph ph-speaker-simple-high', muteBg: m ? 'var(--color-neutral-800)' : 'transparent', muteFg: m ? 'oklch(0.78 0.13 25)' : 'var(--color-neutral-400)', muteTitle: m ? 'Ativar som' : 'Silenciar' });
+    const setApp = (id, patch) => this.setState(p => ({ apps: p.apps.map(x => x.id === id ? { ...x, ...patch(x) } : x) }));
+    const mixVals = {
+      out: { name: out.name, icon: out.icon },
+      outs: outs.map(o => { const on = o.id === out.id; return { ...o, bg: on ? 'var(--color-accent-900)' : 'transparent', iconColor: on ? 'var(--color-accent)' : 'var(--color-neutral-300)', check: on ? 1 : 0, pick: e => { e.stopPropagation(); this.setState({ out: o.id }); } }; }),
+      volLabel: s.muted ? 'Mudo' : s.vol + '%',
+      muteTitle: s.muted ? 'Ativar som' : 'Silenciar',
+      muteBg: s.muted ? 'var(--color-neutral-800)' : 'transparent', muteFg: s.muted ? 'oklch(0.78 0.13 25)' : 'var(--color-text)',
+      toggleMute: e => { e.stopPropagation(); this.setState(p => ({ muted: !p.muted })); },
+      appRows: s.apps.map(a => ({ name: a.name, icon: a.icon, sub: a.id === 'spotify' ? (s.playing ? 'Tocando · ' + t.title : 'Pausado') : a.sub,
+        pct: (a.mute ? 0 : a.vol) + '%', label: a.mute ? 'Mudo' : a.vol + '%', o: s.muted ? 0.45 : 1, ...muteBtn(a.mute),
+        toggle: e => { e.stopPropagation(); setApp(a.id, x => ({ mute: !x.mute })); },
+        down: this.dragFn(v => setApp(a.id, () => ({ vol: v, mute: false }))) })),
+      mic: { icon: s.micMute ? 'ph-fill ph-microphone-slash' : 'ph-fill ph-microphone', sub: s.micMute ? 'Silenciado' : 'Em uso por Discord',
+        pct: (s.micMute ? 0 : s.mic) + '%', label: s.micMute ? 'Mudo' : s.mic + '%',
+        muteIcon: s.micMute ? 'ph-fill ph-microphone-slash' : 'ph ph-microphone', muteBg: s.micMute ? 'var(--color-neutral-800)' : 'transparent', muteFg: s.micMute ? 'oklch(0.78 0.13 25)' : 'var(--color-neutral-400)', muteTitle: s.micMute ? 'Ativar microfone' : 'Silenciar microfone',
+        toggle: e => { e.stopPropagation(); this.setState(p => ({ micMute: !p.micMute })); },
+        down: this.dragFn(v => this.setState({ mic: v, micMute: false })) },
+      mixRef: this.mixRef || (this.mixRef = React.createRef()),
+      openMixer: e => { e.stopPropagation(); this.setMode('mixer'); },
+      volWheel: e => {
+        e.stopPropagation();
+        const d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+        this.vAcc = (this.vAcc || 0) + d;
+        const n = Math.trunc(this.vAcc / 25); if (!n) return;
+        this.vAcc -= n * 25;
+        this.setState(p => ({ vol: Math.max(0, Math.min(100, p.vol - n * 2)), muted: false }));
+        const m = this.state.mode; if (m === 'compact' || m === 'volume') this.setMode('volume');
+      }
+    };
     const openFromBar = mode => e => { e.stopPropagation(); if (s.mode === mode) this.closeAll(); else this.setMode(mode); if (mode === 'stack') this.setState({ unread: false }); };
     const quickInIsland = true;
     const ago = ms => { const m = Math.floor(ms / 60000); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + (m % 60) + ' min'; };
@@ -368,8 +532,8 @@ class Component extends DCLogic {
     const togglePanel = k => e => { e.stopPropagation(); clearTimeout(this.hideT); this.setState({ panel: s.panel === k ? null : k, mode: 'compact', unread: k === 'notifs' ? false : s.unread }); };
 
     const R = {
-      islandW: w + 'px', islandH: h + 'px', islandR: r + 'px',
-      islandShadow: expanded ? '0 0 0 1px var(--color-neutral-800), 0 18px 44px rgba(0,0,0,.6), 0 0 28px color-mix(in srgb, var(--color-accent) 18%, transparent)' : 'var(--shadow-sm)',
+      islandW: w + 'px', islandH: h + 'px', islandR: Math.min(r + 10, h / 2) + 'px',
+      islandShadow: expanded ? SOFT_IN + ', var(--isl-drop, 0 18px 44px rgba(0,0,0,.6)), 0 14px 48px -8px color-mix(in srgb, var(--color-accent) 38%, transparent), 0 0 34px -6px color-mix(in srgb, var(--color-accent) 26%, transparent)' : SOFT_IN + ', ' + SOFT_OUT,
       islandCursor: s.mode === 'compact' || s.mode === 'notif' ? 'pointer' : 'default',
       accentLine: expanded || s.panel === 'center' ? 1 : 0,
       L,
@@ -385,7 +549,7 @@ class Component extends DCLogic {
       edges: [['top', 'Topo', 'ph ph-align-top'], ['bottom', 'Base', 'ph ph-align-bottom'], ['left', 'Esquerda', 'ph ph-align-left'], ['right', 'Direita', 'ph ph-align-right']].map(([k, n, ic]) => ({ name: n, icon: ic,
         bg: edge === k ? 'var(--color-accent-800)' : 'transparent', fg: edge === k ? 'var(--color-accent-100)' : 'var(--color-neutral-400)',
         pick: e => { e.stopPropagation(); try { localStorage.setItem('island-v3-edge', k); } catch (_) {} clearTimeout(this.hideT); this.setState({ edge: k, mode: 'compact', panel: null, peek: false }); } })),
-      backdropEvents: s.panel || (s.mode === 'music' && s.musicPin) || ['note', 'hub', 'stack', 'calendar', 'quick', 'system', 'wifi', 'ai', 'bt'].includes(s.mode) ? 'auto' : 'none',
+      backdropEvents: s.panel || (s.mode === 'music' && s.musicPin) || ['note', 'hub', 'stack', 'calendar', 'quick', 'system', 'battery', 'display', 'wifi', 'ai', 'bt', 'mixer'].includes(s.mode) ? 'auto' : 'none',
       timeLabel: s.now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       dateLabel: wdCap + ', ' + s.now.getDate(),
       todayLabel: 'Hoje, ' + wd + ', ' + s.now.getDate(),
@@ -397,7 +561,10 @@ class Component extends DCLogic {
       track: { artist: t.artist, title: t.title, len: fmt(t.dur) },
       posLabel: fmt(s.pos), posPct: (s.pos / t.dur * 100).toFixed(1) + '%',
       playIcon: s.playing ? 'ph-fill ph-pause' : 'ph-fill ph-play',
-      volPct: s.vol + '%', brightPct: s.bright + '%', volIcon,
+      wavesSm: React.createElement(Waves, { bpm: t.bpm, playing: s.playing, n: 5, h: 20 }),
+      wavesLg: React.createElement(Waves, { bpm: t.bpm, playing: s.playing, n: 7, h: 26 }),
+      ...mixVals,
+      volPct: (s.muted ? 0 : s.vol) + '%', brightPct: s.bright + '%', volIcon,
       wifiIcon: tg.wifi ? 'ph-bold ph-wifi-high' : 'ph-bold ph-wifi-slash',
       cal: this.calendar(s.monthOff),
       calWeeks: (() => { const c = this.calendar(s.monthOff); if (s.calOpen) return c.weeks; const i = s.monthOff === 0 ? c.weeks.findIndex(wk => wk.days.some(d => d.weight === 600)) : 0; return [c.weeks[Math.max(0, i)]]; })(),
@@ -411,7 +578,29 @@ class Component extends DCLogic {
         { name: 'Academia', time: '18:00 – 19:00', dot: 'var(--color-neutral-400)' }
       ],
       tiles, sysRows: sys, sysCompact: sys,
-      batColor, batIcon, batFillW: bat + '%', batFillBg: 'color-mix(in oklch, ' + batColor + ' 38%, transparent)', batNum: String(bat), chgD: (this.props.charging ?? true) ? 'block' : 'none', batShown: (this.props.charging ?? true) ? 'ph-fill ph-battery-charging' : batIcon, batLabel: bat + '%', batText: bat <= 20 ? batColor : 'var(--color-text)',
+      textSizeLabel: s.textSize + 'px',
+      textSegs: [10, 11, 12, 13, 14, 15, 16].map(v => ({ v,
+        fill: v <= s.textSize ? 'var(--color-accent)' : 'var(--color-neutral-800)', knob: v === s.textSize ? 'block' : 'none',
+        pick: e => { e.stopPropagation(); this.setState({ textSize: v }); } })),
+      scales: [1, 1.25, 1.6, 2, 3, 4].map(v => { const a = s.uiScale === v; return { l: v + 'x',
+        bg: a ? 'var(--color-accent-900)' : 'transparent', edge: a ? 'var(--color-accent-700)' : 'var(--color-neutral-800)', fg: a ? 'var(--color-accent-100)' : 'var(--color-neutral-300)',
+        pick: e => { e.stopPropagation(); this.setState({ uiScale: v }); } }; }),
+      ...(() => {
+        const chg = this.props.charging ?? true, full = bat >= 100, mins = Math.round((100 - bat) * 1.6), left = Math.round(bat * 3.4);
+        const hm = m => m >= 60 ? Math.floor(m / 60) + 'h ' + String(m % 60).padStart(2, '0') + 'min' : m + ' min';
+        const prof = [{ k: 'saver', l: 'Economia', icon: 'ph ph-leaf' }, { k: 'balanced', l: 'Equilibrado', icon: 'ph ph-scales' }, { k: 'performance', l: 'Desempenho', icon: 'ph ph-lightning' }];
+        return {
+          batStatus: chg ? (full ? 'Carga completa' : 'Carregando') : 'Na bateria',
+          batStats: [
+            { l: 'Capacidade', v: '52 Wh' }, { l: chg ? 'Até carga total' : 'Tempo restante', v: chg ? (full ? '—' : hm(mins)) : hm(left) },
+            { l: 'Ciclos de carga', v: '184' }, { l: chg ? 'Potência de carga' : 'Consumo', v: chg ? (full ? '—' : '45 W') : (s.powerProfile === 'performance' ? '14.2 W' : s.powerProfile === 'saver' ? '5.1 W' : '8.4 W') }
+          ],
+          profiles: prof.map(p => { const a = s.powerProfile === p.k; return { l: p.l, icon: p.icon,
+            bg: a ? 'var(--color-accent-900)' : 'transparent', edge: a ? 'var(--color-accent-700)' : 'var(--color-neutral-800)', fg: a ? 'var(--color-accent-100)' : 'var(--color-neutral-300)',
+            pick: e => { e.stopPropagation(); this.setState({ powerProfile: p.k }); } }; })
+        };
+      })(),
+      batColor, batIcon, batFillW: bat + '%', batFillBg: bat <= 20 ? 'oklch(0.66 0.19 25)' : 'oklch(0.72 0.17 150)', batNum: String(bat), chgD: (this.props.charging ?? true) ? 'block' : 'none', batShown: (this.props.charging ?? true) ? 'ph-fill ph-battery-charging' : batIcon, batLabel: bat + '%', batText: bat <= 20 ? batColor : 'var(--color-text)',
       hw: [
         { short: 'CPU', name: 'CPU ' + s.cpu + '%', value: s.cpu + '%', w: '3.2ch', color: s.cpu >= 60 ? 'var(--color-accent-300)' : 'var(--color-text)' },
         { short: 'RAM', name: 'RAM 7.2 / 16 GB', value: '7.2G', w: '3.4ch', color: 'var(--color-text)' },
@@ -432,19 +621,70 @@ class Component extends DCLogic {
       openTerm: togglePanel('term'),
       newTab: e => { e.stopPropagation(); this.setState(p => p.sessions.length >= 24 ? null : ({ sessions: [...p.sessions, { cmd: 'zsh', cwd: '~', branch: '—', state: 'idle', start: Date.now() }], activeTerm: p.sessions.length })); },
       pT: pv('term'), wifiOn: tg.wifi, wifiOff: !tg.wifi,
-      wifiSwBg: tg.wifi ? 'var(--color-accent-600)' : 'var(--color-neutral-700)', wifiSwX: tg.wifi ? '16px' : '2px',
+      wifiSwBg: tg.wifi ? 'var(--color-accent-600)' : 'var(--color-neutral-700)', wifiSwX: tg.wifi ? '18px' : '2px',
       toggleWifi: e => { e.stopPropagation(); this.setState(p => ({ toggles: { ...p.toggles, wifi: !p.toggles.wifi } })); },
-      wifiStatus: !tg.wifi ? 'Desligado' : s.connecting ? 'Conectando…' : 'Conectado a ' + s.connected,
-      nets: s.nets.map(n => {
-        const on = tg.wifi && n.ssid === s.connected && !s.connecting, ing = n.ssid === s.connecting;
-        return { ssid: n.ssid, icon: ['', 'ph-bold ph-wifi-low', 'ph-bold ph-wifi-medium', 'ph-bold ph-wifi-high'][n.sig],
-          iconColor: on ? 'var(--color-accent)' : 'var(--color-neutral-300)', lock: n.lock ? 'ph-fill ph-lock-simple' : '',
-          bg: on ? 'var(--color-accent-900)' : 'transparent',
-          status: on ? 'Conectado' : ing ? 'Conectando…' : '', statusColor: on ? 'var(--color-accent-300)' : 'var(--color-neutral-400)',
-          askPw: s.pwFor === n.ssid,
-          connect: e => { e.stopPropagation(); if (on || ing) return;
-            if (n.lock && !(n.known)) { this.setState(p => p.pwFor === n.ssid ? { pwFor: null, pw: '', pwErr: false } : { pwFor: n.ssid, pw: '', pwErr: false, pwVis: false }, () => { const el = this.pwRef.current; if (el) el.focus(); }); return; } clearTimeout(this.connT); this.setState({ connecting: n.ssid }); this.connT = setTimeout(() => this.setState({ connected: n.ssid, connecting: null }), 1200); } };
-      }),
+      ...(() => {
+        const cur = s.nets.find(n => n.ssid === s.connected) || {}, hs = [...s.connected].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) & 0xffff, 3);
+        const subnet = '192.168.' + (hs % 4) + '.', live = tg.wifi && !s.connecting, nt = s.net;
+        const rate = v => v >= 1024 ? (v / 1024).toFixed(1) + ' MB/s' : v.toFixed(1) + ' KB/s';
+        const bytes = v => v >= 1e9 ? (v / 1e9).toFixed(2) + ' GB' : (v / 1e6).toFixed(1) + ' MB';
+        const dash = v => live ? v : '—';
+        const mk = (n, known) => {
+          const on = tg.wifi && n.ssid === s.connected && !s.connecting, ing = n.ssid === s.connecting;
+          return { ssid: n.ssid, icon: ['', 'ph-bold ph-wifi-low', 'ph-bold ph-wifi-medium', 'ph-bold ph-wifi-high'][n.sig],
+            iconColor: on ? 'var(--color-accent)' : 'var(--color-neutral-300)', lock: n.lock ? 'ph-fill ph-lock-simple' : '',
+            bg: on ? 'var(--color-accent-900)' : 'transparent',
+            status: ing ? 'Conectando…' : '', sub: on ? 'Conectado' : ing ? 'Conectando…' : 'Salva',
+            statusColor: on ? 'var(--color-accent-300)' : 'var(--color-neutral-400)',
+            askPw: s.pwFor === n.ssid,
+            connect: e => { e.stopPropagation(); if (on || ing) return;
+              if (n.lock && !n.known) { this.setState(p => p.pwFor === n.ssid ? { pwFor: null, pw: '', pwErr: false } : { pwFor: n.ssid, pw: '', pwErr: false, pwVis: false }, () => { const el = this.pwRef.current; if (el) el.focus(); }); return; }
+              clearTimeout(this.connT); this.setState(p => ({ connecting: n.ssid, wifiView: p.wifiView === 'speed' ? 'stats' : p.wifiView, nets: p.nets.map(x => x.ssid === n.ssid ? { ...x, known: true } : x) }));
+              this.connT = setTimeout(() => this.setState({ connected: n.ssid, connecting: null }), 1200); } };
+        };
+        const known = s.nets.filter(n => n.known).sort((x, y) => (y.ssid === s.connected) - (x.ssid === s.connected) || y.sig - x.sig);
+        const other = s.nets.filter(n => !n.known).sort((x, y) => y.sig - x.sig);
+        const dnsList = [{ k: 'dhcp', l: 'DHCP', ip: 'Automático · ' + subnet + '1' }, { k: 'cloudflare', l: 'Cloudflare', ip: '1.1.1.1 · 1.0.0.1' }, { k: 'google', l: 'Google', ip: '8.8.8.8 · 8.8.4.4' }, { k: 'custom', l: 'Personalizado', ip: s.dnsCustom || '—' }];
+        const sp = s.sp, view = s.wifiView, pwd = cur.pw || '';
+        const pv = pwd ? (s.qrPwVis ? pwd : '•'.repeat(Math.min(pwd.length, 14))) : 'Rede aberta · sem senha';
+        return {
+          connected: s.connected,
+          wifiTitle: tg.wifi ? (s.connecting || s.connected) : 'Wi‑Fi',
+          wifiStatus: !tg.wifi ? 'Desligado' : s.connecting ? 'Conectando…' : 'Transmitindo pacotes',
+          wifiHeadIcon: tg.wifi ? 'ph-fill ph-wifi-high' : 'ph-fill ph-wifi-slash', wifiHeadColor: tg.wifi ? 'var(--color-accent)' : 'var(--color-neutral-500)',
+          wvStats: view === 'stats', wvQr: view === 'qr', wvSpeed: view === 'speed',
+          qrBtnBg: view === 'qr' ? 'var(--color-accent-900)' : 'transparent', qrBtnFg: view === 'qr' ? 'var(--color-accent-200)' : 'var(--color-neutral-300)',
+          spBtnBg: view === 'speed' ? 'var(--color-accent-900)' : 'transparent', spBtnFg: view === 'speed' ? 'var(--color-accent-200)' : 'var(--color-neutral-300)',
+          openQr: e => { e.stopPropagation(); this.setState(p => ({ wifiView: p.wifiView === 'qr' ? 'stats' : 'qr', qrPwVis: false, qrCopied: false })); },
+          openSpeed: e => { e.stopPropagation(); if (view === 'speed') { clearInterval(this.spT); this.setState({ wifiView: 'stats' }); return; } if (sp.phase === 'done') this.setState({ wifiView: 'speed' }); else this.runSpeed(); },
+          rerunSpeed: e => { e.stopPropagation(); if (sp.phase === 'done') this.runSpeed(); },
+          netStats: [
+            { l: 'Ping', v: dash(nt.ping + ' ms') }, { l: 'Perda de pacotes', v: dash(nt.loss + '%') },
+            { l: 'Recebendo', v: dash(rate(nt.rx)) }, { l: 'Enviando', v: dash(rate(nt.tx)) },
+            { l: 'Baixado', v: bytes(nt.dl) }, { l: 'Enviado', v: bytes(nt.ul) },
+            { l: 'Endereço IP', v: dash(subnet + (100 + hs % 60)) }, { l: 'Gateway', v: dash(subnet + '1') }
+          ],
+          qrCells: view === 'qr' ? this.qrCells('WIFI:T:WPA;S:' + s.connected + ';P:' + pwd + ';;') : [],
+          qrPwText: pv, qrEye: s.qrPwVis ? 'ph ph-eye-slash' : 'ph ph-eye',
+          toggleQrPw: e => { e.stopPropagation(); this.setState(p => ({ qrPwVis: !p.qrPwVis })); },
+          qrCopyIcon: s.qrCopied ? 'ph-bold ph-check' : 'ph ph-copy', qrCopyFg: s.qrCopied ? 'var(--color-accent-300)' : 'var(--color-neutral-400)',
+          copyQrPw: e => { e.stopPropagation(); if (!pwd) return; try { navigator.clipboard.writeText(pwd); } catch (_) {} this.setState({ qrCopied: true }); clearTimeout(this.copyT); this.copyT = setTimeout(() => this.setState({ qrCopied: false }), 1400); },
+          spStatus: sp.phase === 'down' ? 'Medindo download…' : sp.phase === 'up' ? 'Medindo upload…' : 'Concluído · ping ' + sp.ping + ' ms',
+          spRerunO: sp.phase === 'done' ? 1 : 0.3,
+          spProg: Math.round(sp.phase === 'done' ? 100 : (sp.phase === 'down' ? sp.prog * 55 : 55 + sp.prog * 45)) + '%',
+          spCols: [
+            { icon: 'ph-bold ph-arrow-down', v: Math.round(sp.down), iconColor: sp.phase === 'down' ? 'var(--color-accent)' : 'var(--color-neutral-400)', fg: sp.down ? 'var(--color-text)' : 'var(--color-neutral-600)' },
+            { icon: 'ph-bold ph-arrow-up', v: Math.round(sp.up), iconColor: sp.phase === 'up' ? 'var(--color-accent)' : 'var(--color-neutral-400)', fg: sp.up ? 'var(--color-text)' : 'var(--color-neutral-600)' }
+          ],
+          dnsIp: (dnsList.find(d => d.k === s.dns) || dnsList[0]).ip, dnsIsCustom: s.dns === 'custom', dnsCustom: s.dnsCustom,
+          onDnsCustom: e => this.setState({ dnsCustom: e.target.value }), stopKey: e => e.stopPropagation(),
+          dnsOpts: dnsList.map(d => { const a = s.dns === d.k; return { l: d.l,
+            bg: a ? 'var(--color-accent-900)' : 'transparent', edge: a ? 'var(--color-accent-700)' : 'var(--color-neutral-800)', fg: a ? 'var(--color-accent-100)' : 'var(--color-neutral-300)',
+            pick: e => { e.stopPropagation(); this.setState({ dns: d.k }); } }; }),
+          knownNets: known.map(n => mk(n, true)), otherNets: other.map(n => mk(n, false)), hasOtherNets: other.length > 0,
+          netListMax: (196 + (s.pwFor ? (s.pwErr ? 76 : 58) : 0)) + 'px'
+        };
+      })(),
       pwRef: this.pwRef || (this.pwRef = React.createRef()),
       pw: s.pw, pwType: s.pwVis ? 'text' : 'password', pwEye: s.pwVis ? 'ph ph-eye-slash' : 'ph ph-eye',
       pwErr: s.pwErr, pwEdge: s.pwErr ? 'oklch(0.55 0.16 25)' : 'var(--color-neutral-800)', pwBtnO: s.pw.length ? 1 : 0.45,
@@ -455,7 +695,24 @@ class Component extends DCLogic {
       onPwKey: e => { e.stopPropagation(); if (e.key === 'Enter') this.submitPw(); if (e.key === 'Escape') this.setState({ pwFor: null, pw: '', pwErr: false }); },
       openWifi: openFromBar('wifi'),
       aiOn: aiOnList.map(aiMap), aiOff: aiOffList.map(aiMap), aiNone: aiOnList.length === 0,
-      aiH: aiHpx + 'px', aiSummary: aiOnList.length + (aiOnList.length === 1 ? ' conectado' : ' conectados'),
+      aiH: aiHpx + 'px',
+      ...(() => {
+        if (!aiCur) return { aiTabs: [], aiMulti: false, aiHas: false, aiCur: {}, aiDays: [], aiModels: [] };
+        const fmt = v => v === 0 ? '0' : v >= 1 ? v.toFixed(1) + 'M' : Math.round(v * 1000) + 'K';
+        const max = Math.max(...aiCur.days, 0.01), mmax = Math.max(...aiCur.models.map(m => m.t), 0.01);
+        const wd = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'], today = s.now.getDay();
+        return {
+          aiMulti: aiOnList.length > 1, aiHas: true, aiCur: aiMap(aiCur),
+          aiTabs: aiOnList.map(p => { const a = p.id === aiCur.id; return { name: p.name, icon: p.icon,
+            bg: a ? 'var(--color-accent-900)' : 'transparent', edge: a ? 'var(--color-accent-700)' : 'var(--color-neutral-800)', fg: a ? 'var(--color-accent-100)' : 'var(--color-neutral-300)',
+            pick: e => { e.stopPropagation(); this.setState({ aiSel: p.id }); } }; }),
+          aiDays: aiCur.days.map((v, i) => { const t = i === 6; return { l: t ? 'Hoje' : wd[(today - 6 + i + 7) % 7], v: fmt(v), w: (v / max * 100).toFixed(1) + '%',
+            fill: t ? 'var(--color-accent)' : 'var(--color-neutral-500)', lc: t ? 'var(--color-text)' : 'var(--color-neutral-500)', vc: t ? 'var(--color-text)' : v ? 'var(--color-neutral-300)' : 'var(--color-neutral-600)', fw: t ? 500 : 400 }; }),
+          aiWeekTotal: fmt(aiCur.days.reduce((a, b) => a + b, 0)),
+          aiModels: aiCur.models.map(m => ({ n: m.n, v: fmt(m.t), w: (m.t / mmax * 100).toFixed(1) + '%' })),
+          aiModelTotal: fmt(aiCur.models.reduce((a, b) => a + b.t, 0))
+        };
+      })(), aiSummary: aiOnList.length + (aiOnList.length === 1 ? ' conectado' : ' conectados'),
       aiBtnBg: s.mode === 'ai' ? 'var(--color-neutral-900)' : 'transparent',
       openAi: openFromBar('ai'),
       peekTop: (h + 8) + 'px',
@@ -535,7 +792,7 @@ class Component extends DCLogic {
       unreveal: () => this.setState({ revealed: false }),
       closeAll: this.closeAll,
       dismiss: e => { e.stopPropagation(); this.closeAll(); },
-      openStack: e => { this.setState({ unread: false }); openFromBar('stack')(e); }, openQuick: quickInIsland ? openFromBar('quick') : togglePanel('quick'), openVolume: openFromBar('volume'), openSystem: quickInIsland ? openFromBar('quick') : togglePanel('quick'),
+      openStack: e => { this.setState({ unread: false }); openFromBar('stack')(e); }, openQuick: quickInIsland ? openFromBar('quick') : togglePanel('quick'), openVolume: openFromBar('mixer'), openSystem: openFromBar('battery'),
       openDash: quickInIsland ? openFromBar('quick') : togglePanel('quick'),
       clearAll: e => { e.stopPropagation(); this.setState({ notifs: [], unread: false }); },
       prevMonth: e => { e.stopPropagation(); this.setState(p => ({ monthOff: p.monthOff - 1 })); },
@@ -543,7 +800,7 @@ class Component extends DCLogic {
       togglePlay: e => { e.stopPropagation(); this.setState(p => ({ playing: !p.playing })); this.arm(this.state.mode); },
       prevTrack: e => { e.stopPropagation(); this.setState(p => ({ track: (p.track + TRACKS.length - 1) % TRACKS.length, pos: 0, playing: true })); this.arm(this.state.mode); },
       nextTrack: e => { e.stopPropagation(); this.setState(p => ({ track: (p.track + 1) % TRACKS.length, pos: 0, playing: true })); this.arm(this.state.mode); },
-      volDown: this.slider('vol', true),
+      volDown: this.dragFn(v => this.setState({ vol: v, muted: false }), () => this.arm(this.state.mode)),
       brightDown: this.slider('bright', true),
       demos: [
         { label: 'Notificação', icon: 'ph ph-bell-ringing', run: e => { e.stopPropagation(); this.pushNotif(); } },
@@ -575,7 +832,7 @@ class Component extends DCLogic {
         case 'hw': return { isHw: true, hw: R.hw };
         case 'event': return simple({ icon: 'ph ph-calendar-blank', label: nx ? nx[0] : 'Sem eventos', sub: nx ? (nx[1] - mins <= 90 ? 'em ' + (nx[1] - mins) + ' min' : pad(Math.floor(nx[1] / 60)) + ':00') : 'hoje', labelMax: '130px' });
         case 'pomodoro': return simple({ hasRing: true, ringPct: Math.round((1 - s.pomo / 1500) * 100) + '%', label: fmt(s.pomo), sub: s.pomoRun ? 'Foco' : 'Pausado' });
-        case 'music': return simple({ icon: 'ph-fill ph-spotify-logo', iconColor: 'var(--color-accent-400)', label: R.track.title, sub: R.track.artist, trail: R.playIcon, labelMax: '120px' });
+        case 'music': return simple({ icon: 'ph-fill ph-spotify-logo', iconColor: 'var(--color-accent-400)', label: R.track.title, sub: R.track.artist, trail: R.playIcon, labelMax: '120px', hasWaves: true, waves: React.createElement(Waves, { bpm: TRACKS[s.track].bpm, playing: s.playing, n: 4, h: 13, bw: 2, gap: 2 }) });
         case 'github': return simple({ icon: 'ph-fill ph-github-logo', label: '3 PRs', sub: '2 para revisar' });
         case 'progress': return simple({ icon: 'ph ph-hourglass-medium', label: 'Dia', hasBar: true, pct: dayPct + '%', sub: dayPct + '%' });
         case 'countdown': return simple({ icon: 'ph ph-airplane-tilt', label: 'Férias', sub: trip + (trip === 1 ? ' dia' : ' dias') });
@@ -597,7 +854,7 @@ class Component extends DCLogic {
         drop: e => { e.preventDefault(); e.stopPropagation(); if (this.drag) this.placeW(this.drag, k, i); this.drag = null; },
         click: e => { e.stopPropagation(); if (s.editing) { this.setState({ sel: { id }, target: k }); return; } if (a) a(e); } };
     });
-    const laneSh = k => !s.editing ? 'var(--shadow-sm)' : s.target === k ? '0 0 0 1px var(--color-accent), 0 0 18px color-mix(in srgb, var(--color-accent) 22%, transparent)' : '0 0 0 1px var(--color-neutral-700)';
+    const laneSh = k => !s.editing ? SOFT_IN + ', ' + SOFT_OUT : s.target === k ? '0 0 0 1px var(--color-accent), 0 0 18px color-mix(in srgb, var(--color-accent) 22%, transparent)' : '0 0 0 1px var(--color-neutral-700)';
     const selId = s.editing && s.sel && (env.left.includes(s.sel.id) || env.right.includes(s.sel.id)) ? s.sel.id : null;
     const selLane = selId ? (env.left.includes(selId) ? 'left' : 'right') : 'left';
     const selIdx = selId ? env[selLane].indexOf(selId) : -1;
