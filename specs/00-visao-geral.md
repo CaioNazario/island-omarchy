@@ -62,7 +62,7 @@ Cada spec é reescrita para o Omarchy no mesmo commit que porta a feature dela. 
 
 ### Design v5
 
-O design passou do protótipo v3 para o v5 (`design-source/`). As diferenças entram nesta ordem, cada uma no commit que atualiza a spec dela:
+O design passou do protótipo v3 para o v5 (`design-source/`). As diferenças entraram nesta ordem, cada uma no commit que atualizou a spec dela:
 
 1. Expansões de uma linha mais baixas (v4): `notif`, `music`, `volume`, `quick`, `wifi`, `bt`, `env` (specs 03, 04, 05, 08, 15)
 2. Acabamento: brilho e gradiente das pílulas e da ilha, sombras `SOFT_IN`/`SOFT_OUT`, raio da ilha expandida (specs 01, 02, 03)
@@ -72,7 +72,7 @@ O design passou do protótipo v3 para o v5 (`design-source/`). As diferenças en
 6. Modo `display`: brilho, tamanho do texto e escala do monitor (spec 08)
 7. Wi‑Fi: estatísticas, QR, teste de velocidade, DNS, redes conhecidas e outras (spec 08)
 8. IA: uma aba por provedor, tokens por dia e por modelo, lidos dos registros do `omarchy-agent-usage-update` (spec 12)
-9. Modo `battery`, aberto pelo botão da bateria; o ícone da bateria na barra não muda (spec 11)
+9. Modo `battery`, aberto pelo botão da bateria; o desenho do botão na barra não muda (spec 11)
 
 Ficam de fora do v5: o seletor de cor de realce e o tema Claro em azul (temas do design não existem na Island).
 

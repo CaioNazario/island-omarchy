@@ -14,12 +14,15 @@ Quando compacta, a Island mostra:
 
 Quando expandida, pode exibir:
 - Notificações
-- Música e controles de reprodução
+- Música e controles de reprodução, com ondas que pulsam enquanto toca
 - Volume e brilho
+- Gerenciador de volume: saídas, volume por app e microfone
 - Calendário
 - Controles rápidos
-- Wi-Fi
+- Wi-Fi: estatísticas da conexão, QR para compartilhar, teste de velocidade e DNS
 - Bluetooth
+- Tela: brilho, tamanho do texto e escala do monitor
+- Bateria: detalhes e perfil de energia
 - Uso de IA
 
 A Island possui diferentes modos de exibição e só mantém um modo ativo por vez.
@@ -95,14 +98,18 @@ Dados do Open-Meteo, sem chave de API. A cidade vem de:
 Sem cidade, o clima some da Island (sem geolocalização por IP).
 
 ### Controles rápidos
-Abra pela seta ou pela bateria da pílula direita, ou com `Super+I` (bind do Hyprland que o `install.sh` mostra).
+Abra pela seta da pílula direita ou com `Super+I` (bind do Hyprland que o `install.sh` mostra).
 Inclui:
-- Volume
+- Volume (o ícone abre o gerenciador de volume)
 - Brilho
 - Wi-Fi
 - Bluetooth
 - Modo noturno (hyprsunset do Omarchy)
 - Não perturbe
+- Tela (brilho, `omarchy-display-text-size` e escala do monitor)
+- Manter tela acesa (o mesmo de `omarchy toggle idle`)
+- Gravar tela (menu de captura do Omarchy)
+- Ditado (Voxtype, se instalado)
 - Energia: suspender, reiniciar, desligar, sair e bloquear, pelos comandos do Omarchy
 
 As teclas de volume e brilho do Omarchy abrem a Island no lugar do OSD dele. Outros avisos de OSD (microfone, desligando…) aparecem num modo próprio da Island.
@@ -123,9 +130,9 @@ Informações sobre:
 - Rede
 
 ### Bateria
-A barra desenha a bateria com o nível dentro: verde a partir de 80%, vermelha até 20%, e um raio enquanto carrega.
+A barra desenha a bateria com o nível dentro: verde a partir de 80%, vermelha até 20%, e um raio enquanto carrega. O clique abre um painel com capacidade, tempo, ciclos e potência (`omarchy-battery-status`) e o perfil de energia (`omarchy-powerprofiles-set`).
 ### Uso de IA
-A Island pode mostrar os limites de uso do **Claude** e do **Codex**, utilizando as credenciais já existentes dos respectivos CLIs.
+A Island pode mostrar os limites de uso do **Claude** e do **Codex**, utilizando as credenciais já existentes dos respectivos CLIs. Os tokens por dia e por modelo vêm dos registros do `omarchy-agent-usage-update`, que a Island roda como o widget de agentes do Omarchy.
 > Veja [Uso de IA: leia antes](#uso-de-ia-leia-antes) antes de ativar esse recurso.
 
 ***
