@@ -188,12 +188,30 @@ Item {
     Layer {
       layerId: "volume"
 
-      LevelRow {
-        glyph: OsdCore.volumeGlyph(island.bar.system.audio.percent, island.bar.system.audio.muted)
-        value: island.bar.system.audio.percent
-        onMoved: value => island.bar.system.audio.setPercent(value)
-        onDragStarted: island.bar.islandState.dragStart()
-        onDragEnded: island.bar.islandState.dragEnd()
+      // Clicar fora do slider abre o gerenciador de volume (design v4 `openMixer`).
+      Item {
+        MouseArea {
+          anchors.fill: parent
+          cursorShape: Qt.PointingHandCursor
+          onClicked: island.bar.openFromBar(island.bar.targetScreen, "mixer")
+        }
+
+        LevelRow {
+          anchors.fill: parent
+          glyph: OsdCore.volumeGlyph(island.bar.system.audio.percent, island.bar.system.audio.muted)
+          value: island.bar.system.audio.percent
+          onMoved: value => island.bar.system.audio.setPercent(value)
+          onDragStarted: island.bar.islandState.dragStart()
+          onDragEnded: island.bar.islandState.dragEnd()
+        }
+      }
+    }
+
+    Layer {
+      layerId: "mixer"
+
+      MixerView {
+        bar: island.bar
       }
     }
 

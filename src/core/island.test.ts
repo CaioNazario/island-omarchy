@@ -506,6 +506,7 @@ describe('getSize', () => {
       'ai',
       'env',
       'note',
+      'mixer',
     ];
     const widths = modes.map((mode) => getSize(mode).width);
     expect(Math.max(...widths)).toBe(MAX_ISLAND_WIDTH);
@@ -598,6 +599,26 @@ describe('getSize', () => {
   it('ai: altura cresce por provedor', () => {
     expect(getSize('ai', { providerCount: 1 })).toEqual({ width: 480, height: 158, radius: 24 });
     expect(getSize('ai', { providerCount: 2 })).toEqual({ width: 480, height: 266, radius: 24 });
+  });
+});
+
+describe('mixer', () => {
+  it('é modo fixo, 440 de largura e a altura do conteúdo', () => {
+    expect(isFixedMode('mixer')).toBe(true);
+    expect(getSize('mixer', { mixerHeight: 419 })).toEqual({ width: 440, height: 419, radius: 24 });
+  });
+
+  it('sem altura medida, usa a máxima do design', () => {
+    expect(getSize('mixer').height).toBe(560);
+  });
+
+  it('o botão de volume da barra abre e fecha o mixer', () => {
+    const state = new IslandState(new FakeScheduler());
+    state.openFromTrigger('mixer');
+    expect(state.mode).toBe('mixer');
+    expect(state.fixed).toBe(true);
+    state.openFromTrigger('mixer');
+    expect(state.mode).toBe('compact');
   });
 });
 

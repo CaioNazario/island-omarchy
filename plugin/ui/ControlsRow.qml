@@ -32,6 +32,8 @@ Item {
 
     SliderPill {
       glyph: OsdCore.volumeGlyph(row.system.audio.percent, row.system.audio.muted)
+      glyphAction: true
+      onGlyphClicked: row.bar.openFromBar(row.bar.targetScreen, "mixer")
       value: row.system.audio.percent
       onMoved: value => row.system.audio.setPercent(value)
       onDragStarted: row.bar.islandState.dragStart()

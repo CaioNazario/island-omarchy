@@ -34,7 +34,29 @@ Código: `plugin/ui/ControlsRow.qml`, `WifiView.qml`, `BtView.qml`, `LevelRow.qm
 - Fonte: `Pipewire.defaultAudioSink` (Quickshell). Máximo 100%, sem amplificação. Mexer no slider acima de 0 tira do mudo.
 - Ícone (`ph-fill`): mudo ou 0 → `ph-speaker-x`; <40 → `ph-speaker-low`; senão `ph-speaker-high`.
 - **Modo `volume`** (320×36, 1500ms): padding 0 16px, gap 12px: ícone 16px · slider (puxador 12px) · valor `70%` (34px, alinhado à direita, 12px `neutral-300`).
-- Abre pelo ícone de volume da barra ou pela tecla de volume/mudo (regra 4 da spec 03).
+- Abre pela tecla de volume/mudo (regra 4 da spec 03) ou pela rolagem no botão de volume da barra. Clicar no modo `volume` fora do slider abre o `mixer`.
+- Na linha de controles, o ícone da pílula de volume é um botão 24×24 raio 12 (margin-left −5px, ícone `text`, hover `neutral-800`) que abre o `mixer`.
+
+## Modo `mixer`
+
+Gerenciador de volume do design v4 (`mixer`), fixo, 440 de largura e a altura do conteúdo (`mixerHeight` em `src/core/mixer.ts`, até 560; acima disso o conteúdo rola). Abre pelo clique no botão de volume da barra, no modo `volume` ou no ícone da pílula de volume. Padding 12px 12px 10px:
+
+- **Cabeçalho** 26px (padding 0 6px, margin-bottom 8px): `ph ph-sliders-horizontal` 14px `neutral-300`, "Volume" 13px/500; à direita o ícone 12px e o nome 11px `neutral-500` da saída atual.
+- **Volume geral**: 42px, raio 14, `neutral-900`, padding 0 12px 0 6px, gap 10px: botão de mudo 30×30 (ícone de volume 16px `text`) · slider com brilho · valor 38px à direita, 12px `neutral-300` (`70%` ou "Mudo").
+- **Rótulos de seção** ("Saída", "Aplicativos", "Entrada"): 10.5px maiúsculo, `letter-spacing .06em`, `neutral-500`, padding 12px 8px 4px. Seção vazia some com o rótulo.
+- **Saída**: uma linha de 36px por sink (raio 10, padding 0 8px, gap 10px): ícone 16px (`accent` na atual, senão `neutral-300`) · nome 12.5px · tipo 11px `neutral-500` · `ph-bold ph-check` 13px `accent-300` só na atual (fundo `accent-900`). Clicar torna a saída padrão por `Pipewire.preferredDefaultAudioSink` e `omarchy-audio-output-set-default`, como o seletor de saída do Omarchy.
+  - Tipo e ícone (`outputDevice`): fone (nome com headphone/headset/earbud/airpod) `ph-fill ph-headphones`, "Bluetooth" ou "Fone"; outro Bluetooth `ph-fill ph-bluetooth`; HDMI/DisplayPort `ph ph-monitor` "HDMI"; o resto `ph ph-laptop` "Integrado". O nome limpa os prefixos e sufixos do ALSA como o painel de áudio do Omarchy.
+  - Lista: sinks que não são stream, sem os que `omarchy-audio-sink-availability` marca como desligados (lido a cada 5s com o `mixer` aberto); a saída padrão aparece sempre. O design mostra a bateria do fone Bluetooth na linha; o Pipewire não informa, então fica de fora.
+- **Aplicativos**: um stream de reprodução por linha (`MixerLevelRow`, 42px, raio 12, padding 0 6px 0 8px, hover `neutral-900`): ícone 16px `accent-300` num quadrado 28 raio 8 `accent-900` · nome 12.5px/500 + sub 11px `neutral-500` (124px, reticências) · slider (puxador 10px) · valor 34px 11.5px `neutral-300` · botão de mudo 26×26 (`ph ph-speaker-simple-high` 14px `neutral-400`; mudo `ph-fill ph-speaker-x` vermelho claro sobre `neutral-800`). Com o volume geral no mudo, as linhas ficam com opacidade 0.45.
+  - Nome e ícone (`streamApp`): `application.name` (ou a descrição do nó); Spotify, Discord, navegadores e sons do sistema têm ícone próprio, o resto `ph-fill ph-speaker-high`. Sub: `media.name` (a faixa, a aba), escondida se repetir o nome.
+  - O stream de afinação de alto-falante do Omarchy (`omarchy_speaker_tuning*`) não aparece.
+- **Entrada**: a mesma linha para o microfone padrão (`ph-fill ph-microphone` / `ph-microphone-slash`), sub com o nome do dispositivo ou "Silenciado".
+- O volume geral mexe na saída física que `omarchy-audio-output-sink` resolve (a mesma das teclas de volume do Omarchy): com uma afinação de alto-falante ou EasyEffects na frente, mexer no sink virtual mudaria o tom e não o volume.
+- As listas são cópias atualizadas 75ms depois de cada mudança nos nós, e as propriedades dos streams só são lidas com o nó vinculado: o painel de áudio do Omarchy registra que reconstruir a lista dentro do sinal de remoção do Pipewire e ler `properties` de nó não vinculado derrubam o Quickshell.
+
+### Rolagem no botão de volume
+
+Cada 120 unidades de rolagem (um entalhe; o touchpad acumula, inverter o sentido zera) mudam o volume em 5%, como a barra do Omarchy (`Util.wheelSteps`). Um entalhe gigante conta como um passo. A ilha mostra `volume` pela regra 4 da spec 03, como uma tecla de volume. O design usa passos de 2% a cada 25px de rolagem de navegador; a Island segue o passo do Omarchy.
 
 ## Brilho
 

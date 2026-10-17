@@ -19,7 +19,7 @@ Da esquerda para a direita:
 1. Área de widgets do ambiente ativo, **alinhada à esquerda** (encostada na ilha), ocupando o espaço livre. Spec 16.
 2. Sino (`ph-fill ph-bell` 16px) com ponto de não lido 7×7 `accent` + anel 2px `bg`, em `top: 5px; right: 8px`. Abre `stack`.
 3. Wi‑Fi (`ph-bold ph-wifi-high` / `ph-bold ph-wifi-slash` quando desligado). Abre `wifi`. Sem placa Wi‑Fi, some (como o tile e o modo, spec 08).
-4. Volume (ícone conforme nível, spec 08). Abre `volume`.
+4. Volume (ícone conforme nível, spec 08). Abre o `mixer`; a rolagem muda o volume (spec 08 "Modo `mixer`").
 5. Bateria (desenho com o nível dentro, spec 11). Abre `quick`.
 6. Seta `ph ph-caret-down` 12px `neutral-300`. Abre `quick`.
 

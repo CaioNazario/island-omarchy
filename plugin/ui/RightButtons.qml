@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import "../core/osd.mjs" as OsdCore
+import "../core/mixer.mjs" as MixerCore
 
 // Botões fixos da pílula direita (specs/02-barra.md "Pílula direita"), gap 2px:
 // sino · Wi‑Fi · volume · bateria · seta. Clicar no gatilho do modo aberto fecha.
@@ -46,12 +47,32 @@ Row {
     }
   }
 
+  // Clique abre o `mixer`; a rolagem muda o volume em passos de 5% e mostra
+  // `volume` como uma tecla de volume (specs/08 "Modo `mixer`").
   BarButton {
-    onClicked: buttons.bar.openFromBar(buttons.screenName, "volume")
+    id: volumeButton
+
+    property real wheelRemainder: 0
+
+    onClicked: buttons.bar.openFromBar(buttons.screenName, "mixer")
 
     PhIcon {
       anchors.centerIn: parent
       glyph: OsdCore.volumeGlyph(buttons.system.audio.percent, buttons.system.audio.muted)
+    }
+
+    WheelHandler {
+      acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+      onWheel: event => {
+        const delta = Math.abs(event.angleDelta.y) >= Math.abs(event.angleDelta.x) ? event.angleDelta.y : event.angleDelta.x;
+        const wheel = MixerCore.wheelVolumeSteps(volumeButton.wheelRemainder, delta);
+        volumeButton.wheelRemainder = wheel.remainder;
+        if (wheel.steps === 0) return;
+        const audio = buttons.system.audio;
+        audio.setPercent(audio.percent + wheel.steps * MixerCore.WHEEL_VOLUME_STEP);
+        buttons.bar.targetScreen = buttons.screenName;
+        buttons.bar.islandState.volumeKey();
+      }
     }
   }
 

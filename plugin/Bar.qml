@@ -7,6 +7,7 @@ import "system"
 import "ui"
 import "core/island.mjs" as IslandCore
 import "core/osd.mjs" as OsdCore
+import "core/mixer.mjs" as MixerCore
 import "core/environments.mjs" as EnvironmentsCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
@@ -73,13 +74,19 @@ Item {
       wifiPasswordField: wifiPasswordFor === "" ? "none" : wifiPasswordError === "" ? "normal" : "error",
       btOn: sources.bluetooth.radioOn,
       calendarView: calendarView,
-      providerCount: sources.ai.providers.length
+      providerCount: sources.ai.providers.length,
+      mixerHeight: MixerCore.mixerHeight({
+        outputs: sources.audio.outputs.length,
+        apps: sources.audio.streams.length,
+        hasMic: sources.audio.micAvailable
+      })
     })
 
   SystemSources {
     id: sources
 
     shell: root.shell
+    audio.listing: root.mode === "mixer"
     // Fontes só de widget rodam só com o widget no ambiente ativo (spec 16).
     hardware.sampling: root.activeWidgets.includes("hw")
     ai.polling: root.activeWidgets.includes("ai")
