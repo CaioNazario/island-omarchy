@@ -2,7 +2,7 @@
 
 Origem: `design/logic.js` `WIDGETS`, `widgetData`, `simple`, `act`, `lane`; `design/components/TopbarWidget.html` (visual de cada widget); `design/markup.html` `leftW`/`rightW`, `L.note`.
 
-Widgets ocupam as pílulas laterais conforme o ambiente ativo (spec 15). Visual comum em `src/ui/`, regras de dado em `src/core/` (uma função pura por widget).
+Widgets ocupam as pílulas laterais conforme o ambiente ativo (spec 15). Visual em `plugin/ui/` (`TopbarWidget.qml`, `WidgetSlot.qml`, `WidgetArea.qml`), regras de dado em `src/core/` (uma função pura por widget).
 
 ## Catálogo
 
@@ -37,7 +37,7 @@ Linha de 24px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 
 | Parte | Visual |
 |---|---|
-| anel | 13×13: arco `accent` sobre `neutral-800`, miolo `bg` com 3px de borda (desenhado com `St.DrawingArea`/Cairo) |
+| anel | 13×13: arco `accent` sobre `neutral-800`, 3px de traço (`Canvas`) |
 | ícone | 14px, cor do widget (padrão `neutral-300`) |
 | rótulo | largura máxima do widget (padrão 140px), reticências |
 | barra | 34×4 raio 2, `accent` sobre `neutral-800` |
@@ -78,7 +78,7 @@ Linha de 24px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
   - fim do foco: "Hora da pausa" / "5 min de pausa"
   - fim da pausa: "Hora de focar" / "25 min de foco"
 - Sem botão de reiniciar nesta versão.
-- Estado em GSettings `pomodoro-state` (spec 13): fase e tempo restante. O bloqueio de tela pausa o pomodoro (o `disable()` roda a cada bloqueio) e ele volta pausado, com o restante guardado; o tempo bloqueado não conta.
+- Roda no `Service.qml`: continua no hot-reload da barra e no bloqueio de tela (o Omarchy não descarrega a barra ao bloquear). Estado em `state.json` `pomodoroState` (spec 13); ao reiniciar o shell volta pausado, com o restante guardado.
 - O relógio de 1s só roda com o widget visível e o pomodoro rodando. O vencimento de fase é um timeout único, esteja o widget visível ou não.
 
 ### `music`
@@ -89,18 +89,18 @@ Linha de 24px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 
 ### `github`
 
-- Credencial: `gh auth token` via `Gio.Subprocess` assíncrono. Somente leitura; o token fica só em memória, nunca em log, GSettings ou erro. O stderr do `gh` também não vai para o log.
+- Credencial: `gh auth token` em `Process` assíncrono. Somente leitura; o token fica só em memória, nunca em log, arquivo ou erro, e vai para o `curl` pela entrada padrão. O stderr do `gh` não vai para o log. Com o token no chaveiro, o `gh` precisa do Secret Service da sessão (no harness, com D-Bus privado, o widget fica em "GitHub").
 - Casos medidos no spike S10 (gh 2.100):
   - Token no keyring ou no `hosts.yml`: sai 0 com o token e `\n` no stdout, em ~50ms. O keyring é consultado mesmo sem `hosts.yml`.
   - Sem login (nem keyring nem `hosts.yml`): sai 1, stdout vazio, stderr `no oauth token found for github.com`.
   - Keyring bloqueado: não medido (abre o prompt de desbloqueio). Coberto pelo timeout.
   - Sem `gh` no PATH: o spawn falha (`G_SPAWN_ERROR_NOENT`).
-- Credencial = stdout sem espaços nas pontas, só com saída 0 e não vazio. Qualquer outro resultado, ou mais de **5s** sem terminar (o processo é encerrado com `force_exit`), conta como sem credencial.
+- Credencial = stdout sem espaços nas pontas, só com saída 0 e não vazio. Qualquer outro resultado, ou mais de **5s** sem terminar (o processo recebe `SIGKILL`), conta como sem credencial.
 - Duas buscas (`GET https://api.github.com/search/issues`, `per_page=1`, lê `total_count`):
   - `is:pr is:open author:@me` → rótulo `N PRs` (`1 PR`)
   - `is:pr is:open review-requested:@me` → sub `M para revisar` (some com M = 0)
-- Cabeçalhos: `Authorization: Bearer`, `Accept: application/vnd.github+json`, `X-GitHub-Api-Version: 2022-11-28`, `User-Agent: island-gnome-extension`.
-- Polling a cada 300s, `Soup.Session` assíncrono, timeout 10s. Erro de rede ou 5xx: mantém o último valor. 401: roda `gh auth token` de novo uma vez.
+- Cabeçalhos: `Authorization: Bearer`, `Accept: application/vnd.github+json`, `X-GitHub-Api-Version: 2022-11-28`, `User-Agent: island-omarchy-plugin`.
+- Polling a cada 300s por `curl` (`HttpGet.qml`), timeout 10s. Erro de rede ou 5xx: mantém o último valor. 401: roda `gh auth token` de novo uma vez.
 - Sem `gh` no PATH, sem login ou 401 persistente: ícone + rótulo "GitHub" `neutral-400`, sem sub.
 - Parse das respostas e textos em `src/core/github.ts`, testado.
 
@@ -111,7 +111,7 @@ Linha de 24px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 
 ### `countdown`
 
-- Nome e data em GSettings `countdown-name`/`countdown-date` (spec 13), editados nas preferências.
+- Nome e data em `settings.json` `countdownName`/`countdownDate` (spec 13).
 - Rótulo: nome, ou "Contagem" com nome vazio.
 - Sub: dias de calendário de hoje até a data (`N dias`, `1 dia`, "hoje"). Data passada: "encerrada".
 - Sem data: rótulo "Sem data" `neutral-400`, sem sub. É o único estado com clique.
@@ -119,7 +119,7 @@ Linha de 24px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 
 ### `note`
 
-- Texto em GSettings `note-text` (spec 13), até 80 caracteres, sem quebra de linha. Um texto só para todos os ambientes.
+- Texto em `settings.json` `noteText` (spec 13), até 80 caracteres, sem quebra de linha. Um texto só para todos os ambientes.
 - Ícone `accent-300`; vazio: ícone `neutral-500` e rótulo "Nota vazia".
 
 ## Modo `note` (420 × 132, raio 24, fixo)
@@ -138,8 +138,9 @@ Fonte de dado usada só por widget (hardware, IA, GitHub) roda apenas enquanto u
 ## Critérios de aceite
 
 - [x] Testes puros: próximo evento (sem eventos, dia inteiro como reserva, ≤90 min, >90 min), fases do pomodoro (troca ao zerar, pausar e retomar), `daysUntil` (hoje, amanhã, passado, virada de ano), progresso do dia, parse das buscas do GitHub e textos no singular/plural.
-- [x] Com a barra estreita, o `hw` perde NET, GPU e TEMP antes de qualquer widget sumir, e nenhum widget aparece cortado. (adiado: testar com o editor da spec 17)
-- [x] O pomodoro notifica a troca de fase e volta pausado, com o mesmo restante, depois de lock/unlock.
-- [x] Sem `gh` instalado, o widget GitHub mostra "GitHub" sem erro no journal. Com login, os números batem com `gh search prs`.
-- [x] Nota editada na ilha aparece no widget ao fechar e sobrevive a lock/unlock.
-- [x] Ambiente sem `hw` nem `ai`: nenhuma leitura de `/proc` e nenhuma chamada HTTP de IA acontecem.
+- [ ] Com a barra estreita, o `hw` perde NET, GPU e TEMP antes de qualquer widget sumir, e nenhum widget aparece cortado.
+- [ ] O pomodoro notifica a troca de fase e continua depois de lock/unlock e hot-reload.
+- [x] Com login no `gh`, o widget mostra a contagem de PRs (`GithubSource` isolado contra a conta real: "0 PRs").
+- [ ] Nota editada na ilha aparece no widget ao fechar e sobrevive ao hot-reload.
+- [ ] Ambiente sem `hw` nem `ai`: nenhuma leitura de `/proc` e nenhuma chamada HTTP de IA acontecem.
+- [x] Ambiente Trabalho mostra próximo evento, pomodoro e IA à esquerda, hardware e GitHub à direita (captura no `make dev`).

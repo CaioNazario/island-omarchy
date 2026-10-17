@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import "system"
+import "core/environments.mjs" as EnvironmentsCore
 
 // Entrada `service` do plugin (keepLoaded: specs/14-spikes.md, S6). Vive até
 // o shell reiniciar: guarda o estado visível que não pode se perder quando a
@@ -20,6 +21,12 @@ Item {
   readonly property string pluginId: "caionazario.island"
 
   readonly property alias notifications: feed
+  readonly property alias settings: settingsStore
+  readonly property alias stateStore: store
+  readonly property alias pomodoro: pomodoro
+  // Ambientes (spec 15): saneados a cada leitura, um ativo para todos os monitores.
+  readonly property var environments: EnvironmentsCore.environmentsFromJson(settingsStore.values.environments)
+  readonly property int environmentIndex: EnvironmentsCore.sanitizeIndex(settingsStore.values.environmentIndex, environments.length)
   readonly property bool doNotDisturb: store.values.doNotDisturb
   readonly property bool hasUnread: feed.hasUnread
 
@@ -27,13 +34,34 @@ Item {
   signal osdCloseRequested
   signal quickToggleRequested
   signal stackRequested
+  signal environmentStepRequested(int direction)
 
   function setDoNotDisturb(on) {
     store.values.doNotDisturb = on;
   }
 
+  /** Troca de ambiente; a barra anima e abre `env` (spec 15). */
+  function setEnvironmentIndex(index) {
+    settingsStore.values.environmentIndex = EnvironmentsCore.sanitizeIndex(index, environments.length);
+  }
+
+  function setEnvironments(list) {
+    settingsStore.values.environments = EnvironmentsCore.toStored(list);
+  }
+
   StateStore {
     id: store
+  }
+
+  SettingsStore {
+    id: settingsStore
+  }
+
+  PomodoroSource {
+    id: pomodoro
+
+    store: store
+    feed: feed
   }
 
   NotificationFeed {
@@ -119,6 +147,15 @@ Item {
 
     function toggleQuick(): string {
       root.quickToggleRequested();
+      return "ok";
+    }
+    // `Super+Ctrl+→`/`←` (spec 15), amarrados no Hyprland.
+    function nextEnvironment(): string {
+      root.environmentStepRequested(1);
+      return "ok";
+    }
+    function previousEnvironment(): string {
+      root.environmentStepRequested(-1);
       return "ok";
     }
     function ping(): string {

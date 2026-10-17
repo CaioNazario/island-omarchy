@@ -66,6 +66,29 @@ Scope {
     };
   }
 
+  /**
+   * Notificação da própria Island (pomodoro, dica do clima): sem app no
+   * D-Bus, entra pelo mesmo roteamento, com glifo Phosphor.
+   */
+  function pushInternal(title, body, glyph) {
+    const entry = {
+      key: nextKey++,
+      ref: null,
+      name: title,
+      glyph: glyph,
+      appIcon: "",
+      text: body,
+      timeMs: Date.now(),
+      critical: false,
+      low: false,
+      fromBrowser: false,
+      transient: false
+    };
+    entries = [entry].concat(entries).slice(0, 8);
+    hasUnread = true;
+    arrived(entry);
+  }
+
   function refresh(key) {
     entries = entries.map(entry => {
       if (entry.key !== key) return entry;

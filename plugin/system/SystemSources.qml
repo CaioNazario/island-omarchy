@@ -20,6 +20,9 @@ Scope {
   readonly property alias music: music
   readonly property alias calendar: calendar
   readonly property alias weather: weather
+  readonly property alias hardware: hardware
+  readonly property alias ai: ai
+  readonly property alias github: github
 
   AudioSource {
     id: audio
@@ -52,5 +55,14 @@ Scope {
   }
   WeatherSource {
     id: weather
+  }
+  HardwareSource {
+    id: hardware
+  }
+  AiUsageSource {
+    id: ai
+  }
+  GithubSource {
+    id: github
   }
 }

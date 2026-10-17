@@ -4,6 +4,8 @@ Origem: `design/components/TopbarWidget.html` (parte `w.isAi`) e camada `L.ai` e
 
 Referência de como os dados são obtidos: [ai-usagebar](https://github.com/akitaonrails/ai-usagebar) (`src/anthropic/`, `src/openai/`). A Island reimplementa em TS, **sem** depender do binário.
 
+Código: regras e requisições em `src/core/aiUsage.ts` (`usageRequest`, `fetchOutcome`), fonte em `plugin/system/AiProvider.qml`/`AiUsageSource.qml`, views `AiWidget.qml`, `AiView.qml`, `AiProviderCard.qml`.
+
 ## Provedores
 
 | | Claude | Codex |
@@ -25,7 +27,7 @@ Referência de como os dados são obtidos: [ai-usagebar](https://github.com/akit
 ## Credenciais: somente leitura
 
 - A Island **nunca** escreve nos arquivos de credencial e **nunca** renova token.
-- `Gio.FileMonitor` nos dois arquivos: quando o CLI renova o token, a Island relê e atualiza.
+- `FileView` com `watchChanges` nos dois arquivos: quando o CLI renova o token, a Island relê, sai do estado expirado e busca de novo.
 - Arquivo ausente → cartão mostra, no lugar das barras, "Faça login no Claude" / "Faça login no Codex", e o provedor some do widget.
 - Token expirado (pela data ou HTTP 401) → mantém os últimos valores do cache e mostra "Abra o Claude Code para renovar" / "Abra o Codex para renovar".
 
@@ -35,7 +37,7 @@ Referência de como os dados são obtidos: [ai-usagebar](https://github.com/akit
 - Abrir o modo `ai` força atualização se o cache tiver mais de **60s**.
 - HTTP 429 → mantém cache e dobra o intervalo até 1200s; volta a 300s no próximo sucesso.
 - Erro de rede → mantém cache sem mensagem; após 3 falhas seguidas, "Sem conexão" no cartão.
-- Todo HTTP via `Soup.Session` assíncrono, timeout 10s.
+- Todo HTTP por `curl` (`plugin/system/HttpGet.qml`), timeout 10s, com os cabeçalhos pela entrada padrão (`-H @-`): o token nunca aparece na linha de comando do processo.
 
 ## Cores por nível (sessão e semanal)
 
@@ -62,11 +64,12 @@ O antigo botão da pílula esquerda virou o widget `ai` (spec 16). No ambiente P
   - Duas colunas (gap 14px): "Sessão · 5h" e "Semanal" (11px `neutral-400`) com o % à direita (500, cor da tabela) · barra 4px · "Reinicia {quando}" 10.5px `neutral-500` (margin-top 5px).
   - "Reinicia" da sessão é relativo: `em 2h 14min`, `em 45min`. Da semanal é absoluto: `seg, 09:00` (dia abreviado minúsculo + hora local).
 - Sem botões Conectar/Desconectar: quais provedores aparecem é decidido nas preferências (spec 13).
+- Estados no cartão: sem credencial, "Faça login no …" no lugar das barras; expirado ("Abra o … para renovar") ou sem conexão ("Sem conexão"), as barras do cache e o aviso à direita do topo.
 
 ## Critérios de aceite
 
-- [x] Testes de `aiUsage.ts`: parse dos dois payloads, janelas do Codex fora de ordem, campos ausentes, formatação de "Reinicia", faixas de cor.
-- [x] Nenhuma escrita em `~/.claude` ou `~/.codex` durante a execução (verificável por `inotifywait`).
-- [x] Sem `~/.codex/auth.json`, o cartão do Codex mostra "Faça login no Codex", o Codex some do widget e o Claude funciona normalmente.
-- [x] Rodar o Claude Code (que renova o token) faz o cartão sair do estado expirado sem reiniciar a extensão.
-- [x] Resposta HTTP malformada não gera exceção no log do Shell.
+- [x] Testes de `aiUsage.ts`: parse dos dois payloads, janelas do Codex fora de ordem, campos ausentes, formatação de "Reinicia", faixas de cor, requisição por provedor e status HTTP → resultado.
+- [ ] Nenhuma escrita em `~/.claude` ou `~/.codex` durante a execução (verificável por `inotifywait`).
+- [x] Sem `~/.codex/auth.json`, o Codex some do widget e o Claude funciona normalmente (visto no `make dev` com a conta real).
+- [ ] Rodar o Claude Code (que renova o token) faz o cartão sair do estado expirado sem reiniciar o shell.
+- [x] Resposta HTTP malformada não gera exceção (`fetchOutcome` → `malformed`).

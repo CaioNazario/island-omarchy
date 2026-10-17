@@ -7,7 +7,7 @@ import "system"
 import "ui"
 import "core/island.mjs" as IslandCore
 import "core/osd.mjs" as OsdCore
-import "core/notifications.mjs" as NotificationsCore
+import "core/environments.mjs" as EnvironmentsCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
 // este item a cada hot-reload; o que precisa sobreviver mora no Service.qml.
@@ -39,9 +39,9 @@ Item {
   property string wifiPasswordError: ""
 
   // Notificações (specs/04): conteúdo do `notif`, banner e destaque no `stack`.
-  property var notifEntry: null
-  property var bannerEntry: null
-  property int flashKey: 0
+  readonly property alias notifEntry: router.notifEntry
+  readonly property alias bannerEntry: router.bannerEntry
+  readonly property alias flashKey: router.flashKey
   // Relógio do tempo relativo ("há N min"), um tique por minuto.
   property real nowMs: Date.now()
 
@@ -49,6 +49,18 @@ Item {
   // Semana no mês atual.
   property string calendarView: "week"
   property int calendarOffset: 0
+
+  // Ambientes (spec 15): um ativo para todos os monitores, guardado no serviço.
+  readonly property var environments: service ? service.environments : EnvironmentsCore.defaultEnvironments()
+  readonly property int environmentIndex: service ? service.environmentIndex : 0
+  readonly property var environment: environments[environmentIndex]
+  readonly property var activeWidgets: environment.left.concat(environment.right)
+  // Sentido da última troca (+1/−1) para a animação; 0 = sem animar.
+  property int envDirection: 0
+  // Deslocamento do conteúdo das pílulas acompanhando a rolagem.
+  property real envDrag: 0
+  property var envScroll: new EnvironmentsCore.EnvironmentScroll()
+  property bool editorOpen: false
 
   // Conteúdo do modo `osd` (specs/08 "OSD do Omarchy").
   property var osd: ({ glyph: "info", text: "", percent: 0 })
@@ -60,13 +72,21 @@ Item {
       stackItemCount: service && service.notifications ? service.notifications.entries.length : 0,
       wifiPasswordField: wifiPasswordFor === "" ? "none" : wifiPasswordError === "" ? "normal" : "error",
       btOn: sources.bluetooth.radioOn,
-      calendarView: calendarView
+      calendarView: calendarView,
+      providerCount: sources.ai.providers.length
     })
 
   SystemSources {
     id: sources
 
     shell: root.shell
+    // Fontes só de widget rodam só com o widget no ambiente ativo (spec 16).
+    hardware.sampling: root.activeWidgets.includes("hw")
+    ai.polling: root.activeWidgets.includes("ai")
+    ai.claudeEnabled: root.service ? root.service.settings.values.aiClaudeEnabled : true
+    ai.codexEnabled: root.service ? root.service.settings.values.aiCodexEnabled : true
+    github.polling: root.activeWidgets.includes("github")
+    weather.preferredLocation: root.service ? root.service.settings.values.weatherLocation : null
   }
 
   QmlScheduler {
@@ -192,10 +212,53 @@ Item {
     function onQuickToggleRequested() {
       root.toggleQuick();
     }
+    function onEnvironmentStepRequested(direction) {
+      root.stepEnvironment(direction);
+    }
     function onStackRequested() {
       root.targetFocusedScreen();
       if (root.mode !== "stack") root.islandState.openFromTrigger("stack");
     }
+  }
+
+  /** Próximo/anterior, circular (`stepIndex`). */
+  function stepEnvironment(direction) {
+    if (!service) return;
+    switchEnvironment(EnvironmentsCore.stepIndex(environmentIndex, environments.length, direction), direction);
+  }
+
+  /** Clique num ponto ou aba do editor: vai direto, animando no sentido do destino. */
+  function goEnvironment(index) {
+    if (!service || index === environmentIndex) return;
+    switchEnvironment(index, index > environmentIndex ? 1 : -1);
+  }
+
+  // Só trocas pedidas mostram `env`: o índice também muda quando a barra
+  // acha o serviço (hot-reload) ou o arquivo muda por fora, e aí a ilha fica.
+  function switchEnvironment(index, direction) {
+    envDirection = direction;
+    service.setEnvironmentIndex(index);
+    targetForAutomatic();
+    islandState.environmentSwitched();
+  }
+
+  /** Rolagem sobre a barra (spec 15 "Rolagem suave"); a regra é do core. */
+  function scrollBar(input) {
+    const result = envScroll.handle(input);
+    if (result.drag !== undefined) envDrag = result.drag;
+    if (result.step) {
+      envDrag = 0;
+      stepEnvironment(result.step);
+    }
+    return result.handled;
+  }
+
+  // O editor de ambientes é a spec 17; até lá o botão não abre nada.
+  function toggleEditor() {
+  }
+
+  // As preferências (spec 13) entram depois; até lá não abrem nada.
+  function openPreferences(page) {
   }
 
   function resetCalendar() {
@@ -226,53 +289,10 @@ Item {
     }
   }
 
-  // Notificação nova (specs/04 "Roteamento"): a regra é do core.
-  function routeNotification(entry) {
-    const incoming = {
-      critical: entry.critical,
-      low: entry.low,
-      acknowledged: false,
-      bannersAllowed: !service.doNotDisturb,
-      fromBrowser: entry.fromBrowser
-    };
-    const route = NotificationsCore.routeNotification(incoming, { mode: mode, cardOpen: cardOpen });
-    if (route === "notif") return showNotif(entry);
-    if (route === "stack") return flash(entry);
-    if (route === "banner") return showBanner(entry);
-  }
+  NotificationRouter {
+    id: router
 
-  function showNotif(entry) {
-    targetForAutomatic();
-    notifEntry = entry;
-    islandState.openNotification(entry.critical, entry.fromBrowser);
-  }
-
-  function flash(entry) {
-    flashKey = entry.key;
-    flashTimer.restart();
-  }
-
-  function showBanner(entry) {
-    bannerEntry = entry;
-    bannerTimer.restart();
-  }
-
-  function hideBanner() {
-    bannerEntry = null;
-  }
-
-  Timer {
-    id: flashTimer
-
-    interval: 2500
-    onTriggered: root.flashKey = 0
-  }
-
-  Timer {
-    id: bannerTimer
-
-    interval: 2600
-    onTriggered: root.hideBanner()
+    bar: root
   }
 
   Timer {
@@ -282,12 +302,8 @@ Item {
     onTriggered: root.nowMs = Date.now()
   }
 
-  Connections {
-    target: root.service ? root.service.notifications : null
-    function onArrived(entry) {
-      root.nowMs = Date.now();
-      root.routeNotification(entry);
-    }
+  function hideBanner() {
+    router.hideBanner();
   }
 
   // Falha ao conectar com senha: o painel reabre com a mensagem (specs/08).

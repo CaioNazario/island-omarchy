@@ -43,6 +43,10 @@ Scope {
       id: adapter
 
       property bool doNotDisturb: false
+      // `serialize` do src/core/pomodoro.ts; vazio = Foco 25:00 pausado.
+      property string pomodoroState: ""
+      // A dica "Configure sua cidade" já apareceu (spec 07).
+      property bool weatherHintShown: false
     }
     // qmllint enable unresolved-type
   }

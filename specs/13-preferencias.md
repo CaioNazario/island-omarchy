@@ -4,35 +4,30 @@ Origem: `design/props.json` (`clickAction`) e o estado persistido do protótipo 
 
 O design v3 muda o padrão de `clickAction` para "Calendário compacto" e só aplica a opção fora do ambiente Padrão. A Island mantém o comportamento da v1.0: opção global, padrão cartão central.
 
-## Schema GSettings
+## Arquivo de preferências
 
-`org.gnome.shell.extensions.island`, em `schemas/`:
+`$XDG_CONFIG_HOME/island/settings.json` (`plugin/system/SettingsStore.qml`, um `JsonAdapter` no `Service.qml`). O arquivo é vigiado: editar por fora (à mão ou pela janela de preferências) vale na hora. Chave ausente usa o padrão; JSON inválido também.
 
 | Chave | Tipo | Padrão | Usada em |
 |---|---|---|---|
-| `click-action` | enum `center-card` \| `calendar` | `center-card` | spec 03 (clique na ilha compacta) |
-| `weather-location` | `v` (localização GWeather serializada) | vazio | spec 07 |
-| `weather-hint-shown` | `b` | `false` | spec 07 (interna, sem UI) |
-| `prefs-page` | `s` | vazio | página a abrir nas preferências (interna, sem UI) |
-| `ai-claude-enabled` | `b` | `true` | spec 12 |
-| `ai-codex-enabled` | `b` | `true` | spec 12 |
-| `environments` | `a(ssasas)` (nome, ícone, widgets da esquerda, widgets da direita) | os 4 ambientes iniciais da spec 15 | spec 15, 17 |
-| `environment-index` | `u` | `0` | spec 15 |
-| `switch-environment-next` | `as` | `['<Super><Control>Right']` | spec 15 (keybinding, sem UI) |
-| `switch-environment-previous` | `as` | `['<Super><Control>Left']` | spec 15 (keybinding, sem UI) |
-| `auto-hide` | `b` | `false` | spec 18 (editada no editor de ambientes) |
-| `note-text` | `s` (até 80) | vazio | spec 16 (editada na ilha) |
-| `countdown-name` | `s` | vazio | spec 16 |
-| `countdown-date` | `s` (`AAAA-MM-DD`) | vazio | spec 16 |
-| `pomodoro-state` | `s` | vazio (Foco 25:00, pausado) | spec 16 (interna, sem UI) |
+| `clickAction` | `"card"` \| `"calendar"` | `"card"` | spec 03 (clique na ilha compacta) |
+| `weatherLocation` | `{name, latitude, longitude}` ou `null` | `null` | spec 07 |
+| `aiClaudeEnabled` | bool | `true` | spec 12 |
+| `aiCodexEnabled` | bool | `true` | spec 12 |
+| `environments` | `[[nome, ícone, [esquerda], [direita]], …]` | `[]` (= os 4 ambientes iniciais da spec 15) | spec 15, 17 |
+| `environmentIndex` | int | `0` | spec 15 |
+| `autoHide` | bool | `false` | spec 18 |
+| `noteText` | string (até 80) | `""` | spec 16 |
+| `countdownName` | string | `""` | spec 16 |
+| `countdownDate` | `"AAAA-MM-DD"` ou `""` | `""` | spec 16 |
 
-A extensão reage a `changed::<chave>` sem reiniciar.
+Estado que não é preferência fica em `$XDG_STATE_HOME/island/state.json` (`StateStore.qml`): `doNotDisturb` (spec 04), `pomodoroState` (spec 16), `weatherHintShown` (spec 07).
 
-O atalho de controles rápidos não é preferência: a Island usa o `toggle-quick-settings` do próprio Shell (`Super+S`, spec 03).
+Atalhos não são preferência: são binds do Hyprland para o alvo IPC `island` (`toggleQuick`, `nextEnvironment`, `previousEnvironment`; specs 03 e 15).
 
-## Janela de preferências (`prefs.ts`, GTK4 + libadwaita)
+## Janela de preferências (a portar)
 
-Roda em outro processo e só conversa com a extensão via GSettings. Textos em pt-BR via gettext.
+Ainda não portada: na v1.1 era GTK4 + libadwaita em outro processo. No Omarchy ela fala só pelo `settings.json`. Até lá, as preferências se editam no arquivo.
 
 - **Geral**
   - "Clique na ilha abre": Calendário e música (cartão) · Calendário compacto (ilha)
@@ -52,8 +47,6 @@ A notificação de dica do clima (spec 07) abre esta janela direto na página Cl
 
 ## Critérios de aceite
 
-- [x] Cada chave do schema muda o comportamento na hora, com a extensão rodando.
-- [x] `glib-compile-schemas` roda sem aviso no build e no `install.sh`.
-- [x] A janela abre pelo app Extensões e por `gnome-extensions prefs island@caionazario.dev`.
-- [x] As chaves novas da v1.1 mudam o comportamento na hora, com a extensão rodando.
-- [x] Mudar a data da contagem nas preferências atualiza o widget sem reiniciar.
+- [ ] Cada chave do `settings.json` muda o comportamento na hora, com o shell rodando.
+- [ ] A janela de preferências abre e grava no `settings.json`.
+- [ ] Mudar a data da contagem atualiza o widget sem reiniciar.

@@ -20,11 +20,56 @@ Item {
 
   height: island.height
 
+  // Rolagem sobre a barra troca de ambiente (specs/15 "Rolagem suave"). No
+  // Qt, touchpad chega com `pixelDelta` e fase; roda inclinada só com
+  // `angleDelta` (120 por clique). Um passo do core ≈ 10px de dedo.
+  function wheel(event) {
+    const touchpad = event.pixelDelta.x !== 0 || event.pixelDelta.y !== 0 || event.phase !== Qt.NoScrollPhase;
+    const input = touchpad ? {
+      kind: "smooth",
+      dx: -event.pixelDelta.x / 10,
+      dy: -event.pixelDelta.y / 10,
+      finished: event.phase === Qt.ScrollEnd
+    } : wheelInput(event);
+    event.accepted = input !== null && bar.scrollBar(input);
+  }
+
+  function wheelInput(event) {
+    if (event.angleDelta.x === 0) return null;
+    return { kind: "discrete", direction: event.angleDelta.x > 0 ? "left" : "right", fromWheel: true };
+  }
+
   Pill {
     id: leftPill
 
     anchors.left: parent.left
     width: row.pillWidth
+
+    WheelHandler {
+      acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+      onWheel: event => row.wheel(event)
+    }
+
+    EnvButton {
+      id: envButton
+
+      anchors.left: parent.left
+      anchors.leftMargin: Tokens.pillPaddingH
+      anchors.verticalCenter: parent.verticalCenter
+      bar: row.bar
+    }
+
+    WidgetArea {
+      anchors.left: envButton.right
+      anchors.leftMargin: 4
+      anchors.right: parent.right
+      anchors.rightMargin: Tokens.pillPaddingH
+      height: parent.height
+      bar: row.bar
+      screenName: row.screenName
+      ids: row.bar.environment.left
+      side: "left"
+    }
   }
 
   Island {
@@ -53,7 +98,26 @@ Item {
     anchors.right: parent.right
     width: row.pillWidth
 
+    WheelHandler {
+      acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+      onWheel: event => row.wheel(event)
+    }
+
+    WidgetArea {
+      anchors.left: parent.left
+      anchors.leftMargin: Tokens.pillPaddingH
+      anchors.right: buttons.left
+      anchors.rightMargin: 4
+      height: parent.height
+      bar: row.bar
+      screenName: row.screenName
+      ids: row.bar.environment.right
+      side: "right"
+    }
+
     RightButtons {
+      id: buttons
+
       anchors.right: parent.right
       anchors.rightMargin: Tokens.pillPaddingH
       anchors.verticalCenter: parent.verticalCenter

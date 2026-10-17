@@ -158,6 +158,30 @@ Item {
     }
 
     Layer {
+      layerId: "env"
+
+      EnvRow {
+        bar: island.bar
+      }
+    }
+
+    Layer {
+      layerId: "note"
+
+      NoteView {
+        bar: island.bar
+      }
+    }
+
+    Layer {
+      layerId: "ai"
+
+      AiView {
+        bar: island.bar
+      }
+    }
+
+    Layer {
       layerId: "volume"
 
       LevelRow {

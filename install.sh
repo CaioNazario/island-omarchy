@@ -46,8 +46,10 @@ install() {
   for id in "${REPLACED_PLUGINS[@]}"; do omarchy plugin disable "$id"; done
   omarchy plugin enable "$PLUGIN_ID"
   echo "Instalado em: $TARGET_DIR"
-  echo "Atalho Super+S (specs/03-ilha.md): adicione em ~/.config/hypr/bindings.lua:"
-  echo '  o.bind("SUPER + S", "Island", "omarchy-shell island toggleQuick")'
+  echo "Atalhos (specs 03 e 15): adicione em ~/.config/hypr/bindings.lua:"
+  echo '  o.bind("SUPER + S", "Island: controles", "omarchy-shell island toggleQuick")'
+  echo '  o.bind("SUPER + CTRL + RIGHT", "Island: próximo ambiente", "omarchy-shell island nextEnvironment")'
+  echo '  o.bind("SUPER + CTRL + LEFT", "Island: ambiente anterior", "omarchy-shell island previousEnvironment")'
   echo "Para voltar à barra do Omarchy: $0 --uninstall"
 }
 
