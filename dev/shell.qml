@@ -88,6 +88,14 @@ ShellRoot {
       return bar.mode; // qmllint disable missing-property
     }
 
+    // Clique na ilha do monitor capturado (regra 5 da spec 03).
+    function click(): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      bar.islandClick(host.captureScreen()); // qmllint disable missing-property
+      return bar.cardOpen ? "card" : bar.mode; // qmllint disable missing-property
+    }
+
     function status(): string {
       return JSON.stringify({
         bar: barLoader.status === Loader.Ready,
