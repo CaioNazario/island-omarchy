@@ -128,6 +128,7 @@ Problema já encontrado e sua solução. Adicione aqui toda vez que algo custar 
 - `FileView` com `watchChanges` não percebe um arquivo que nasce depois (ex.: o registro do `omarchy-agent-usage-update`): chame `reload()` quando quem escreve terminar.
 - Sem `Qt.clearComponentCache` (Qt 6.11), o hot-reload recria a barra com os componentes antigos, no harness (`ipc dev reload`) e no omarchy-shell real (`shell.qml` tem a mesma guarda). No harness, `nested.sh stop` e `serve` de novo; na sessão, o `install.sh` termina com `omarchy-restart-shell`.
 - `implicitWidth` de `Column`/`Row` é só leitura e o `qmllint` não acusa dentro de componente inline: só o log do `make dev` mostra (`Invalid property assignment`). Dê `width` a quem usa o componente.
+- `WheelHandler` só reage à roda vertical por padrão (`orientation: Qt.Vertical`): para rolagem horizontal (deslize de dois dedos), `orientation: Qt.Horizontal`.
 - Senha ou lista de servidores para um comando vai pela entrada padrão (`stdinEnabled`, `write()` no `onStarted`, depois `stdinEnabled = false` fecha a entrada), nunca pela linha de comando.
 
 ## Antes de dizer que terminou

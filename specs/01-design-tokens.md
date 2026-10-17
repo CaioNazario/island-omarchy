@@ -59,8 +59,24 @@ Pílulas e ilha usam o acabamento do design v5 (`plugin/ui/SoftSurface.qml`), so
 - **Brilho vertical**: pílula `rgba(255,255,255,.045)` → `.01` em 46% → `rgba(0,0,0,.05)`; ilha `.04` → `.01` em 22% → transparente em 55% → `rgba(0,0,0,.05)`.
 - **Halo do acento**: elipse radial embaixo, pílula `80% 150% at 50% 135%` (`accent` 9% → transparente em 65%), ilha `70% 120% at 50% 125%` (8% → 60%).
 - **`SOFT_IN`** (por dentro): 1px de brilho `rgba(255,255,255,.07)` no topo, sombra `rgba(0,0,0,.14)` nos 8px de baixo e anel 1px `rgba(255,255,255,.05)`. O brilho interno de 4% do `accent` fica de fora (não aparece sobre o `bg`).
-- **`SOFT_OUT`** (por fora, pílulas e ilha compacta): `0 10px 30px -6px accent 34%`, `0 0 22px -4px accent 22%`, `0 16px 36px -14px rgba(0,0,0,.5)`.
-- **Ilha expandida**: no lugar do `SOFT_OUT`, `0 18px 44px rgba(0,0,0,.6)`, `0 14px 48px -8px accent 38%` e `0 0 34px -6px accent 26%`, com fade de 300ms.
+- **`SOFT_OUT`** (por fora, pílulas e ilha compacta): só `0 16px 36px -14px rgba(0,0,0,.5)`. Os dois brilhos `accent` do design (34% e 22%) saíram a pedido do usuário: em volta da barra viravam um vazamento roxo.
+- **Ilha expandida**: no lugar do `SOFT_OUT`, `0 18px 44px rgba(0,0,0,.6)`, com fade de 300ms; sem os brilhos `accent` do design, pelo mesmo motivo.
+
+## Temas
+
+Os cinco temas do design (`THEMES` em design/logic.js), escolhidos no editor de ambientes (spec 17) e guardados em `settings.json` `theme` (spec 13). `src/core/themes.ts` dá as cores de cada um e o `Tokens.qml` as lê, então a UI inteira troca junto.
+
+| Tema | Base | Superfícies |
+|---|---|---|
+| Nocturne (padrão) | os tokens acima | pílulas e ilha em `bg` opaco |
+| Vidro fosco | Nocturne; `neutral-900`/`800` = `neutral-100` a 10%/18% | pílulas `bg` 38%, ilha `bg` 52%, editor `bg` 60% (sem o blur do design) |
+| Sólido | Nocturne; `neutral-900` `#30334a`, `neutral-800` `#41455c` | `surface` |
+| Claro | `bg` `#f5f6fb`, `text` `#1b1d28`, neutros invertidos do design; escala do acento invertida, `accent` = passo 5 dela | `#f8f9fc` a 80% (pílulas), 94% (ilha), 96% (editor) |
+| Alto contraste | `bg` `#0b0c12`, `text` `#f7f8fc`, neutros do design; passos 5–7 do acento puxados para cima, `accent` = `accent-400` | `#0b0c12` |
+
+- O Alto contraste do design também aumenta a saturação do acento em 25%; a Island usa a escala normal.
+- O azul do Claro no v4 (matiz 232) depende do seletor de realce, que não existe: o Claro usa o roxo invertido.
+- Cores fixas de estado (vermelhos, verde da bateria, Energia) não mudam com o tema.
 
 ## Efeitos (equivalentes QML)
 

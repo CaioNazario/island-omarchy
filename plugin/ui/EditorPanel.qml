@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import "../core/environments.mjs" as EnvironmentsCore
+import "../core/themes.mjs" as ThemeCore
 
 // Editor de ambientes (specs/17-editor-ambientes.md): 880px, `top: 48px`,
 // padding 16px, raio 20, `bg` 94%, anel `neutral-800`, linhas com gap 14px:
@@ -271,6 +272,30 @@ Rectangle {
       Layout.fillWidth: true
       bar: panel.bar
       dragProxy: panel.dragProxy
+    }
+
+    // Tema (spec 01 "Temas"): vale para a barra inteira, não por ambiente.
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 6
+
+      IslandText {
+        Layout.rightMargin: 8
+        text: "Tema"
+      }
+
+      Repeater {
+        model: ThemeCore.THEME_IDS
+
+        ChoiceButton {
+          required property string modelData
+
+          Layout.fillWidth: true
+          label: modelData
+          active: Tokens.theme === modelData
+          onClicked: panel.bar.setTheme(modelData)
+        }
+      }
     }
 
     RowLayout {

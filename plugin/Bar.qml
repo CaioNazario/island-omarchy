@@ -133,6 +133,17 @@ Item {
     id: scheduler
   }
 
+  // Tema da preferência (spec 01 "Temas"): todas as cores leem o `Tokens`.
+  Binding {
+    target: Tokens
+    property: "theme"
+    value: root.service ? root.service.settings.values.theme : "Nocturne"
+  }
+
+  function setTheme(id) {
+    if (service) service.settings.values.theme = id;
+  }
+
   Component.onCompleted: {
     islandState = new IslandCore.IslandState(scheduler, { onChange: syncIsland });
     targetFocusedScreen();

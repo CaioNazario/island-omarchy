@@ -17,6 +17,7 @@ O design v3 muda o padrão de `clickAction` para "Calendário compacto" e só ap
 | `environments` | `[[nome, ícone, [esquerda], [direita]], …]` | `[]` (= os 4 ambientes iniciais da spec 15) | spec 15, 17 |
 | `environmentIndex` | int | `0` | spec 15 |
 | `autoHide` | bool | `false` | spec 18 |
+| `theme` | `"Nocturne"` \| `"Vidro fosco"` \| `"Sólido"` \| `"Claro"` \| `"Alto contraste"` | `"Nocturne"` | spec 01 "Temas", spec 17 |
 | `noteText` | string (até 80) | `""` | spec 16 |
 | `countdownName` | string | `""` | spec 16 |
 | `countdownDate` | `"AAAA-MM-DD"` ou `""` | `""` | spec 16 |

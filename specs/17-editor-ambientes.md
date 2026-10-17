@@ -58,6 +58,10 @@ Ainda não existe: o auto-ocultar (spec 18) não está implementado na barra, e 
 - Linha clicável inteira, padding 10px 12px, raio 12, `neutral-900`, hover `neutral-800`: `ph ph-eye-slash` 16px `neutral-300`; "Ocultar barra automaticamente" 12.5px/500 + "A barra some e reaparece quando o ponteiro encosta na borda de cima da tela" 11px `neutral-500`; switch 32×18 (ligado: trilho `accent-800`, anel `accent`, bolinha `accent-200` em 16px; desligado: trilho `neutral-800`, bolinha `neutral-400` em 2px; 200ms).
 - A linha "Posição da barra" do design não existe: a barra fica só no topo (spec 00).
 
+## Tema
+
+Linha com "Tema" 13px/500 e cinco opções de 30px (`ChoiceButton`, ativa `accent-900` com anel `accent-700`): Nocturne, Vidro fosco, Sólido, Claro, Alto contraste. Vale para a barra inteira, não por ambiente; troca na hora (spec 01 "Temas"). Não existe no design, onde o tema é uma opção do protótipo.
+
 ## Rodapé
 
 `ph ph-hand-swipe-left` 15px + "Deslize com dois dedos sobre a barra para trocar de ambiente. No teclado: Super+Ctrl+Alt+← / Super+Ctrl+Alt+→." 11.5px `neutral-500`.
