@@ -114,6 +114,14 @@ export function getSize(mode: Mode, ctx: SizeContext = {}): Size {
   }
 }
 
+/**
+ * Raio desenhado: o design v5 arredonda mais a ilha (`islandR: min(r + 10, h / 2)`),
+ * e as camadas de cada modo continuam medidas pela tabela de `getSize`.
+ */
+export function displayRadius(size: Size): number {
+  return Math.min(size.radius + 10, size.height / 2);
+}
+
 export type IslandClickOpens = 'card' | 'calendar';
 
 export interface IslandStateOptions {

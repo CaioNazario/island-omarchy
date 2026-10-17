@@ -28,7 +28,9 @@ O QML não entende `oklch()` nem `color-mix()`. Valores convertidos (alfa via `Q
 | Fundo do botão Energia aberto | `oklch(0.45 0.14 25)` | `#932b2a` |
 | Texto "Desligar" | `oklch(0.78 0.13 25)` | `#ff958d` |
 | Borda do campo de senha com erro | `oklch(0.55 0.16 25)` | `#bd413f` |
-| Brilho da ilha expandida | `accent` 18% | `accent` com alfa 0.18 |
+| Brilho da ilha expandida (v5) | `accent` 38% e 26% | `accent` com alfa 0.38 / 0.26 |
+| Brilho das pílulas e da ilha compacta (`SOFT_OUT`, v5) | `accent` 34% e 22% | `accent` com alfa 0.34 / 0.22 |
+| Halo do acento embaixo (v5) | `accent` 9% (pílula), 8% (ilha) | `accent` com alfa 0.09 / 0.08 |
 | Brilho do cartão central | `accent` 10% | `accent` com alfa 0.10 |
 | Brilho do thumb do slider de volume | `accent` 60% | `accent` com alfa 0.60 |
 | `.btn-primary:hover` / `:active` | `accent` 12% / 22% | `accent` com alfa 0.12 / 0.22 |
@@ -50,6 +52,16 @@ O QML não entende `oklch()` nem `color-mix()`. Valores convertidos (alfa via `Q
 - Empacotados como SVG simbólicos em `icons/` dentro do plugin; só os ícones usados, não a fonte inteira.
 - Ícones de marca sem equivalente no Phosphor caem em `ph-music-note` (música) ou `ph-globe` (notificação de site).
 
+## Superfícies
+
+Pílulas e ilha usam o acabamento do design v5 (`plugin/ui/SoftSurface.qml`), sobre o fundo `bg` opaco:
+
+- **Brilho vertical**: pílula `rgba(255,255,255,.045)` → `.01` em 46% → `rgba(0,0,0,.05)`; ilha `.04` → `.01` em 22% → transparente em 55% → `rgba(0,0,0,.05)`.
+- **Halo do acento**: elipse radial embaixo, pílula `80% 150% at 50% 135%` (`accent` 9% → transparente em 65%), ilha `70% 120% at 50% 125%` (8% → 60%).
+- **`SOFT_IN`** (por dentro): 1px de brilho `rgba(255,255,255,.07)` no topo, sombra `rgba(0,0,0,.14)` nos 8px de baixo e anel 1px `rgba(255,255,255,.05)`. O brilho interno de 4% do `accent` fica de fora (não aparece sobre o `bg`).
+- **`SOFT_OUT`** (por fora, pílulas e ilha compacta): `0 10px 30px -6px accent 34%`, `0 0 22px -4px accent 22%`, `0 16px 36px -14px rgba(0,0,0,.5)`.
+- **Ilha expandida**: no lugar do `SOFT_OUT`, `0 18px 44px rgba(0,0,0,.6)`, `0 14px 48px -8px accent 38%` e `0 0 34px -6px accent 26%`, com fade de 300ms.
+
 ## Efeitos (equivalentes QML)
 
 | Design | QML |
@@ -59,6 +71,8 @@ O QML não entende `oklch()` nem `color-mix()`. Valores convertidos (alfa via `Q
 | Cartões `cubic-bezier(.3,1.15,.4,1)` .4s | Mesma técnica, `Tokens.cardCurve`, 400ms |
 | Crossfade de conteúdo `.22s ease` com atraso `.08s` | `SequentialAnimation` com `PauseAnimation` de 80ms + `opacity` em 220ms |
 | `box-shadow: 0 0 0 1px` (anel) | `border.width: 1` do `Rectangle` |
+| `box-shadow` externo com desfoque | `RectangularShadow` (QtQuick.Effects, Qt 6.9+); espalhamento negativo vira margem |
+| `radial-gradient` elíptico | `Shape` com `RadialGradient` e `Scale` vertical, recortado por `ClippingRectangle` |
 | `:hover` / `:active` | `HoverHandler`/`MouseArea.containsMouse` e `pressed` |
 | `:focus-visible` anel 2px `accent` | `activeFocus` com borda de 2px `accent` |
 

@@ -5,7 +5,7 @@ Origem: `design/markup.html` container `barRef`, pílula esquerda (`dropLeft`) e
 ## Layout
 
 - Container no topo de cada monitor: `left: 12px`, `right: 12px`, `top: 2px` (era 0 até o design v3), três filhos em linha com `gap: 6px`, alinhados pelo topo (a ilha cresce para baixo sem mover as laterais).
-- **Pílulas laterais**: dividem igualmente o espaço que sobra da ilha (`flex: 1 1 0`); altura 26px, raio 13px, fundo `bg`, anel 1px `neutral-800`, padding horizontal 6px. Sem o blur do design por enquanto (spec 01).
+- **Pílulas laterais**: dividem igualmente o espaço que sobra da ilha (`flex: 1 1 0`); altura 26px, raio 13px, fundo `bg` com o acabamento do v5 (brilho, halo do acento, `SOFT_IN` e `SOFT_OUT`, spec 01 "Superfícies"), padding horizontal 6px. Sem o blur do design por enquanto (spec 01).
 - **Ilha**: largura/altura/raio do modo atual (spec 03), centralizada entre as laterais.
 
 ### Pílula esquerda

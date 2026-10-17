@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  displayRadius,
   getSize,
   isFixedMode,
   IslandState,
@@ -597,6 +598,17 @@ describe('getSize', () => {
   it('ai: altura cresce por provedor', () => {
     expect(getSize('ai', { providerCount: 1 })).toEqual({ width: 480, height: 158, radius: 24 });
     expect(getSize('ai', { providerCount: 2 })).toEqual({ width: 480, height: 266, radius: 24 });
+  });
+});
+
+describe('displayRadius', () => {
+  it('soma 10 ao raio da tabela sem passar da metade da altura (design v5)', () => {
+    expect(displayRadius(getSize('compact'))).toBe(13);
+    expect(displayRadius(getSize('notif'))).toBe(24);
+    expect(displayRadius(getSize('music'))).toBe(29);
+    expect(displayRadius(getSize('quick'))).toBe(23);
+    expect(displayRadius(getSize('stack', { stackItemCount: 3 }))).toBe(34);
+    expect(displayRadius(getSize('calendar', { calendarView: 'week' }))).toBe(34);
   });
 });
 
