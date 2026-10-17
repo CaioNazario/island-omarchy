@@ -2,7 +2,10 @@
 // lidos dos registros que `omarchy-agent-usage-update` grava em
 // ~/.local/state/omarchy/agents/usage/<agente>.json, como o widget de agentes do
 // Omarchy (/usr/share/omarchy/shell/plugins/agents). Formatação e nomes dos
-// modelos seguem o `Main.qml` de lá.
+// modelos seguem o `Main.qml` de lá. Os limites de sessão e semanal também
+// vêm do registro (o coletor do Claude consulta o endpoint OAuth de uso).
+
+import type { UsageWindow } from './aiUsage.js';
 
 export interface AgentDay {
   date: string;
@@ -21,6 +24,10 @@ export interface AgentRecord {
   days: AgentDay[];
   /** Do mais usado para o menos. */
   models: AgentModel[];
+  session: UsageWindow | null;
+  weekly: UsageWindow | null;
+  /** Aviso do coletor em vez dos limites (sem login, limite de requisições). */
+  status: string;
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -54,6 +61,28 @@ function parseModels(value: unknown): AgentModel[] {
     .sort((a, b) => b.tokens - a.tokens);
 }
 
+function parseWindow(entry: Record<string, unknown>): UsageWindow | null {
+  if (typeof entry.percent !== 'number' || !Number.isFinite(entry.percent)) return null;
+  const resetsAt = typeof entry.resetsAt === 'string' ? Date.parse(entry.resetsAt) : NaN;
+  return { percent: entry.percent * 100, resetsAt: Number.isNaN(resetsAt) ? null : resetsAt };
+}
+
+/** Pelo rótulo ("Session (5-hour)", "Weekly (7-day)"), nunca pela posição. */
+function findWindow(limits: unknown, pattern: RegExp): UsageWindow | null {
+  if (!Array.isArray(limits)) return null;
+  const entry = limits.filter(isObject).find((limit) => pattern.test(String(limit.label ?? '')));
+  return entry ? parseWindow(entry) : null;
+}
+
+function statusText(data: Record<string, unknown>, hasLimits: boolean): string {
+  if (typeof data.usageStatusText === 'string' && data.usageStatusText !== '')
+    return data.usageStatusText;
+  if (!hasLimits && typeof data.authHelpText === 'string' && data.authHelpText !== '') {
+    return 'Faça login no CLI para ver os limites';
+  }
+  return '';
+}
+
 export function parseAgentRecord(text: string): AgentRecord | null {
   let data: unknown;
   try {
@@ -63,11 +92,16 @@ export function parseAgentRecord(text: string): AgentRecord | null {
   }
   if (!isObject(data)) return null;
   const updatedAt = typeof data.updatedAt === 'string' ? Date.parse(data.updatedAt) : NaN;
+  const session = findWindow(data.limits, /session|5-hour/i);
+  const weekly = findWindow(data.limits, /weekly|7-day/i);
   return {
     plan: typeof data.tierLabel === 'string' ? data.tierLabel : '',
     updatedAt: Number.isNaN(updatedAt) ? 0 : updatedAt,
     days: parseDays(data.recentDays),
     models: parseModels(data.modelUsage),
+    session,
+    weekly,
+    status: statusText(data, session !== null || weekly !== null),
   };
 }
 

@@ -132,8 +132,8 @@ Informações sobre:
 ### Bateria
 A barra desenha a bateria com o nível dentro: verde a partir de 80%, vermelha até 20%, e um raio enquanto carrega. O clique abre um painel com capacidade, tempo, ciclos e potência (`omarchy-battery-status`) e o perfil de energia (`omarchy-powerprofiles-set`).
 ### Uso de IA
-A Island pode mostrar os limites de uso do **Claude** e do **Codex**, utilizando as credenciais já existentes dos respectivos CLIs. Os tokens por dia e por modelo vêm dos registros do `omarchy-agent-usage-update`, que a Island roda como o widget de agentes do Omarchy.
-> Veja [Uso de IA: leia antes](#uso-de-ia-leia-antes) antes de ativar esse recurso.
+A Island mostra os limites de uso e os tokens por dia e por modelo do **Claude** e do **Codex** a partir dos registros do `omarchy-agent-usage-update`, que ela roda como o widget de agentes do Omarchy.
+> Veja [Uso de IA: leia antes](#uso-de-ia-leia-antes).
 
 ***
 ## Como funciona
@@ -228,23 +228,9 @@ npm ci
 Volta para a barra do Omarchy e religa as notificações e o OSD dele.
 ***
 ## Uso de IA: leia antes
-O widget de uso de IA **não utiliza APIs oficiais de uso**.
-Quando ativados, os provedores funcionam da seguinte maneira:
-1. A Island lê o token OAuth existente em:
-   - `~/.claude/.credentials.json`
-   - `~/.codex/auth.json`
-2. Utiliza esse token para consultar endpoints de uso **não documentados** da Anthropic e da OpenAI. O token vai para o `curl` pela entrada padrão, nunca pela linha de comando.
-3. O endpoint do Claude exige o User-Agent do Claude CLI, então a Island se identifica como o CLI.
-
-A Island:
-- **Nunca modifica** os arquivos de credenciais.
-- **Nunca renova** os tokens.
-- Relê as credenciais quando o CLI atualiza o arquivo.
-
-Esses endpoints não são APIs públicas e podem mudar ou deixar de existir a qualquer momento.
-Se a resposta recebida estiver em um formato inesperado, o cartão de IA mostra um erro sem afetar o restante da Island.
-Se preferir não utilizar esse recurso, desative os provedores de IA nas preferências.
-Sem uma credencial válida, o widget continua disponível, mas mostra apenas **"IA"**.
+A Island não lê credenciais nem consulta APIs de uso por conta própria. Ela roda o `omarchy-agent-usage-update` (o mesmo coletor do widget de agentes do Omarchy) a cada 15 minutos, com o widget de IA no ambiente ativo, e lê os registros em `~/.local/state/omarchy/agents/usage/`.
+Os limites dependem do coletor do Omarchy: o do Claude consulta o endpoint de uso com a credencial do Claude Code, que não é uma API pública e pode mudar.
+Sem login no CLI, o widget continua disponível, mas mostra apenas **"IA"**. Para não usar esse recurso, desative os provedores nas preferências.
 ***
 ## Limitações
 Atualmente:

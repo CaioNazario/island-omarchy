@@ -6,17 +6,14 @@ import "../core/aiUsage.mjs" as AiCore
 import "../core/agentUsage.mjs" as AgentCore
 
 // Cartão de um provedor (specs/12-uso-ia.md "Modo `ai`"): padding 10 10 12,
-// raio 14, `neutral-900`. Sem credencial, uma linha "Faça login" no lugar das
-// barras; expirado ou sem conexão, as barras do cache e o aviso no topo.
+// raio 14, `neutral-900`. Tudo vem do registro do Omarchy: sem limites, o
+// aviso do coletor no lugar das barras; com limites e aviso, o aviso no topo.
 // Abaixo, tokens por dia e por modelo do registro do omarchy.agents (v5).
 Rectangle {
   id: card
 
   required property var provider
-  readonly property var usage: provider.usage
-  readonly property string notice: !provider.loggedIn ? ""
-    : provider.expired ? (provider.providerId === "claude" ? "Abra o Claude Code para renovar" : "Abra o Codex para renovar")
-    : provider.offline ? "Sem conexão" : ""
+  readonly property string notice: provider.hasLimits ? provider.status : ""
 
   readonly property var record: provider.record
   readonly property var days: record ? AgentCore.dayRows(record.days, Qt.formatDate(new Date(), "yyyy-MM-dd")) : []
@@ -93,8 +90,9 @@ Rectangle {
 
     IslandText {
       Layout.preferredHeight: 46
-      visible: !card.provider.loggedIn
-      text: card.provider.providerId === "claude" ? "Faça login no Claude" : "Faça login no Codex"
+      visible: !card.provider.hasLimits
+      text: card.provider.status !== "" ? card.provider.status
+        : card.record === null ? "Sem dados do Omarchy ainda" : "Sem limites para mostrar"
       px: 12
       font.weight: Tokens.weightBody
       color: Tokens.neutral400
@@ -103,18 +101,18 @@ Rectangle {
     RowLayout {
       Layout.fillWidth: true
       Layout.preferredHeight: 46
-      visible: card.provider.loggedIn
+      visible: card.provider.hasLimits
       spacing: 14
 
       UsageColumn {
         title: "Sessão · 5h"
-        window: card.usage ? card.usage.session : null
+        window: card.provider.session
         reset: window && window.resetsAt ? "Reinicia " + AiCore.formatSessionReset(window.resetsAt, Date.now()) : ""
       }
 
       UsageColumn {
         title: "Semanal"
-        window: card.usage ? card.usage.weekly : null
+        window: card.provider.weekly
         reset: window && window.resetsAt ? "Reinicia " + AiCore.formatWeeklyReset(window.resetsAt) : ""
       }
     }

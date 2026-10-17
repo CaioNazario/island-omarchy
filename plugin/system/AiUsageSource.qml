@@ -17,7 +17,7 @@ Scope {
   readonly property alias claude: claude
   readonly property alias codex: codex
   readonly property var providers: [claude, codex].filter(provider => provider.enabled)
-  readonly property var loggedIn: providers.filter(provider => provider.loggedIn)
+  readonly property var withLimits: providers.filter(provider => provider.hasLimits)
   // Aba escolhida no modo `ai`; sem escolha válida, o primeiro provedor.
   property string selectedId: ""
   readonly property var current: providers.find(provider => provider.providerId === selectedId) ?? providers[0] ?? null
@@ -26,7 +26,6 @@ Scope {
   readonly property int recordsStaleMs: 5 * 60 * 1000
 
   function refreshIfStale() {
-    providers.forEach(provider => provider.refreshIfStale());
     const newest = Math.max(0, ...providers.map(provider => provider.record ? provider.record.updatedAt : 0));
     if (Date.now() - newest > recordsStaleMs) updateRecords();
   }
@@ -56,7 +55,6 @@ Scope {
 
     providerId: "claude"
     enabled: ai.claudeEnabled
-    polling: ai.polling
   }
 
   AiProvider {
@@ -64,6 +62,5 @@ Scope {
 
     providerId: "codex"
     enabled: ai.codexEnabled
-    polling: ai.polling
   }
 }

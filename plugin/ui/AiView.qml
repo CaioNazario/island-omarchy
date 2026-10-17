@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import "../core/aiUsage.mjs" as AiCore
 
 // Modo `ai` (specs/12-uso-ia.md "Modo `ai`"; design v5): cabeçalho, uma aba
 // por provedor ligado nas preferências (com mais de um) e o cartão do
@@ -40,7 +39,7 @@ Item {
       }
 
       IslandText {
-        text: view.ai.loggedIn.length === 1 ? "1 conectado" : view.ai.loggedIn.length + " conectados"
+        text: view.ai.withLimits.length === 1 ? "1 conectado" : view.ai.withLimits.length + " conectados"
         px: 11
         font.weight: Tokens.weightBody
         color: Tokens.neutral500

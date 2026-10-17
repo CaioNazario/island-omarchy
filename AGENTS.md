@@ -48,7 +48,7 @@ scripts/         build do core (`build-core.mjs`) e extração do design
 ```
 
 - `src/core/` nunca depende de QML, Quickshell nem Node em runtime. É onde mora toda regra testável. O QML só liga eventos ao core e renderiza o resultado.
-- Todo serviço é opcional: sem a dependência (sem bateria, sem GPU conhecida, sem credencial de IA, sem cidade), o bloco da UI some sem erro nem log ruidoso.
+- Todo serviço é opcional: sem a dependência (sem bateria, sem GPU conhecida, sem registro de IA do Omarchy, sem cidade), o bloco da UI some sem erro nem log ruidoso.
 - A Island é dona da barra, das notificações e do OSD: `omarchy.notifications` e `omarchy.osd` ficam em `disabledPlugins`, e o `Service.qml` registra os mesmos alvos IPC (`notifications`, `osd`) que os scripts `omarchy-*` chamam.
 
 ## Ciclo de vida: hot-reload e serviço persistente
@@ -91,7 +91,7 @@ O host recria o `Bar.qml` a cada hot-reload de plugin (qualquer arquivo salvo em
 
 ## Segredos
 
-- Credencial de IA só via libsecret (`secret-tool` em `Process`). Nunca no arquivo de configuração, log, fixture, teste ou commit.
+- A Island não lê credencial de IA: o uso vem dos registros do `omarchy-agent-usage-update` (spec 12). Credencial que algum serviço precise (token do `gh`, senha de Wi‑Fi) fica só em memória e vai a outro processo pela entrada padrão, nunca no arquivo de configuração, log, fixture, teste, linha de comando ou commit.
 - Antes de commitar, confira `git diff --cached` procurando token, key ou `.env`.
 
 ## Nunca sem perguntar
@@ -135,4 +135,4 @@ Problema já encontrado e sua solução. Adicione aqui toda vez que algo custar 
 - [ ] Spec afetada atualizada no mesmo commit
 - [ ] Estado visível que precisa sobreviver ao hot-reload mora no `Service.qml`
 - [ ] Nenhum I/O síncrono na thread da UI
-- [ ] Nenhuma credencial fora do libsecret
+- [ ] Nenhuma credencial em arquivo, log ou linha de comando

@@ -36,7 +36,7 @@ Ainda não portada: na v1.1 era GTK4 + libadwaita em outro processo. No Omarchy 
   - Botão "Limpar", só com cidade escolhida aqui: volta à cadeia de fallback
   - Busca de cidade própria (o GWeather 4 não tem mais o `GWeatherLocationEntry`): sem acento nem caixa, cada palavra casa com o começo de uma palavra do nome, estado ou país; até 20 resultados
 - **Uso de IA**
-  - Um switch por provedor (Claude, Codex) + estado da credencial: "Encontrada", "Não encontrada: faça login no Claude", "Expirada" (só pela data do arquivo; o 401 da spec 12 não chega aqui)
+  - Um switch por provedor (Claude, Codex) + estado do registro do Omarchy (spec 12): "Com limites", "Faça login no CLI" ou "Sem dados"
 - **Widgets**
   - Contagem regressiva: nome (até 20 caracteres) e data (seletor de data; "Limpar" apaga a data)
   - GitHub: estado do `gh`, "Conectado" ou "Não encontrado: rode `gh auth login`" (roda `gh auth status` ao abrir a página)

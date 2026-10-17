@@ -11,6 +11,10 @@ import {
 const RECORD = JSON.stringify({
   id: 'claude',
   tierLabel: 'Pro',
+  limits: [
+    { label: 'Session (5-hour)', percent: 0.98, resetsAt: '2026-10-17T08:19:59.521331+00:00' },
+    { label: 'Weekly (7-day)', percent: 0.17, resetsAt: '2026-10-24T00:59:59.521351+00:00' },
+  ],
   updatedAt: '2026-10-17T05:37:58.656188+00:00',
   recentDays: [
     { date: '2026-10-11', messageCount: 0 },
@@ -59,7 +63,48 @@ describe('parseAgentRecord', () => {
       updatedAt: 0,
       days: [],
       models: [],
+      session: null,
+      weekly: null,
+      status: '',
     });
+  });
+});
+
+describe('limites', () => {
+  it('sessão e semanal pelo rótulo, em 0–100, com o reset em ms', () => {
+    const record = parseAgentRecord(RECORD);
+    expect(record?.session).toEqual({
+      percent: 98,
+      resetsAt: Date.parse('2026-10-17T08:19:59.521331+00:00'),
+    });
+    expect(record?.weekly?.percent).toBeCloseTo(17);
+  });
+
+  it('rótulos por janela, não pela posição', () => {
+    const record = parseAgentRecord(
+      JSON.stringify({
+        limits: [
+          { label: 'Weekly (7-day)', percent: 0.5 },
+          { label: 'Session', percent: 0.1 },
+        ],
+      }),
+    );
+    expect(record?.weekly).toEqual({ percent: 50, resetsAt: null });
+    expect(record?.session?.percent).toBeCloseTo(10);
+  });
+
+  it('sem limites (sem login), o aviso do coletor vira texto em português', () => {
+    const record = parseAgentRecord(
+      JSON.stringify({ limits: [], authHelpText: 'Run `codex login` to authenticate.' }),
+    );
+    expect(record?.session).toBeNull();
+    expect(record?.status).toBe('Faça login no CLI para ver os limites');
+  });
+
+  it('usageStatusText do coletor aparece como veio', () => {
+    expect(parseAgentRecord(JSON.stringify({ usageStatusText: 'Rate limited' }))?.status).toBe(
+      'Rate limited',
+    );
   });
 });
 
