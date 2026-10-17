@@ -23,6 +23,9 @@ Scope {
   readonly property alias hardware: hardware
   readonly property alias ai: ai
   readonly property alias github: github
+  readonly property alias idle: idle
+  readonly property alias screenRecord: screenRecord
+  readonly property alias dictation: dictation
 
   AudioSource {
     id: audio
@@ -64,5 +67,16 @@ Scope {
   }
   GithubSource {
     id: github
+  }
+  IdleSource {
+    id: idle
+
+    shell: sources.shell
+  }
+  ScreenRecordSource {
+    id: screenRecord
+  }
+  DictationSource {
+    id: dictation
   }
 }

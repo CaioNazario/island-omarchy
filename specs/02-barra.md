@@ -65,7 +65,7 @@ Com modo fixo (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `music`
 
 - [x] As duas laterais têm sempre a mesma largura e a ilha fica centralizada no monitor.
 - [ ] Maximizar uma janela a deixa encostada em y=28 sem sobrepor a barra.
-- [ ] Em 1280px lógicos com a ilha em `wifi` (520px) e o ambiente Trabalho, nenhum texto da barra é cortado (widgets somem inteiros, spec 16).
+- [ ] Em 1280px lógicos com a ilha em `wifi` (660px) e o ambiente Trabalho, nenhum texto da barra é cortado (widgets somem inteiros, spec 16).
 - [ ] Conectar/desconectar um segundo monitor cria/remove a barra dele sem reiniciar o shell.
 - [ ] Uma janela em tela cheia esconde a barra só no monitor dela.
 - [ ] Clique fora de um modo fixo fecha a ilha e não ativa a janela clicada.

@@ -40,6 +40,7 @@ QtObject {
   readonly property color batteryInk: "#000000"
   readonly property color powerOpenBg: "#932b2a" // oklch(0.45 0.14 25)
   readonly property color powerOffText: "#ff958d" // oklch(0.78 0.13 25)
+  readonly property color recordOnBg: "#d73337" // oklch(0.58 0.2 25)
   readonly property color passwordErrorBorder: "#bd413f" // oklch(0.55 0.16 25)
 
   readonly property color volumeThumbGlow: Qt.alpha(accent, 0.60)

@@ -5,7 +5,8 @@ import QtQuick.Layouts
 import "../core/osd.mjs" as OsdCore
 
 // Linha de controles comum a `quick`, `wifi` e `bt` (specs/08-controles-rapidos.md):
-// 46px, padding 0 7px, gap 6px. Tile de rádio sem hardware some; sem
+// 46px, padding 0 7px, gap 6px, com a ilha em 660px. Tile de rádio sem
+// hardware some, como os de serviço que faltam (Omarchy, voxtype); sem
 // backlight, o volume ocupa o espaço do brilho.
 Item {
   id: row
@@ -67,6 +68,32 @@ Item {
       glyph: "bell-slash-fill"
       on: row.bar.service !== null && row.bar.service.doNotDisturb
       onClicked: if (row.bar.service) row.bar.service.setDoNotDisturb(!row.bar.service.doNotDisturb)
+    }
+
+    Tile {
+      visible: row.system.idle.available
+      glyph: "coffee-fill"
+      on: row.system.idle.stayAwake
+      onClicked: row.system.idle.toggle()
+    }
+
+    // Começar abre o menu de captura do Omarchy: fecha a ilha antes, como
+    // Configurações, para o menu pegar o foco.
+    Tile {
+      glyph: row.system.screenRecord.recording ? "stop-fill" : "record-fill"
+      on: row.system.screenRecord.recording
+      onColor: Tokens.recordOnBg
+      onClicked: {
+        if (!row.system.screenRecord.recording) row.bar.closeAll();
+        row.system.screenRecord.toggle();
+      }
+    }
+
+    Tile {
+      visible: row.system.dictation.available
+      glyph: row.system.dictation.recording ? "microphone-fill" : "microphone"
+      on: row.system.dictation.recording
+      onClicked: row.system.dictation.toggle()
     }
 
     Rectangle {

@@ -18,8 +18,11 @@ Código: `plugin/ui/ControlsRow.qml`, `WifiView.qml`, `BtView.qml`, `LevelRow.qm
    | Bluetooth | `ph-bold ph-bluetooth` | abre `bt`; em `bt`, volta a `quick` |
    | Modo noturno | `ph-fill ph-moon` | alterna o serviço `omarchy.nightlight` (hyprsunset), pelo proxy `firstPartyServiceFor`; sem o serviço, o tile some |
    | Não perturbe | `ph-fill ph-bell-slash` | alterna o não perturbe da própria Island (`Service.qml`), que é o servidor de notificações (spec 04) |
+   | Manter tela acesa | `ph-fill ph-coffee` | alterna o `stayAwake` do serviço `omarchy.idle` (`setIdleEnabled`, pelo proxy `firstPartyServiceFor`), o mesmo estado de `omarchy toggle idle`; sem o serviço, o tile some |
+   | Gravar tela | `ph-fill ph-record`; gravando `ph-fill ph-stop` | ligado = `gpu-screen-recorder` vivo (`pgrep`, a cada 2s com a linha de controles à vista), fundo `oklch(0.58 0.2 25)` (`#d73337`). Gravando, para com `omarchy-capture-screenrecording --stop-recording`; parado, fecha a ilha e abre o menu de captura do Omarchy (`omarchy-menu toggle trigger.capture.screenrecord`), como o indicador de gravação do Omarchy |
+   | Ditado | `ph ph-microphone`; gravando `ph-fill ph-microphone` | ligado = Voxtype gravando (`omarchy-voxtype-status`, seguido com a linha de controles à vista); clique `voxtype record toggle`, o mesmo do atalho `Super+Ctrl+X`; sem `voxtype`, o tile some |
 
-   Estado ligado dos tiles Wi‑Fi/BT = rádio ligado. Tile de rádio sem hardware some.
+   Estado ligado dos tiles Wi‑Fi/BT = rádio ligado. Tile de rádio sem hardware some. O design mostra no título dos tiles o estado e o tempo de gravação ("Gravando tela · 01:23"); a Island não tem dica de ferramenta e deixa isso de fora.
 4. Divisor 1×22 `neutral-800` (margin 0 2px).
 5. **Configurações** e **Energia**: spec 09.
 
@@ -81,11 +84,11 @@ As teclas de volume e brilho do Omarchy rodam `omarchy-audio-output-volume`/`oma
 - Ícone: o nome do Omarchy vira Phosphor (`osdGlyph`): microfone → `ph-microphone`/`ph-microphone-slash`, teclado → `ph-fill ph-keyboard`, reiniciar → `ph-arrow-clockwise`, desligar → `ph-bold ph-power`, sair → `ph-sign-out`, mídia → `ph-fill ph-play`/`pause`/`skip-*`, download → `ph-download-simple`, desconhecido → `ph-info`.
 - Payload sem mensagem nem progresso, ou JSON inválido: ignorado.
 
-## Modo `quick` (520×46)
+## Modo `quick` (660×46)
 
 Só a linha de controles. Com a linha de energia aberta: 94px (spec 09). Abre por `Super+I`, bateria, seta ou o widget Hardware (spec 16).
 
-## Modo `wifi` (520×280)
+## Modo `wifi` (660×280)
 
 Linha de controles · linha de energia (opcional) · divisor · seção de redes (padding 0 12px):
 
@@ -117,7 +120,7 @@ Captive portal não é detectável antes de conectar: a rede aparece como aberta
 - **Conectar**: `WifiNetwork.connectWithPsk(senha)` (Quickshell); o painel fecha e a rede mostra "Conectando…".
 - **Falha** (`Network.connectionFailed`): `NoSecrets` ou `WifiAuthTimeout` → "Senha incorreta"; outro motivo ou 30s sem ativar → "Não foi possível conectar" (`connectFailureMessage`, mesma leitura do painel de rede do Omarchy). O perfil recém-criado sai (`forget()`) e o painel reabre com o erro. Sem agente de segredos na sessão, o NM não abre diálogo nenhum.
 
-## Modo `bt` (520×336, desligado 288)
+## Modo `bt` (660×336, desligado 288)
 
 Linha de controles · linha de energia (opcional) · divisor · seção (padding 0 12px):
 

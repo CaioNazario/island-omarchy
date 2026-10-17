@@ -87,6 +87,9 @@ Item {
 
     shell: root.shell
     audio.listing: root.mode === "mixer"
+    // Tiles de gravação e ditado só consultam com a linha de controles à vista.
+    screenRecord.watching: ["quick", "wifi", "bt"].includes(root.mode)
+    dictation.watching: ["quick", "wifi", "bt"].includes(root.mode)
     // Fontes só de widget rodam só com o widget no ambiente ativo (spec 16).
     hardware.sampling: root.activeWidgets.includes("hw")
     ai.polling: root.activeWidgets.includes("ai")

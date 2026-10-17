@@ -73,7 +73,7 @@ export interface SizeContext {
 }
 
 /** Largura do maior modo; a barra mede o espaço das laterais com ela. */
-export const MAX_ISLAND_WIDTH = 520;
+export const MAX_ISLAND_WIDTH = 660;
 
 export function getSize(mode: Mode, ctx: SizeContext = {}): Size {
   switch (mode) {
@@ -95,18 +95,18 @@ export function getSize(mode: Mode, ctx: SizeContext = {}): Size {
     case 'calendar':
       return { width: 480, height: ctx.calendarView === 'month' ? 214 : 150, radius: 24 };
     case 'quick':
-      return { width: 520, height: ctx.quickEnergyOpen ? 94 : 46, radius: 23 };
+      return { width: 660, height: ctx.quickEnergyOpen ? 94 : 46, radius: 23 };
     case 'wifi': {
       let height = 280;
       if (ctx.wifiEnergyOpen) height += 48;
       if (ctx.wifiPasswordField === 'normal') height += 58;
       else if (ctx.wifiPasswordField === 'error') height += 76;
-      return { width: 520, height, radius: 24 };
+      return { width: 660, height, radius: 24 };
     }
     case 'bt': {
       let height = ctx.btOn === false ? 288 : 336;
       if (ctx.btEnergyOpen) height += 48;
-      return { width: 520, height, radius: 24 };
+      return { width: 660, height, radius: 24 };
     }
     case 'env':
       return { width: 260, height: 32, radius: 16 };
