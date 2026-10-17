@@ -4,6 +4,20 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 
 ## [Não lançada]
 
+## [0.3.0] - 2026-10-17
+
+### Adicionado
+
+- Editor de ambientes: criar, renomear, trocar o ícone e apagar ambientes; adicionar widgets de um catálogo, movê-los entre as pílulas e arrastá-los.
+- Temas do design (Nocturne, Vidro fosco, Sólido, Claro e Alto contraste), escolhidos no editor.
+
+### Corrigido
+
+- O clima acha a localização como o widget de clima do Omarchy.
+- O clima piscava num ciclo de atualizações.
+- Deslizar dois dedos troca de ambiente.
+- Brilho roxo em volta da barra.
+
 ## [0.2.0] - 2026-10-17
 
 Design v5.
@@ -44,6 +58,7 @@ Primeira versão: a Island como plugin de barra do Omarchy.
 - Clima pelo Open-Meteo.
 - Ambientes e widgets nas pílulas laterais, com hardware e uso de IA do Claude e do Codex.
 
-[Não lançada]: https://github.com/CaioNazario/island-omarchy/compare/v0.2.0...dev
+[Não lançada]: https://github.com/CaioNazario/island-omarchy/compare/v0.3.0...dev
+[0.3.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/CaioNazario/island-omarchy/releases/tag/v0.1.0
