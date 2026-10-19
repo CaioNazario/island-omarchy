@@ -180,6 +180,7 @@ Isso evita que a interface fique pulando de um estado para outro enquanto você 
 ### Interações
 - **Clique na Island compacta:** abre o cartão central ou o calendário, conforme configurado.
 - **Clique em uma notificação:** abre a lista de notificações.
+- **Rolar para baixo sobre a barra** (qualquer uma das três pílulas, mouse ou touchpad): abre a lista de notificações; **para cima**, fecha. Dentro da lista, para cima rola a lista e só fecha quando ela está no topo.
 - **Clique no botão de ambiente:** abre o editor de ambientes.
 - **`Super+I`:** abre os controles rápidos.
 - **`Super+Ctrl+Alt+←/→`:** troca de ambiente.

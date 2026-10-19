@@ -65,6 +65,15 @@ Padding 0 10px 0 8px, gap 10px:
 - Abrir a lista (pelo sino, pelo `notif` ou pelo banner) marca tudo como lido.
 - **Clique num item**: executa a ação padrão da notificação (abre/foca o app ou site), remove o item e fecha a ilha. **×**: só remove. **Limpar tudo**: remove todas.
 
+## Rolagem (mouse e touchpad)
+
+Regra pura em `src/core/stackScroll.ts` (`StackScroll`); a ligação é `Bar.wheelStack` + um `WheelHandler` vertical em cada pílula (`BarRow.qml`) e um no `StackView.qml`.
+- Rolar **para baixo** sobre qualquer uma das três pílulas, com a ilha em `compact` ou `notif`, abre o `stack` (como o gesto de três dedos). Rolar **para cima** com o `stack` aberto o fecha.
+- Só estes dois casos: com música, calendário, controles, Wi‑Fi, cartão central etc. abertos a rolagem não faz nada, e o sentido oposto ao do modo passa adiante.
+- Dentro do `stack`, rolar para cima rola a lista; só fecha com a lista no topo, e o giro que chegou ao topo não fecha (precisa de uma pausa ou de levantar os dedos). O Qt entrega o evento ao pai mesmo quando a lista rola, então o `atTop` vem do `StackView`, não da propagação.
+- Roda do mouse: um giro age uma vez; 250ms sem evento (`Timer` do `Bar.qml`) libera o próximo. Touchpad: soma 40px na vertical e age uma vez por gesto (o fim vem da fase `ScrollEnd`, com o mesmo timer de reserva).
+- O gesto horizontal de dois dedos continua sendo a troca de ambiente (spec 15): evento com `|dx| ≥ |dy|` não é desta regra. O botão de volume mantém a roda dele (o handler mais específico bloqueia o do pai).
+
 ## Banner
 
 - 380px de largura, centralizado, `top` = altura atual da ilha + 8px (acompanha a ilha com a mesma mola). 58px de altura, raio 22, fundo `bg`, anel `neutral-800`, sem a sombra escura e o brilho do design (spec 03, "Animação").
@@ -83,4 +92,6 @@ Padding 0 10px 0 8px, gap 10px:
 - [x] Com `wifi` aberto, uma notificação vira banner e o modo `wifi` continua intacto (captura no `make dev`).
 - [ ] Nenhum toast do Omarchy aparece com a Island ativa; `./install.sh --uninstall` os devolve.
 - [ ] Lock/unlock e hot-reload da barra mantêm a lista de notificações.
+- [x] Testes de `stackScroll.ts`: roda e touchpad, modos que não reagem, lista fora do topo, gesto horizontal, inversão de sentido, trava até a pausa.
+- [ ] Com o mouse sobre a pílula esquerda, a central e a direita, rolar para baixo abre o `stack` e para cima o fecha; sobre o botão de volume a roda continua mudando o volume (conferir na sessão real: o harness não injeta ponteiro).
 - [x] Notificação do Brave com `web.whatsapp.com` abre `notif` com "WhatsApp" e o ícone dele, e fecha em 2100ms (captura no `make dev`).
