@@ -4,6 +4,17 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 
 ## [Não lançada]
 
+## [0.4.0] - 2026-10-18
+
+### Adicionado
+
+- Eventos do calendário lidos de um feed ICS privado (o "endereço secreto no formato iCal" do Google Agenda), com a URL guardada no chaveiro.
+- Rolar sobre a barra abre (para baixo) e fecha (para cima) a lista de notificações.
+
+### Corrigido
+
+- Os widgets salvos dos ambientes se perdiam ao reiniciar, e a próxima edição apagava o arquivo de preferências.
+
 ## [0.3.0] - 2026-10-17
 
 ### Adicionado
@@ -58,7 +69,8 @@ Primeira versão: a Island como plugin de barra do Omarchy.
 - Clima pelo Open-Meteo.
 - Ambientes e widgets nas pílulas laterais, com hardware e uso de IA do Claude e do Codex.
 
-[Não lançada]: https://github.com/CaioNazario/island-omarchy/compare/v0.3.0...dev
+[Não lançada]: https://github.com/CaioNazario/island-omarchy/compare/v0.4.0...dev
+[0.4.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/CaioNazario/island-omarchy/releases/tag/v0.1.0
