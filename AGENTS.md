@@ -92,7 +92,7 @@ O host recria o `Bar.qml` a cada hot-reload de plugin (qualquer arquivo salvo em
 
 ## Segredos
 
-- A Island não lê credencial de IA: o uso vem dos registros do `omarchy-agent-usage-update` (spec 12). Credencial que algum serviço precise (token do `gh`, senha de Wi‑Fi) fica só em memória e vai a outro processo pela entrada padrão, nunca no arquivo de configuração, log, fixture, teste, linha de comando ou commit.
+- A Island não lê credencial de IA: o uso vem dos registros do `omarchy-agent-usage-update` (spec 12). Credencial que algum serviço precise (token do `gh`, senha de Wi‑Fi, URL secreta do feed ICS do calendário, que vem do chaveiro) fica só em memória e vai a outro processo pela entrada padrão, nunca no arquivo de configuração, log, fixture, teste, linha de comando ou commit.
 - Antes de commitar, confira `git diff --cached` procurando token, key ou `.env`.
 
 ## Nunca sem perguntar
@@ -129,6 +129,7 @@ Problema já encontrado e sua solução. Adicione aqui toda vez que algo custar 
 - Sem `Qt.clearComponentCache` (Qt 6.11), o hot-reload recria a barra com os componentes antigos, no harness (`ipc dev reload`) e no omarchy-shell real (`shell.qml` tem a mesma guarda). No harness, `nested.sh stop` e `serve` de novo; na sessão, o `install.sh` termina com `omarchy-restart-shell`.
 - `implicitWidth` de `Column`/`Row` é só leitura e o `qmllint` não acusa dentro de componente inline: só o log do `make dev` mostra (`Invalid property assignment`). Dê `width` a quem usa o componente.
 - `WheelHandler` só reage à roda vertical por padrão (`orientation: Qt.Vertical`): para rolagem horizontal (deslize de dois dedos), `orientation: Qt.Horizontal`.
+- `console.log` do `qml`/`qs` vai para o journal, não para o terminal: rode com `QT_FORCE_STDERR_LOGGING=1` (o `check-core.mjs` imprime `modules ok` no console, então a saída dele sempre aparece vazia). `XMLHttpRequest` de `file://` precisa de `QML_XHR_ALLOW_FILE_READ=1`, e um `QtObject` sem janela encerra antes de uma resposta assíncrona: leia o arquivo de forma síncrona (`open(..., false)`) em scripts de experimento.
 - Senha ou lista de servidores para um comando vai pela entrada padrão (`stdinEnabled`, `write()` no `onStarted`, depois `stdinEnabled = false` fecha a entrada), nunca pela linha de comando.
 
 ## Antes de dizer que terminou

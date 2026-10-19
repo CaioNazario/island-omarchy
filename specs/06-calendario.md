@@ -15,7 +15,10 @@ Regra pura em `src/core/calendar.ts`:
 
 ## Eventos
 
-- Fonte: em aberto (spec 14, S8). O Omarchy não traz Evolution Data Server nem outra fonte de eventos; até o spike decidir, `plugin/system/CalendarEvents.qml` devolve lista vazia e a UI mostra só o título.
+- Fonte: feed ICS privado (spec 14, S8), por exemplo o "Endereço secreto no formato iCal" do Google Calendar. `plugin/system/CalendarEvents.qml` lê a URL do chaveiro (`secret-tool lookup service island kind calendar-ics`, 5s de limite para um chaveiro bloqueado), baixa o feed por `curl -K -` e atualiza a cada 15 min; a lista de hoje é recalculada na virada do dia, sem novo download. Sem URL no chaveiro, sem `secret-tool` ou sem rede, a lista é vazia (ou a última baixada) e a UI mostra só o título.
+- A URL é credencial (AGENTS.md "Segredos"): só em memória, entregue ao `curl` pela entrada padrão, nunca na linha de comando, em log, em arquivo de configuração ou em teste. Só `https://` (`webcal://` vira `https://`). Resposta que não é `VCALENDAR` (página de login, URL trocada) não apaga os eventos e faz a próxima atualização reler o chaveiro.
+- Parser em `src/core/ics*.ts` (puro, sem `Intl`): fusos pelo `VTIMEZONE` do próprio feed (`TZID` sem `VTIMEZONE` vale como horário local), dia inteiro e flutuante no horário local, `RRULE` (DAILY/WEEKLY/MONTHLY/YEARLY com INTERVAL, COUNT, UNTIL, BYDAY com ordinal, BYMONTHDAY, BYMONTH; semana começa na segunda), `EXDATE`, `RECURRENCE-ID` (editada ou `CANCELLED`) e `STATUS:CANCELLED`. Não suporta `RDATE`, `BYSETPOS`, `BYWEEKNO`, `BYYEARDAY`, `WKST` nem frequência abaixo de dia: uma regra assim deixa o evento só na data de início. A janela é ontem a amanhã e `icsPrefilter.ts` descarta antes do parse os `VEVENT` que certamente estão fora dela: no V4 um feed de 1,4 MB (3000 eventos + 60 séries) leva ~55 ms; sem o filtro levava ~1 s na thread da UI.
+- O calendário de origem é identificado por `X-WR-CALNAME` (ou `ics`); um feed é um calendário só.
 - Mostra os eventos de **hoje** em ordem de início, no máximo 10: ponto 8px colorido + nome + intervalo `HH:MM – HH:MM` (dia inteiro: "Dia inteiro").
 - Cor do ponto: da paleta da ilha, não a do calendário de origem. Cada calendário ganha `accent-500`, `accent-300`, `neutral-400` em rotação, na ordem em que aparece na lista.
 - Sem eventos: a coluna de eventos mostra só o título "Hoje, …".
@@ -39,5 +42,6 @@ Aberto quando "Clique na ilha abre" = **Calendário compacto**, ou pelo clique n
 ## Critérios de aceite
 
 - [x] Testes de `calendar.ts`: meses começando em cada dia da semana, fevereiro bissexto, semana de hoje, navegação entre anos.
-- [ ] Evento da fonte escolhida no S8 aparece na lista de hoje sem reiniciar o shell.
+- [x] Testes de `ics*.ts`: fusos (com e sem horário de verão), dia inteiro, recorrência de cada frequência, EXDATE, RECURRENCE-ID, cancelados, URL do chaveiro, mesmos resultados com TZ=UTC, Asia/Tokyo, America/New_York e America/Sao_Paulo.
+- [ ] Evento de uma conta real do Google aparece na lista de hoje sem reiniciar o shell (conferir com a URL real no `make dev`).
 - [ ] Alternar Mês/Semana no modo `calendar` anima a altura 150 ↔ 214.

@@ -87,9 +87,17 @@ Exibe:
 O cartão central combina:
 - Música em reprodução
 - Calendário da semana ou do mês
-- Eventos de hoje (ainda sem fonte no Omarchy: veja Limitações)
+- Eventos de hoje, do feed ICS do seu calendário (veja Calendário)
 
 O calendário pode ser aberto ao clicar na Island compacta, dependendo da preferência configurada.
+### Calendário
+Os eventos vêm de um feed ICS privado, por exemplo o do Google Calendar (somente leitura). No Google: **Configurações → (sua agenda) → Integrar agenda → Endereço secreto no formato iCal**. Guarde a URL no chaveiro, sem passar pela linha de comando:
+```bash
+secret-tool store --label="Island: calendário (ICS)" service island kind calendar-ics
+```
+O comando pede o valor no terminal: cole a URL. A Island lê a URL do chaveiro a cada atualização do feed (15 min) e a mantém só em memória. Para parar de usar: `secret-tool clear service island kind calendar-ics`.
+
+Suporta eventos únicos, dia inteiro, recorrentes (`RRULE`, `EXDATE`) e ocorrências editadas ou canceladas. Quem tem a URL lê a agenda toda: não a cole em issue, log ou arquivo de configuração, e gere outra no Google se ela vazar. O Google demora a refletir mudanças no feed (de minutos a algumas horas).
 ### Clima
 Dados do Open-Meteo, sem chave de API. A cidade vem de:
 - `weatherLocation` em `~/.config/island/settings.json`
@@ -198,6 +206,8 @@ O `src/core` é compilado para módulos ES (`.mjs`) que o QML importa direto.
 - Claude Code — `~/.claude/.credentials.json`
 - Codex CLI — `~/.codex/auth.json`
 
+**Calendário**: o `secret-tool` (libsecret) e a URL do feed ICS (veja Calendário acima).
+
 **GitHub**: o [`gh`](https://cli.github.com/) com login feito (`gh auth login`). A Island só lê o token com `gh auth token` e o mantém em memória.
 ***
 ## Instalação
@@ -236,7 +246,7 @@ Sem login no CLI, o widget continua disponível, mas mostra apenas **"IA"**. Par
 Atualmente:
 - Apenas Omarchy (o GNOME ficou no commit `5cb704a`).
 - Ainda não portados: editor de ambientes, auto-ocultar e a janela de preferências.
-- O calendário não tem fonte de eventos no Omarchy (spike S8 em `specs/14-spikes.md`).
+- O calendário só lê (feed ICS): não cria nem edita eventos. Não suporta `RDATE` nem `RRULE` com `BYSETPOS`, `BYWEEKNO` ou frequência abaixo de dia.
 - GPUs NVIDIA não aparecem no bloco de hardware.
 - Notificações do Firefox não mostram o serviço web de origem.
 - Não há tema claro nem botões de ação nas notificações.

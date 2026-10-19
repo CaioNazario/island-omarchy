@@ -32,7 +32,7 @@ Até a v1.1 a Island era uma extensão do GNOME Shell (último código no commit
 | 03 | [ilha](03-ilha.md) | Máquina de estados, tamanhos, animação, timers, hover, Esc/clique fora |
 | 04 | [notificacoes](04-notificacoes.md) | Captura, identificação de serviço web, roteamento, DND, lista |
 | 05 | [musica](05-musica.md) | MPRIS, modo música, cartão central |
-| 06 | [calendario](06-calendario.md) | Semana/mês, eventos (EDS) |
+| 06 | [calendario](06-calendario.md) | Semana/mês, eventos (feed ICS) |
 | 07 | [clima](07-clima.md) | GWeather, cadeia de fallback |
 | 08 | [controles-rapidos](08-controles-rapidos.md) | Controles rápidos, volume/brilho, Wi‑Fi (+ senha), Bluetooth |
 | 09 | [sessao-energia](09-sessao-energia.md) | Configurações, linha de energia |

@@ -9,11 +9,15 @@ Os spikes S5–S7 abriram o porte para o Omarchy (v2). Ficam aqui como registro 
 - **Pergunta**: o repositório de plugins do Omarchy aceita um plugin que lê credenciais de CLIs de terceiros e chama endpoints não documentados com User-Agent de outro cliente?
 - **Pronto quando**: há uma resposta dos mantenedores; enquanto isso, a instalação é só via `install.sh`.
 
-## S8 · Fonte de eventos do calendário (aberto)
+## S8 · Fonte de eventos do calendário (resolvido: feed ICS)
 
 - **Pergunta**: de onde vêm os eventos de hoje (spec 06) e do widget Próximo evento (spec 16) no Omarchy? A v1.1 usava o Evolution Data Server do GNOME, que o Omarchy não instala.
-- **Candidatos**: URL ICS privada (Google/Outlook/iCloud) baixada por HTTP com parser no core; Evolution Data Server quando instalado (helper via `gdbus`); `khal`/vdirsyncer.
-- **Pronto quando**: o usuário escolhe a fonte e um experimento mostra os eventos de hoje de uma conta real.
+- **Escolha** (2026-10-18): URL ICS privada (o Google Calendar a chama de "Endereço secreto no formato iCal"), baixada por `curl` e lida por um parser no core. Descartados: Evolution Data Server (não vem no Omarchy) e `khal`/vdirsyncer (exigem OAuth do Google e mais um daemon para o mesmo resultado).
+- **Resultado**: funciona no V4 com um feed de 1,4 MB (3000 eventos + 60 séries), ~55 ms por interpretação. Regras e limites do parser estão na spec 06. Pendente só a conferência com uma conta real.
+- **Restrições encontradas**:
+  - O V4 não tem `Intl`, então `TZID=America/Sao_Paulo` não resolve pelo nome: o deslocamento sai do `VTIMEZONE` que o próprio Google põe no feed (`icsZones.ts`).
+  - O V4 é ~7× mais lento que o Node e o parser roda na thread da UI: sem o pré-filtro (`icsPrefilter.ts`) um feed com anos de histórico levava ~1 s; recorrência sem COUNT começa a varredura perto da janela.
+  - A URL é credencial: chaveiro + `curl -K -` (AGENTS.md "Segredos").
 
 ## S5 · O QML importa o `src/core` compilado? (resolvido)
 
