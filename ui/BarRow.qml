@@ -36,6 +36,11 @@ Item {
     event.accepted = input !== null && bar.scrollBar(input);
   }
 
+  // Rolagem vertical sobre qualquer pílula abre/fecha o `stack` (specs/04 "Rolagem").
+  function stackWheel(event) {
+    event.accepted = bar.wheelStack(event, screenName, mode, true);
+  }
+
   function wheelInput(event) {
     if (event.angleDelta.x === 0) return null;
     return { kind: "discrete", direction: event.angleDelta.x > 0 ? "left" : "right", fromWheel: true };
@@ -56,6 +61,12 @@ Item {
       acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
       orientation: Qt.Horizontal
       onWheel: event => row.wheel(event)
+    }
+
+    WheelHandler {
+      acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+      orientation: Qt.Vertical
+      onWheel: event => row.stackWheel(event)
     }
 
     EnvButton {
@@ -89,6 +100,14 @@ Item {
     bar: row.bar
     displayMode: row.mode
     onClicked: row.bar.islandClick(row.screenName)
+
+    // Em `stack` a lista de notificações cuida da rolagem (StackView.qml).
+    WheelHandler {
+      acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+      orientation: Qt.Vertical
+      enabled: row.mode !== "stack"
+      onWheel: event => row.stackWheel(event)
+    }
   }
 
   // Só o monitor-alvo mostra o banner (specs/02 "Monitores").
@@ -117,6 +136,12 @@ Item {
       acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
       orientation: Qt.Horizontal
       onWheel: event => row.wheel(event)
+    }
+
+    WheelHandler {
+      acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+      orientation: Qt.Vertical
+      onWheel: event => row.stackWheel(event)
     }
 
     WidgetArea {

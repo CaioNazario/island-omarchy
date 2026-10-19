@@ -13,6 +13,7 @@ import "core/wifi.mjs" as WifiCore
 import "core/wifiPanel.mjs" as WifiPanelCore
 import "core/environments.mjs" as EnvironmentsCore
 import "core/environmentEditor.mjs" as EditorCore
+import "core/stackScroll.mjs" as StackScrollCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
 // este item a cada hot-reload; o que precisa sobreviver mora no Service.qml.
@@ -69,6 +70,8 @@ Item {
   // Deslocamento do conteúdo das pílulas acompanhando a rolagem.
   property real envDrag: 0
   property var envScroll: new EnvironmentsCore.EnvironmentScroll()
+  // Rolagem vertical sobre a barra abre/fecha o `stack` (specs/04 "Rolagem"); uma só para as três pílulas e a lista.
+  property var stackScroll: new StackScrollCore.StackScroll()
   // Editor de ambientes (specs/17): aberto no monitor-alvo, com a pílula onde
   // o catálogo adiciona e o widget selecionado na barra.
   property bool editorOpen: false
@@ -330,6 +333,36 @@ Item {
       stepEnvironment(result.step);
     }
     return result.handled;
+  }
+
+  /**
+   * Rolagem vertical (specs/04 "Rolagem"): para baixo abre o `stack`, para
+   * cima fecha. `mode` é o da ilha no monitor sob o cursor; `atTop`, se a
+   * lista de notificações está no topo. No Qt o touchpad chega com
+   * `pixelDelta` e fase; a roda só com `angleDelta`. Devolve se o evento foi
+   * tratado.
+   */
+  function wheelStack(event, screenName, mode, atTop) {
+    const touchpad = event.pixelDelta.x !== 0 || event.pixelDelta.y !== 0 || event.phase !== Qt.NoScrollPhase;
+    const input = touchpad ? {
+      kind: "smooth",
+      dx: event.pixelDelta.x,
+      dy: event.pixelDelta.y,
+      finished: event.phase === Qt.ScrollEnd
+    } : { kind: "discrete", dy: event.angleDelta.y };
+    const result = stackScroll.handle(input, { mode: mode, atTop: atTop });
+    stackScrollIdle.restart();
+    if (result.action === "open") openFromBar(screenName, "stack");
+    else if (result.action === "close") closeAll();
+    return result.handled;
+  }
+
+  // A roda não avisa o fim do giro: 250ms sem evento libera o próximo.
+  Timer {
+    id: stackScrollIdle
+
+    interval: 250
+    onTriggered: root.stackScroll.reset()
   }
 
   // O editor de ambientes é a spec 17; até lá o botão não abre nada.
