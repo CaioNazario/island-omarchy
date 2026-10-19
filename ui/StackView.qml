@@ -13,6 +13,14 @@ Item {
   readonly property var feed: bar.service ? bar.service.notifications : null
   readonly property var entries: feed ? feed.entries : []
 
+  // Rolar para cima fecha o `stack`, mas só do topo da lista: antes disso a
+  // rolagem é da lista (o Qt entrega o evento ao pai mesmo quando a lista rola).
+  WheelHandler {
+    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+    orientation: Qt.Vertical
+    onWheel: event => event.accepted = view.bar.wheelStack(event, "", view.bar.mode, !list.visible || list.atYBeginning)
+  }
+
   ColumnLayout {
     anchors.fill: parent
     anchors.margins: 12
@@ -106,6 +114,8 @@ Item {
     }
 
     ListView {
+      id: list
+
       Layout.fillWidth: true
       Layout.fillHeight: true
       visible: view.entries.length > 0

@@ -95,25 +95,55 @@ export function sanitizeEnvironments(stored) {
     });
     return envs.length > 0 ? envs : defaultEnvironments();
 }
-function isStringList(value) {
-    return Array.isArray(value) && value.every((item) => typeof item === 'string');
+/** Teto de um "array" que não é `Array`: um `{"length": 1e9}` no arquivo não pode alocar. */
+const MAX_LIST_LENGTH = 1000;
+/**
+ * Lista como o `JsonAdapter` do Quickshell a entrega: o V4 devolve os `var`
+ * lidos do arquivo como objetos com `length` e índices em que `Array.isArray`
+ * dá `false` (medido no qs 0.3.2). Com `Array.isArray` a leitura descartava
+ * tudo e a Island subia com os ambientes iniciais, apagando as edições do
+ * usuário na gravação seguinte.
+ */
+function asList(value) {
+    if (Array.isArray(value))
+        return value;
+    if (typeof value !== 'object' || value === null)
+        return null;
+    const length = value.length;
+    if (typeof length !== 'number' || !Number.isInteger(length))
+        return null;
+    if (length < 0 || length > MAX_LIST_LENGTH)
+        return null;
+    return Array.from(value);
 }
-function isStoredEnvironment(value) {
-    if (!Array.isArray(value) || value.length !== 4)
-        return false;
-    const [name, icon, left, right] = value;
-    return (typeof name === 'string' &&
-        typeof icon === 'string' &&
-        isStringList(left) &&
-        isStringList(right));
+function asStringList(value) {
+    const list = asList(value);
+    return list !== null && list.every((item) => typeof item === 'string')
+        ? list
+        : null;
+}
+function asStoredEnvironment(value) {
+    const item = asList(value);
+    if (item === null || item.length !== 4)
+        return null;
+    const [name, icon] = item;
+    const left = asStringList(item[2]);
+    const right = asStringList(item[3]);
+    if (typeof name !== 'string' || typeof icon !== 'string' || !left || !right)
+        return null;
+    return [name, icon, left, right];
 }
 /**
- * Valor lido do `settings.json` (specs/13-preferencias.md), em qualquer forma:
- * entradas fora de `[nome, ícone, [esquerda], [direita]]` saem antes do
- * saneamento.
+ * Valor lido do `settings.json` (specs/13-preferencias.md), em qualquer forma
+ * (inclusive a lista tipo array do JsonAdapter, `asList`): entradas fora de
+ * `[nome, ícone, [esquerda], [direita]]` saem antes do saneamento.
  */
 export function environmentsFromJson(value) {
-    return sanitizeEnvironments(Array.isArray(value) ? value.filter(isStoredEnvironment) : []);
+    var _a;
+    const stored = ((_a = asList(value)) !== null && _a !== void 0 ? _a : [])
+        .map(asStoredEnvironment)
+        .filter((env) => env !== null);
+    return sanitizeEnvironments(stored);
 }
 export function toStored(envs) {
     return envs.map((env) => [env.name, env.icon, [...env.left], [...env.right]]);
