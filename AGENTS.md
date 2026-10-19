@@ -121,6 +121,7 @@ Problema já encontrado e sua solução. Adicione aqui toda vez que algo custar 
 
 - O V4 do QML recusa class fields (`Expected token '('`) , `catch {}` sem variável (`Syntax error`) e spread de objeto (`Unexpected token ...`): o core compila com `target: ES2017`.
 - O QML só trata como módulo ES arquivos `.mjs`: o build renomeia a saída do `tsc` e reescreve os imports `./x.js` → `./x.mjs`.
+- `JsonAdapter` (Quickshell 0.3.2) entrega os `var` lidos do arquivo como objetos com `length` e índices em que `Array.isArray` dá `false` (e `JSON.stringify` ainda mostra uma lista). Validar com `Array.isArray` joga fora o valor guardado: a Island subia com os ambientes iniciais a cada reinício e a edição seguinte regravava o arquivo por cima. Use `asList` (`environments.ts`) para ler lista do adapter; teste no Vitest com um fake de objeto com `length` e sem ser `Array`, e o `make smoke` confere no motor real (semente em `dist/xdg`). Ler o arquivo depois do teste não basta: confira também o que a barra enxerga (`nested.sh ipc dev environments`).
 - O V4 não tem `setTimeout`, `TextDecoder` nem `Intl`: timers do core recebem um `Scheduler` feito de `Timer` QML, e bytes chegam ao core já como string.
 - `FileView` com `preload: false` nunca emite `loaded` numa leitura assíncrona de `/proc` (tamanho 0): deixe o `preload` ligado e chame `reload()`.
 - `qs ipc -p` só acha instâncias do display atual, e métodos com nome de subcomando do `qs` (`show`) precisam de `call --`.

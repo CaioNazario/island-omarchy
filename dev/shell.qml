@@ -121,6 +121,14 @@ ShellRoot {
       return JSON.stringify(bar.environment); // qmllint disable missing-property
     }
 
+    // Ambientes como a barra os enxerga (já lidos do settings.json): o `smoke`
+    // confere que os guardados no arquivo sobrevivem ao reinício.
+    function environments(): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      return JSON.stringify(bar.environments); // qmllint disable missing-property
+    }
+
     // Clique na ilha do monitor capturado (regra 5 da spec 03).
     function click(): string {
       const bar = barLoader.item; // qmllint disable missing-property

@@ -321,4 +321,70 @@ describe('environmentsFromJson', () => {
     ]);
     expect(result.map((env) => env.name)).toEqual(['A']);
   });
+  // Regressão: o `JsonAdapter` do Quickshell entrega os `var` lidos do arquivo
+  // ao JS como objetos com `length` e índices, e `Array.isArray` dá `false`
+  // (medido no qs 0.3.2, AGENTS.md "Hurdles"). A leitura descartava tudo e o
+  // Island subia com os ambientes iniciais depois de cada reinício; a próxima
+  // edição regravava o arquivo por cima e apagava os widgets do usuário.
+  describe('lista tipo array do JsonAdapter', () => {
+    function qmlList(items: readonly unknown[]): ArrayLike<unknown> {
+      const list: Record<string, unknown> = { length: items.length };
+      items.forEach((item, i) => {
+        list[String(i)] = item;
+      });
+      return list as unknown as ArrayLike<unknown>;
+    }
+
+    it('guarda de verdade que o fake não é um array (senão o teste não prova nada)', () => {
+      expect(Array.isArray(qmlList(['a']))).toBe(false);
+    });
+
+    it('mantém os ambientes do arquivo, não os iniciais', () => {
+      const fromFile = qmlList([
+        qmlList(['Padrão', 'house', qmlList(['music', 'ai']), qmlList(['note', 'progress', 'hw'])]),
+        qmlList(['Trabalho', 'briefcase', qmlList(['event']), qmlList(['github'])]),
+      ]);
+      expect(environmentsFromJson(fromFile)).toEqual([
+        { name: 'Padrão', icon: 'house', left: ['music', 'ai'], right: ['note', 'progress', 'hw'] },
+        { name: 'Trabalho', icon: 'briefcase', left: ['event'], right: ['github'] },
+      ]);
+    });
+
+    it('aceita a mistura: lista de verdade com listas internas do motor, e o contrário', () => {
+      const mixed = [['A', 'house', qmlList(['ai']), ['hw']]];
+      expect(environmentsFromJson(mixed)[0]).toEqual({
+        name: 'A',
+        icon: 'house',
+        left: ['ai'],
+        right: ['hw'],
+      });
+      const outer = qmlList([['B', 'coffee', ['note'], ['hw']]]);
+      expect(environmentsFromJson(outer)[0]?.name).toBe('B');
+    });
+
+    it('ainda descarta a entrada fora da forma dentro da lista do motor', () => {
+      const fromFile = qmlList([
+        qmlList(['A', 'house', qmlList([]), qmlList(['note'])]),
+        'lixo',
+        qmlList(['B', 'coffee', 'x', qmlList([])]),
+      ]);
+      expect(environmentsFromJson(fromFile).map((env) => env.name)).toEqual(['A']);
+    });
+
+    it('ida e volta: o que a barra grava volta igual na leitura seguinte', () => {
+      const envs: Environment[] = [
+        { name: 'Casa', icon: 'coffee', left: ['ai', 'note'], right: ['hw'] },
+      ];
+      const stored = toStored(envs).map(([name, icon, left, right]) =>
+        qmlList([name, icon, qmlList(left), qmlList(right)]),
+      );
+      expect(environmentsFromJson(qmlList(stored))).toEqual(envs);
+    });
+
+    it('objeto com `length` absurdo ou que não é lista não vira lista gigante', () => {
+      expect(environmentsFromJson({ length: 1e9 })).toEqual(defaultEnvironments());
+      expect(environmentsFromJson({ length: -1 })).toEqual(defaultEnvironments());
+      expect(environmentsFromJson({ nome: 'x' })).toEqual(defaultEnvironments());
+    });
+  });
 });

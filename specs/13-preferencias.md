@@ -22,6 +22,8 @@ O design v3 muda o padrão de `clickAction` para "Calendário compacto" e só ap
 | `countdownName` | string | `""` | spec 16 |
 | `countdownDate` | `"AAAA-MM-DD"` ou `""` | `""` | spec 16 |
 
+Listas lidas do arquivo chegam ao JS como objetos com `length` e índices em que `Array.isArray` dá `false` (o motor do QML, via `JsonAdapter`): o core as lê com `asList` (`environments.ts`). Quem validasse com `Array.isArray` jogaria fora o que o usuário guardou e a próxima gravação apagaria o arquivo. O `make smoke` semeia um `settings.json` com um ambiente próprio e falha se a barra não o carregar.
+
 Estado que não é preferência fica em `$XDG_STATE_HOME/island/state.json` (`StateStore.qml`): `doNotDisturb` (spec 04), `pomodoroState` (spec 16), `weatherHintShown` (spec 07).
 
 Atalhos não são preferência: são binds do Hyprland para o alvo IPC `island` (`toggleQuick`, `nextEnvironment`, `previousEnvironment`; specs 03 e 15).

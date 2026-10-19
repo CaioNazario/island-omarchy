@@ -103,10 +103,22 @@ log_errors() {
   grep -E 'ERROR|TypeError|ReferenceError|WARN.*(scene|qml)' "$LOG" || true
 }
 
+# Regressão: o JsonAdapter entrega as listas do arquivo como objetos em que
+# `Array.isArray` dá `false`, a leitura descartava os ambientes guardados e a
+# Island subia com os iniciais depois de cada reinício (AGENTS.md "Hurdles").
+# Só o motor real pega isso: o Vitest não tem o JsonAdapter.
+seed_settings() {
+  mkdir -p "$DIST/xdg/config/island"
+  printf '{"environments": [["Semente","coffee",["pomodoro","note"],["hw"]]], "environmentIndex": 0}\n' \
+    >"$DIST/xdg/config/island/settings.json"
+}
+
 smoke() {
   trap stop EXIT
+  seed_settings
   start
   wait_for '[[ "$(harness_status)" == *"\"bar\":true"* ]]' "the bar to load"
+  wait_for '[[ "$(harness_ipc environments)" == *"\"name\":\"Semente\""*"\"left\":[\"pomodoro\",\"note\"]"* ]]' "the environments saved in settings.json to load"
   for i in $(seq 1 "$SMOKE_RELOADS"); do
     harness_ipc reload >/dev/null
     wait_for '[[ "$(harness_status)" == *"\"bar\":true"*"\"reloads\":$i"* ]]' "reload $i"
