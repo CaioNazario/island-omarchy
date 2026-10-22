@@ -279,8 +279,10 @@ Rectangle {
       Layout.fillWidth: true
       spacing: 6
 
+      // Mesma largura do rótulo "Realce": as opções das duas linhas alinham.
       IslandText {
         Layout.rightMargin: 8
+        Layout.preferredWidth: accentLabel.implicitWidth
         text: "Tema"
       }
 
@@ -294,6 +296,32 @@ Rectangle {
           label: modelData
           active: Tokens.theme === modelData
           onClicked: panel.bar.setTheme(modelData)
+        }
+      }
+    }
+
+    // Cor de realce (spec 01 "Realce"): global como o tema.
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 6
+
+      IslandText {
+        id: accentLabel
+
+        Layout.rightMargin: 8
+        text: "Realce"
+      }
+
+      Repeater {
+        model: ThemeCore.ACCENT_IDS
+
+        ChoiceButton {
+          required property string modelData
+
+          Layout.fillWidth: true
+          label: modelData
+          active: Tokens.accentName === modelData
+          onClicked: panel.bar.setAccent(modelData)
         }
       }
     }

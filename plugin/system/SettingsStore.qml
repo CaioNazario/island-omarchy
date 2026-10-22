@@ -54,6 +54,8 @@ Scope {
       property bool autoHide: false
       // Tema do design (spec 01 "Temas"; `THEME_IDS` em themes.ts).
       property string theme: "Nocturne"
+      // Cor de realce (spec 01 "Realce"; `ACCENT_IDS` em themes.ts).
+      property string accent: "Roxo"
       property string noteText: ""
       property string countdownName: ""
       // `AAAA-MM-DD` ou vazio.

@@ -60,7 +60,9 @@ Ainda não existe: o auto-ocultar (spec 18) não está implementado na barra, e 
 
 ## Tema
 
-Linha com "Tema" 13px/500 e cinco opções de 30px (`ChoiceButton`, ativa `accent-900` com anel `accent-700`): Nocturne, Vidro fosco, Sólido, Claro, Alto contraste. Vale para a barra inteira, não por ambiente; troca na hora (spec 01 "Temas"). Não existe no design, onde o tema é uma opção do protótipo.
+Linha com "Tema" 13px/500 e duas opções de 30px (`ChoiceButton`, ativa `accent-900` com anel `accent-700`): Nocturne e Alto contraste. Vale para a barra inteira, não por ambiente; troca na hora (spec 01 "Temas"). Não existe no design, onde o tema é uma opção do protótipo.
+
+Logo abaixo, a linha "Realce" com as mesmas opções de 30px: Roxo e Branco (spec 01 "Realce"). Também vale para a barra inteira e troca na hora. Os rótulos "Tema" e "Realce" têm a mesma largura, então as opções das duas linhas alinham.
 
 ## Rodapé
 

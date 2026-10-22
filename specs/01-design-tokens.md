@@ -15,7 +15,14 @@ Uma tabela única em `plugin/ui/Tokens.qml` (singleton QML) é a fonte de toda c
 
 ### Realce
 
-`accent` e `accent-100…900` são fixos: a escala que o design calcula ao carregar com matiz 289 e saturação 100%, e `accent` = `accent-500`. Os valores são `#f4f3ff #e6e4ff #d2cdff #b5acfa #9387dd #766ab9 #5a508f #3f3865 #28253e`. Os valores fixos do `tokens.css` (`#9184d9`, `#968ae0`…) não são usados: o design também troca pela escala calculada ao carregar. O design deixa escolher a matiz e a saturação; a Island não (fora de escopo, spec 00).
+`accent` e `accent-100…900` vêm da cor de realce, escolhida no editor de ambientes (spec 17) e guardada em `settings.json` `accent` (spec 13). Vale para os dois temas.
+
+| Realce | Escala `accent-100…900` | `accent` |
+|---|---|---|
+| Roxo (padrão) | a que o design calcula ao carregar, matiz 289 e saturação 100% (`acRamp(289, 1)`): `#f4f3ff #e6e4ff #d2cdff #b5acfa #9387dd #766ab9 #5a508f #3f3865 #28253e` | `accent-500` (`accent-400` no Alto contraste) |
+| Branco | a mesma luminosidade sem saturação (`acRamp(h, 0)`): `#f5f5f5 #e8e8e8 #d4d4d4 #b7b7b7 #959595 #777777 #5b5b5b #404040 #292929` | `accent-200` nos dois temas: o `accent-500` sairia cinza |
+
+Os valores fixos do `tokens.css` (`#9184d9`, `#968ae0`…) não são usados: o design também troca pela escala calculada ao carregar. O design deixa escolher qualquer matiz e saturação; a Island oferece só esses dois. Um `accent` desconhecido cai no Roxo.
 
 ### Cores pré-calculadas
 
@@ -64,18 +71,16 @@ Pílulas e ilha usam o acabamento do design v5 (`plugin/ui/SoftSurface.qml`), so
 
 ## Temas
 
-Os cinco temas do design (`THEMES` em design/logic.js), escolhidos no editor de ambientes (spec 17) e guardados em `settings.json` `theme` (spec 13). `src/core/themes.ts` dá as cores de cada um e o `Tokens.qml` as lê, então a UI inteira troca junto.
+Dois dos temas do design (`THEMES` em design/logic.js), escolhidos no editor de ambientes (spec 17) e guardados em `settings.json` `theme` (spec 13). `src/core/themes.ts` dá as cores de cada um e o `Tokens.qml` as lê, então a UI inteira troca junto.
 
 | Tema | Base | Superfícies |
 |---|---|---|
 | Nocturne (padrão) | os tokens acima | pílulas e ilha em `bg` opaco |
-| Vidro fosco | Nocturne; `neutral-900`/`800` = `neutral-100` a 10%/18% | pílulas `bg` 38%, ilha `bg` 52%, editor `bg` 60% (sem o blur do design) |
-| Sólido | Nocturne; `neutral-900` `#30334a`, `neutral-800` `#41455c` | `surface` |
-| Claro | `bg` `#f5f6fb`, `text` `#1b1d28`, neutros invertidos do design; escala do acento invertida, `accent` = passo 5 dela | `#f8f9fc` a 80% (pílulas), 94% (ilha), 96% (editor) |
 | Alto contraste | `bg` `#0b0c12`, `text` `#f7f8fc`, neutros do design; passos 5–7 do acento puxados para cima, `accent` = `accent-400` | `#0b0c12` |
 
 - O Alto contraste do design também aumenta a saturação do acento em 25%; a Island usa a escala normal.
-- O azul do Claro no v4 (matiz 232) depende do seletor de realce, que não existe: o Claro usa o roxo invertido.
+- Vidro fosco, Sólido e Claro saíram a pedido do usuário. Um `theme` antigo com um deles no `settings.json` cai no Nocturne.
+- Botões redondos da linha de controles (`tileOn`/`tileOff` em `themes.ts`, spec 08): cada tema e realce garante o contraste. Fora do Nocturne com Roxo, ligado é o `accent` cheio com ícone escuro.
 - Cores fixas de estado (vermelhos, verde da bateria, Energia) não mudam com o tema.
 
 ## Efeitos (equivalentes QML)

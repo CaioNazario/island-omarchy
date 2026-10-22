@@ -147,6 +147,17 @@ Item {
     if (service) service.settings.values.theme = id;
   }
 
+  // Cor de realce (spec 01 "Realce"), também global.
+  Binding {
+    target: Tokens
+    property: "accentName"
+    value: root.service ? root.service.settings.values.accent : "Roxo"
+  }
+
+  function setAccent(id) {
+    if (service) service.settings.values.accent = id;
+  }
+
   Component.onCompleted: {
     islandState = new IslandCore.IslandState(scheduler, { onChange: syncIsland });
     targetFocusedScreen();

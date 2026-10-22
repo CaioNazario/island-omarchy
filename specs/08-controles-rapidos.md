@@ -10,7 +10,7 @@ Código: `plugin/ui/ControlsRow.qml`, `WifiView.qml`, `BtView.qml`, `LevelRow.qm
 
 1. **Brilho**: pílula `flex: 1`, 32px, raio 16, `neutral-900`, padding 0 11px, gap 8px; `ph ph-sun` 16px + slider. Some se não houver backlight controlável (o volume ocupa o espaço).
 2. **Volume**: igual, com o ícone de volume.
-3. **Tiles** 32×32 raio 16, ícone 15px (ligado: `accent-600` / ícone `neutral-100`; desligado: `neutral-800` / `neutral-300`; transição 180ms):
+3. **Tiles** 32×32 raio 16, ícone 15px (ligado `tileOn` / ícone `tileOnIcon`; desligado `tileOff` / `tileOffIcon`; transição 180ms). No Nocturne com realce Roxo são as cores do design: ligado `accent-600` / `neutral-100`, desligado `neutral-800` / `neutral-300`. No Alto contraste e no realce Branco o `accent-600` é claro ou cinza e o ícone claro sumia sobre ele: ligado é o `accent` cheio com ícone na cor do `bg`; no Alto contraste, desligado é `#262938` com ícone `#f7f8fc` (spec 01 "Temas"). Configurações e Energia em repouso seguem o tile desligado:
 
    | Tile | Ícone | Clique |
    |---|---|---|

@@ -87,7 +87,7 @@ Ficam de fora do v5: o seletor de cor de realce e o tema Claro em azul (temas do
 - Publicação no repositório de plugins do Omarchy (instalação via `install.sh`)
 - Tema claro, botões de ação em notificações, bandeja AppIndicator, troca de layout de teclado
 - GPU NVIDIA no bloco de hardware (sem máquina para validar o `nvidia-smi`)
-- Cor de realce escolhida pelo usuário (painel de matiz/saturação do design v3): o `accent` é fixo (spec 01)
+- Painel de matiz/saturação do design v3: a Island só oferece o realce Roxo ou Branco (spec 01 "Realce")
 
 ## Critérios de aceite globais
 
