@@ -89,6 +89,7 @@ Item {
       glyph: row.system.screenRecord.recording ? "stop-fill" : "record-fill"
       on: row.system.screenRecord.recording
       onColor: Tokens.recordOnBg
+      onIconColor: Tokens.neutral100
       onClicked: {
         if (!row.system.screenRecord.recording) row.bar.closeAll();
         row.system.screenRecord.toggle();
@@ -121,8 +122,8 @@ Item {
 
     RoundButton {
       glyph: "power-bold"
-      restingColor: row.bar.powerOpen ? Tokens.powerOpenBg : Tokens.neutral800
-      restingIconColor: row.bar.powerOpen ? Tokens.neutral100 : Tokens.neutral300
+      restingColor: row.bar.powerOpen ? Tokens.powerOpenBg : Tokens.tileOff
+      restingIconColor: row.bar.powerOpen ? Tokens.neutral100 : Tokens.tileOffIcon
       onClicked: row.bar.islandState.togglePower()
     }
   }

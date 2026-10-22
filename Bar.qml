@@ -147,6 +147,17 @@ Item {
     if (service) service.settings.values.theme = id;
   }
 
+  // Cor de realce (spec 01 "Realce"), também global.
+  Binding {
+    target: Tokens
+    property: "accentName"
+    value: root.service ? root.service.settings.values.accent : "Roxo"
+  }
+
+  function setAccent(id) {
+    if (service) service.settings.values.accent = id;
+  }
+
   Component.onCompleted: {
     islandState = new IslandCore.IslandState(scheduler, { onChange: syncIsland });
     targetFocusedScreen();
@@ -259,7 +270,7 @@ Item {
     wifiPasswordError = "";
   }
 
-  /** `Super+I` (specs/03 "Atalho"): de qualquer modo vai a `quick`; de `quick`, fecha. */
+  /** `Super+S` (specs/03 "Atalho"): de qualquer modo vai a `quick`; de `quick`, fecha. */
   function toggleQuick() {
     if (mode !== "quick") targetFocusedScreen();
     islandState.openFromTrigger("quick");
@@ -298,8 +309,12 @@ Item {
       root.stepEnvironment(direction);
     }
     function onStackRequested() {
+      if (root.mode === "stack") return;
       root.targetFocusedScreen();
-      if (root.mode !== "stack") root.islandState.openFromTrigger("stack");
+      root.islandState.openFromTrigger("stack");
+    }
+    function onStackCloseRequested() {
+      if (root.mode === "stack") root.closeAll();
     }
   }
 
