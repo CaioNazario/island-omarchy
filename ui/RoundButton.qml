@@ -2,15 +2,15 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
-// Configurações e Energia (specs/09-sessao-energia.md): 32×32 raio 16,
-// hover `neutral-700`/`text`, pressionado `accent-800`. `restingColor` e
+// Configurações e Energia (specs/09-sessao-energia.md): 32×32 raio 16, em
+// repouso `tileOff`/`tileOffIcon` como os tiles desligados, hover `neutral-700`/`text`, pressionado `accent-800`. `restingColor` e
 // `restingIconColor` mudam com a linha de energia aberta.
 Rectangle {
   id: button
 
   required property string glyph
-  property color restingColor: Tokens.neutral800
-  property color restingIconColor: Tokens.neutral300
+  property color restingColor: Tokens.tileOff
+  property color restingIconColor: Tokens.tileOffIcon
 
   signal clicked
 

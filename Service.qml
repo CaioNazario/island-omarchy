@@ -34,6 +34,7 @@ Item {
   signal osdCloseRequested
   signal quickToggleRequested
   signal stackRequested
+  signal stackCloseRequested
   signal environmentStepRequested(int direction)
 
   function setDoNotDisturb(on) {
@@ -147,6 +148,16 @@ Item {
 
     function toggleQuick(): string {
       root.quickToggleRequested();
+      return "ok";
+    }
+    // Gestos de três dedos (spec 04): para baixo só abre `stack`, para cima só
+    // fecha. Repetir o gesto não alterna.
+    function openStack(): string {
+      root.stackRequested();
+      return "ok";
+    }
+    function closeStack(): string {
+      root.stackCloseRequested();
       return "ok";
     }
     // `Super+Ctrl+Alt+→`/`←` (spec 15), amarrados no Hyprland.

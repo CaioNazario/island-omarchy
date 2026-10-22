@@ -18,6 +18,20 @@ omarchy plugin disable omarchy.notifications
 omarchy plugin disable omarchy.osd
 ```
 
+## Atalhos e gestos
+
+O plugin traz os atalhos e gestos da Island em `hypr/island.lua`. Para ligá-los, acrescente no fim do `~/.config/hypr/hyprland.lua`:
+
+```lua
+dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/caionazario.island/hypr/island.lua")
+```
+
+- `Super+S`: controles rápidos (tira o scratchpad do Omarchy dessa tecla)
+- `Super+Ctrl+Alt+←/→`: troca de ambiente
+- Três dedos para baixo no touchpad: abre a lista de notificações; para cima, fecha
+
+Como o arquivo fica dentro do plugin, o `omarchy plugin update` também atualiza os atalhos. Não repita esses binds no seu `bindings.lua`: o Hyprland rodaria os dois.
+
 ## Atualização
 
 ```bash

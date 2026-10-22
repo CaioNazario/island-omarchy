@@ -7,10 +7,13 @@ import "../core/themes.mjs" as ThemeCore
 // calcula em oklch()/color-mix(), já convertidas. specs/01-design-tokens.md
 // documenta a origem de cada valor; nenhuma cor da UI fica fora daqui. As
 // cores base, os neutros, o acento e as superfícies vêm do tema escolhido
-// (`themes.ts`); o Bar.qml liga `theme` à preferência do `settings.json`.
+// (`themes.ts`); o Bar.qml liga `theme` e `accentName` às preferências do
+// `settings.json`.
 QtObject {
   property string theme: "Nocturne"
-  readonly property var palette: ThemeCore.themeColors(theme)
+  // Cor de realce (spec 01 "Realce"): `accent` já é a cor, daí o nome.
+  property string accentName: "Roxo"
+  readonly property var palette: ThemeCore.themeColors(theme, accentName)
 
   readonly property color bg: palette.bg
   readonly property color surface: palette.surface
@@ -20,7 +23,12 @@ QtObject {
   readonly property color laneBg: palette.lane
   readonly property color islandBg: palette.island
   readonly property color panelBg: palette.panel
-  readonly property bool lightTheme: palette.light
+  // Botões redondos da linha de controles (`Tile`, `RoundButton`): cada tema
+  // garante o contraste (themes.ts).
+  readonly property color tileOn: palette.tileOn
+  readonly property color tileOnIcon: palette.tileOnIcon
+  readonly property color tileOff: palette.tileOff
+  readonly property color tileOffIcon: palette.tileOffIcon
 
   readonly property color neutral100: palette.neutrals[0]
   readonly property color neutral200: palette.neutrals[1]
@@ -32,7 +40,7 @@ QtObject {
   readonly property color neutral800: palette.neutrals[7]
   readonly property color neutral900: palette.neutrals[8]
 
-  // `acRamp(289, 1)` de design/logic.js (invertida no Claro): a escala que o
+  // `acRamp(289, 1)` de design/logic.js no Roxo: a escala que o
   // design calcula ao carregar, não os valores fixos do tokens.css.
   readonly property color accent100: palette.accents[0]
   readonly property color accent200: palette.accents[1]
