@@ -4,6 +4,18 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 
 ## [Não lançada]
 
+## [0.5.0] - 2026-10-21
+
+### Adicionado
+
+- Atalhos e gestos no projeto (`hypr/island.lua`): `Super+S` abre os controles rápidos (no lugar do scratchpad do Omarchy); três dedos para baixo abrem a lista de notificações, e para cima fecham.
+- Realce Roxo ou Branco no editor.
+
+### Mudado
+
+- Ficam só os temas Nocturne e Alto contraste. Um tema removido salvo nas preferências volta ao Nocturne.
+- Botões dos controles rápidos mais fortes fora do Nocturne com realce Roxo.
+
 ## [0.4.0] - 2026-10-18
 
 ### Adicionado
@@ -69,7 +81,8 @@ Primeira versão: a Island como plugin de barra do Omarchy.
 - Clima pelo Open-Meteo.
 - Ambientes e widgets nas pílulas laterais, com hardware e uso de IA do Claude e do Codex.
 
-[Não lançada]: https://github.com/CaioNazario/island-omarchy/compare/v0.4.0...dev
+[Não lançada]: https://github.com/CaioNazario/island-omarchy/compare/v0.5.0...dev
+[0.5.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.1.0...v0.2.0
