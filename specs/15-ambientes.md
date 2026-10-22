@@ -41,7 +41,7 @@ Troca circular: depois do último vem o primeiro.
 | Clique num ponto do botão de ambiente | vai direto para aquele ambiente |
 | Aba no editor (spec 17) | vai direto para aquele ambiente |
 
-Atalhos numerados (`Alt+1–N` do design) não existem. `Alt+←/→` do design também não: roubaria o "voltar" do navegador. Os atalhos são binds do Hyprland para o alvo IPC `island` (`nextEnvironment`/`previousEnvironment`), em `~/.config/hypr/bindings.lua`; o `install.sh` mostra as linhas. `Super+Ctrl+←/→` da v1.1 não serve: no Omarchy 4.0.4 troca a janela do grupo (`default/hypr/bindings/tiling.lua`), e `Super+Alt+←/→` move a janela para o grupo. `Super+Ctrl+Alt+←/→` não tem bind padrão.
+Atalhos numerados (`Alt+1–N` do design) não existem. `Alt+←/→` do design também não: roubaria o "voltar" do navegador. Os atalhos são binds do Hyprland para o alvo IPC `island` (`nextEnvironment`/`previousEnvironment`), em `hypr/island.lua`, que o `install.sh` instala (spec 03 "Atalho"). `Super+Ctrl+←/→` da v1.1 não serve: no Omarchy 4.0.4 troca a janela do grupo (`default/hypr/bindings/tiling.lua`), e `Super+Alt+←/→` move a janela para o grupo. `Super+Ctrl+Alt+←/→` não tem bind padrão.
 
 ### Rolagem suave
 

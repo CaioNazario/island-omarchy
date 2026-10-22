@@ -106,7 +106,7 @@ Dados do Open-Meteo, sem chave de API. A cidade vem de:
 Sem cidade, o clima some da Island (sem geolocalização por IP).
 
 ### Controles rápidos
-Abra pela seta da pílula direita ou com `Super+I` (bind do Hyprland que o `install.sh` mostra).
+Abra pela seta da pílula direita ou com `Super+S` (bind do Hyprland que o `install.sh` instala).
 Inclui:
 - Volume (o ícone abre o gerenciador de volume)
 - Brilho
@@ -181,8 +181,9 @@ Isso evita que a interface fique pulando de um estado para outro enquanto você 
 - **Clique na Island compacta:** abre o cartão central ou o calendário, conforme configurado.
 - **Clique em uma notificação:** abre a lista de notificações.
 - **Rolar para baixo sobre a barra** (qualquer uma das três pílulas, mouse ou touchpad): abre a lista de notificações; **para cima**, fecha. Dentro da lista, para cima rola a lista e só fecha quando ela está no topo.
+- **Três dedos para baixo no touchpad:** abre a lista de notificações; **para cima**, fecha. Os gestos são do Hyprland (`openStack` e `closeStack` do alvo IPC `island`; spec 04).
 - **Clique no botão de ambiente:** abre o editor de ambientes.
-- **`Super+I`:** abre os controles rápidos.
+- **`Super+S`:** abre os controles rápidos.
 - **`Super+Ctrl+Alt+←/→`:** troca de ambiente.
 - **`Esc`:** fecha o modo fixo atual.
 
@@ -221,7 +222,7 @@ npm ci
 ```
 O `install.sh` compila o plugin, copia para `~/.config/omarchy/plugins/caionazario.island/`, desliga as notificações e o OSD do Omarchy (a Island assume os dois) e troca a barra. O shell recarrega sozinho, sem logout.
 
-No fim, ele mostra as linhas de atalho para colar em `~/.config/hypr/bindings.lua` (`Super+I` e `Super+Ctrl+Alt+←/→`).
+Ele também instala os atalhos e gestos da Island (`Super+S`, `Super+Ctrl+Alt+←/→` e três dedos para baixo/cima): copia `hypr/island.lua` para `~/.config/hypr/island.lua` e acrescenta `require("hypr.island")` no fim do `~/.config/hypr/hyprland.lua`, com backup. Não repita esses binds no seu `bindings.lua`: o Hyprland rodaria os dois. O `--uninstall` tira a linha e o arquivo.
 
 As preferências ficam em `~/.config/island/settings.json` (a janela de preferências ainda não foi portada). Mudanças no arquivo valem na hora.
 ***

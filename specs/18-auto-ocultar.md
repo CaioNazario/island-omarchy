@@ -41,5 +41,5 @@ Comportamento da spec 02: a barra sempre visível e reservando 28px.
 - [x] Ligar no editor tira o strut na hora: uma janela maximizada passa a começar em y=0. Desligar devolve os 28px.
 - [x] Clicar numa aba do navegador maximizado encostada no topo não revela a barra. Empurrar o ponteiro contra a borda revela.
 - [x] Notificação chegando com a barra escondida mostra a barra junto com o `notif` e esconde de novo depois.
-- [ ] `Super+I` com a barra escondida mostra a barra com `quick` aberto.
+- [ ] `Super+S` com a barra escondida mostra a barra com `quick` aberto.
 - [x] Lock/unlock com auto-ocultar ligado não deixa barreira nem strut para trás.

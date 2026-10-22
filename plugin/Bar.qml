@@ -259,7 +259,7 @@ Item {
     wifiPasswordError = "";
   }
 
-  /** `Super+I` (specs/03 "Atalho"): de qualquer modo vai a `quick`; de `quick`, fecha. */
+  /** `Super+S` (specs/03 "Atalho"): de qualquer modo vai a `quick`; de `quick`, fecha. */
   function toggleQuick() {
     if (mode !== "quick") targetFocusedScreen();
     islandState.openFromTrigger("quick");
@@ -298,8 +298,12 @@ Item {
       root.stepEnvironment(direction);
     }
     function onStackRequested() {
+      if (root.mode === "stack") return;
       root.targetFocusedScreen();
-      if (root.mode !== "stack") root.islandState.openFromTrigger("stack");
+      root.islandState.openFromTrigger("stack");
+    }
+    function onStackCloseRequested() {
+      if (root.mode === "stack") root.closeAll();
     }
   }
 

@@ -69,7 +69,7 @@ O host recria o `Bar.qml` a cada hot-reload de plugin (qualquer arquivo salvo em
 | `make build` | core → `.mjs` + plugin + ícones em `dist/caionazario.island/` |
 | `make dev` | build + Hyprland aninhado numa janela, com o harness `dev/` rodando o plugin dentro dele |
 | `make smoke` | build + Hyprland aninhado sem interação: carrega o plugin, força 5 hot-reloads e falha se o log do Quickshell tiver `ERROR` ou `TypeError` |
-| `./install.sh` / `./install.sh --uninstall` | copia o build para `~/.config/omarchy/plugins/caionazario.island/`, troca a barra e desliga/religa `omarchy.notifications` e `omarchy.osd` |
+| `./install.sh` / `./install.sh --uninstall` | copia o build para `~/.config/omarchy/plugins/caionazario.island/`, troca a barra, desliga/religa `omarchy.notifications` e `omarchy.osd` e instala/remove os atalhos e gestos (`hypr/island.lua` → `~/.config/hypr/island.lua` + `require` no `hyprland.lua`) |
 
 - Logs do harness: `dist/dev.log`. Logs do omarchy-shell real: `qs log -p /usr/share/omarchy/shell`.
 - Captura do Hyprland aninhado: `make shot` (grim no socket do aninhado) grava `dist/shot.png`.

@@ -54,7 +54,7 @@ O cartão central (spec 05) também é um estado da ilha: 440 × altura do conte
 
 ## Regras de transição
 
-1. **Abrir por gatilho do usuário** (clique na barra ou num widget, `Super+I`): substitui qualquer modo e fecha cartão central, linha de energia e painel de senha.
+1. **Abrir por gatilho do usuário** (clique na barra ou num widget, `Super+S`): substitui qualquer modo e fecha cartão central, linha de energia e painel de senha.
 2. Clicar no gatilho do modo já aberto fecha a ilha.
 3. **Eventos automáticos nunca substituem modo fixo nem cartão aberto**:
    - notificação: regras da spec 04
@@ -71,10 +71,11 @@ O cartão central (spec 05) também é um estado da ilha: 440 × altura do conte
 
 Modos fixos (inclusive `note` e `music` fixado) e o cartão central tomam o foco de teclado enquanto abertos: a camada do monitor-alvo passa a `WlrKeyboardFocus.Exclusive` (spec 02). É isso que permite Esc, setas nos sliders, digitar a senha de Wi‑Fi e a nota. Ao fechar, volta a `None`. Modos transitórios não tomam foco.
 
-## Atalho `Super+I`
+## Atalho `Super+S`
 
 - Alterna `quick`: de qualquer modo vai para `quick`; de `quick` volta a `compact`.
-- A Island expõe o alvo IPC `island` com `toggleQuick` (`Service.qml`). O atalho é do Hyprland: `o.bind("SUPER + I", "Island: controles", "omarchy-shell island toggleQuick")` em `~/.config/hypr/bindings.lua`, sem `repeating` (segurar a tecla não repete). O `Super+S` da v1.1 não serve: no Omarchy 4.0.4 é o scratchpad (`default/hypr/bindings/tiling.lua`). O `install.sh` mostra a linha; não edita a config do usuário.
+- A Island expõe o alvo IPC `island` com `toggleQuick` (`Service.qml`). O atalho é do Hyprland: `hl.unbind("SUPER + S")` seguido de `o.bind("SUPER + S", "Island: controles", "omarchy-shell island toggleQuick")`, sem `repeating` (segurar a tecla não repete). No Omarchy 4.0.4 o `Super+S` é o scratchpad (`default/hypr/bindings/tiling.lua`); o `unbind` tira esse bind para a Island ficar com a tecla.
+- Atalhos e gestos da Island são padrão do projeto: ficam em `hypr/island.lua`. O `install.sh` copia esse arquivo para `~/.config/hypr/island.lua` e acrescenta `require("hypr.island")` no fim do `~/.config/hypr/hyprland.lua` (uma vez, com backup `.bak.<epoch>`), depois `hyprctl reload`. O `--uninstall` tira a linha e o arquivo. O resto da config do usuário não é editado, e os mesmos binds não devem ficar repetidos no `bindings.lua`: o Hyprland rodaria os dois (o `toggleQuick` abriria e fecharia).
 
 ## Critérios de aceite
 
@@ -82,7 +83,7 @@ Modos fixos (inclusive `note` e `music` fixado) e o cartão central tomam o foco
 - [ ] Cada modo abre com as medidas da tabela (±1px).
 - [ ] Uma notificação chegando com `wifi` aberto não altera a ilha (vira banner, spec 04).
 - [ ] Trocar de faixa com `calendar` aberto não abre `music`.
-- [ ] Segurar `Super+I` não faz a ilha piscar.
+- [ ] Segurar `Super+S` não faz a ilha piscar.
 - [ ] Com o mouse sobre a ilha em `notif`, ela não fecha; ao sair, fecha 2500ms depois.
 - [ ] Esc com o campo de senha focado fecha só o painel de senha; um segundo Esc fecha a ilha.
 - [x] Testes de `island.ts` para `env` (só abre de `compact`/`env`, rearma), `note` como modo fixo e `music` fixado (sem timer, troca de faixa não fecha).

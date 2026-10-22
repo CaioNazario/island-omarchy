@@ -26,7 +26,7 @@ Listas lidas do arquivo chegam ao JS como objetos com `length` e índices em que
 
 Estado que não é preferência fica em `$XDG_STATE_HOME/island/state.json` (`StateStore.qml`): `doNotDisturb` (spec 04), `pomodoroState` (spec 16), `weatherHintShown` (spec 07).
 
-Atalhos não são preferência: são binds do Hyprland para o alvo IPC `island` (`toggleQuick`, `nextEnvironment`, `previousEnvironment`; specs 03 e 15).
+Atalhos não são preferência: são binds do Hyprland para o alvo IPC `island` (`toggleQuick`, `openStack`, `closeStack`, `nextEnvironment`, `previousEnvironment`; specs 03, 04 e 15).
 
 ## Janela de preferências (a portar)
 

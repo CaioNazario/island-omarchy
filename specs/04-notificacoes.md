@@ -11,6 +11,10 @@ Código: `plugin/system/NotificationFeed.qml` (no `Service.qml`), roteamento no 
 - Cada notificação fica `tracked` (senão o objeto morre ao fim do handler). Atualização por `replaces_id` chega no mesmo objeto e atualiza o item. Quando o app fecha a notificação (`closed`), o item sai da lista.
 - Hint `transient`: aparece (`notif`/banner) mas não entra na lista.
 - O alvo IPC `notifications` tem o contrato do Omarchy (spec 14, S7): `toggleDnd`/`setDnd`/`isDnd`/`dndState`, `showHistory` (abre `stack`), `clear`/`dismissAll` (limpa a lista), `dismissOne` (a mais recente), `invokeLast` (ação padrão da mais recente), `dismiss <trecho do título>`, `ping`. Os atalhos `Super+vírgula` do Omarchy seguem funcionando.
+- O alvo IPC `island` tem `openStack` e `closeStack`, para os gestos de três dedos do Hyprland:
+  - `openStack` (três dedos para baixo) abre `stack` no monitor focado. Com `stack` já aberto, não faz nada: repetir o gesto não fecha a lista.
+  - `closeStack` (três dedos para cima) volta a `compact` só se o modo for `stack`. Em outro modo, não faz nada.
+  - Os dois gestos vêm em `hypr/island.lua`, que o `install.sh` instala (spec 03 "Atalho").
 
 ## Identificação da origem
 

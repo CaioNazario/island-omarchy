@@ -7,6 +7,12 @@ set -euo pipefail
 PLUGIN_ID="caionazario.island"
 TARGET_DIR="$HOME/.config/omarchy/plugins/$PLUGIN_ID"
 REPLACED_PLUGINS=(omarchy.notifications omarchy.osd)
+# Atalhos e gestos (hypr/island.lua): módulo próprio, ligado por uma linha no
+# hyprland.lua. O resto da config do usuário fica intocado.
+HYPR_DIR="$HOME/.config/hypr"
+HYPR_MODULE="$HYPR_DIR/island.lua"
+HYPR_MAIN="$HYPR_DIR/hyprland.lua"
+HYPR_REQUIRE='require("hypr.island")'
 
 usage() {
   echo "Uso: $0 [--uninstall]"
@@ -19,6 +25,30 @@ require_shell() {
   exit 1
 }
 
+install_hypr() {
+  local script_dir="$1"
+  cp "$script_dir/hypr/island.lua" "$HYPR_MODULE"
+  if [[ ! -f "$HYPR_MAIN" ]]; then
+    echo "Sem $HYPR_MAIN: adicione $HYPR_REQUIRE na sua config do Hyprland." >&2
+    return
+  fi
+  if ! grep -qxF "$HYPR_REQUIRE" "$HYPR_MAIN"; then
+    cp "$HYPR_MAIN" "$HYPR_MAIN.bak.$(date +%s)"
+    printf '\n-- Atalhos e gestos da Island (install.sh).\n%s\n' "$HYPR_REQUIRE" >>"$HYPR_MAIN"
+  fi
+  hyprctl reload >/dev/null
+}
+
+uninstall_hypr() {
+  if [[ -f "$HYPR_MAIN" ]] && grep -qxF "$HYPR_REQUIRE" "$HYPR_MAIN"; then
+    cp "$HYPR_MAIN" "$HYPR_MAIN.bak.$(date +%s)"
+    grep -vxF -e "$HYPR_REQUIRE" -e '-- Atalhos e gestos da Island (install.sh).' "$HYPR_MAIN" >"$HYPR_MAIN.tmp"
+    mv "$HYPR_MAIN.tmp" "$HYPR_MAIN"
+  fi
+  rm -f "$HYPR_MODULE"
+  hyprctl reload >/dev/null
+}
+
 uninstall() {
   require_shell
   # A barra volta primeiro: sem ela, o shell cairia na padrão de qualquer jeito.
@@ -29,6 +59,7 @@ uninstall() {
     echo "Removido: $TARGET_DIR"
   fi
   omarchy-shell shell rescanPlugins >/dev/null
+  uninstall_hypr
 }
 
 install() {
@@ -49,11 +80,10 @@ install() {
   # barra com os componentes da instalação anterior: só um shell novo carrega
   # o build copiado.
   omarchy-restart-shell >/dev/null
+  install_hypr "$script_dir"
   echo "Instalado em: $TARGET_DIR"
-  echo "Atalhos (specs 03 e 15): adicione em ~/.config/hypr/bindings.lua:"
-  echo '  o.bind("SUPER + I", "Island: controles", "omarchy-shell island toggleQuick")'
-  echo '  o.bind("SUPER + CTRL + ALT + RIGHT", "Island: próximo ambiente", "omarchy-shell island nextEnvironment")'
-  echo '  o.bind("SUPER + CTRL + ALT + LEFT", "Island: ambiente anterior", "omarchy-shell island previousEnvironment")'
+  echo "Atalhos e gestos em $HYPR_MODULE: Super+S (controles), Super+Ctrl+Alt+←/→ (ambiente),"
+  echo "três dedos para baixo/cima (abre/fecha as notificações)."
   echo "Para voltar à barra do Omarchy: $0 --uninstall"
 }
 

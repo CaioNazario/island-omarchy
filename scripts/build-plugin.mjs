@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Monta o plugin em `<dest>`: copia `plugin/` e `icons/` e gera um `qmldir`
+// Monta o plugin em `<dest>`: copia `plugin/`, `icons/` e `hypr/` (atalhos e
+// gestos, para quem instala pelo `omarchy plugin add`) e gera um `qmldir`
 // por pasta de QML. Com `qmldir`, uma importação de diretório só enxerga os
 // tipos listados nele; gerar evita esquecer um componente novo. Arquivos com
 // `pragma Singleton` entram como `singleton`. Os ícones saem brancos: o
@@ -51,5 +52,6 @@ const DEST = process.argv[2];
 if (!DEST) throw new Error('usage: build-plugin.mjs <dest dir>, got no argument');
 cpSync(join(ROOT, 'plugin'), DEST, { recursive: true });
 writeWhiteIcons(join(ROOT, 'icons'), join(DEST, 'icons'));
+cpSync(join(ROOT, 'hypr'), join(DEST, 'hypr'), { recursive: true });
 writeQmldirs(DEST);
 console.log(`build-plugin: plugin assembled in ${DEST}`);

@@ -145,6 +145,13 @@ ShellRoot {
       return "ok";
     }
 
+    // Modo da ilha no monitor alvo: confere os gestos (`openStack`, `closeStack`).
+    function mode(): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      return bar.mode; // qmllint disable missing-property
+    }
+
     function status(): string {
       return JSON.stringify({
         bar: barLoader.status === Loader.Ready,
