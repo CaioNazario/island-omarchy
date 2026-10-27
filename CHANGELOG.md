@@ -4,6 +4,16 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 
 ## [Não lançada]
 
+## [0.6.0] - 2026-10-27
+
+### Adicionado
+
+- Bateria amarela com a economia de energia ligada.
+
+### Removido
+
+- O que restava da época GNOME: a busca de cidade das antigas preferências e o campo de notificação já reconhecida.
+
 ## [0.5.0] - 2026-10-21
 
 ### Adicionado
@@ -81,7 +91,8 @@ Primeira versão: a Island como plugin de barra do Omarchy.
 - Clima pelo Open-Meteo.
 - Ambientes e widgets nas pílulas laterais, com hardware e uso de IA do Claude e do Codex.
 
-[Não lançada]: https://github.com/CaioNazario/island-omarchy/compare/v0.5.0...dev
+[Não lançada]: https://github.com/CaioNazario/island-omarchy/compare/v0.6.0...dev
+[0.6.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.2.0...v0.3.0
