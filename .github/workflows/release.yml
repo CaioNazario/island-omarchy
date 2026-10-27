@@ -1,0 +1,60 @@
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - run: pacman -Syu --noconfirm --needed git make nodejs npm quickshell qt6-declarative github-cli jq
+      - uses: actions/checkout@v4
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - run: npm ci
+      - run: make lint
+      - run: make test
+      - run: make build
+      # A tag, o manifest e o CHANGELOG.md precisam dizer a mesma versão.
+      - run: |
+          version="${GITHUB_REF_NAME#v}"
+          test "$(jq -r .version dist/caionazario.island/manifest.json)" = "$version"
+          grep -q "^## \[$version\]" CHANGELOG.md
+      # O main é o que o `omarchy plugin add` clona: só o plugin compilado, com
+      # o README e um commit por versão. Uma tag que não é mais nova que o main
+      # (rodada de novo, ou versão antiga) não mexe nele.
+      - run: |
+          version="${GITHUB_REF_NAME#v}"
+          git fetch --depth 1 origin main
+          git worktree add main-build FETCH_HEAD
+          current=$(jq -r .version main-build/manifest.json)
+          newest=$(printf '%s\n' "$current" "$version" | sort -V | tail -1)
+          if [ "$current" = "$version" ] || [ "$newest" != "$version" ]; then
+            echo "main já está na $current; nada a publicar"
+            exit 0
+          fi
+          find main-build -mindepth 1 -maxdepth 1 ! -name .git ! -name README.md -exec rm -rf {} +
+          cp -r dist/caionazario.island/. main-build/
+          cp LICENSE main-build/
+          cd main-build
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "build: v$version"
+          git push origin HEAD:main
+      # Notas: a seção da versão no CHANGELOG.md, sem o título.
+      - run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '
+            index($0, "## [" v "]") == 1 { on = 1; next }
+            on && /^## \[/ { exit }
+            on && /^\[/ { exit }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md --verify-tag
+        env:
+          GH_TOKEN: ${{ github.token }}

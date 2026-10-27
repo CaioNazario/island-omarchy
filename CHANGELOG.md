@@ -4,6 +4,11 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 
 ## [Não lançada]
 
+### Mudado
+
+- A CI roda nos pushes da `dev`.
+- A tag de uma versão publica o build na `main` e cria a release no GitHub.
+
 ## [0.6.0] - 2026-10-27
 
 ### Adicionado
