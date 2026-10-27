@@ -12,7 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     container: archlinux:latest
     steps:
-      - run: pacman -Syu --noconfirm --needed git make nodejs npm quickshell qt6-declarative github-cli jq
+      # O quickshell do repositório do Omarchy, o mesmo que roda o plugin: o
+      # 0.3.2 do Arch não declara `values` no `UntypedObjectModel` e o qmllint
+      # acusa o `Mpris.players.values`. A chave é a do `omarchy-keyring`.
+      - run: |
+          key=40DFB630FF42BCFFB047046CF0134EE680CAC571
+          pacman-key --init
+          pacman-key --recv-keys "$key" --keyserver hkps://keyserver.ubuntu.com
+          pacman-key --lsign-key "$key"
+          sed -i '/^\[core\]/i [omarchy]\nServer = https://pkgs.omarchy.org/stable/$arch\n' /etc/pacman.conf
+          pacman -Syu --noconfirm --needed git make nodejs npm quickshell qt6-declarative github-cli jq
+          pacman -Q quickshell qt6-declarative
       - uses: actions/checkout@v4
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: npm ci
