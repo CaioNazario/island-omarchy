@@ -57,6 +57,7 @@ QtObject {
   readonly property color alertText: "#fd736d" // oklch(0.72 0.17 25)
   readonly property color batteryRed: "#c62f2f"
   readonly property color batteryGreen: "#2e9e4f"
+  readonly property color batterySaver: "#e0b122"
   readonly property color batteryInk: "#000000"
   readonly property color powerOpenBg: "#932b2a" // oklch(0.45 0.14 25)
   readonly property color powerOffText: "#ff958d" // oklch(0.78 0.13 25)

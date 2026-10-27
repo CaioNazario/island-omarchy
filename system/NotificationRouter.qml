@@ -19,7 +19,6 @@ Scope {
     const incoming = {
       critical: entry.critical,
       low: entry.low,
-      acknowledged: false,
       bannersAllowed: !bar.service.doNotDisturb,
       fromBrowser: entry.fromBrowser
     };

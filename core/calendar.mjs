@@ -58,7 +58,7 @@ const MAX_TODAY_EVENTS = 10;
 function startOfDay(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
-// Mesma regra do Shell (`_eventOverlapsInterval`): inclui eventos de duração zero.
+// Inclui eventos de duração zero.
 function overlaps(event, begin, end) {
     if (event.start >= begin && event.end < end)
         return true;

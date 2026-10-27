@@ -1,9 +1,8 @@
 // Roteamento de notificação nova e tempo relativo (specs/04-notificacoes.md;
 // design/logic.js `pushNotif`, ~136).
-// O Shell nunca mostra banner de notificação já reconhecida nem de urgência
-// baixa (`_onNotificationRequestBanner`, js/ui/messageTray.js, 50.4).
+// Urgência baixa nunca mostra banner.
 function onlyInList(notification) {
-    if (notification.acknowledged || notification.low)
+    if (notification.low)
         return true;
     return !notification.bannersAllowed && !notification.critical;
 }
@@ -45,7 +44,7 @@ function stripMarkup(text) {
             return (_a = NAMED_ENTITIES[code.toLowerCase()]) !== null && _a !== void 0 ? _a : entity;
         const isHex = code[1] === 'x' || code[1] === 'X';
         const point = parseInt(code.slice(isHex ? 2 : 1), isHex ? 16 : 10);
-        // `fromCodePoint` lança fora do Unicode; uma exceção aqui chegaria ao Shell.
+        // `fromCodePoint` lança fora do Unicode; uma exceção aqui chegaria ao shell.
         return point <= MAX_CODE_POINT ? String.fromCodePoint(point) : entity;
     });
 }

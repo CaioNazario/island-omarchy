@@ -22,6 +22,9 @@ Scope {
   readonly property bool charging: available && (device.state === UPowerDeviceState.Charging
     || device.state === UPowerDeviceState.FullyCharged
     || device.state === UPowerDeviceState.PendingCharge)
+  // Economia de bateria ligada (perfil power-saver); vem do serviço, então vale
+  // também com o painel fechado.
+  readonly property bool saver: PowerProfiles.profile === PowerProfile.PowerSaver
   readonly property var display: BatteryCore.batteryDisplay(percent, charging)
 
   property var status: ({})

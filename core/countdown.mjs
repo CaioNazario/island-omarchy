@@ -1,5 +1,5 @@
 // Widget Contagem regressiva (specs/16-widgets.md `countdown`): a data vem de
-// GSettings `countdown-date` como `AAAA-MM-DD` (specs/13-preferencias.md).
+// `countdownDate` do `settings.json` como `AAAA-MM-DD` (specs/13-preferencias.md).
 export const MAX_COUNTDOWN_NAME = 20;
 /** `AAAA-MM-DD` válido vira data; vazio ou dia inexistente vira `null`. */
 export function parseIsoDate(text) {

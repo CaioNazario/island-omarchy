@@ -11,7 +11,7 @@ Item {
 
   required property var bar
   readonly property var battery: bar.system.battery
-  readonly property color tone: battery.display.tone === "good" ? Tokens.batteryGreen
+  readonly property color tone: battery.saver ? Tokens.batterySaver : battery.display.tone === "good" ? Tokens.batteryGreen
     : battery.display.tone === "low" ? Tokens.batteryRed : Tokens.neutral300
 
   ColumnLayout {
