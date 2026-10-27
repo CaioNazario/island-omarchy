@@ -10,7 +10,7 @@ BarButton {
 
   required property var battery
   readonly property var display: battery.display
-  readonly property color tone: display.tone === "good" ? Tokens.batteryGreen
+  readonly property color tone: battery.saver ? Tokens.batterySaver : display.tone === "good" ? Tokens.batteryGreen
     : display.tone === "low" ? Tokens.batteryRed : Tokens.neutral300
 
   visible: battery.available

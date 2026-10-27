@@ -23,6 +23,7 @@ Regra pura em `src/core/battery.ts`:
 | ≥90 | `#2e9e4f` (verde sólido) |
 | ≤20 | `#c62f2f` (vermelho sólido) |
 | entre | `neutral-300` |
+| economia de bateria ligada (perfil `power-saver`) | `#e0b122` (amarelo), vale para o botão e o painel e sobrepõe o nível |
 
 A tabela de ícones `ph-battery-*` por nível saiu: a barra não usa mais ícone de bateria (o `ph-fill ph-battery-medium` dos dispositivos Bluetooth, spec 08, continua).
 
