@@ -6,7 +6,9 @@ DIST := dist/$(PLUGIN_ID)
 # `signal-handler-parameters` desligado: o mesmo qmltypes não exporta
 # QProcess::ExitStatus, e todo `Process.onExited` vira aviso.
 QMLLINT ?= $(firstword $(wildcard /usr/lib/qt6/bin/qmllint) $(shell command -v qmllint 2>/dev/null))
-QML_FILES = $(shell find $(DIST) dev -name '*.qml')
+# Caminhos absolutos: com caminho relativo, o qmllint do Qt 6.12 não acha o
+# `singleton` no qmldir e acusa o `pragma Singleton` do Tokens.qml.
+QML_FILES = $(shell find $(CURDIR)/$(DIST) $(CURDIR)/dev -name '*.qml')
 
 .PHONY: test lint build dev smoke shot clean
 
