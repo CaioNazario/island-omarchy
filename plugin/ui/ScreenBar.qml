@@ -104,7 +104,7 @@ Scope {
       bar: screenBar.bar
       mode: screenBar.mode
       screenName: screenBar.screenName
-      dragProxy: dragProxy
+      dragProxy: editorDragProxy
     }
 
     EditorPanel {
@@ -113,11 +113,11 @@ Scope {
       width: 880
       visible: screenBar.editing
       bar: screenBar.bar
-      dragProxy: dragProxy
+      dragProxy: editorDragProxy
     }
 
     EditorDragProxy {
-      id: dragProxy
+      id: editorDragProxy
     }
 
     Shortcut {

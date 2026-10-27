@@ -14,9 +14,9 @@ Scope {
   property bool claudeEnabled: true
   property bool codexEnabled: true
 
-  readonly property alias claude: claude
-  readonly property alias codex: codex
-  readonly property var providers: [claude, codex].filter(provider => provider.enabled)
+  readonly property alias claude: claudeProvider
+  readonly property alias codex: codexProvider
+  readonly property var providers: [claudeProvider, codexProvider].filter(provider => provider.enabled)
   readonly property var withLimits: providers.filter(provider => provider.hasLimits)
   // Aba escolhida no modo `ai`; sem escolha válida, o primeiro provedor.
   property string selectedId: ""
@@ -51,14 +51,14 @@ Scope {
   }
 
   AiProvider {
-    id: claude
+    id: claudeProvider
 
     providerId: "claude"
     enabled: ai.claudeEnabled
   }
 
   AiProvider {
-    id: codex
+    id: codexProvider
 
     providerId: "codex"
     enabled: ai.codexEnabled

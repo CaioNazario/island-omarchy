@@ -18,7 +18,7 @@ Item {
   implicitHeight: size
 
   Image {
-    id: source
+    id: glyphImage
 
     anchors.fill: parent
     source: Qt.resolvedUrl("../icons/" + icon.glyph + "-symbolic.svg")
@@ -31,8 +31,8 @@ Item {
   }
 
   MultiEffect {
-    anchors.fill: source
-    source: source
+    anchors.fill: glyphImage
+    source: glyphImage
     colorization: 1
     colorizationColor: icon.color
   }

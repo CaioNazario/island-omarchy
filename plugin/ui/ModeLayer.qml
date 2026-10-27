@@ -7,7 +7,7 @@ import QtQuick
 // superfície corta o que sobra. O conteúdo só existe enquanto a camada
 // aparece ou está saindo.
 Item {
-  id: layer
+  id: root
 
   required property string layerId
   required property string shownLayer
@@ -26,7 +26,7 @@ Item {
   visible: opacity > 0
   scale: hiddenScale
   transform: Translate {
-    y: layer.offsetY
+    y: root.offsetY
   }
 
   Component.onCompleted: if (shown) settle(1, 1, 0)
@@ -36,7 +36,7 @@ Item {
     id: loader
 
     anchors.fill: parent
-    active: layer.visible || layer.shown
+    active: root.visible || root.shown
   }
 
   function settle(toOpacity, toScale, toOffset) {
@@ -75,7 +75,7 @@ Item {
     NumberAnimation {
       id: fadeTo
 
-      target: layer
+      target: root
       property: "opacity"
       duration: Tokens.fadeMs
       easing.type: Easing.InOutQuad
@@ -88,7 +88,7 @@ Item {
     NumberAnimation {
       id: scaleTo
 
-      target: layer
+      target: root
       property: "scale"
       duration: Tokens.scaleMs
       easing.type: Easing.InOutQuad
@@ -96,7 +96,7 @@ Item {
     NumberAnimation {
       id: offsetTo
 
-      target: layer
+      target: root
       property: "offsetY"
       duration: Tokens.scaleMs
       easing.type: Easing.InOutQuad
