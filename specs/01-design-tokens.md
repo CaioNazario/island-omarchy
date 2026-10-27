@@ -87,7 +87,7 @@ Dois dos temas do design (`THEMES` em design/logic.js), escolhidos no editor de 
 
 | Design | QML |
 |---|---|
-| `backdrop-filter: blur(16px)` nas pílulas, `blur(20px)` no cartão | Ainda sem blur. Candidato: `BackgroundEffect.blurRegion` do Quickshell, que aceita `Region` com `radius` (a v1.1 ficou sem blur porque o do GNOME era retangular) |
+| `backdrop-filter: blur(16px)` nas pílulas, `blur(20px)` no cartão | Ainda sem blur. Candidato: `BackgroundEffect.blurRegion` do Quickshell, que aceita `Region` com `radius` |
 | Mola da ilha `cubic-bezier(.3,1.2,.4,1)` .46s | `NumberAnimation` de 460ms com `Easing.BezierSpline` e `bezierCurve: [.3, 1.2, .4, 1, 1, 1]` (`Tokens.springCurve`) |
 | Cartões `cubic-bezier(.3,1.15,.4,1)` .4s | Mesma técnica, `Tokens.cardCurve`, 400ms |
 | Crossfade de conteúdo `.22s ease` com atraso `.08s` | `SequentialAnimation` com `PauseAnimation` de 80ms + `opacity` em 220ms |

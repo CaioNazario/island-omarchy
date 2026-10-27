@@ -82,9 +82,9 @@ export function visibleWeeks(grid: MonthGrid, view: CalendarView): CalendarDay[]
 
 // Eventos de hoje (specs/06-calendario.md, "Eventos").
 
-/** Evento como o `DBusEventSource` do Shell entrega. */
+/** Evento lido do feed ICS (`icsEvents.ts`). */
 export interface CalendarEvent {
-  /** `<uid do calendário>\n<uid do evento>\n<recorrência>` (gnome-shell-calendar-server). */
+  /** `<id do calendário>\n<uid do evento>\n<início em ms>`. */
   id: string;
   summary: string;
   start: Date;
@@ -106,7 +106,7 @@ function startOfDay(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-// Mesma regra do Shell (`_eventOverlapsInterval`): inclui eventos de duração zero.
+// Inclui eventos de duração zero.
 function overlaps(event: CalendarEvent, begin: Date, end: Date): boolean {
   if (event.start >= begin && event.end < end) return true;
   return event.end > begin && event.start < end;

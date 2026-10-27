@@ -65,7 +65,7 @@ export interface Environment {
   right: WidgetId[];
 }
 
-/** Forma persistida em `settings.json` `environments` (specs/13-preferencias.md); a mesma `a(ssasas)` do GSettings da v1. */
+/** Forma persistida em `settings.json` `environments` (specs/13-preferencias.md). */
 export type StoredEnvironment = readonly [string, string, readonly string[], readonly string[]];
 
 export const MAX_ENVIRONMENTS = 6;

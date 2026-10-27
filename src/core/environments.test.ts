@@ -83,7 +83,7 @@ describe('sanitizeEnvironments', () => {
 });
 
 describe('defaultEnvironments', () => {
-  it('starts with Padrão reproducing the v1.0 bar', () => {
+  it('starts with Padrão: ai on the left, hardware on the right', () => {
     expect(defaultEnvironments()[0]).toEqual({
       name: 'Padrão',
       icon: 'house',

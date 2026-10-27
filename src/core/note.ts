@@ -1,5 +1,5 @@
 // Nota (specs/16-widgets.md `note` e "Modo `note`"): um texto só, sem quebra
-// de linha, em GSettings `note-text`.
+// de linha, em `noteText` do `settings.json`.
 
 export const MAX_NOTE_LENGTH = 80;
 

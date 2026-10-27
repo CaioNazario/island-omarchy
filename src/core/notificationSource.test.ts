@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { identifySource, isBrowserApp } from './notificationSource.js';
 
-// Payloads reais no GNOME 50 (spike S1): `new Notification(título, {body:
-// "oi"})` em web.whatsapp.com, vistos pelo `dbus-monitor`. `appName` é o
-// título da fonte no Shell, o `Name=` do `.desktop` do `desktop-entry`.
+// Payloads reais (spike S1): `new Notification(título, {body: "oi"})` em
+// web.whatsapp.com, vistos pelo `dbus-monitor`. `appName` é o `Name=` do
+// `.desktop` do `desktop-entry`.
 // Chromium: domínio na primeira linha do corpo e uma linha em branco.
 const BRAVE_WHATSAPP = { appName: 'Brave', body: 'web.whatsapp.com\n\noi' };
 const CHROME_WHATSAPP = { appName: 'Google Chrome', body: 'web.whatsapp.com\n\noi' };

@@ -49,7 +49,7 @@ O cartão central (spec 05) também é um estado da ilha: 440 × altura do conte
 - Cada modo é uma camada própria, centrada no topo da ilha, com o tamanho do seu modo. Troca de modo = crossfade: a camada que entra vai a opacidade 1 em 220ms com atraso de 80ms e escala 0.94→1 (300ms); a que sai faz o inverso. A camada `notif` entra de `translateY(-18px) scale(.96)`.
 - Entre `quick`, `wifi` e `bt`, em qualquer direção, a troca de camada é instantânea, sem fade nem escala: os três repetem a fileira de tiles no topo e só a ilha anima a altura. Abrir `wifi`/`bt` direto da barra (vindo de `compact` ou outro modo) usa o crossfade normal.
 - Linha de acento: 36×2 no topo central, `accent`, raio inferior 2px; opacidade 1 quando a ilha não está em `compact` ou o cartão central está aberto (300ms).
-- Superfície e sombras: spec 01 "Superfícies". Compacta, a ilha usa o `SOFT_OUT` das pílulas; expandida, a sombra escura e o brilho maior do `accent`. A v1.1 (GNOME) tirou as sombras porque o Shell as desenhava como um halo quadrado; o `RectangularShadow` acompanha o raio.
+- Superfície e sombras: spec 01 "Superfícies". Compacta, a ilha usa o `SOFT_OUT` das pílulas; expandida, a sombra escura e o brilho maior do `accent`. O `RectangularShadow` acompanha o raio.
 - Cursor de mão só em `compact` e `notif`.
 
 ## Regras de transição

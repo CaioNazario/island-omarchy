@@ -5,8 +5,7 @@ import Quickshell
 import Quickshell.Io
 
 // Preferências da Island (specs/13-preferencias.md) em
-// `$XDG_CONFIG_HOME/island/settings.json`: as chaves do antigo schema
-// GSettings, com os mesmos padrões. Vigiado: editar o arquivo (à mão ou pela
+// `$XDG_CONFIG_HOME/island/settings.json`. Vigiado: editar o arquivo (à mão ou pela
 // janela de preferências) vale na hora. Vive no Service.qml.
 Scope {
   id: store

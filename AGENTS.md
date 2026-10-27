@@ -2,8 +2,6 @@
 
 Plugin de barra do Omarchy (shell em Quickshell, sobre Hyprland) que substitui a barra padrão por três pílulas flutuantes (uso de IA · ilha · sistema). A ilha central se expande estilo Dynamic Island para notificações, música, volume/brilho, calendário, controles rápidos, Wi‑Fi, Bluetooth e uso de IA.
 
-Até a v1.1 a Island era uma extensão do GNOME Shell. O último código GNOME é o commit `5cb704a` (tag `v1.1.0` + correções da bateria) e não é mais mantido.
-
 ## Fonte da verdade
 
 Cada fonte manda num eixo:

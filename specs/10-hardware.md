@@ -2,7 +2,7 @@
 
 Origem: `design/components/TopbarWidget.html` (parte `w.isHw`); `design/logic.js` `hw`, `widgetData('hw')` e o tick de `componentDidMount`.
 
-Os blocos são o widget `hw` (spec 16). No ambiente Padrão ele fica na pílula direita, como na v1.0.
+Os blocos são o widget `hw` (spec 16). No ambiente Padrão ele fica na pílula direita.
 
 ## Blocos
 

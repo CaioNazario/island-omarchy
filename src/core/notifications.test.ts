@@ -10,7 +10,6 @@ import {
 const normal: IncomingNotification = {
   critical: false,
   low: false,
-  acknowledged: false,
   bannersAllowed: true,
   fromBrowser: false,
 };
@@ -62,9 +61,8 @@ describe('routeNotification', () => {
     expect(routeNotification(critical, island('wifi'))).toBe('banner');
   });
 
-  it('urgência baixa e notificação já reconhecida vão só para a lista, como no Shell', () => {
+  it('urgência baixa vai só para a lista', () => {
     expect(routeNotification({ ...normal, low: true }, island('compact'))).toBe('list');
-    expect(routeNotification({ ...normal, acknowledged: true }, island('compact'))).toBe('list');
   });
 });
 

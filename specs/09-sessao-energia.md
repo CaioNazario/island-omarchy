@@ -26,7 +26,7 @@ Depois do divisor, na linha de controles de `quick`, `wifi` e `bt`:
   | Bloquear | `ph ph-lock-simple` | `omarchy-system-lock` |
 
 - Qualquer ação fecha a ilha antes de executar.
-- O Omarchy não tem o diálogo de encerramento do GNOME: Reiniciar, Desligar e Sair fecham as janelas e agem em ~2s, como no menu de sistema do Omarchy. O OSD "Shutting down"/"Rebooting"/"Logging out" que os scripts mandam aparece na ilha (modo `osd`, spec 08).
+- Sem diálogo de encerramento: Reiniciar, Desligar e Sair fecham as janelas e agem em ~2s, como no menu de sistema do Omarchy. O OSD "Shutting down"/"Rebooting"/"Logging out" que os scripts mandam aparece na ilha (modo `osd`, spec 08).
 - Trocar de modo, Esc ou clique fora fecham a linha de energia.
 
 ## Fonte

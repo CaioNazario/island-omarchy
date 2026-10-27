@@ -2,8 +2,6 @@
 Um plugin de barra do **[Omarchy](https://omarchy.org/)** (Hyprland + Quickshell) que substitui a barra padrão por três pílulas flutuantes.
 A pílula central — a **Island** — funciona como uma Dynamic Island para o desktop: muda de tamanho conforme o contexto e concentra notificações, música, volume, brilho, calendário, controles rápidos e outras informações do sistema.
 As pílulas laterais mostram widgets, organizados em **ambientes** que você troca com um gesto ou atalho.
-
-> Até a v1.1 a Island era uma extensão do GNOME Shell. O último código GNOME está no commit `5cb704a`.
 ***
 ## ✦ Recursos
 ### Island
@@ -246,8 +244,8 @@ Sem login no CLI, o widget continua disponível, mas mostra apenas **"IA"**. Par
 ***
 ## Limitações
 Atualmente:
-- Apenas Omarchy (o GNOME ficou no commit `5cb704a`).
-- Ainda não portados: editor de ambientes, auto-ocultar e a janela de preferências.
+- Apenas Omarchy.
+- Ainda não feitos: auto-ocultar e a janela de preferências.
 - O calendário só lê (feed ICS): não cria nem edita eventos. Não suporta `RDATE` nem `RRULE` com `BYSETPOS`, `BYWEEKNO` ou frequência abaixo de dia.
 - GPUs NVIDIA não aparecem no bloco de hardware.
 - Notificações do Firefox não mostram o serviço web de origem.

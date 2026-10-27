@@ -1,6 +1,6 @@
 // Widget Pomodoro (specs/16-widgets.md `pomodoro`): Foco 25:00 → Pausa 05:00
 // → Foco…, trocando de fase sozinho ao zerar. O bloqueio de tela pausa: o
-// estado salvo em GSettings `pomodoro-state` é sempre pausado.
+// estado salvo em `pomodoroState` do `state.json` é sempre pausado.
 
 export type PomodoroPhase = 'focus' | 'break';
 

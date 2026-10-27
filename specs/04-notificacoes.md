@@ -18,7 +18,7 @@ Código: `plugin/system/NotificationFeed.qml` (no `Service.qml`), roteamento no 
 
 ## Identificação da origem
 
-Regra pura em `src/core/notificationSource.ts`, com a tabela como constante no mesmo módulo. Mudar a tabela exige reinstalar, mas no Wayland qualquer mudança na extensão já exige logout, então um JSON lido em runtime não pouparia nada.
+Regra pura em `src/core/notificationSource.ts`, com a tabela como constante no mesmo módulo. Mudar a tabela exige atualizar o plugin.
 
 1. **Notificação de navegador** (app Brave, Google Chrome, Chromium): o Chromium põe o domínio de origem na primeira linha do corpo, seguido de uma linha em branco (`"web.whatsapp.com\n\noi"`, payloads reais do Brave e do Chrome, fixtures nos testes). O Chromium foi assumido pelo mesmo código, sem payload colhido. Com `body-markup`, o domínio pode vir dentro de um `<a>`. Se a primeira linha não for um domínio (com porta opcional), a notificação fica como app nativo. O **Firefox** não manda a origem em nenhum campo nem hint (só `app_name` "Firefox", título e corpo), então a notificação web dele fica como app nativo.
 2. Domínio na tabela → nome + ícone da tabela:

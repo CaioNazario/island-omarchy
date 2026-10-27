@@ -2,16 +2,16 @@
 
 Pontos que ninguém verificou ainda. Cada spike se resolve **antes** de implementar a feature que depende dele: um experimento pequeno e descartável, e o resultado (o que funciona, com a API exata) entra na spec dependente. Depois disso, o spike sai desta lista.
 
-Os spikes S5–S7 abriram o porte para o Omarchy (v2). Ficam aqui como registro até as specs dependentes serem reescritas; cada resultado já vale como regra.
+Os spikes resolvidos ficam aqui como registro; cada resultado já vale como regra.
 
-## S4 · Publicação (futuro, fora da v2)
+## S4 · Publicação (futuro)
 
 - **Pergunta**: o repositório de plugins do Omarchy aceita um plugin que lê credenciais de CLIs de terceiros e chama endpoints não documentados com User-Agent de outro cliente?
 - **Pronto quando**: há uma resposta dos mantenedores; enquanto isso, a instalação é só via `install.sh`.
 
 ## S8 · Fonte de eventos do calendário (resolvido: feed ICS)
 
-- **Pergunta**: de onde vêm os eventos de hoje (spec 06) e do widget Próximo evento (spec 16) no Omarchy? A v1.1 usava o Evolution Data Server do GNOME, que o Omarchy não instala.
+- **Pergunta**: de onde vêm os eventos de hoje (spec 06) e do widget Próximo evento (spec 16) no Omarchy? O Omarchy não instala o Evolution Data Server.
 - **Escolha** (2026-10-18): URL ICS privada (o Google Calendar a chama de "Endereço secreto no formato iCal"), baixada por `curl` e lida por um parser no core. Descartados: Evolution Data Server (não vem no Omarchy) e `khal`/vdirsyncer (exigem OAuth do Google e mais um daemon para o mesmo resultado).
 - **Resultado**: funciona no V4 com um feed de 1,4 MB (3000 eventos + 60 séries), ~55 ms por interpretação. Regras e limites do parser estão na spec 06. Pendente só a conferência com uma conta real.
 - **Restrições encontradas**:

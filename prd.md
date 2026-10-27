@@ -1,6 +1,6 @@
-# PRD — Island: topbar com Dynamic Island para GNOME
+# PRD — Island: barra com Dynamic Island para o Omarchy
 
-**Status:** design validado em protótipo · **Plataforma:** GNOME Shell 50+ (Linux, Wayland) · **Data:** set/2026
+**Status:** design validado em protótipo · **Plataforma:** Omarchy (Hyprland + Quickshell) · **Data:** set/2026
 
 Referência visual e de comportamento: `design-source/Desktop Island.dc.html` (extraído em `design/`). Detalhe de implementação: `specs/`. Em conflito, vale design > specs > este PRD.
 
@@ -8,7 +8,7 @@ Referência visual e de comportamento: `design-source/Desktop Island.dc.html` (e
 
 ## 1. Problema
 
-A topbar padrão do GNOME é estática e subutilizada: o relógio central só abre um calendário; notificações, mídia e controles do sistema ficam espalhados em menus separados; e informações que um desenvolvedor consulta o dia todo (uso de hardware, limites de IA) exigem abrir apps ou janelas.
+Uma topbar comum é estática e subutilizada: o relógio central só abre um calendário; notificações, mídia e controles do sistema ficam espalhados em menus separados; e informações que um desenvolvedor consulta o dia todo (uso de hardware, limites de IA) exigem abrir apps ou janelas.
 
 ## 2. Objetivo
 
@@ -19,16 +19,16 @@ Transformar a topbar num ponto único de consulta e controle, com uma "ilha" cen
 - Acessar controles frequentes (volume, brilho, Wi‑Fi, Bluetooth, toggles, energia) em 1 clique ou `Super+S`.
 - Receber notificações no ponto onde o olhar já está (centro superior), inclusive enquanto a ilha está em uso.
 
-**Fora de escopo (v1)**
+**Fora de escopo**
 - Botão Atividades, terminais/Ghostty, modo Download.
 - Extensão de navegador companion (identificar o site que toca música).
 - Distros além do Arch (o código não assume Arch, mas só ele é validado).
-- Publicação no extensions.gnome.org (instalação via `install.sh`).
+- Publicação no repositório de plugins do Omarchy (instalação via `omarchy plugin add`).
 - Tema claro, botões de ação em notificações, bandeja AppIndicator.
 
 ## 3. Público
 
-Usuário avançado de Linux/GNOME, desenvolvedor, com assinaturas de IA (Claude, Codex) e muitos serviços web abertos no navegador (YouTube, YouTube Music, Spotify, WhatsApp).
+Usuário avançado de Linux/Omarchy, desenvolvedor, com assinaturas de IA (Claude, Codex) e muitos serviços web abertos no navegador (YouTube, YouTube Music, Spotify, WhatsApp).
 
 ## 4. Princípios de design
 
@@ -105,7 +105,7 @@ Abre abaixo da ilha ao clicar nela compacta: música + calendário (semana/mês)
 - Todo elemento interativo tem hover e pressed do ramp de acento e anel de foco de 2px no acento.
 - Tooltips em todo elemento condensado (hardware, IA).
 - Números com dígitos tabulares.
-- Interface em pt-BR, traduzível (gettext).
+- Interface em pt-BR.
 
 ## 9. Preferências
 
@@ -113,7 +113,7 @@ Abre abaixo da ilha ao clicar nela compacta: música + calendário (semana/mês)
 |---|---|---|
 | Clique na ilha abre | Calendário e música (cartão) · Calendário compacto (ilha) | Calendário e música |
 | Ocultar automaticamente | A barra some e reaparece ao encostar o mouse no topo | Desligado |
-| Cidade do clima | Busca de cidade; vazio usa o GNOME ou a localização automática | Vazio |
+| Cidade do clima | Busca de cidade; vazio usa a cidade do Omarchy ou a localização automática | Vazio |
 | Provedores de IA | Claude, Codex (liga/desliga cada um) | Ambos |
 | Atalho dos controles rápidos | Qualquer combinação | `Super+S` |
 
@@ -132,7 +132,7 @@ Abre abaixo da ilha ao clicar nela compacta: música + calendário (semana/mês)
 | Codex no lugar de ChatGPT | O limite de sessão/semana acessível é o do Codex. |
 | Uso de IA só lê credenciais | Renovar token por conta própria arrisca deslogar os CLIs. |
 | Senha de Wi‑Fi inline | Nada de diálogo fora do visual Nocturne no fluxo comum. |
-| Energia pelo diálogo nativo | Preserva o aviso de trabalho não salvo e o cancelamento. |
+| Energia como no menu do Omarchy | Reiniciar, Desligar e Sair agem direto, como o menu de sistema do Omarchy. |
 
 ## 11. Métricas de sucesso (propostas)
 
@@ -140,17 +140,17 @@ Abre abaixo da ilha ao clicar nela compacta: música + calendário (semana/mês)
 - Tempo até ajustar volume/brilho ≤1,5s a partir do clique.
 - Zero casos de notificação substituindo conteúdo aberto manualmente.
 - Topbar sem corte de texto em 1280px de largura com a ilha no maior modo.
-- Zero vazamentos após 20 ciclos de lock/unlock.
+- Zero vazamentos após 20 hot-reloads do plugin.
 
 ## 12. Requisitos técnicos
 
-- Extensão GNOME Shell 50+ em TypeScript (tipos `@girs`), compilada com `tsc`, UI em St/Clutter, substituindo o painel padrão.
-- Fontes de dados: `MessageTray` do Shell (notificações), MPRIS (mídia), `Gvc` (volume), NetworkManager (Wi‑Fi), GnomeBluetooth (Bluetooth), UPower (bateria), `/proc` + `/sys` (hardware), GWeather (clima), Evolution Data Server via `CalendarServer` (eventos), endpoints de uso do Claude e do Codex (IA).
+- Plugin de barra do Omarchy (`bar` + `service`) com UI em QML sobre Quickshell, substituindo a barra padrão. Regras em TypeScript (`src/core`), compiladas com `tsc` para módulos `.mjs` que o QML importa.
+- Fontes de dados: servidor de notificações próprio (`Quickshell.Services.Notifications`), MPRIS (mídia), PipeWire (volume), comandos do Omarchy (brilho, tela, energia), NetworkManager (Wi‑Fi), BlueZ (Bluetooth), UPower (bateria), `/proc` + `/sys` (hardware), Open-Meteo (clima), feed ICS (eventos), registros do `omarchy-agent-usage-update` (IA).
 - Toda fonte é opcional: sem a dependência, o bloco some.
-- Animações a 60fps; nenhum I/O síncrono no main loop do Shell.
-- Estado persistente em GSettings.
-- Instalação via `install.sh`.
+- Animações a 60fps; nenhum I/O síncrono na thread da UI do shell.
+- Preferências em `settings.json` e estado em `state.json` (`$XDG_CONFIG_HOME` e `$XDG_STATE_HOME`, pasta `island`).
+- Instalação via `omarchy plugin add`.
 
 ## 13. Questões abertas
 
-Rastreadas como spikes em `specs/14-spikes.md`: formato da notificação web por navegador, senha errada de Wi‑Fi sem diálogo nativo, pareamento Bluetooth sem agente de UI e publicação no extensions.gnome.org.
+Rastreadas como spikes em `specs/14-spikes.md`.

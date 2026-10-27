@@ -9,8 +9,6 @@ export type NotificationRoute = 'notif' | 'stack' | 'banner' | 'list';
 export interface IncomingNotification {
   critical: boolean;
   low: boolean;
-  /** Já reconhecida pelo Shell ao chegar (ex.: app residente com foco). */
-  acknowledged: boolean;
   /** `showBanners` da política da fonte: "Não perturbe" + a opção por app. */
   bannersAllowed: boolean;
   /** Veio de um navegador (`isBrowserApp`). */
@@ -22,10 +20,9 @@ export interface IslandSnapshot {
   cardOpen: boolean;
 }
 
-// O Shell nunca mostra banner de notificação já reconhecida nem de urgência
-// baixa (`_onNotificationRequestBanner`, js/ui/messageTray.js, 50.4).
+// Urgência baixa nunca mostra banner.
 function onlyInList(notification: IncomingNotification): boolean {
-  if (notification.acknowledged || notification.low) return true;
+  if (notification.low) return true;
   return !notification.bannersAllowed && !notification.critical;
 }
 
@@ -67,7 +64,7 @@ function stripMarkup(text: string): string {
       if (code[0] !== '#') return NAMED_ENTITIES[code.toLowerCase()] ?? entity;
       const isHex = code[1] === 'x' || code[1] === 'X';
       const point = parseInt(code.slice(isHex ? 2 : 1), isHex ? 16 : 10);
-      // `fromCodePoint` lança fora do Unicode; uma exceção aqui chegaria ao Shell.
+      // `fromCodePoint` lança fora do Unicode; uma exceção aqui chegaria ao shell.
       return point <= MAX_CODE_POINT ? String.fromCodePoint(point) : entity;
     });
 }
