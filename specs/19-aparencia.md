@@ -86,6 +86,18 @@ Um id desconhecido no `settings.json` usa a paleta Tema.
 
 O `Service.qml` lê `settings.json` `appearance` com `sanitizeAppearance` a cada mudança do arquivo e entrega o resultado à barra, que o liga ao `Tokens.appearance`. Uma troca pela UI (`setAppearanceOption`, `withAppearanceOption` no core) grava o objeto inteiro já saneado; um valor inválido não muda nada. Aplicar um preset (`applyAppearancePreset`) grava o preset inteiro. O `make smoke` semeia uma aparência com uma opção inválida e confere o que a barra recebe.
 
+## Aba Aparência
+
+### Peças
+
+- **Seção** (`SettingsSection`): cartão `neutral-900`, raio 12, padding 12, rótulo de painel (11px maiúsculo `neutral-500`) e linhas com gap 10px.
+- **Linha** (`SettingRow`): rótulo 12.5px/500 e, embaixo, dica opcional 11px `neutral-500`; controle à direita. Variantes:
+  - `SwitchRow`: `ToggleSwitch`.
+  - `SliderRow`: `IslandSlider` de 150px + valor 12px `neutral-300` (porcentagem ou `px`). O slider vai de 0 a 100, e a linha converte para a faixa da opção.
+  - `ChoiceRow`: `ChoiceButton` de 88px.
+- **Cor** (`ColorSwatch`): círculo de 24px, anel `neutral-700` (hover `neutral-400`); escolhida, anel de 2px `accent`.
+- **Paleta** (`GradientTile`): faixa 64×30, raio 8, com as 3 cores em 0/50/100%, e o nome 11px embaixo. Escolhida: anel de 2px e nome `accent`.
+
 ## Critérios de aceite
 
 
