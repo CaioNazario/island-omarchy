@@ -3,11 +3,11 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import "../core/environments.mjs" as EnvironmentsCore
-import "../core/themes.mjs" as ThemeCore
 
 // Aba Ambientes do editor (specs/17-editor-ambientes.md): linhas com gap
 // 14px: ambientes · ambiente ativo · seleção · catálogo · rodapé. O
-// "Concluir" fica no cabeçalho do `EditorPanel`.
+// "Concluir" fica no cabeçalho do `EditorPanel`; Tema e Realce, na aba
+// Aparência.
 ColumnLayout {
   id: page
 
@@ -238,58 +238,6 @@ ColumnLayout {
     Layout.fillWidth: true
     bar: page.bar
     dragProxy: page.dragProxy
-  }
-
-  // Tema (spec 01 "Temas"): vale para a barra inteira, não por ambiente.
-  RowLayout {
-    Layout.fillWidth: true
-    spacing: 6
-
-    // Mesma largura do rótulo "Realce": as opções das duas linhas alinham.
-    IslandText {
-      Layout.rightMargin: 8
-      Layout.preferredWidth: accentLabel.implicitWidth
-      text: "Tema"
-    }
-
-    Repeater {
-      model: ThemeCore.THEME_IDS
-
-      ChoiceButton {
-        required property string modelData
-
-        Layout.fillWidth: true
-        label: modelData
-        active: Tokens.theme === modelData
-        onClicked: page.bar.setTheme(modelData)
-      }
-    }
-  }
-
-  // Cor de realce (spec 01 "Realce"): global como o tema.
-  RowLayout {
-    Layout.fillWidth: true
-    spacing: 6
-
-    IslandText {
-      id: accentLabel
-
-      Layout.rightMargin: 8
-      text: "Realce"
-    }
-
-    Repeater {
-      model: ThemeCore.ACCENT_IDS
-
-      ChoiceButton {
-        required property string modelData
-
-        Layout.fillWidth: true
-        label: modelData
-        active: Tokens.accentName === modelData
-        onClicked: page.bar.setAccent(modelData)
-      }
-    }
   }
 
   RowLayout {
