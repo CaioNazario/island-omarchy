@@ -16,6 +16,7 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 - Cantos das pílulas e da ilha, compacta e aberta: os do design, arredondados com raio escolhido, quadrados ou os das janelas do Hyprland (seção Forma).
 - O banner de notificação segue a aparência da ilha.
 - Estilos prontos na aba Aparência: Padrão (o design, que desfaz os ajustes) e Vidro.
+- Widgets de barra de outros plugins do Omarchy (como o omaplug) nas pílulas: ambientes aceitam `plugin:<id>` no `settings.json`, e o widget abre o painel dele logo abaixo da barra.
 
 ### Mudado
 

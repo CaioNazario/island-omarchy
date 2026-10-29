@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import "../core/environments.mjs" as EnvironmentsCore
 
 // O que segue o ponteiro ao arrastar um widget no editor (specs/17
 // "Arrastar e soltar"): um chip leve, não o widget, para a origem poder ser
@@ -10,8 +9,9 @@ import "../core/environments.mjs" as EnvironmentsCore
 Rectangle {
   id: proxy
 
+  property var bar: null
   property string widgetId: ""
-  readonly property var info: widgetId !== "" ? EnvironmentsCore.WIDGET_CATALOG[widgetId] : null
+  readonly property var info: widgetId !== "" ? bar ? bar.widgetInfo(widgetId) : null : null
 
   visible: Drag.active
   z: 1000

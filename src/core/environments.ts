@@ -168,7 +168,7 @@ const MAX_LIST_LENGTH = 1000;
  * tudo e a Island subia com os ambientes iniciais, apagando as edições do
  * usuário na gravação seguinte.
  */
-function asList(value: unknown): unknown[] | null {
+export function asList(value: unknown): unknown[] | null {
   if (Array.isArray(value)) return value;
   if (typeof value !== 'object' || value === null) return null;
   const length = (value as { length?: unknown }).length;

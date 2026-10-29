@@ -143,6 +143,8 @@ Scope {
 
     EditorDragProxy {
       id: editorDragProxy
+
+      bar: screenBar.bar
     }
 
     Shortcut {

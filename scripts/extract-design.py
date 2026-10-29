@@ -42,6 +42,8 @@ EXTRA_ICONS = {
     ("regular", "download-simple"),
     ("regular", "monitor"),
     ("regular", "info"),
+    # specs/16-widgets.md "Widgets de plugins": widget de outro plugin no editor.
+    ("regular", "puzzle-piece"),
 }
 
 ICON_CLASS = re.compile(r"\bph(?:-(bold|fill))? ph-([a-z0-9-]+)")

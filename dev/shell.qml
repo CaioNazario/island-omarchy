@@ -26,6 +26,30 @@ ShellRoot {
     }
   }
 
+  // Catálogo como o `PluginBarWidgetRegistryApi` que uma barra de terceiros
+  // recebe, com um widget de plugin de mentira (specs/16 "Widgets de plugins").
+  QtObject {
+    id: widgetRegistry
+
+    property int revision: 1
+    property var widgets: ({
+        "dev.fake": {
+          component: fakeWidget,
+          metadata: {
+            displayName: "Widget de teste",
+            description: "Plugin de mentira do harness",
+            firstParty: false
+          }
+        }
+      })
+  }
+
+  Component {
+    id: fakeWidget
+
+    FakePluginWidget {}
+  }
+
   Loader {
     id: serviceLoader
 
@@ -47,6 +71,7 @@ ShellRoot {
     if ("omarchyPath" in target) target.omarchyPath = Quickshell.env("OMARCHY_PATH");
     if ("shell" in target) target.shell = scopedShell;
     if ("barConfig" in target) target.barConfig = { position: "top", layout: {} };
+    if ("barWidgetRegistry" in target) target.barWidgetRegistry = widgetRegistry;
   }
 
   // O host descarrega, limpa o cache de componentes e recarrega
@@ -170,6 +195,23 @@ ShellRoot {
       const bar = barLoader.item; // qmllint disable missing-property
       if (!bar) return "no bar";
       return bar.mode; // qmllint disable missing-property
+    }
+
+    // Widget de plugin de mentira no monitor capturado: `toggle` clica nele;
+    // devolve se o painel está aberto e onde ele abre (spec 16).
+    function pluginWidget(action: string): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      const items = bar.pluginWidgets.instancesOf("dev.fake"); // qmllint disable missing-property
+      const widget = items.find(item => item.anchorWindow && item.anchorWindow.screen.name === host.captureScreen());
+      if (!widget) return JSON.stringify({ count: items.length });
+      if (action === "toggle") widget.toggle();
+      return JSON.stringify({
+        count: items.length,
+        opened: widget.opened,
+        popupY: widget.popupY,
+        active: bar.pluginWidgets.activePopout === widget // qmllint disable missing-property
+      });
     }
 
     function status(): string {

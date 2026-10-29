@@ -69,6 +69,8 @@ Item {
           screenName: area.screenName
           side: area.side
           dragProxy: area.dragProxy
+          shift: area.slide + area.bar.envDrag
+          fade: content.opacity
           budget: area.fit[index] || 0
           visible: area.fit[index] !== null && area.fit[index] !== undefined
           onNaturalWidthChanged: Qt.callLater(area.relayout)
