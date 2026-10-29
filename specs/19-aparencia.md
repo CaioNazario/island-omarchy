@@ -157,6 +157,12 @@ O `Service.qml` lê `settings.json` `appearance` com `sanitizeAppearance` a cada
 
 Aba Aparência do editor (`AppearancePage`), em duas colunas com gap 14px. Uma linha só aparece quando faz sentido, sem ficar desabilitada.
 
+Coluna da esquerda: Tema, Fundo e Sombra. Da direita: Forma, Borda e Efeitos.
+
+**Tema**
+
+As linhas Tema (Nocturne · Alto contraste) e Realce (Roxo · Branco) da spec 17, que saíram da aba Ambientes. Valem para a barra inteira e gravam `theme` e `accent` (spec 13), fora de `appearance`.
+
 **Fundo**
 
 | Linha | Controle | Visível se |

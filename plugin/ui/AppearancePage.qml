@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../core/appearance.mjs" as AppearanceCore
 import "../core/gradients.mjs" as GradientCore
+import "../core/themes.mjs" as ThemeCore
 
 // Aba Aparência do editor (specs/19-aparencia.md "Aba Aparência"): seções em
 // duas colunas. Cada troca grava em `settings.json` `appearance` pelo
@@ -33,6 +34,65 @@ RowLayout {
     Layout.preferredWidth: 1
     Layout.alignment: Qt.AlignTop
     spacing: 14
+
+    SettingsSection {
+      Layout.fillWidth: true
+      title: "Tema"
+
+      // Tema (spec 01 "Temas"): vale para a barra inteira, não por ambiente.
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 6
+
+        // Mesma largura do rótulo "Realce": as opções das duas linhas alinham.
+        IslandText {
+          Layout.rightMargin: 8
+          Layout.preferredWidth: accentLabel.implicitWidth
+          text: "Tema"
+          px: 12.5
+        }
+
+        Repeater {
+          model: ThemeCore.THEME_IDS
+
+          ChoiceButton {
+            required property string modelData
+
+            Layout.fillWidth: true
+            label: modelData
+            active: Tokens.theme === modelData
+            onClicked: page.bar.setTheme(modelData)
+          }
+        }
+      }
+
+      // Cor de realce (spec 01 "Realce"): global como o tema.
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 6
+
+        IslandText {
+          id: accentLabel
+
+          Layout.rightMargin: 8
+          text: "Realce"
+          px: 12.5
+        }
+
+        Repeater {
+          model: ThemeCore.ACCENT_IDS
+
+          ChoiceButton {
+            required property string modelData
+
+            Layout.fillWidth: true
+            label: modelData
+            active: Tokens.accentName === modelData
+            onClicked: page.bar.setAccent(modelData)
+          }
+        }
+      }
+    }
 
     SettingsSection {
       Layout.fillWidth: true

@@ -18,6 +18,7 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 
 ### Mudado
 
+- Tema e Realce saem da aba Ambientes do editor e vão para a aba Aparência.
 - A CI roda nos pushes da `dev`.
 - A tag de uma versão publica o build na `main` e cria a release no GitHub.
 
