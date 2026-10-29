@@ -59,3 +59,18 @@ Os spikes resolvidos ficam aqui como registro; cada resultado já vale como regr
   - A força do blur é a do `decoration:blur:size` global do Hyprland, e o cliente não controla. Com `size = 3`, o blur fica visivelmente mais fraco. A Island não muda esse valor: mudar afetaria todas as janelas.
   - Com `decoration:blur:enabled = false`, o compositor não borra nada e o fundo 82% fica legível através da pílula. A Island só usa o fundo translúcido quando o blur do sistema está ligado (`hyprctl getoption decoration:blur:enabled -j`, lido de novo no `configreloaded`). Senão, o fundo é opaco.
   - O banner de notificação é outra superfície da mesma camada e precisa do seu próprio `Region` quando visível.
+
+## S10 · Shaders de fundo dentro do plugin (resolvido)
+
+- **Pergunta**: os shaders de gradiente e grão do omadock (`gradient.frag`, `grain.frag`, MIT) rodam na Island como `ShaderEffect`, carregados de dentro do plugin e acompanhando a ilha animada?
+- **Experimento** (2026-10-28): Hyprland 0.56.2 aninhado, Qt 6.12. `.qsb` copiados para `shaders/` no build e dois `ShaderEffect` na `SoftSurface` (`fragmentShader: Qt.resolvedUrl("../shaders/gradient.frag.qsb")`), com `size` e `radius` ligados à superfície. Paleta Aurora com força 0.55 e grão 0.6.
+- **Resultado**: funciona.
+  - Os dois shaders carregam pelo caminho relativo ao plugin (`file://`, como o host carrega a barra) e recortam pelo raio nas pílulas, na ilha compacta e na ilha aberta.
+  - Durante a animação de tamanho e de raio, o recorte acompanha a ilha quadro a quadro.
+  - Custo: com os shaders, o tempo de render por quadro (`QSG_RENDER_TIMING=1`) fica em 0–2 ms, igual à barra sem eles, abrindo e fechando `wifi` e `quick`.
+  - No omarchy-shell real, o omadock instalado em `~/.config/omarchy/plugins/omadock` carrega os mesmos `.qsb` do mesmo jeito, com gradiente e grão ligados.
+  - O `qsb` do `qt6-shadertools` 6.12 gera bytes idênticos aos `.qsb` do omadock (`--glsl "100 es,120,150" --hlsl 50 --msl 12`). Dá para commitar os `.qsb` e conferir na CI recompilando.
+  - Nenhum aviso no log.
+- **Restrições encontradas**:
+  - Na ilha aberta, a Aurora com força 0.55 apaga os textos `neutral-*` sobre o fundo claro (rótulos do `wifi` quase ilegíveis). A força do gradiente precisa de um teto calculado pelo contraste dos textos sobre a cor média do fundo (C4), ou um teto menor na ilha aberta.
+  - O shader pinta a própria base (`base` com a opacidade). O brilho, o halo e a borda da `SoftSurface` precisam ficar por cima dele.
