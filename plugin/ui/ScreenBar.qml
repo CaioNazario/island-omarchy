@@ -65,7 +65,7 @@ Scope {
 
       Region {
         item: barRow.leftPill
-        radius: Tokens.pillRadius
+        radius: barRow.leftPill.surfaceRadius
       }
       Region {
         item: barRow.island
@@ -73,7 +73,7 @@ Scope {
       }
       Region {
         item: barRow.rightPill
-        radius: Tokens.pillRadius
+        radius: barRow.rightPill.surfaceRadius
       }
       Region {
         item: barRow.banner.visible ? barRow.banner : null

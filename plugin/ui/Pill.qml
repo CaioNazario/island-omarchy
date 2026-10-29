@@ -13,6 +13,9 @@ Item {
   property bool editing: false
   property bool editTarget: false
 
+  // Raio do design (13) ou o da forma escolhida (spec 19 "Cantos").
+  readonly property real surfaceRadius: Tokens.radiusFor(Tokens.pillRadius, height)
+
   signal targetPicked
 
   height: Tokens.barHeight
@@ -20,14 +23,14 @@ Item {
   RectangularShadow {
     anchors.fill: parent
     visible: pill.editing && pill.editTarget
-    radius: Tokens.pillRadius
+    radius: pill.surfaceRadius
     blur: 18
     color: Tokens.editorTargetGlow
   }
 
   SoftSurface {
     anchors.fill: parent
-    radius: Tokens.pillRadius
+    radius: pill.surfaceRadius
   }
 
   MouseArea {
@@ -40,7 +43,7 @@ Item {
     anchors.fill: parent
     z: 5
     visible: pill.editing
-    radius: Tokens.pillRadius
+    radius: pill.surfaceRadius
     color: "transparent"
     border.width: 1
     border.color: pill.editTarget ? Tokens.accent : Tokens.neutral700

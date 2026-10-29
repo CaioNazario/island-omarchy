@@ -75,7 +75,8 @@ Item {
     id: softSurface
 
     anchors.fill: parent
-    radius: IslandCore.displayRadius(root.size)
+    // O raio do design para o modo, ou o da forma escolhida (spec 19 "Cantos").
+    radius: Tokens.radiusFor(IslandCore.displayRadius(root.size), root.size.height)
     island: true
     expanded: root.displayMode !== "compact"
 

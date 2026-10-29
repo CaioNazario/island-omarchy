@@ -125,6 +125,8 @@ Do compositor, pelo protocolo `ext-background-effect-v1` (specs/14-spikes.md, S9
 | `square` (Quadrado) | 0 |
 | `theme` (Tema) | o `decoration:rounding` do Hyprland, até meia altura; sem o valor, o do design |
 
+`Tokens.radiusFor(design, altura)` aplica a forma escolhida: nas pílulas (`Pill.surfaceRadius`, que também vai para o anel e o brilho do editor) e na ilha, compacta e aberta, sobre o `displayRadius` de cada modo. A animação de raio da ilha continua a mesma (460ms). As regiões de blur usam os mesmos raios.
+
 O `HyprOptionsSource` lê o `decoration:rounding` (`parseIntOption`: inteiro não negativo, ou -1) junto com o blur, ao subir e a cada `configreloaded`, e o `Bar.qml` liga o valor a `Tokens.hyprRounding`.
 
 ## Shaders
@@ -162,6 +164,13 @@ Aba Aparência do editor (`AppearancePage`), em duas colunas com gap 14px. Uma l
 | Força — "Quanto as cores cobrem o fundo. Cede o necessário para os textos continuarem legíveis." | slider 0–100% | fundo ligado, gradiente |
 | Opacidade do tema — "Opaca, ou 82% com o blur ligado, como no design." | switch | fundo ligado e cor diferente de Nenhuma |
 | Opacidade | slider 0–100% | idem, com "Opacidade do tema" desligada |
+
+**Forma**
+
+| Linha | Controle | Visível se |
+|---|---|---|
+| Cantos — "Padrão são os do design; Tema segue o arredondamento das janelas do Hyprland." | Padrão · Arredondado · Quadrado · Tema, numa linha própria embaixo do rótulo | sempre |
+| Raio — "Nas pílulas, até 9px: mais que isso já é uma pílula." | slider 2–24 px | Arredondado |
 
 **Sombra**
 
