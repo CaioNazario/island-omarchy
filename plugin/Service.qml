@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import "system"
 import "core/environments.mjs" as EnvironmentsCore
+import "core/appearance.mjs" as AppearanceCore
 
 // Entrada `service` do plugin (keepLoaded: specs/14-spikes.md, S6). Vive até
 // o shell reiniciar: guarda o estado visível que não pode se perder quando a
@@ -27,6 +28,8 @@ Item {
   // Ambientes (spec 15): saneados a cada leitura, um ativo para todos os monitores.
   readonly property var environments: EnvironmentsCore.environmentsFromJson(settingsStore.values.environments)
   readonly property int environmentIndex: EnvironmentsCore.sanitizeIndex(settingsStore.values.environmentIndex, environments.length)
+  // Aparência (spec 19), saneada a cada leitura como os ambientes.
+  readonly property var appearance: AppearanceCore.sanitizeAppearance(settingsStore.values.appearance)
   readonly property bool doNotDisturb: persistedState.values.doNotDisturb
   readonly property bool hasUnread: notificationFeed.hasUnread
 
@@ -48,6 +51,15 @@ Item {
 
   function setEnvironments(list) {
     settingsStore.values.environments = EnvironmentsCore.toStored(list);
+  }
+
+  /** Uma opção da aparência; o arquivo guarda o objeto inteiro já saneado. */
+  function setAppearanceOption(key, value) {
+    settingsStore.values.appearance = AppearanceCore.withAppearanceOption(appearance, key, value);
+  }
+
+  function applyAppearancePreset(id) {
+    settingsStore.values.appearance = AppearanceCore.appearancePreset(id);
   }
 
   StateStore {

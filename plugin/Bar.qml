@@ -158,6 +158,14 @@ Item {
     if (service) service.settings.values.accent = id;
   }
 
+  // Aparência das pílulas e da ilha (spec 19), também global.
+  Binding {
+    target: Tokens
+    property: "appearance"
+    when: root.service !== null
+    value: root.service ? root.service.appearance : null
+  }
+
   Component.onCompleted: {
     islandState = new IslandCore.IslandState(scheduler, { onChange: syncIsland });
     targetFocusedScreen();

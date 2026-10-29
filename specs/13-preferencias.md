@@ -19,6 +19,7 @@ O design v3 muda o padrão de `clickAction` para "Calendário compacto" e só ap
 | `autoHide` | bool | `false` | spec 18 |
 | `accent` | `"Roxo"` \| `"Branco"` (outro valor cai no Roxo) | `"Roxo"` | spec 01 "Realce", spec 17 |
 | `theme` | `"Nocturne"` \| `"Alto contraste"` (outro valor cai no Nocturne) | `"Nocturne"` | spec 01 "Temas", spec 17 |
+| `appearance` | objeto com as opções da spec 19 ou `null` | `null` (= visual do design) | spec 19 |
 | `noteText` | string (até 80) | `""` | spec 16 |
 | `countdownName` | string | `""` | spec 16 |
 | `countdownDate` | `"AAAA-MM-DD"` ou `""` | `""` | spec 16 |

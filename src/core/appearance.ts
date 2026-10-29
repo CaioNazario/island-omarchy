@@ -131,24 +131,36 @@ function readChoice<T extends string>(value: unknown, options: readonly T[], fal
 }
 
 /** Hex com alfa fica de fora: a opacidade é uma opção à parte. */
-function readColor(value: unknown): string {
+function readColor(value: unknown, fallback: string): string {
   if (value === 'theme' || value === 'none') return value;
-  if (typeof value !== 'string' || !/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value)) return 'theme';
+  if (typeof value !== 'string' || !/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value)) return fallback;
   return toHex(parseHex(value));
 }
 
-/** Chave ausente, de tipo errado ou fora da lista volta ao padrão. */
-export function sanitizeAppearance(raw: unknown): Appearance {
-  const look: Appearance = { ...DEFAULT_APPEARANCE };
+/**
+ * Chave ausente, de tipo errado ou fora da lista fica com o valor de `base`
+ * (o padrão, ao ler o arquivo).
+ */
+export function sanitizeAppearance(
+  raw: unknown,
+  base: Appearance = DEFAULT_APPEARANCE,
+): Appearance {
+  const look: Appearance = { ...base };
   if (!isRecord(raw)) return look;
-  for (const key of BOOL_KEYS) look[key] = readBool(raw[key], DEFAULT_APPEARANCE[key]);
+  for (const key of BOOL_KEYS) look[key] = readBool(raw[key], base[key]);
   for (const key of Object.keys(NUMBER_RANGES) as NumberKey[])
-    look[key] = readNumber(raw[key], NUMBER_RANGES[key], DEFAULT_APPEARANCE[key]);
-  look.fill = readChoice(raw.fill, FILL_IDS, DEFAULT_APPEARANCE.fill);
-  look.shape = readChoice(raw.shape, SHAPE_IDS, DEFAULT_APPEARANCE.shape);
-  look.gradient = readChoice(raw.gradient, GRADIENT_IDS, DEFAULT_APPEARANCE.gradient);
-  look.color = readColor(raw.color);
+    look[key] = readNumber(raw[key], NUMBER_RANGES[key], base[key]);
+  look.fill = readChoice(raw.fill, FILL_IDS, base.fill);
+  look.shape = readChoice(raw.shape, SHAPE_IDS, base.shape);
+  look.gradient = readChoice(raw.gradient, GRADIENT_IDS, base.gradient);
+  look.color = readColor(raw.color, base.color);
   return look;
+}
+
+/** Uma opção trocada pela UI; valor inválido ou opção desconhecida não muda nada. */
+export function withAppearanceOption(look: Appearance, key: string, value: unknown): Appearance {
+  if (!(key in look)) return { ...look };
+  return sanitizeAppearance({ ...look, [key]: value }, look);
 }
 
 export interface AppearancePreset {
