@@ -24,6 +24,11 @@ jobs:
           pacman -Q quickshell qt6-declarative
       - uses: actions/checkout@v4
       - run: npm ci
+      # O qsb confere que os .qsb commitados são o que os .frag compilam
+      # (scripts/shaders-in-sync.sh, specs/14-spikes.md S10).
+      - run: pacman -S --noconfirm --needed qt6-shadertools
       - run: make lint
+        env:
+          REQUIRE_QSB: '1'
       - run: make test
       - run: make build

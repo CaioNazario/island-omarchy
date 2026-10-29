@@ -108,6 +108,10 @@ Do compositor, pelo protocolo `ext-background-effect-v1` (specs/14-spikes.md, S9
 - A força é a do `decoration:blur:size` do Hyprland. A Island não muda esse valor, que vale para todas as janelas.
 - `HyprOptionsSource` lê `decoration:blur:enabled` (`hyprctl getoption … -j`, `parseBoolOption` em `hyprOptions.ts`) ao subir e a cada `configreloaded`. Com ele desligado, o blur não fica ativo e a opacidade do tema volta a 1: um fundo de 82% sem blur deixaria a tela legível por trás.
 
+## Shaders
+
+`plugin/shaders/gradient.frag` e `grain.frag`, do omadock (MIT; specs/14-spikes.md, S10), com os `.qsb` commitados ao lado. O `make lint` roda `scripts/shaders-in-sync.sh`, que recompila cada `.frag` com o `qsb` (`--glsl "100 es,120,150" --hlsl 50 --msl 12`) e falha se o binário commitado for diferente. Na CI o `qt6-shadertools` é instalado e `REQUIRE_QSB=1` faz a falta do `qsb` falhar em vez de pular. Depois de editar um `.frag`: `scripts/shaders-in-sync.sh --write`.
+
 ## Persistência
 
 O `Service.qml` lê `settings.json` `appearance` com `sanitizeAppearance` a cada mudança do arquivo e entrega o resultado à barra, que o liga ao `Tokens.appearance`. Uma troca pela UI (`setAppearanceOption`, `withAppearanceOption` no core) grava o objeto inteiro já saneado; um valor inválido não muda nada. Aplicar um preset (`applyAppearancePreset`) grava o preset inteiro. O `make smoke` semeia uma aparência com uma opção inválida e confere o que a barra recebe.

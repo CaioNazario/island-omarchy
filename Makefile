@@ -21,6 +21,7 @@ lint: build
 	npx tsc --noEmit -p tsconfig.json
 	npx tsc -p tsconfig.test.json
 	node scripts/check-core.mjs $(DIST)/core
+	scripts/shaders-in-sync.sh
 	$(QMLLINT) --max-warnings 0 --uncreatable-type disable --signal-handler-parameters disable -I /usr/lib/qt6/qml $(QML_FILES)
 	# O validador do Omarchy só existe numa máquina com Omarchy (não na CI).
 	if command -v omarchy >/dev/null; then omarchy plugin validate $(DIST); fi
