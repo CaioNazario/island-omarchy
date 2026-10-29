@@ -28,13 +28,15 @@ ShellRoot {
 
   // Catálogo como o `PluginBarWidgetRegistryApi` que uma barra de terceiros
   // recebe, com um widget de plugin de mentira (specs/16 "Widgets de plugins").
+  // O componente sai de `Qt.createComponent`, como em shell.qml
+  // `loadPluginWidget`: um `Component {}` declarado aqui teria outro dono.
   QtObject {
     id: widgetRegistry
 
     property int revision: 1
     property var widgets: ({
         "dev.fake": {
-          component: fakeWidget,
+          component: Qt.createComponent(Qt.resolvedUrl("FakePluginWidget.qml")),
           metadata: {
             displayName: "Widget de teste",
             description: "Plugin de mentira do harness",
@@ -42,12 +44,6 @@ ShellRoot {
           }
         }
       })
-  }
-
-  Component {
-    id: fakeWidget
-
-    FakePluginWidget {}
   }
 
   Loader {

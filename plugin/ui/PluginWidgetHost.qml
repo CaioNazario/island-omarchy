@@ -37,10 +37,49 @@ Item {
     PluginWidgetBar {}
   }
 
+  // Componente próprio de cada plugin, `{ url, revision, component }`. O do
+  // catálogo vem de `Qt.createComponent` no omarchy-shell (shell.qml
+  // `loadPluginWidget`), sem pai. Medido no Omarchy 4 com Quickshell 0.3:
+  // destruídas as instâncias dele na Island (troca de ambiente), o componente
+  // some (ler a entrada dá `TypeError`) e o widget não volta. Este tem o
+  // anfitrião como pai e vive com a barra.
+  property var components: ({})
+
+  onCatalogChanged: loadComponents()
+  Component.onCompleted: loadComponents()
+
   /** Componente do widget `plugin:<id>`; `null` se o plugin não está carregado. */
   function componentFor(widgetId) {
-    if (!catalog.some(info => info.id === widgetId)) return null;
-    return registry.widgets[EnvironmentsCore.pluginIdOf(widgetId)].component;
+    const entry = components[EnvironmentsCore.pluginIdOf(widgetId)];
+    return entry && entry.component.status === Component.Ready ? entry.component : null;
+  }
+
+  // Lido só quando o catálogo muda: aí os componentes dele estão vivos.
+  function loadComponents() {
+    const next = {};
+    const revision = registry ? registry.revision : 0;
+    catalog.forEach(info => {
+      const pluginId = EnvironmentsCore.pluginIdOf(info.id);
+      const url = String(registry.widgets[pluginId].component.url);
+      const known = components[pluginId];
+      next[pluginId] = known && known.url === url && known.revision === revision ? known : ownComponent(url, revision);
+    });
+    const dropped = Object.keys(components).filter(id => components[id] !== next[id]).map(id => components[id].component);
+    components = next;
+    // Depois de os `Loader` trocarem de componente.
+    Qt.callLater(() => dropped.forEach(component => component.destroy()));
+  }
+
+  function ownComponent(url, revision) {
+    const component = Qt.createComponent(url, Component.Asynchronous, host);
+    component.statusChanged.connect(() => {
+      if (component.status === Component.Error) console.warn("Island: widget de plugin " + url + " falhou: " + component.errorString());
+    });
+    return {
+      url: url,
+      revision: revision,
+      component: component
+    };
   }
 
   function settingsFor(pluginId) {
