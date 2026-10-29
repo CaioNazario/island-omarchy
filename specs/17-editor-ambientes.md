@@ -2,7 +2,7 @@
 
 Origem: `design/markup.html` bloco `editing` (`envTabs`, `envNameVal`, `envIcons`, `delEnv`, `hasSel`/`noSel`, `catalog`, `setTargetLeft`/`setTargetRight`, `toggleAutoHide`); `design/logic.js` `placeW`, `openEditor`/`closeEditor`, `selPrev`/`selNext`/`selMove`/`selRemove`, `addEnv`, `delEnv`, `laneSh`.
 
-Painel na camada da barra (a mesma `PanelWindow` de tela cheia onde a ilha cresce) para criar, editar e excluir ambientes e escolher os widgets (specs 15 e 16). As regras de mover e inserir widget ficam em `src/core/environments.ts` (`placeWidget` segue `placeW`) e `src/core/environmentEditor.ts` (renomear, ícone, ‹ ›, trocar de pílula, rótulo da seleção, índice do soltar). O estado (aberto, pílula-alvo, selecionado) mora no `Bar.qml`; a UI em `EditorPanel.qml`, `EditorSelection.qml`, `EditorCatalog.qml`, `EditorDragArea.qml` e `EditorDragProxy.qml`.
+Painel na camada da barra (a mesma `PanelWindow` de tela cheia onde a ilha cresce) para criar, editar e excluir ambientes e escolher os widgets (specs 15 e 16). As regras de mover e inserir widget ficam em `src/core/environments.ts` (`placeWidget` segue `placeW`) e `src/core/environmentEditor.ts` (renomear, ícone, ‹ ›, trocar de pílula, rótulo da seleção, índice do soltar). O estado (aberto, pílula-alvo, selecionado) mora no `Bar.qml`; a UI em `EditorPanel.qml` (moldura), `EnvironmentsPage.qml` (as linhas abaixo), `EditorSelection.qml`, `EditorCatalog.qml`, `EditorDragArea.qml` e `EditorDragProxy.qml`.
 
 ## Abrir e fechar
 
