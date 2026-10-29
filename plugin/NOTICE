@@ -1,0 +1,38 @@
+Código de terceiros na Island
+=============================
+
+A Island é GPL-3.0 (LICENSE na raiz do repositório). Partes das opções de
+aparência (specs/19-aparencia.md) vêm do omadock
+(https://github.com/thepathless/omadock; extraído do clone
+https://github.com/priard/omadock no commit 16492e5), sob a licença MIT
+abaixo:
+
+- plugin/shaders/gradient.frag e grain.frag (e os .qsb compilados deles)
+- as fórmulas e constantes de src/core/color.ts, gradients.ts,
+  appearance.ts, surfaceStyle.ts e hyprOptions.ts: contraste, paletas,
+  paleta do tema, cores sólidas, preset Vidro, borda automática e a leitura
+  do hyprctl getoption
+
+---
+
+MIT License
+
+Copyright (c) 2026 thepathless
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

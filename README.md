@@ -287,3 +287,5 @@ Logs do harness: `dist/dev.log`.
 ***
 ## Licença
 GPL-3.0-or-later
+
+Os shaders e parte das fórmulas da aparência vêm do [omadock](https://github.com/thepathless/omadock) (MIT); o aviso de licença está em [`plugin/NOTICE`](plugin/NOTICE).
