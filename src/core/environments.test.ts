@@ -5,7 +5,10 @@ import {
   EnvironmentScroll,
   environmentsFromJson,
   findWidget,
+  isPluginWidgetId,
   placeWidget,
+  pluginIdOf,
+  pluginWidgetId,
   removeWidget,
   removeEnvironment,
   sanitizeEnvironments,
@@ -31,6 +34,23 @@ describe('sanitizeEnvironments', () => {
   it('drops unknown widgets', () => {
     const [env] = sanitizeEnvironments([['A', 'house', ['ai', 'clock'], ['weather', 'hw']]]);
     expect(env).toMatchObject({ left: ['ai'], right: ['hw'] });
+  });
+
+  it('keeps plugin widgets, even of a plugin not loaded now', () => {
+    const [env] = sanitizeEnvironments([['A', 'house', ['plugin:omaplug', 'ai'], ['plugin:gone']]]);
+    expect(env).toMatchObject({ left: ['plugin:omaplug', 'ai'], right: ['plugin:gone'] });
+  });
+
+  it('drops plugin widgets outside the Omarchy id format', () => {
+    const [env] = sanitizeEnvironments([
+      ['A', 'house', ['plugin:', 'plugin:../x', 'plugin:-a', 'plugin:a b'], ['plugin:ok.id_2-b']],
+    ]);
+    expect(env).toMatchObject({ left: [], right: ['plugin:ok.id_2-b'] });
+  });
+
+  it('keeps only the first occurrence of a repeated plugin widget', () => {
+    const [env] = sanitizeEnvironments([['A', 'house', ['plugin:omaplug'], ['plugin:omaplug']]]);
+    expect(env).toMatchObject({ left: ['plugin:omaplug'], right: [] });
   });
 
   it('keeps only the first occurrence of a repeated widget, left before right', () => {
@@ -79,6 +99,36 @@ describe('sanitizeEnvironments', () => {
 
   it('round-trips through the stored form', () => {
     expect(sanitizeEnvironments(toStored(defaultEnvironments()))).toEqual(defaultEnvironments());
+  });
+});
+
+describe('plugin widget ids', () => {
+  it('builds the id from the manifest id', () => {
+    expect(pluginWidgetId('omaplug')).toBe('plugin:omaplug');
+    expect(pluginWidgetId('caionazario.island')).toBe('plugin:caionazario.island');
+  });
+
+  it.each(['', '.hidden', 'a/b', 'a b', 'x'.repeat(65)])('refuses the plugin id %j', (id) => {
+    expect(pluginWidgetId(id)).toBeNull();
+  });
+
+  it('tells plugin widgets from Island widgets', () => {
+    expect(isPluginWidgetId('plugin:omaplug')).toBe(true);
+    expect(isPluginWidgetId('ai')).toBe(false);
+    expect(isPluginWidgetId('omaplug')).toBe(false);
+  });
+
+  it('reads the plugin id back', () => {
+    expect(pluginIdOf('plugin:omaplug')).toBe('omaplug');
+    expect(pluginIdOf('ai')).toBe('');
+  });
+
+  it('moves a plugin widget like any other', () => {
+    const env: Environment = { name: 'A', icon: 'house', left: ['ai'], right: ['hw'] };
+    const placed = placeWidget(env, 'plugin:omaplug', 'left', 0);
+    expect(placed.left).toEqual(['plugin:omaplug', 'ai']);
+    expect(findWidget(placed, 'plugin:omaplug')).toEqual({ side: 'left', index: 0, count: 2 });
+    expect(removeWidget(placed, 'plugin:omaplug').left).toEqual(['ai']);
   });
 });
 

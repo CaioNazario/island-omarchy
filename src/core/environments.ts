@@ -17,6 +17,19 @@ export const WIDGET_IDS = [
 
 export type WidgetId = (typeof WIDGET_IDS)[number];
 
+/**
+ * Widget de barra de outro plugin do Omarchy (specs/16-widgets.md "Widgets de
+ * plugins"): `plugin:` + o id do manifesto, no formato que o
+ * `omarchy-plugin-validate` aceita (`^[A-Za-z0-9][A-Za-z0-9._-]*$`).
+ */
+export type PluginWidgetId = `plugin:${string}`;
+
+/** O que uma pílula guarda: widget do catálogo da Island ou de plugin. */
+export type PlacedWidgetId = WidgetId | PluginWidgetId;
+
+const PLUGIN_PREFIX = 'plugin:';
+const PLUGIN_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
+
 /** Cartão do catálogo (specs/16-widgets.md "Catálogo"); ícone como em `ui/icons.ts`. */
 export const WIDGET_CATALOG: Record<WidgetId, { name: string; icon: string; description: string }> =
   {
@@ -61,8 +74,8 @@ export type EnvIcon = (typeof ENV_ICONS)[number];
 export interface Environment {
   name: string;
   icon: EnvIcon;
-  left: WidgetId[];
-  right: WidgetId[];
+  left: PlacedWidgetId[];
+  right: PlacedWidgetId[];
 }
 
 /** Forma persistida em `settings.json` `environments` (specs/13-preferencias.md). */
@@ -95,6 +108,25 @@ function isWidgetId(id: string): id is WidgetId {
   return (WIDGET_IDS as readonly string[]).includes(id);
 }
 
+export function isPluginWidgetId(id: string): id is PluginWidgetId {
+  return id.startsWith(PLUGIN_PREFIX) && PLUGIN_ID_PATTERN.test(id.slice(PLUGIN_PREFIX.length));
+}
+
+/** `omaplug` → `plugin:omaplug`; id fora do formato do Omarchy dá `null`. */
+export function pluginWidgetId(pluginId: string): PluginWidgetId | null {
+  const id = `${PLUGIN_PREFIX}${pluginId}`;
+  return isPluginWidgetId(id) ? id : null;
+}
+
+/** `plugin:omaplug` → `omaplug`; widget da Island dá `''`. */
+export function pluginIdOf(id: string): string {
+  return isPluginWidgetId(id) ? id.slice(PLUGIN_PREFIX.length) : '';
+}
+
+function isPlacedWidgetId(id: string): id is PlacedWidgetId {
+  return isWidgetId(id) || isPluginWidgetId(id);
+}
+
 function isEnvIcon(icon: string): icon is EnvIcon {
   return (ENV_ICONS as readonly string[]).includes(icon);
 }
@@ -107,10 +139,12 @@ function isEnvIcon(icon: string): icon is EnvIcon {
  */
 export function sanitizeEnvironments(stored: readonly StoredEnvironment[]): Environment[] {
   const envs = stored.slice(0, MAX_ENVIRONMENTS).map(([name, icon, left, right]) => {
-    const seen = new Set<WidgetId>();
-    const keep = (ids: readonly string[]): WidgetId[] =>
-      ids.filter((id): id is WidgetId => {
-        if (!isWidgetId(id) || seen.has(id)) return false;
+    const seen = new Set<PlacedWidgetId>();
+    // Widget de plugin fica mesmo sem o plugin instalado agora: ele pode
+    // estar carregando, e a barra só não o desenha (specs/16-widgets.md).
+    const keep = (ids: readonly string[]): PlacedWidgetId[] =>
+      ids.filter((id): id is PlacedWidgetId => {
+        if (!isPlacedWidgetId(id) || seen.has(id)) return false;
         seen.add(id);
         return true;
       });
@@ -201,7 +235,7 @@ export type Side = 'left' | 'right';
  */
 export function placeWidget(
   env: Environment,
-  id: WidgetId,
+  id: PlacedWidgetId,
   side: Side,
   at: number | null,
 ): Environment {
@@ -220,7 +254,7 @@ export interface WidgetPlace {
   count: number;
 }
 
-export function findWidget(env: Environment, id: WidgetId): WidgetPlace | null {
+export function findWidget(env: Environment, id: PlacedWidgetId): WidgetPlace | null {
   for (const side of ['left', 'right'] as const) {
     const index = env[side].indexOf(id);
     if (index !== -1) return { side, index, count: env[side].length };
@@ -228,7 +262,7 @@ export function findWidget(env: Environment, id: WidgetId): WidgetPlace | null {
   return null;
 }
 
-export function removeWidget(env: Environment, id: WidgetId): Environment {
+export function removeWidget(env: Environment, id: PlacedWidgetId): Environment {
   return {
     ...env,
     left: env.left.filter((w) => w !== id),

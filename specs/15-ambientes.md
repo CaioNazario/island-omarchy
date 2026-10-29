@@ -10,6 +10,7 @@ Regra pura em `src/core/environments.ts`:
 
 - Ambiente = nome (até 20 caracteres), ícone (um dos 9 de `ENV_ICONS`), lista de widgets da pílula esquerda e lista da direita.
 - Um widget aparece no máximo uma vez por ambiente (em uma das duas pílulas). Ambientes diferentes podem repetir widgets.
+- Um widget é do catálogo da Island (spec 16) ou de outro plugin do Omarchy, com o id `plugin:<id do manifesto>` (spec 16 "Widgets de plugins"). O id do plugin segue o formato do `omarchy-plugin-validate` (`^[A-Za-z0-9][A-Za-z0-9._-]*$`, até 64 caracteres).
 - Máximo de **6** ambientes, mínimo 1.
 - O primeiro ambiente é o **Padrão**: pode ser renomeado e ter os widgets trocados, mas não pode ser excluído nem sair da primeira posição.
 - Ícones (`ENV_ICONS`): `ph ph-house`, `ph-briefcase`, `ph-book-open`, `ph-sun-horizon`, `ph-code`, `ph-game-controller`, `ph-moon-stars`, `ph-barbell`, `ph-coffee`.
@@ -27,7 +28,7 @@ O Padrão tem IA à esquerda e hardware à direita.
 
 ### Persistência
 
-`settings.json` `environments` e `environmentIndex` (spec 13). Ao ler (`environmentsFromJson`, que antes descarta entradas fora da forma), `environments.ts` saneia o valor: descarta widget desconhecido ou repetido e ícone desconhecido (vira `ph-house`), corta nomes em 20 caracteres e a lista em 6, e usa os ambientes iniciais se a lista vier vazia ou inválida. Índice fora da faixa vira 0. Toda mudança grava na hora.
+`settings.json` `environments` e `environmentIndex` (spec 13). Ao ler (`environmentsFromJson`, que antes descarta entradas fora da forma), `environments.ts` saneia o valor: descarta widget desconhecido ou repetido (o de plugin fica mesmo com o plugin ausente ou carregando: só não é desenhado) e ícone desconhecido (vira `ph-house`), corta nomes em 20 caracteres e a lista em 6, e usa os ambientes iniciais se a lista vier vazia ou inválida. Índice fora da faixa vira 0. Toda mudança grava na hora.
 
 ## Troca de ambiente
 
