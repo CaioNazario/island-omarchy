@@ -106,6 +106,10 @@ O grão é o `SurfaceGrain` (`grain.frag`), também num `Loader`, ativo só com 
 
 O `Tokens.qml` calcula `pillStyle` e `islandStyle` com `surfaceStyle`. A `SoftSurface` escolhe o seu e pinta o fundo com `fill`, e o brilho e o halo só com `finish`. O 1px de brilho no topo (`inset 0 1px 0`) só aparece sobre fundo opaco: atrás de um fundo translúcido, o branco clarearia a superfície inteira.
 
+## Banner
+
+O banner de notificação (spec 04) usa o `islandStyle`: cor e opacidade do fundo, gradiente, grão e a forma dos cantos sobre o raio 22 do design. Não tem o brilho, o halo nem a sombra, como no design. O anel é o `neutral-800` do design enquanto a opacidade da borda está em automático; com ela manual, a cor das outras superfícies. A largura é a da borda, e com a borda desligada não há anel. A região de blur dele usa o mesmo raio.
+
 ## Blur
 
 Do compositor, pelo protocolo `ext-background-effect-v1` (specs/14-spikes.md, S9):
