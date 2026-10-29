@@ -114,6 +114,17 @@ Do compositor, pelo protocolo `ext-background-effect-v1` (specs/14-spikes.md, S9
 - A força é a do `decoration:blur:size` do Hyprland. A Island não muda esse valor, que vale para todas as janelas.
 - `HyprOptionsSource` lê `decoration:blur:enabled` (`hyprctl getoption … -j`, `parseBoolOption` em `hyprOptions.ts`) ao subir e a cada `configreloaded`. Com ele desligado, o blur não fica ativo e a opacidade do tema volta a 1: um fundo de 82% sem blur deixaria a tela legível por trás.
 
+## Cantos
+
+`src/core/shapes.ts` (`shapedRadius`), por superfície: o raio do design daquela superfície e modo (`pillRadius` 13; na ilha, `displayRadius` de `SIZES`) e a altura dela.
+
+| `shape` | Raio |
+|---|---|
+| `default` (Padrão) | o do design |
+| `rounded` (Arredondado) | `cornerRadius`, entre 2 e meia altura − 4 (numa pílula de 26px, até 9) |
+| `square` (Quadrado) | 0 |
+| `theme` (Tema) | o `decoration:rounding` do Hyprland, até meia altura; sem o valor, o do design |
+
 ## Shaders
 
 `plugin/shaders/gradient.frag` e `grain.frag`, do omadock (MIT; specs/14-spikes.md, S10), com os `.qsb` commitados ao lado. O `make lint` roda `scripts/shaders-in-sync.sh`, que recompila cada `.frag` com o `qsb` (`--glsl "100 es,120,150" --hlsl 50 --msl 12`) e falha se o binário commitado for diferente. Na CI o `qt6-shadertools` é instalado e `REQUIRE_QSB=1` faz a falta do `qsb` falhar em vez de pular. Depois de editar um `.frag`: `scripts/shaders-in-sync.sh --write`.
