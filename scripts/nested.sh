@@ -121,6 +121,13 @@ smoke() {
   wait_for '[[ "$(harness_status)" == *"\"bar\":true"* ]]' "the bar to load"
   wait_for '[[ "$(harness_ipc environments)" == *"\"name\":\"Semente\""*"\"left\":[\"pomodoro\",\"note\"]"* ]]' "the environments saved in settings.json to load"
   wait_for '[[ "$(harness_ipc appearance)" == *"\"fill\":\"solid\""*"\"shape\":\"square\""* ]]' "the appearance saved in settings.json to load"
+  # Aparência fora do padrão nos hot-reloads (spec 19): os shaders de
+  # gradiente e grão, os cantos quadrados e as regiões de blur.
+  harness_ipc editorDo preset glass >/dev/null
+  harness_ipc editorDo appearance 'shape "square"' >/dev/null
+  harness_ipc editorDo appearance 'blur true' >/dev/null
+  wait_for '[[ "$(harness_ipc appearance)" == *"\"fill\":\"gradient\""*"\"shape\":\"square\""*"\"blur\":true"* ]]' "the glass preset with square corners and blur"
+  harness_ipc open quick >/dev/null
   for i in $(seq 1 "$SMOKE_RELOADS"); do
     harness_ipc reload >/dev/null
     wait_for '[[ "$(harness_status)" == *"\"bar\":true"*"\"reloads\":$i"* ]]' "reload $i"

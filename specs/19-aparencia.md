@@ -220,7 +220,8 @@ A borda fica por dentro da superfície (um `Rectangle` com `border` sobre o fund
 ## Critérios de aceite
 
 
-- [ ] Com o `settings.json` sem a chave de aparência, a barra fica igual à de antes.
+- [x] Com o `settings.json` sem a chave de aparência, a barra fica igual à de antes (comparação de capturas no aninhado: só o relógio e os números de hardware mudam).
+- [x] O `make smoke` aplica o Vidro com cantos quadrados e blur e passa pelos hot-reloads sem erro no log.
 - [x] Editar `appearance` no arquivo vale na hora, e um valor inválido volta ao padrão.
 - [x] Com o blur ligado, o que está atrás das pílulas e da ilha fica borrado, e a sombra não.
 - [x] Desligar o blur na config do Hyprland e recarregar deixa o fundo opaco de novo.
