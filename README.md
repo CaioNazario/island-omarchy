@@ -56,13 +56,20 @@ Para trocar de ambiente:
 
 Quando falta espaço, o Hardware perde blocos (rede, GPU, temperatura) e depois somem widgets inteiros, a começar pelo mais longe da Island.
 ### Editor de ambientes
-> Ainda não portado para o Omarchy (spec 17). Por enquanto, os ambientes se editam em `~/.config/island/settings.json`.
-
-Clique no botão de ambiente, no início da pílula esquerda, para abrir o editor. Nele dá para:
+Clique no botão de ambiente, no início da pílula esquerda, para abrir o editor. Na aba **Ambientes** dá para:
 - Criar, renomear, trocar o ícone e excluir ambientes
 - Adicionar widgets clicando ou arrastando do catálogo para uma pílula
 - Reordenar arrastando na própria barra, ou selecionar um widget e movê-lo ou removê-lo
-- Ligar o auto-ocultar
+
+### Aparência
+Na aba **Aparência** do editor, para as pílulas, a ilha e o banner:
+- Estilo pronto: Padrão (o design) ou Vidro
+- Tema (Nocturne ou Alto contraste) e realce (Roxo ou Branco)
+- Fundo ligado ou não, sólido (a cor do tema, nenhuma ou uma de 10 cores escuras) ou em gradiente (9 paletas, ou a tirada do tema do Omarchy), e a opacidade
+- Blur do compositor atrás da barra e grão de filme
+- Borda, sombra e cantos: os do design, arredondados, quadrados ou os das janelas do Hyprland
+
+Tudo vale na hora e fica em `~/.config/island/settings.json` (`appearance`). Sem mexer em nada, a barra é a do design. Detalhes em `specs/19-aparencia.md`.
 
 ### Auto-ocultar
 > Ainda não portado para o Omarchy (spec 18).
