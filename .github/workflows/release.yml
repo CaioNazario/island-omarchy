@@ -21,9 +21,15 @@ jobs:
           pacman-key --recv-keys "$key" --keyserver hkps://keyserver.ubuntu.com
           pacman-key --lsign-key "$key"
           sed -i '/^\[core\]/i [omarchy]\nServer = https://pkgs.omarchy.org/stable/$arch\n' /etc/pacman.conf
-          pacman -Syu --noconfirm --needed git make nodejs npm quickshell qt6-declarative github-cli jq
+          pacman -Syu --noconfirm --needed git make quickshell qt6-declarative github-cli jq
           pacman -Q quickshell qt6-declarative
       - uses: actions/checkout@v4
+      # O Node vem do nodejs.org, não do Arch: em 2026-10-29 o nodejs
+      # 26.12.1-2 do Arch pedia a libsimdjson.so.34 já trocada pelo simdjson
+      # 5.0.8, e o `npm ci` não abria.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: npm ci
       # O qsb confere que os .qsb commitados são o que os .frag compilam
