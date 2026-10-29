@@ -82,6 +82,20 @@ Paleta **Tema**:
 
 Um id desconhecido no `settings.json` usa a paleta Tema.
 
+## Superfície
+
+`src/core/surfaceStyle.ts` calcula o estilo de cada superfície (pílula ou ilha) a partir das opções, do fundo do tema (`lane` ou `island`), da paleta e do blur do sistema. O QML só pinta.
+
+- **Blur** ativo só com `blur`, `decoration:blur:enabled` do Hyprland e fundo ligado.
+- **Opacidade**: a do tema é 1 sem blur e 0.82 com blur (o `bg` 82% do design). Desligando "do tema", vale `opacity`.
+- **Fundo**: cor do tema ou a escolhida, com a opacidade. "Nenhuma" é preto 25% fixo. Fundo desligado: transparente, sem acabamento nem sombra.
+- **Acabamento** (brilho e halo do design): só com fundo ligado e cor diferente de "Nenhuma".
+- **Borda**: branca, de `borderWidth`. Automática: 0.05 (o anel do design), ou 0.48 quando o fundo quase some (desligado, "Nenhuma" ou opacidade abaixo de 0.25). Manual: `borderOpacity`.
+- **Sombra**: `shadowStrength`; na ilha aberta, 1.2× (até 1). Desligada ou sem fundo, 0.
+- **Gradiente**: o retângulo de fundo fica transparente e o shader pinta a base (a cor do fundo com a opacidade) e as cores por cima. A força é limitada para os textos continuarem legíveis (`cappedStrength`): a maior força, até a pedida, em que cada tinta atinge o contraste mínimo sobre o fundo médio (o tema misturado à média das 3 cores com 75% da força, como o omadock estima).
+  - Pílulas e ilha compacta: `text` a 4.5:1. A Aurora vai até 0.63.
+  - Ilha aberta: também os rótulos `neutral-500` a 3:1. Fica em torno de 0.2 em todas as paletas.
+
 ## Persistência
 
 O `Service.qml` lê `settings.json` `appearance` com `sanitizeAppearance` a cada mudança do arquivo e entrega o resultado à barra, que o liga ao `Tokens.appearance`. Uma troca pela UI (`setAppearanceOption`, `withAppearanceOption` no core) grava o objeto inteiro já saneado; um valor inválido não muda nada. Aplicar um preset (`applyAppearancePreset`) grava o preset inteiro. O `make smoke` semeia uma aparência com uma opção inválida e confere o que a barra recebe.
