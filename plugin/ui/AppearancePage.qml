@@ -27,6 +27,10 @@ RowLayout {
     if (page.bar.service) page.bar.service.setAppearanceOption(key, value);
   }
 
+  function applyPreset(id) {
+    if (page.bar.service) page.bar.service.applyAppearancePreset(id);
+  }
+
   spacing: 14
 
   ColumnLayout {
@@ -235,6 +239,21 @@ RowLayout {
     Layout.preferredWidth: 1
     Layout.alignment: Qt.AlignTop
     spacing: 14
+
+    SettingsSection {
+      Layout.fillWidth: true
+      title: "Estilo"
+
+      // Preset igual à aparência atual; ajustar qualquer opção sai dele.
+      ChoiceRow {
+        Layout.fillWidth: true
+        label: "Estilo"
+        hint: "Padrão desfaz todos os ajustes. Vidro: Aurora com grão."
+        options: AppearanceCore.APPEARANCE_PRESETS.map(preset => ({ id: preset.id, label: preset.name }))
+        current: AppearanceCore.matchingPreset(page.look)
+        onChosen: id => page.applyPreset(id)
+      }
+    }
 
     SettingsSection {
       Layout.fillWidth: true

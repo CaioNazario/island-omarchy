@@ -157,7 +157,15 @@ O `Service.qml` lê `settings.json` `appearance` com `sanitizeAppearance` a cada
 
 Aba Aparência do editor (`AppearancePage`), em duas colunas com gap 14px. Uma linha só aparece quando faz sentido, sem ficar desabilitada.
 
-Coluna da esquerda: Tema, Fundo e Sombra. Da direita: Forma, Borda e Efeitos.
+Coluna da esquerda: Tema, Fundo e Sombra. Da direita: Estilo, Forma, Borda e Efeitos.
+
+**Estilo**
+
+| Linha | Controle | Visível se |
+|---|---|---|
+| Estilo — "Padrão desfaz todos os ajustes. Vidro: Aurora com grão." | Padrão · Vidro (os presets); fica marcado o igual à aparência atual (`matchingPreset`), e nenhum depois de um ajuste | sempre |
+
+Escolher um preset grava o preset inteiro (`applyAppearancePreset`).
 
 **Tema**
 
