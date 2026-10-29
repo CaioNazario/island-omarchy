@@ -31,6 +31,7 @@ describe('surfaceStyle', () => {
       shadow: 0.5,
       shadowExpanded: 0.6,
       blur: false,
+      grain: 0,
     });
   });
 
@@ -100,6 +101,13 @@ describe('surfaceStyle', () => {
     );
     expect(style.gradient!.strength).toBeLessThan(1);
     expect(style.gradient!.strength).toBeGreaterThan(0);
+  });
+});
+
+describe('grão', () => {
+  it('a força da opção; sem fundo, nenhum', () => {
+    expect(surfaceStyle(input({ grain: 0.18 })).grain).toBe(0.18);
+    expect(surfaceStyle(input({ grain: 0.18, background: false })).grain).toBe(0);
   });
 });
 
