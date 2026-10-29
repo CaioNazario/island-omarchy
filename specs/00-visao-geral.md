@@ -43,6 +43,7 @@ A Island é um plugin de barra do Omarchy (Quickshell sobre Hyprland) que substi
 | 16 | [widgets](16-widgets.md) | Catálogo, visual, dados e clique de cada widget, modo `note` |
 | 17 | [editor-ambientes](17-editor-ambientes.md) | Editor de ambientes e widgets, arrastar e soltar |
 | 18 | [auto-ocultar](18-auto-ocultar.md) | Barra que some e volta pela borda |
+| 19 | [aparencia](19-aparencia.md) | Fundo, gradiente, grão, borda, sombra, cantos e blur das pílulas e da ilha |
 
 ## Ordem de implementação
 
