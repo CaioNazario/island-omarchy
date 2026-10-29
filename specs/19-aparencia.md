@@ -150,6 +150,15 @@ Aba Aparência do editor (`AppearancePage`), em duas colunas com gap 14px. Uma l
 | Opacidade do tema — "Opaca, ou 82% com o blur ligado, como no design." | switch | fundo ligado e cor diferente de Nenhuma |
 | Opacidade | slider 0–100% | idem, com "Opacidade do tema" desligada |
 
+**Sombra**
+
+| Linha | Controle | Visível se |
+|---|---|---|
+| Sombra — "Embaixo das pílulas e da ilha. Sem fundo, não há sombra." | switch | sempre |
+| Força — "Na ilha aberta, 1.2× esta força." | slider 0–100% | sombra ligada |
+
+A `SurfaceShadow` usa o alfa de `shadow` no `SOFT_OUT` e o de `shadowExpanded` no `--isl-drop`; com alfa 0, a sombra não é desenhada.
+
 **Borda**
 
 | Linha | Controle | Visível se |

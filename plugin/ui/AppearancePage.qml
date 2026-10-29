@@ -147,6 +147,27 @@ RowLayout {
         onMoved: value => page.set("opacity", value)
       }
     }
+    SettingsSection {
+      Layout.fillWidth: true
+      title: "Sombra"
+
+      SwitchRow {
+        Layout.fillWidth: true
+        label: "Sombra"
+        hint: "Embaixo das pílulas e da ilha. Sem fundo, não há sombra."
+        on: page.look.shadow
+        onToggled: on => page.set("shadow", on)
+      }
+
+      SliderRow {
+        Layout.fillWidth: true
+        visible: page.look.shadow
+        label: "Força"
+        hint: "Na ilha aberta, 1.2× esta força."
+        value: page.look.shadowStrength
+        onMoved: value => page.set("shadowStrength", value)
+      }
+    }
   }
 
   ColumnLayout {

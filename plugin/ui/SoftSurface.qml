@@ -28,6 +28,8 @@ Item {
     anchors.fill: parent
     radius: soft.radius
     expanded: soft.expanded
+    strength: soft.style.shadow
+    expandedStrength: soft.style.shadowExpanded
   }
 
   // `inset 0 1px 0 rgba(255,255,255,.07)`: o fundo deixa 1px do brilho à
