@@ -6,9 +6,8 @@ import "../core/environments.mjs" as EnvironmentsCore
 import "../core/environmentEditor.mjs" as EditorCore
 
 // Linha 4 do editor (specs/17 "Linha 4: catálogo"): cabeçalho com "N em uso"
-// e o seletor da pílula-alvo; grade de 4 colunas com um cartão por widget.
-// Fora do ambiente, o cartão adiciona ao fim da pílula-alvo (clique) ou onde
-// for solto (arraste); já no ambiente, fica apagado e sem ação.
+// e o seletor da pílula-alvo; grade de 4 colunas com um cartão por widget
+// (`CatalogCard`), e outra com os widgets de outros plugins.
 ColumnLayout {
   id: catalog
 
@@ -108,76 +107,44 @@ ColumnLayout {
     Repeater {
       model: EnvironmentsCore.WIDGET_IDS
 
-      Rectangle {
-        id: card
-
+      CatalogCard {
         required property string modelData
-        readonly property var info: EnvironmentsCore.WIDGET_CATALOG[modelData]
-        readonly property bool inUse: EnvironmentsCore.findWidget(catalog.env, modelData) !== null
 
-        Layout.fillWidth: true
-        Layout.preferredWidth: 1
-        implicitHeight: 48
-        radius: 12
-        opacity: inUse ? 0.45 : 1
-        color: dragArea.containsMouse && !inUse ? Tokens.neutral800 : Tokens.neutral900
+        bar: catalog.bar
+        widgetId: modelData
+        dragProxy: catalog.dragProxy
+      }
+    }
+  }
 
-        RowLayout {
-          anchors.fill: parent
-          anchors.leftMargin: 10
-          anchors.rightMargin: 10
-          spacing: 10
+  // Widgets de barra de outros plugins (spec 16 "Widgets de plugins"); some
+  // sem nenhum carregado.
+  IslandText {
+    Layout.topMargin: 4
+    visible: catalog.bar.pluginWidgets.catalog.length > 0
+    text: "Plugins do Omarchy"
+  }
 
-          Rectangle {
-            implicitWidth: 30
-            implicitHeight: 30
-            radius: 9
-            color: Tokens.accent900
+  GridLayout {
+    Layout.fillWidth: true
+    visible: catalog.bar.pluginWidgets.catalog.length > 0
+    columns: 4
+    columnSpacing: 6
+    rowSpacing: 6
 
-            PhIcon {
-              anchors.centerIn: parent
-              glyph: card.info.icon
-              color: Tokens.accent300
-            }
-          }
+    Repeater {
+      model: catalog.bar.pluginWidgets.catalog
 
-          ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 1
+      // Largura de uma coluna da grade de cima: com menos de 4 cartões, o
+      // `fillWidth` esticaria um só pela linha inteira.
+      CatalogCard {
+        required property var modelData
 
-            IslandText {
-              Layout.fillWidth: true
-              text: card.info.name
-              px: 12.5
-              elide: Text.ElideRight
-            }
-
-            IslandText {
-              Layout.fillWidth: true
-              text: card.info.description
-              px: 11
-              font.weight: Tokens.weightBody
-              color: Tokens.neutral500
-              elide: Text.ElideRight
-            }
-          }
-
-          PhIcon {
-            glyph: card.inUse ? "check-circle-fill" : "plus"
-            size: 13
-            color: card.inUse ? Tokens.accent400 : Tokens.neutral400
-          }
-        }
-
-        EditorDragArea {
-          id: dragArea
-
-          anchors.fill: parent
-          enabled: !card.inUse
-          widgetId: card.modelData
-          dragProxy: catalog.dragProxy
-          onTapped: catalog.bar.editorPlace(card.modelData, catalog.bar.editorTarget, null)
-        }
+        Layout.fillWidth: false
+        Layout.preferredWidth: (catalog.width - 3 * 6) / 4
+        bar: catalog.bar
+        widgetId: modelData.id
+        dragProxy: catalog.dragProxy
       }
     }
   }
