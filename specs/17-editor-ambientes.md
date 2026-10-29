@@ -52,6 +52,8 @@ Faixa de 40px, raio 12, `neutral-900`, padding 0 8px 0 12px.
   - Conteúdo: bloco 30×30 raio 9 `accent-900` com ícone 16px `accent-300` · nome 12.5px/500 e descrição 11px `neutral-500`, ambos com reticências · marca 13px.
   - Fora do ambiente: marca `ph ph-plus` `neutral-400`, arrastável. Clique adiciona ao fim da pílula-alvo.
   - Já no ambiente: marca `ph-fill ph-check-circle` `accent-400`, opacidade .45, sem clique nem arraste.
+- Abaixo, com algum widget de outro plugin carregado (spec 16 "Widgets de plugins"), o título "Plugins do Omarchy" 13px/500 (4px a mais de espaço acima) e outra grade igual, com os widgets de terceiros do catálogo do omarchy-shell em ordem de nome: ícone `ph-puzzle-piece`, nome `displayName` do manifesto (ou o id) e a descrição dele. Sem nenhum, título e grade somem. Não é do design.
+- Na seleção (linha 3) e no arraste, um widget de plugin usa o mesmo nome; com o plugin ausente, o id e "Plugin não carregado".
 
 ## Linha 5: auto-ocultar
 

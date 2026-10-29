@@ -2,7 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import "../core/environments.mjs" as EnvironmentsCore
 
-// Cartão do catálogo do editor (specs/17 "Linha 4: catálogo"). Fora do
+// Cartão do catálogo do editor (specs/17 "Linha 4: catálogo"): um widget da
+// Island ou de outro plugin (spec 16 "Widgets de plugins"). Fora do
 // ambiente, adiciona ao fim da pílula-alvo (clique) ou onde for solto
 // (arraste); já no ambiente, fica apagado e sem ação.
 Rectangle {

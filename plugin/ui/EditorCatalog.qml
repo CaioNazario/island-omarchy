@@ -7,7 +7,7 @@ import "../core/environmentEditor.mjs" as EditorCore
 
 // Linha 4 do editor (specs/17 "Linha 4: catálogo"): cabeçalho com "N em uso"
 // e o seletor da pílula-alvo; grade de 4 colunas com um cartão por widget
-// (`CatalogCard`).
+// (`CatalogCard`), e outra com os widgets de outros plugins.
 ColumnLayout {
   id: catalog
 
@@ -112,6 +112,38 @@ ColumnLayout {
 
         bar: catalog.bar
         widgetId: modelData
+        dragProxy: catalog.dragProxy
+      }
+    }
+  }
+
+  // Widgets de barra de outros plugins (spec 16 "Widgets de plugins"); some
+  // sem nenhum carregado.
+  IslandText {
+    Layout.topMargin: 4
+    visible: catalog.bar.pluginWidgets.catalog.length > 0
+    text: "Plugins do Omarchy"
+  }
+
+  GridLayout {
+    Layout.fillWidth: true
+    visible: catalog.bar.pluginWidgets.catalog.length > 0
+    columns: 4
+    columnSpacing: 6
+    rowSpacing: 6
+
+    Repeater {
+      model: catalog.bar.pluginWidgets.catalog
+
+      // Largura de uma coluna da grade de cima: com menos de 4 cartões, o
+      // `fillWidth` esticaria um só pela linha inteira.
+      CatalogCard {
+        required property var modelData
+
+        Layout.fillWidth: false
+        Layout.preferredWidth: (catalog.width - 3 * 6) / 4
+        bar: catalog.bar
+        widgetId: modelData.id
         dragProxy: catalog.dragProxy
       }
     }
