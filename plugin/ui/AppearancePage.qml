@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import "../core/appearance.mjs" as AppearanceCore
+import "../core/gradients.mjs" as GradientCore
 
 // Aba Aparência do editor (specs/19-aparencia.md "Aba Aparência"): seções em
 // duas colunas. Cada troca grava em `settings.json` `appearance` pelo
@@ -12,6 +13,14 @@ RowLayout {
 
   required property var bar
   readonly property var look: Tokens.look
+  readonly property bool solid: look.background && look.fill === "solid"
+  readonly property bool gradient: look.background && look.fill === "gradient"
+  // A paleta Tema primeiro, com as cores que ela tem agora.
+  readonly property var palettes: [{
+      id: "theme",
+      name: "Tema",
+      colors: GradientCore.gradientColors("theme", Tokens.omarchyColors, [Tokens.accent300, Tokens.accent500, Tokens.accent700].map(String))
+    }].concat(GradientCore.GRADIENT_PRESETS)
 
   function set(key, value) {
     if (page.bar.service) page.bar.service.setAppearanceOption(key, value);
@@ -37,9 +46,19 @@ RowLayout {
         onToggled: on => page.set("background", on)
       }
 
-      SettingRow {
+      ChoiceRow {
         Layout.fillWidth: true
         visible: page.look.background
+        label: "Preenchimento"
+        hint: "Uma cor, ou cores que se misturam, como nos temas do Zen e do Arc."
+        options: [{ id: "solid", label: "Sólido" }, { id: "gradient", label: "Gradiente" }]
+        current: page.look.fill
+        onChosen: id => page.set("fill", id)
+      }
+
+      SettingRow {
+        Layout.fillWidth: true
+        visible: page.solid
         label: "Cor"
         hint: "A do tema, nenhuma ou uma cor fixa."
 
@@ -60,7 +79,7 @@ RowLayout {
 
       Flow {
         Layout.fillWidth: true
-        visible: page.look.background
+        visible: page.solid
         spacing: 6
 
         Repeater {
@@ -74,6 +93,41 @@ RowLayout {
             onClicked: page.set("color", modelData)
           }
         }
+      }
+
+      SettingRow {
+        Layout.fillWidth: true
+        visible: page.gradient
+        label: "Paleta"
+        hint: "A Tema vem do acento e das cores do tema do Omarchy."
+      }
+
+      Flow {
+        Layout.fillWidth: true
+        visible: page.gradient
+        spacing: 8
+
+        Repeater {
+          model: page.palettes
+
+          GradientTile {
+            required property var modelData
+
+            name: modelData.name
+            colors: modelData.colors
+            chosen: page.look.gradient === modelData.id
+            onClicked: page.set("gradient", modelData.id)
+          }
+        }
+      }
+
+      SliderRow {
+        Layout.fillWidth: true
+        visible: page.gradient
+        label: "Força"
+        hint: "Quanto as cores cobrem o fundo. Cede o necessário para os textos continuarem legíveis."
+        value: page.look.gradientStrength
+        onMoved: value => page.set("gradientStrength", value)
       }
 
       SwitchRow {

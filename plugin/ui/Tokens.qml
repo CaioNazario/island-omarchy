@@ -29,15 +29,14 @@ QtObject {
   property bool blurAvailable: false
   // Sem paleta do Omarchy, os tons do realce: `accent-300/500/700`.
   readonly property var gradientColors: GradientCore.gradientColors(look.gradient, omarchyColors, [palette.accents[2], palette.accents[4], palette.accents[6]])
-  // Estilo de cada superfície (spec 19 "Superfície"). A ilha aberta também
-  // protege os rótulos `neutral-500` do gradiente.
-  readonly property var pillStyle: surfaceStyleFor(palette.lane, false)
-  readonly property var islandStyle: surfaceStyleFor(palette.island, false)
-  readonly property var islandOpenStyle: surfaceStyleFor(palette.island, true)
+  // Estilo de cada superfície (spec 19 "Superfície"). O gradiente cede para
+  // o texto e para os rótulos `neutral-500` (widget de hardware, rótulos
+  // dos painéis) continuarem legíveis.
+  readonly property var pillStyle: surfaceStyleFor(palette.lane)
+  readonly property var islandStyle: surfaceStyleFor(palette.island)
 
-  function surfaceStyleFor(base, open) {
-    const inks = [{ color: palette.text, min: 4.5 }];
-    if (open) inks.push({ color: palette.neutrals[4], min: 3 });
+  function surfaceStyleFor(base) {
+    const inks = [{ color: palette.text, min: 4.5 }, { color: palette.neutrals[4], min: 3 }];
     return SurfaceCore.surfaceStyle({ look: look, base: base, gradientColors: gradientColors, inks: inks, blurAvailable: blurAvailable });
   }
 

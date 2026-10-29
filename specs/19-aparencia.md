@@ -95,12 +95,13 @@ Leitura (`OmarchyThemeColors.qml`): `~/.local/state/omarchy/current/theme/colors
 - **Borda**: branca, de `borderWidth`. Automática: 0.05 (o anel do design), ou 0.48 quando o fundo quase some (desligado, "Nenhuma" ou opacidade abaixo de 0.25). Manual: `borderOpacity`.
 - **Sombra**: `shadowStrength`; na ilha aberta, 1.2× (até 1). Desligada ou sem fundo, 0.
 - **Gradiente**: o retângulo de fundo fica transparente e o shader pinta a base (a cor do fundo com a opacidade) e as cores por cima. A força é limitada para os textos continuarem legíveis (`cappedStrength`): a maior força, até a pedida, em que cada tinta atinge o contraste mínimo sobre o fundo médio (o tema misturado à média das 3 cores com 75% da força, como o omadock estima).
-  - Pílulas e ilha compacta: `text` a 4.5:1. A Aurora vai até 0.63.
-  - Ilha aberta: também os rótulos `neutral-500` (`#9397ab`) a 3:1. Fica entre 0.39 (Aurora) e 0.65 (Brasa).
+  - Em todas as superfícies: `text` a 4.5:1 e os rótulos `neutral-500` (`#9397ab`, widget de hardware e rótulos dos painéis) a 3:1. Fica entre 0.39 (Aurora) e 0.65 (Brasa). Só com o texto, as pílulas aceitariam a Aurora até 0.63, mas os rótulos do hardware sumiam sobre o verde.
 
 ### Render
 
-O `Tokens.qml` calcula `pillStyle`, `islandStyle` e `islandOpenStyle` com `surfaceStyle`. A `SoftSurface` escolhe o seu (a ilha troca ao abrir) e pinta o fundo com `fill`, e o brilho e o halo só com `finish`. O 1px de brilho no topo (`inset 0 1px 0`) só aparece sobre fundo opaco: atrás de um fundo translúcido, o branco clarearia a superfície inteira.
+O gradiente é o `SurfaceGradient` (o shader), carregado por um `Loader` só quando a superfície tem gradiente, sobre o retângulo de fundo (que fica transparente) e sob o brilho e o halo. A força anima em 300ms.
+
+O `Tokens.qml` calcula `pillStyle` e `islandStyle` com `surfaceStyle`. A `SoftSurface` escolhe o seu e pinta o fundo com `fill`, e o brilho e o halo só com `finish`. O 1px de brilho no topo (`inset 0 1px 0`) só aparece sobre fundo opaco: atrás de um fundo translúcido, o branco clarearia a superfície inteira.
 
 ## Blur
 
@@ -139,7 +140,10 @@ Aba Aparência do editor (`AppearancePage`), em duas colunas com gap 14px. Uma l
 | Linha | Controle | Visível se |
 |---|---|---|
 | Fundo — "Desligado, sobram só os ícones e o texto." | switch | sempre |
-| Cor — "A do tema, nenhuma ou uma cor fixa." | Tema · Nenhuma, e as 10 cores sólidas embaixo | fundo ligado |
+| Preenchimento — "Uma cor, ou cores que se misturam, como nos temas do Zen e do Arc." | Sólido · Gradiente | fundo ligado |
+| Cor — "A do tema, nenhuma ou uma cor fixa." | Tema · Nenhuma, e as 10 cores sólidas embaixo | fundo ligado, sólido |
+| Paleta — "A Tema vem do acento e das cores do tema do Omarchy." | as 10 paletas (`GradientTile`), Tema primeiro, com as cores que ela tem agora | fundo ligado, gradiente |
+| Força — "Quanto as cores cobrem o fundo. Cede o necessário para os textos continuarem legíveis." | slider 0–100% | fundo ligado, gradiente |
 | Opacidade do tema — "Opaca, ou 82% com o blur ligado, como no design." | switch | fundo ligado e cor diferente de Nenhuma |
 | Opacidade | slider 0–100% | idem, com "Opacidade do tema" desligada |
 

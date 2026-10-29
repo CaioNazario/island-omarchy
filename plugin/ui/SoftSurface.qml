@@ -19,8 +19,10 @@ Item {
   property bool island: false
   // Opções de aparência (specs/19-aparencia.md "Superfície"), já resolvidas
   // pelo core.
-  readonly property var style: !island ? Tokens.pillStyle : expanded ? Tokens.islandOpenStyle : Tokens.islandStyle
-  readonly property bool opaqueFill: Qt.color(style.fill).a >= 1
+  readonly property var style: island ? Tokens.islandStyle : Tokens.pillStyle
+  // No gradiente o fundo é a base do shader, e não o retângulo.
+  readonly property color paint: style.gradient ? style.gradient.base : style.fill
+  readonly property bool opaqueFill: paint.a >= 1
 
   SurfaceShadow {
     anchors.fill: parent
@@ -37,11 +39,22 @@ Item {
     color: soft.style.finish && soft.opaqueFill ? Qt.rgba(1, 1, 1, 0.07) : "transparent"
 
     Rectangle {
+      id: fillRect
+
       anchors.fill: parent
       anchors.topMargin: soft.opaqueFill ? 1 : 0
       radius: soft.radius
-      // Até o shader do gradiente (task R3), a base dele pinta o fundo.
-      color: soft.style.gradient ? soft.style.gradient.base : soft.style.fill
+      color: soft.style.fill
+    }
+
+    Loader {
+      anchors.fill: fillRect
+      active: soft.style.gradient !== null
+
+      sourceComponent: SurfaceGradient {
+        gradient: soft.style.gradient
+        cornerRadius: soft.radius
+      }
     }
 
     SurfaceHalo {
