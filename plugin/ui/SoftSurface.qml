@@ -80,12 +80,14 @@ Item {
     }
   }
 
-  // `inset 0 0 0 1px rgba(255,255,255,.05)`
+  // `inset 0 0 0 1px rgba(255,255,255,.05)` no padrão; largura e opacidade
+  // vêm das opções (spec 19 "Superfície"). Por dentro: não muda o tamanho.
   Rectangle {
     anchors.fill: parent
+    visible: soft.style.borderWidth > 0
     radius: soft.radius
     color: "transparent"
-    border.width: 1
-    border.color: Qt.rgba(1, 1, 1, 0.05)
+    border.width: soft.style.borderWidth
+    border.color: soft.style.borderColor
   }
 }

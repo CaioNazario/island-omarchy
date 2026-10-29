@@ -11,6 +11,7 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 - Blur atrás das pílulas e da ilha (seção Efeitos), pelo compositor. Com ele, o fundo do tema fica em 82%, como no design.
 - Fundo em gradiente, com 9 paletas e a paleta Tema, tirada das cores do tema do Omarchy. A força cede para os textos continuarem legíveis.
 - Grão de filme sobre o fundo (seção Efeitos).
+- Borda configurável: ligada ou não, largura e opacidade (seção Borda).
 
 ### Mudado
 

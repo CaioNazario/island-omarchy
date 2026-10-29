@@ -157,6 +157,47 @@ RowLayout {
 
     SettingsSection {
       Layout.fillWidth: true
+      title: "Borda"
+
+      SwitchRow {
+        Layout.fillWidth: true
+        label: "Borda"
+        hint: "Contorno fino em volta das pílulas e da ilha."
+        on: page.look.border
+        onToggled: on => page.set("border", on)
+      }
+
+      SliderRow {
+        Layout.fillWidth: true
+        visible: page.look.border
+        label: "Largura"
+        from: 1
+        to: 6
+        unit: "px"
+        value: page.look.borderWidth
+        onMoved: value => page.set("borderWidth", value)
+      }
+
+      SwitchRow {
+        Layout.fillWidth: true
+        visible: page.look.border
+        label: "Opacidade automática"
+        hint: "Discreta como no design, e mais forte quando o fundo quase some."
+        on: page.look.borderOpacityAuto
+        onToggled: on => page.set("borderOpacityAuto", on)
+      }
+
+      SliderRow {
+        Layout.fillWidth: true
+        visible: page.look.border && !page.look.borderOpacityAuto
+        label: "Opacidade da borda"
+        value: page.look.borderOpacity
+        onMoved: value => page.set("borderOpacity", value)
+      }
+    }
+
+    SettingsSection {
+      Layout.fillWidth: true
       title: "Efeitos"
 
       SwitchRow {
