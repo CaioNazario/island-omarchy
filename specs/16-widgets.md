@@ -132,6 +132,19 @@ Linha de 22px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 - Grava a cada mudança (debounce 300ms) e ao fechar. Enter ou Esc fecham a ilha.
 - Clique fora fecha, como nos outros modos fixos.
 
+## Widgets de plugins
+
+Widgets de barra (`kind: "bar-widget"`) de outros plugins do Omarchy, como o omaplug, entram nas pílulas com o id `plugin:<id do manifesto>` (spec 15). Regra pura em `src/core/pluginWidgets.ts`; anfitrião em `plugin/ui/PluginWidgetHost.qml`, fachada em `PluginWidgetBar.qml` e o slot em `PluginWidget.qml`.
+
+- **Catálogo**: o `barWidgetRegistry` que o omarchy-shell injeta numa barra de terceiros (shell.qml `configureBar`/`publicBarWidgetSnapshot`, Omarchy 4), com o `Component` e os metadados de cada widget. Só os de terceiros: os do Omarchy (`metadata.firstParty`) esperam a barra dele inteira (plugins/bar/Bar.qml `injectProps`) e ficam de fora. Ordem por `displayName` (ou o id), ícone `ph-puzzle-piece`.
+- **Contrato**: como plugins/bar/Bar.qml `injectProps`, o widget recebe só o que declara: `bar` (fachada no formato de `qs.Ui/PluginBarApi.qml`), `moduleName` (o id do plugin) e `settings` (os campos da entrada dele em `bar.layout` do `shell.json`, sem o `id`).
+- **Fachada `bar`**: uma por plugin, compartilhada pelos monitores. Posição `top`, `barSize` = 28 (a faixa reservada), fonte `monospace` (os widgets do Omarchy desenham glifos Nerd Font), cores do tema da Island. `run` executa como o `Util.execDetached` do Omarchy (`bash -lc`). Sem dica flutuante (`showTooltip` não faz nada) e sem troca de painel por setas (`switchPanelFrom` dá `false`).
+- **`shell` do widget**: `pluginShellForBarEntry` da fachada da Island. O omarchy-shell só a dá se o plugin tem entrada em `bar.layout` (`barEntryConfigured`) e nunca dá o serviço do plugin a uma barra de terceiros (README do omarchy-shell): widget que precisa do próprio serviço não funciona inteiro na Island.
+- **Onde é desenhado**: o slot só reserva a largura do widget na pílula. O widget fica numa faixa própria do topo (`PanelWindow` de 28px, camada `top`, entrada só sobre o widget), por cima do lugar dele: o painel do Omarchy (`qs.Ui/KeyboardPanel.qml` `cardOrigin`) abre a `anchorWindow.height` do topo, e na camada de tela cheia da Island seria o pé da tela. A faixa some com o slot (quando não cabe, spec 16 "Quando não cabe") e segue o deslocamento e a opacidade da troca de ambiente.
+- **Um painel por vez**: como plugins/bar/Bar.qml `requestPopout`, abrir o painel de um plugin fecha o anterior (`closeForPopoutSwitch`, senão `close`). Abrir um painel com um modo fixo da ilha ou o editor abertos fecha os dois; abrir um modo fixo na ilha fecha o painel do plugin.
+- **Plugin ausente**: o id fica no ambiente e o slot não desenha nada (largura 0); no editor aparece com o id como nome e a descrição "Plugin não carregado".
+- **Edição** (spec 17): a faixa deixa o clique passar, e o widget de plugin se seleciona e arrasta como os outros.
+
 ## Fontes só quando visíveis
 
 Fonte de dado usada só por widget (hardware, IA, GitHub) roda apenas enquanto um widget dela está no ambiente ativo; troca de ambiente liga/desliga. MPRIS, calendário e clima continuam sempre ligados (usados também pela ilha).
@@ -144,4 +157,7 @@ Fonte de dado usada só por widget (hardware, IA, GitHub) roda apenas enquanto u
 - [x] Com login no `gh`, o widget mostra a contagem de PRs (`GithubSource` isolado contra a conta real: "0 PRs").
 - [ ] Nota editada na ilha aparece no widget ao fechar e sobrevive ao hot-reload.
 - [ ] Ambiente sem `hw` nem `ai`: nenhuma leitura de `/proc` e nenhuma chamada HTTP de IA acontecem.
+- [x] Testes puros do catálogo de plugins (só terceiros com componente, ordem, nome de reserva), do rótulo no editor (widget da Island, de plugin carregado e ausente) e das configurações da entrada em `bar.layout`.
+- [x] Widget de plugin no harness: aparece na pílula, o painel dele abre 5px abaixo da faixa de 28px e um modo fixo da ilha o fecha (`make smoke`).
+- [ ] O omaplug aparece na pílula na sessão real e o painel dele abre sob o ícone.
 - [x] Ambiente Trabalho mostra próximo evento, pomodoro e IA à esquerda, hardware e GitHub à direita (captura no `make dev`).

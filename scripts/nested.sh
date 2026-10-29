@@ -110,7 +110,7 @@ log_errors() {
 # (spec 19) vai junto: um objeto aninhado do arquivo, com uma opção inválida.
 seed_settings() {
   mkdir -p "$DIST/xdg/config/island"
-  printf '{"environments": [["Semente","coffee",["pomodoro","note"],["hw"]]], "environmentIndex": 0, "appearance": {"shape": "square", "fill": "xadrez"}}\n' \
+  printf '{"environments": [["Semente","coffee",["pomodoro","note"],["hw","plugin:dev.fake"]]], "environmentIndex": 0, "appearance": {"shape": "square", "fill": "xadrez"}}\n' \
     >"$DIST/xdg/config/island/settings.json"
 }
 
@@ -127,7 +127,13 @@ smoke() {
   harness_ipc editorDo appearance 'shape "square"' >/dev/null
   harness_ipc editorDo appearance 'blur true' >/dev/null
   wait_for '[[ "$(harness_ipc appearance)" == *"\"fill\":\"gradient\""*"\"shape\":\"square\""*"\"blur\":true"* ]]' "the glass preset with square corners and blur"
+  # Widget de plugin (spec 16): o painel abre logo abaixo da barra (28px +
+  # 5), e um modo fixo da ilha o fecha.
+  wait_for '[[ "$(harness_ipc pluginWidget status)" == *"\"opened\":false"* ]]' "the plugin widget to load"
+  harness_ipc pluginWidget toggle >/dev/null
+  wait_for '[[ "$(harness_ipc pluginWidget status)" == *"\"opened\":true,\"popupY\":33,\"active\":true"* ]]' "the plugin popout below the bar"
   harness_ipc open quick >/dev/null
+  wait_for '[[ "$(harness_ipc pluginWidget status)" == *"\"opened\":false"*"\"active\":false"* ]]' "a fixed island mode to close the plugin popout"
   for i in $(seq 1 "$SMOKE_RELOADS"); do
     harness_ipc reload >/dev/null
     wait_for '[[ "$(harness_status)" == *"\"bar\":true"*"\"reloads\":$i"* ]]' "reload $i"

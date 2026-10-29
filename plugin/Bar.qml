@@ -14,6 +14,7 @@ import "core/wifiPanel.mjs" as WifiPanelCore
 import "core/environments.mjs" as EnvironmentsCore
 import "core/environmentEditor.mjs" as EditorCore
 import "core/stackScroll.mjs" as StackScrollCore
+import "core/pluginWidgets.mjs" as PluginWidgetsCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
 // este item a cada hot-reload; o que precisa sobreviver mora no Service.qml.
@@ -26,10 +27,13 @@ Item {
   property var manifest: null
   property var barConfig: ({})
   property var pluginRegistry: null
+  // Catálogo de widgets de barra dos plugins (specs/16 "Widgets de plugins").
+  property var barWidgetRegistry: null
 
   readonly property string pluginId: "caionazario.island"
   property var service: null
   readonly property alias system: sources
+  readonly property alias pluginWidgets: pluginHost
 
   // Um estado de ilha para todos os monitores (specs/02-barra.md
   // "Monitores"); `targetScreen` diz qual deles mostra o modo aberto.
@@ -212,6 +216,24 @@ Item {
     if (mode === "stack" && service) service.notifications.markAllRead();
     // Com a lista aberta, o banner repetiria o primeiro item dela.
     if (mode === "stack") hideBanner();
+    // Um painel por vez: modo fixo da ilha fecha o painel de plugin aberto.
+    if (fixed) pluginHost.closePopout();
+  }
+
+  PluginWidgetHost {
+    id: pluginHost
+
+    registry: root.barWidgetRegistry
+    shell: root.shell
+    layout: root.shell && root.shell.barConfig ? root.shell.barConfig.layout : root.barConfig.layout
+    onPopoutOpened: {
+      if (root.fixed || root.editorOpen) root.closeAll();
+    }
+  }
+
+  /** Nome, ícone e descrição de um widget para o editor (spec 17). */
+  function widgetInfo(id) {
+    return PluginWidgetsCore.widgetInfo(id, pluginHost.catalog);
   }
 
   // O host carrega serviços e barra em paralelo: o serviço pode chegar depois.
