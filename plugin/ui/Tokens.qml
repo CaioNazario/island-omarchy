@@ -27,6 +27,8 @@ QtObject {
   property var omarchyColors: ({})
   // `decoration:blur:enabled` do Hyprland (spec 14, S9).
   property bool blurAvailable: false
+  // `decoration:rounding` do Hyprland, para os cantos Tema; -1 sem o valor.
+  property int hyprRounding: -1
   // Sem paleta do Omarchy, os tons do realce: `accent-300/500/700`.
   readonly property var gradientColors: GradientCore.gradientColors(look.gradient, omarchyColors, [palette.accents[2], palette.accents[4], palette.accents[6]])
   // Estilo de cada superfície (spec 19 "Superfície"). O gradiente cede para

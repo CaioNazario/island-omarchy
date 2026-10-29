@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseBoolOption } from './hyprOptions.js';
+import { parseBoolOption, parseIntOption } from './hyprOptions.js';
 
 describe('parseBoolOption', () => {
   it('Hyprland novo responde "bool"', () => {
@@ -24,5 +24,18 @@ describe('parseBoolOption', () => {
     expect(parseBoolOption('no such option')).toBe(false);
     expect(parseBoolOption('')).toBe(false);
     expect(parseBoolOption('{"option": "x"}')).toBe(false);
+  });
+});
+
+describe('parseIntOption', () => {
+  it('o "int" da resposta', () => {
+    expect(parseIntOption('{"option": "decoration:rounding", "int": 12, "set": true }')).toBe(12);
+    expect(parseIntOption('{"option": "decoration:rounding", "int": 0, "set": true }')).toBe(0);
+  });
+
+  it('resposta inválida, sem "int" ou negativa dá -1 (sem o valor)', () => {
+    expect(parseIntOption('no such option')).toBe(-1);
+    expect(parseIntOption('{"option": "decoration:rounding"}')).toBe(-1);
+    expect(parseIntOption('{"option": "decoration:rounding", "int": -3}')).toBe(-1);
   });
 });

@@ -125,6 +125,8 @@ Do compositor, pelo protocolo `ext-background-effect-v1` (specs/14-spikes.md, S9
 | `square` (Quadrado) | 0 |
 | `theme` (Tema) | o `decoration:rounding` do Hyprland, até meia altura; sem o valor, o do design |
 
+O `HyprOptionsSource` lê o `decoration:rounding` (`parseIntOption`: inteiro não negativo, ou -1) junto com o blur, ao subir e a cada `configreloaded`, e o `Bar.qml` liga o valor a `Tokens.hyprRounding`.
+
 ## Shaders
 
 `plugin/shaders/gradient.frag` e `grain.frag`, do omadock (MIT; specs/14-spikes.md, S10), com os `.qsb` commitados ao lado. O `make lint` roda `scripts/shaders-in-sync.sh`, que recompila cada `.frag` com o `qsb` (`--glsl "100 es,120,150" --hlsl 50 --msl 12`) e falha se o binário commitado for diferente. Na CI o `qt6-shadertools` é instalado e `REQUIRE_QSB=1` faz a falta do `qsb` falhar em vez de pular. Depois de editar um `.frag`: `scripts/shaders-in-sync.sh --write`.
