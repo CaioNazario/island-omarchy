@@ -9,7 +9,7 @@ import {
   placeWidget,
   type EnvIcon,
   type Environment,
-  type WidgetId,
+  type PlacedWidgetId,
 } from './environments.js';
 
 function updateAt(
@@ -39,7 +39,7 @@ export function setEnvironmentIcon(
 }
 
 /** ‹ e › da seleção: uma posição na mesma pílula; no limite, nada muda. */
-export function stepWidget(env: Environment, id: WidgetId, delta: -1 | 1): Environment {
+export function stepWidget(env: Environment, id: PlacedWidgetId, delta: -1 | 1): Environment {
   const place = findWidget(env, id);
   if (!place) return env;
   const target = place.index + delta;
@@ -48,13 +48,13 @@ export function stepWidget(env: Environment, id: WidgetId, delta: -1 | 1): Envir
   return placeWidget(env, id, place.side, delta < 0 ? target : target + 1);
 }
 
-export function moveToOtherSide(env: Environment, id: WidgetId): Environment {
+export function moveToOtherSide(env: Environment, id: PlacedWidgetId): Environment {
   const place = findWidget(env, id);
   if (!place) return env;
   return placeWidget(env, id, place.side === 'left' ? 'right' : 'left', null);
 }
 
-export function selectionLabel(env: Environment, id: WidgetId): string {
+export function selectionLabel(env: Environment, id: PlacedWidgetId): string {
   const place = findWidget(env, id);
   if (!place) return '';
   const pill = place.side === 'left' ? 'Pílula esquerda' : 'Pílula direita';
