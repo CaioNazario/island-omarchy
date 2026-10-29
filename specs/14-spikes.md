@@ -44,3 +44,18 @@ Os spikes resolvidos ficam aqui como registro; cada resultado já vale como regr
   - O `omarchy.notifications` é dono de `org.freedesktop.Notifications` via `NotificationServer` (`Quickshell.Services.Notifications`). Com ele em `disabledPlugins`, o `NotificationServer` do `Service.qml` da Island assume o nome.
   - As teclas de volume/brilho do Omarchy chamam `omarchy-audio-output-volume` e `omarchy-brightness-display`, que terminam em `omarchy-shell -q osd show '<json>'` com `{icon, message, value, progressText, max, duration}`. Com `omarchy.osd` desligado, um `IpcHandler { target: "osd" }` na Island recebe essas chamadas e abre `volume`/`brightness`, sem mexer em atalho nenhum.
   - Os scripts de DND e de dispensar chamam o alvo IPC `notifications` (`dndState`, `toggleDnd`, `setDnd`, `isDnd`, `showHistory`, `clear`, `dismissAll`, `dismissOne`, `invokeLast`, `dismiss`, `ping`; todos devolvem string). A Island registra esse alvo com os mesmos nomes e retornos.
+
+## S9 · Blur nativo atrás das pílulas e da ilha (resolvido)
+
+- **Pergunta**: o `backdrop-filter: blur(16px)` do design pode ser feito pelo compositor, só sob as pílulas e a ilha, sem regra de camada no Hyprland e sem mudar a configuração global de blur?
+- **Experimento** (2026-10-28): Hyprland 0.56.2 aninhado, Quickshell 0.3.2. Na `PanelWindow` `island`, `BackgroundEffect.blurRegion` (anexado, de `Quickshell.Wayland`, protocolo `ext-background-effect-v1`) com um `Region` por superfície: `Region { item: leftPill; radius: 13 }`, o mesmo para a pílula direita e, na ilha, o raio animado da `SoftSurface`. Pílulas e ilha com `bg` 82% sobre um fundo de listras e texto.
+- **Resultado**: funciona.
+  - O blur fica só dentro de cada `Region` e respeita o raio: pílulas, ilha compacta e ilha aberta (`quick`, `wifi`).
+  - A região acompanha a ilha durante a animação de tamanho e de raio, sem atraso visível.
+  - A sombra da ilha fica fora da região e não é borrada. Uma regra de camada no namespace `island` borraria a camada de tela cheia inteira onde o alfa passasse do `ignore_alpha`, sombra incluída.
+  - Sobrevive ao hot-reload da barra e vale em cada monitor (testado com uma segunda saída criada com o shell rodando).
+  - Nenhum aviso no log.
+- **Restrições encontradas**:
+  - A força do blur é a do `decoration:blur:size` global do Hyprland, e o cliente não controla. Com `size = 3`, o blur fica visivelmente mais fraco. A Island não muda esse valor: mudar afetaria todas as janelas.
+  - Com `decoration:blur:enabled = false`, o compositor não borra nada e o fundo 82% fica legível através da pílula. A Island só usa o fundo translúcido quando o blur do sistema está ligado (`hyprctl getoption decoration:blur:enabled -j`, lido de novo no `configreloaded`). Senão, o fundo é opaco.
+  - O banner de notificação é outra superfície da mesma camada e precisa do seu próprio `Region` quando visível.
