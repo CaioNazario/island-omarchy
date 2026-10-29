@@ -167,6 +167,15 @@ RowLayout {
         on: page.look.blur
         onToggled: on => page.set("blur", on)
       }
+
+      SliderRow {
+        Layout.fillWidth: true
+        visible: page.look.background
+        label: "Grão"
+        hint: "Granulado de filme sobre o fundo, sólido, translúcido ou com blur."
+        value: page.look.grain
+        onMoved: value => page.set("grain", value)
+      }
     }
   }
 }

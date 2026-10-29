@@ -43,6 +43,8 @@ export interface SurfaceStyle {
   shadow: number;
   shadowExpanded: number;
   blur: boolean;
+  /** Grão de filme sobre o fundo, 0 a 1 (`grain.frag`). */
+  grain: number;
 }
 
 // `bg` 82% das pílulas no design, pensado para ficar sobre o blur.
@@ -153,5 +155,6 @@ export function surfaceStyle(input: SurfaceInput): SurfaceStyle {
     shadow,
     shadowExpanded: round2(Math.min(1, shadow * EXPANDED_SHADOW)),
     blur,
+    grain: look.background ? look.grain : 0,
   };
 }

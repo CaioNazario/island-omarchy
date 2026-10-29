@@ -57,6 +57,16 @@ Item {
       }
     }
 
+    Loader {
+      anchors.fill: parent
+      active: soft.style.grain > 0
+
+      sourceComponent: SurfaceGrain {
+        strength: soft.style.grain
+        cornerRadius: soft.radius
+      }
+    }
+
     SurfaceHalo {
       anchors.fill: parent
       visible: soft.style.finish
