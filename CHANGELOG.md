@@ -7,6 +7,7 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 ### Adicionado
 
 - Fundo das pílulas e da ilha configurável na chave `appearance` do `settings.json`: cor do tema, nenhuma ou uma das cores sólidas, e opacidade.
+- Aba Aparência no editor de ambientes, com a seção Fundo. O "Concluir" vai para o cabeçalho, ao lado das abas.
 
 ### Mudado
 

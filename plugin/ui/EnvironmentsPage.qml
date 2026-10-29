@@ -6,7 +6,8 @@ import "../core/environments.mjs" as EnvironmentsCore
 import "../core/themes.mjs" as ThemeCore
 
 // Aba Ambientes do editor (specs/17-editor-ambientes.md): linhas com gap
-// 14px: ambientes · ambiente ativo · seleção · catálogo · rodapé.
+// 14px: ambientes · ambiente ativo · seleção · catálogo · rodapé. O
+// "Concluir" fica no cabeçalho do `EditorPanel`.
 ColumnLayout {
   id: page
 
@@ -21,12 +22,6 @@ ColumnLayout {
   RowLayout {
     Layout.fillWidth: true
     spacing: 6
-
-    IslandText {
-      Layout.rightMargin: 8
-      text: "Ambientes"
-      px: 14
-    }
 
     Repeater {
       model: page.bar.environments
@@ -102,17 +97,6 @@ ColumnLayout {
         cursorShape: Qt.PointingHandCursor
         onClicked: page.bar.editorAddEnvironment()
       }
-    }
-
-    Item {
-      Layout.fillWidth: true
-    }
-
-    TextButton {
-      implicitHeight: 30
-      label: "Concluir"
-      primary: true
-      onClicked: page.bar.closeEditor()
     }
   }
 
