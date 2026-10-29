@@ -116,6 +116,19 @@ O `Service.qml` lê `settings.json` `appearance` com `sanitizeAppearance` a cada
 - **Cor** (`ColorSwatch`): círculo de 24px, anel `neutral-700` (hover `neutral-400`); escolhida, anel de 2px `accent`.
 - **Paleta** (`GradientTile`): faixa 64×30, raio 8, com as 3 cores em 0/50/100%, e o nome 11px embaixo. Escolhida: anel de 2px e nome `accent`.
 
+### Seções
+
+Aba Aparência do editor (`AppearancePage`), em duas colunas com gap 14px. Uma linha só aparece quando faz sentido, sem ficar desabilitada.
+
+**Fundo**
+
+| Linha | Controle | Visível se |
+|---|---|---|
+| Fundo — "Desligado, sobram só os ícones e o texto." | switch | sempre |
+| Cor — "A do tema, nenhuma ou uma cor fixa." | Tema · Nenhuma, e as 10 cores sólidas embaixo | fundo ligado |
+| Opacidade do tema — "Opaca, ou 82% com o blur ligado, como no design." | switch | fundo ligado e cor diferente de Nenhuma |
+| Opacidade | slider 0–100% | idem, com "Opacidade do tema" desligada |
+
 ## Critérios de aceite
 
 

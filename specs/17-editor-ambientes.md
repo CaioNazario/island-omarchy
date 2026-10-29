@@ -15,16 +15,18 @@ Painel na camada da barra (a mesma `PanelWindow` de tela cheia onde a ilha cresc
 - Fundo: tela inteira, `bg` com 50% de opacidade, sem o blur de 2px do design.
 - Painel: centralizado, 880px, `top: 48px`, padding 16px, raio 20, `bg` com 94% de opacidade, anel 1px `neutral-800`, sem blur e sem sombra (spec 03, "Animação"). Colunas com gap 14px.
 
+## Abas
+
+Cabeçalho do painel (não existe no design): duas abas, **Ambientes** (as linhas abaixo) e **Aparência** (spec 19), e o **Concluir** à direita (`.btn-primary`, 30px, 12.5px). Aba (`EditorTab`): 30px, padding 0 14px, raio 15, 13px; ativa `accent-900`, anel `accent-700`, texto `accent-100`; inativa `neutral-900`, texto `neutral-300`, hover `neutral-800`. A aba escolhida fica no `Bar.qml` (`editorPage`) e continua a mesma ao reabrir o editor. No design, o título "Ambientes" e o "Concluir" ficavam na linha 1.
+
 ## Linha 1: ambientes
 
-- "Ambientes" 14px/500 (margin-right 8px).
 - Uma aba por ambiente: 30px, padding 0 12px, raio 15, gap 7px, ícone 14px + nome 12.5px.
   - Ativa: `accent-900`, anel `accent-700`, texto `accent-100`.
   - Inativa: `neutral-900`, texto `neutral-300`, hover `neutral-800`.
   - Sem o chip `Alt+N` do design (não há atalho numerado, spec 15).
   - Clique troca de ambiente (com animação e modo `env`, spec 15).
 - **Novo** (só com menos de 6): 30px, anel `neutral-800`, `ph ph-plus` 13px, `neutral-300`. Cria "Ambiente N" com o ícone `ENV_ICONS[n % 9]`, pílulas vazias, e troca para ele.
-- **Concluir** à direita: `.btn-primary`, 30px, 12.5px.
 
 ## Linha 2: ambiente ativo
 

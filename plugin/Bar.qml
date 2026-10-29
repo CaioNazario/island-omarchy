@@ -75,6 +75,8 @@ Item {
   // Editor de ambientes (specs/17): aberto no monitor-alvo, com a pílula onde
   // o catálogo adiciona e o widget selecionado na barra.
   property bool editorOpen: false
+  // Aba do editor: `environments` ou `appearance` (specs 17 e 19).
+  property string editorPage: "environments"
   property string editorTarget: "left"
   property string editorSelected: ""
 

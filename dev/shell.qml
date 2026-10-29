@@ -99,7 +99,8 @@ ShellRoot {
     // Ação do editor sem ponteiro (o aninhado não simula mouse): `place
     // <id> <left|right> [índice]`, `select <id>`, `step <-1|1>`, `move`,
     // `remove`, `add`, `delete`, `rename <nome>`, `icon <glifo>`, `switch <i>`, `theme <nome>`,
-    // `accent <nome>`, `appearance <chave> <valor JSON>`, `preset <id>`.
+    // `accent <nome>`, `appearance <chave> <valor JSON>`, `preset <id>`,
+    // `page <environments|appearance>`.
     function editorDo(action: string, arg: string): string {
       const bar = barLoader.item; // qmllint disable missing-property
       if (!bar) return "no bar";
@@ -118,7 +119,8 @@ ShellRoot {
         theme: () => bar.setTheme(arg),
         accent: () => bar.setAccent(arg),
         appearance: () => bar.service.setAppearanceOption(parts[0], JSON.parse(parts.slice(1).join(" "))),
-        preset: () => bar.service.applyAppearancePreset(arg)
+        preset: () => bar.service.applyAppearancePreset(arg),
+        page: () => bar.editorPage = arg
       }; // qmllint disable missing-property
       if (!actions[action]) return "unknown action " + action;
       actions[action]();
