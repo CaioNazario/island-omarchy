@@ -94,7 +94,7 @@ Um id desconhecido no `settings.json` usa a paleta Tema.
 - **Sombra**: `shadowStrength`; na ilha aberta, 1.2× (até 1). Desligada ou sem fundo, 0.
 - **Gradiente**: o retângulo de fundo fica transparente e o shader pinta a base (a cor do fundo com a opacidade) e as cores por cima. A força é limitada para os textos continuarem legíveis (`cappedStrength`): a maior força, até a pedida, em que cada tinta atinge o contraste mínimo sobre o fundo médio (o tema misturado à média das 3 cores com 75% da força, como o omadock estima).
   - Pílulas e ilha compacta: `text` a 4.5:1. A Aurora vai até 0.63.
-  - Ilha aberta: também os rótulos `neutral-500` a 3:1. Fica em torno de 0.2 em todas as paletas.
+  - Ilha aberta: também os rótulos `neutral-500` (`#9397ab`) a 3:1. Fica entre 0.39 (Aurora) e 0.65 (Brasa).
 
 ## Persistência
 

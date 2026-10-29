@@ -5,7 +5,8 @@ import { cappedStrength, surfaceStyle, type SurfaceInput } from './surfaceStyle.
 
 const AURORA: [string, string, string] = ['#5dffb0', '#7fc4ff', '#c99cff'];
 const TEXT_INK = { color: '#e9e9ed', min: 4.5 };
-const LABEL_INK = { color: '#75798c', min: 3 };
+// `neutral-500` do Nocturne.
+const LABEL_INK = { color: '#9397ab', min: 3 };
 
 function input(look: Partial<Appearance>, extra: Partial<SurfaceInput> = {}): SurfaceInput {
   return {
