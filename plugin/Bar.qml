@@ -160,6 +160,13 @@ Item {
     if (service) service.settings.values.accent = id;
   }
 
+  // Blur do Hyprland ligado (spec 19 "Blur"): sem ele, o fundo fica opaco.
+  Binding {
+    target: Tokens
+    property: "blurAvailable"
+    value: sources.hyprOptions.blurEnabled
+  }
+
   // Aparência das pílulas e da ilha (spec 19), também global.
   Binding {
     target: Tokens

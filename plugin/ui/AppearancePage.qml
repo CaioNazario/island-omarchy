@@ -100,5 +100,19 @@ RowLayout {
     Layout.preferredWidth: 1
     Layout.alignment: Qt.AlignTop
     spacing: 14
+
+    SettingsSection {
+      Layout.fillWidth: true
+      title: "Efeitos"
+
+      SwitchRow {
+        Layout.fillWidth: true
+        visible: page.look.background
+        label: "Blur"
+        hint: Tokens.blurAvailable ? "Vidro fosco atrás da barra. A força é a do blur do Hyprland." : "O blur do Hyprland está desligado (decoration:blur:enabled): não tem efeito."
+        on: page.look.blur
+        onToggled: on => page.set("blur", on)
+      }
+    }
   }
 }

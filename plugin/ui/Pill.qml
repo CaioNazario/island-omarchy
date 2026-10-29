@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Effects
 
 // Pílula lateral (specs/02-barra.md "Layout"): 26px de altura, raio 13, fundo
-// `bg` com o acabamento do design v5. Sem o blur do design por enquanto. Na
+// `bg` com o acabamento do design v5; o blur é opcional (spec 19). Na
 // edição de ambientes (spec 17), a pílula-alvo ganha anel `accent` com brilho
 // de 18px e a outra anel `neutral-700`; clicar no espaço vazio a torna alvo.
 Item {

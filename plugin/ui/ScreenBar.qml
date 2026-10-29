@@ -55,6 +55,31 @@ Scope {
     // Com modo fixo aberto, a camada inteira recebe o clique fora e o consome
     // (specs/02-barra.md "Clique fora"); senão, só pílulas e ilha.
     mask: screenBar.holdsFocus ? null : barRegion
+    // Blur do compositor só sob as superfícies (specs/14-spikes.md, S9;
+    // spec 19 "Blur"): uma regra de camada borraria a camada de tela cheia
+    // inteira, sombras incluídas.
+    BackgroundEffect.blurRegion: Tokens.pillStyle.blur ? blurRegion : null
+
+    Region {
+      id: blurRegion
+
+      Region {
+        item: barRow.leftPill
+        radius: Tokens.pillRadius
+      }
+      Region {
+        item: barRow.island
+        radius: barRow.island.surfaceRadius
+      }
+      Region {
+        item: barRow.rightPill
+        radius: Tokens.pillRadius
+      }
+      Region {
+        item: barRow.banner.visible ? barRow.banner : null
+        radius: 22
+      }
+    }
 
     Region {
       id: barRegion
