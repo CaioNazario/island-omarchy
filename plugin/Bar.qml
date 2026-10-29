@@ -167,6 +167,13 @@ Item {
     value: sources.hyprOptions.blurEnabled
   }
 
+  // Cantos Tema (spec 19 "Cantos"): o raio das janelas do Hyprland.
+  Binding {
+    target: Tokens
+    property: "hyprRounding"
+    value: sources.hyprOptions.rounding
+  }
+
   // Paleta Tema do gradiente (spec 19 "Gradiente"): cores do tema do Omarchy.
   Binding {
     target: Tokens
