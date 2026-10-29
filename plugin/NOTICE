@@ -9,9 +9,9 @@ abaixo:
 
 - plugin/shaders/gradient.frag e grain.frag (e os .qsb compilados deles)
 - as fórmulas e constantes de src/core/color.ts, gradients.ts,
-  appearance.ts, surfaceStyle.ts e hyprOptions.ts: contraste, paletas,
-  paleta do tema, cores sólidas, preset Vidro, borda automática e a leitura
-  do hyprctl getoption
+  appearance.ts, surfaceStyle.ts, hyprOptions.ts e shapes.ts: contraste,
+  paletas, paleta do tema, cores sólidas, preset Vidro, borda automática, a
+  leitura do hyprctl getoption e os cantos Arredondado e Tema
 
 ---
 
