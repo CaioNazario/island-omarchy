@@ -5,12 +5,15 @@ import QtQuick.Effects
 
 // Sombras de fora da `SoftSurface` (specs/01-design-tokens.md "Superfícies"):
 // `SOFT_OUT` em repouso e `--isl-drop` na ilha expandida, com fade entre as
-// duas.
+// duas. O alfa de cada uma vem das opções de aparência (spec 19
+// "Superfície"); no padrão, 0.5 e 0.6, os do design.
 Item {
   id: shadow
 
   property real radius: height / 2
   property bool expanded: false
+  property real strength: 0.5
+  property real expandedStrength: 0.6
 
   component Glow: RectangularShadow {
     // `box-shadow` com espalhamento negativo: a sombra encolhe pelas margens.
@@ -21,6 +24,7 @@ Item {
     anchors.margins: spreadIn
     radius: Math.max(0, shadow.radius - spreadIn)
     opacity: forExpanded === shadow.expanded ? 1 : 0
+    visible: color.a > 0
 
     Behavior on opacity {
       NumberAnimation {
@@ -35,7 +39,7 @@ Item {
     offset: Qt.vector2d(0, 16)
     blur: 36
     spreadIn: 14
-    color: Qt.rgba(0, 0, 0, 0.5)
+    color: Qt.rgba(0, 0, 0, shadow.strength)
   }
 
   // Ilha expandida: `--isl-drop`, também sem o brilho `accent` em volta.
@@ -43,6 +47,6 @@ Item {
     forExpanded: true
     offset: Qt.vector2d(0, 18)
     blur: 44
-    color: Qt.rgba(0, 0, 0, 0.6)
+    color: Qt.rgba(0, 0, 0, shadow.expandedStrength)
   }
 }

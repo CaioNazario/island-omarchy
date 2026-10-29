@@ -12,6 +12,7 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 - Fundo em gradiente, com 9 paletas e a paleta Tema, tirada das cores do tema do Omarchy. A força cede para os textos continuarem legíveis.
 - Grão de filme sobre o fundo (seção Efeitos).
 - Borda configurável: ligada ou não, largura e opacidade (seção Borda).
+- Sombra configurável: ligada ou não, e força (seção Sombra).
 
 ### Mudado
 
