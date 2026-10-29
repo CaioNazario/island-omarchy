@@ -68,7 +68,12 @@ Item {
     onHoveredChanged: root.bar.islandHovered(hovered)
   }
 
+  // Raio animado da superfície: a região de blur da ScreenBar acompanha.
+  readonly property real surfaceRadius: softSurface.radius
+
   SoftSurface {
+    id: softSurface
+
     anchors.fill: parent
     radius: IslandCore.displayRadius(root.size)
     island: true

@@ -87,7 +87,7 @@ Dois dos temas do design (`THEMES` em design/logic.js), escolhidos no editor de 
 
 | Design | QML |
 |---|---|
-| `backdrop-filter: blur(16px)` nas pílulas, `blur(20px)` no cartão | Ainda sem blur. Caminho testado (spec 14, S9): `BackgroundEffect.blurRegion` na camada `island`, um `Region` com `radius` por superfície. A força é o `decoration:blur:size` do Hyprland, e sem `decoration:blur:enabled` o fundo fica opaco |
+| `backdrop-filter: blur(16px)` nas pílulas, `blur(20px)` no cartão | Opcional, desligado por padrão (spec 19 "Blur"): `BackgroundEffect.blurRegion` na camada `island`, um `Region` com `radius` por superfície. A força é o `decoration:blur:size` do Hyprland, e sem `decoration:blur:enabled` o fundo fica opaco |
 | Mola da ilha `cubic-bezier(.3,1.2,.4,1)` .46s | `NumberAnimation` de 460ms com `Easing.BezierSpline` e `bezierCurve: [.3, 1.2, .4, 1, 1, 1]` (`Tokens.springCurve`) |
 | Cartões `cubic-bezier(.3,1.15,.4,1)` .4s | Mesma técnica, `Tokens.cardCurve`, 400ms |
 | Crossfade de conteúdo `.22s ease` com atraso `.08s` | `SequentialAnimation` com `PauseAnimation` de 80ms + `opacity` em 220ms |
