@@ -26,7 +26,12 @@ jobs:
       - uses: actions/checkout@v4
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: npm ci
+      # O qsb confere que os .qsb commitados são o que os .frag compilam
+      # (scripts/shaders-in-sync.sh, specs/14-spikes.md S10).
+      - run: pacman -S --noconfirm --needed qt6-shadertools
       - run: make lint
+        env:
+          REQUIRE_QSB: '1'
       - run: make test
       - run: make build
       # A tag, o manifest e o CHANGELOG.md precisam dizer a mesma versão.
