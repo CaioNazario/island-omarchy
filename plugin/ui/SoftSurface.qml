@@ -17,6 +17,10 @@ Item {
   // Pílula ou ilha: o halo e o brilho têm medidas diferentes (SurfaceHalo,
   // SurfaceGloss).
   property bool island: false
+  // Opções de aparência (specs/19-aparencia.md "Superfície"), já resolvidas
+  // pelo core.
+  readonly property var style: !island ? Tokens.pillStyle : expanded ? Tokens.islandOpenStyle : Tokens.islandStyle
+  readonly property bool opaqueFill: Qt.color(style.fill).a >= 1
 
   SurfaceShadow {
     anchors.fill: parent
@@ -25,26 +29,30 @@ Item {
   }
 
   // `inset 0 1px 0 rgba(255,255,255,.07)`: o fundo deixa 1px do brilho à
-  // mostra no topo, acompanhando o raio.
+  // mostra no topo, acompanhando o raio. Com fundo translúcido o branco
+  // apareceria por trás dele inteiro: o brilho só fica sobre fundo opaco.
   ClippingRectangle {
     anchors.fill: parent
     radius: soft.radius
-    color: Qt.rgba(1, 1, 1, 0.07)
+    color: soft.style.finish && soft.opaqueFill ? Qt.rgba(1, 1, 1, 0.07) : "transparent"
 
     Rectangle {
       anchors.fill: parent
-      anchors.topMargin: 1
+      anchors.topMargin: soft.opaqueFill ? 1 : 0
       radius: soft.radius
-      color: soft.island ? Tokens.islandBg : Tokens.laneBg
+      // Até o shader do gradiente (task R3), a base dele pinta o fundo.
+      color: soft.style.gradient ? soft.style.gradient.base : soft.style.fill
     }
 
     SurfaceHalo {
       anchors.fill: parent
+      visible: soft.style.finish
       island: soft.island
     }
 
     SurfaceGloss {
       anchors.fill: parent
+      visible: soft.style.finish
       island: soft.island
     }
   }

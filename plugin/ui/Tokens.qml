@@ -3,6 +3,8 @@ pragma Singleton
 import QtQuick
 import "../core/themes.mjs" as ThemeCore
 import "../core/appearance.mjs" as AppearanceCore
+import "../core/gradients.mjs" as GradientCore
+import "../core/surfaceStyle.mjs" as SurfaceCore
 
 // Tokens Nocturne (design/tokens.css, bloco `:root`) e as cores que o design
 // calcula em oklch()/color-mix(), já convertidas. specs/01-design-tokens.md
@@ -18,6 +20,26 @@ QtObject {
   // Opções de aparência (specs/19-aparencia.md), ligadas pelo Bar.qml ao
   // `settings.json`. O padrão é o visual do design.
   property var appearance: AppearanceCore.DEFAULT_APPEARANCE
+  // A `Binding` do Bar.qml pode entregar `null` enquanto o serviço sobe.
+  readonly property var look: appearance || AppearanceCore.DEFAULT_APPEARANCE
+  // Cores nomeadas do `colors.toml` do tema do Omarchy (spec 19 "Gradiente");
+  // vazio sem o arquivo.
+  property var omarchyColors: ({})
+  // `decoration:blur:enabled` do Hyprland (spec 14, S9).
+  property bool blurAvailable: false
+  // Sem paleta do Omarchy, os tons do realce: `accent-300/500/700`.
+  readonly property var gradientColors: GradientCore.gradientColors(look.gradient, omarchyColors, [palette.accents[2], palette.accents[4], palette.accents[6]])
+  // Estilo de cada superfície (spec 19 "Superfície"). A ilha aberta também
+  // protege os rótulos `neutral-500` do gradiente.
+  readonly property var pillStyle: surfaceStyleFor(palette.lane, false)
+  readonly property var islandStyle: surfaceStyleFor(palette.island, false)
+  readonly property var islandOpenStyle: surfaceStyleFor(palette.island, true)
+
+  function surfaceStyleFor(base, open) {
+    const inks = [{ color: palette.text, min: 4.5 }];
+    if (open) inks.push({ color: palette.neutrals[4], min: 3 });
+    return SurfaceCore.surfaceStyle({ look: look, base: base, gradientColors: gradientColors, inks: inks, blurAvailable: blurAvailable });
+  }
 
   readonly property color bg: palette.bg
   readonly property color surface: palette.surface

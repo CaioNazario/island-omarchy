@@ -96,6 +96,10 @@ Um id desconhecido no `settings.json` usa a paleta Tema.
   - Pílulas e ilha compacta: `text` a 4.5:1. A Aurora vai até 0.63.
   - Ilha aberta: também os rótulos `neutral-500` (`#9397ab`) a 3:1. Fica entre 0.39 (Aurora) e 0.65 (Brasa).
 
+### Render
+
+O `Tokens.qml` calcula `pillStyle`, `islandStyle` e `islandOpenStyle` com `surfaceStyle`. A `SoftSurface` escolhe o seu (a ilha troca ao abrir) e pinta o fundo com `fill`, e o brilho e o halo só com `finish`. O 1px de brilho no topo (`inset 0 1px 0`) só aparece sobre fundo opaco: atrás de um fundo translúcido, o branco clarearia a superfície inteira.
+
 ## Persistência
 
 O `Service.qml` lê `settings.json` `appearance` com `sanitizeAppearance` a cada mudança do arquivo e entrega o resultado à barra, que o liga ao `Tokens.appearance`. Uma troca pela UI (`setAppearanceOption`, `withAppearanceOption` no core) grava o objeto inteiro já saneado; um valor inválido não muda nada. Aplicar um preset (`applyAppearancePreset`) grava o preset inteiro. O `make smoke` semeia uma aparência com uma opção inválida e confere o que a barra recebe.
