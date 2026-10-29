@@ -55,6 +55,9 @@ Scope {
       property string theme: "Nocturne"
       // Cor de realce (spec 01 "Realce"; `ACCENT_IDS` em themes.ts).
       property string accent: "Roxo"
+      // Aparência das pílulas e da ilha (spec 19; `sanitizeAppearance` em
+      // appearance.ts). Null = o visual do design.
+      property var appearance: null
       property string noteText: ""
       property string countdownName: ""
       // `AAAA-MM-DD` ou vazio.

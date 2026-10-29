@@ -106,10 +106,11 @@ log_errors() {
 # Regressão: o JsonAdapter entrega as listas do arquivo como objetos em que
 # `Array.isArray` dá `false`, a leitura descartava os ambientes guardados e a
 # Island subia com os iniciais depois de cada reinício (AGENTS.md "Hurdles").
-# Só o motor real pega isso: o Vitest não tem o JsonAdapter.
+# Só o motor real pega isso: o Vitest não tem o JsonAdapter. A aparência
+# (spec 19) vai junto: um objeto aninhado do arquivo, com uma opção inválida.
 seed_settings() {
   mkdir -p "$DIST/xdg/config/island"
-  printf '{"environments": [["Semente","coffee",["pomodoro","note"],["hw"]]], "environmentIndex": 0}\n' \
+  printf '{"environments": [["Semente","coffee",["pomodoro","note"],["hw"]]], "environmentIndex": 0, "appearance": {"shape": "square", "fill": "xadrez"}}\n' \
     >"$DIST/xdg/config/island/settings.json"
 }
 
@@ -119,6 +120,7 @@ smoke() {
   start
   wait_for '[[ "$(harness_status)" == *"\"bar\":true"* ]]' "the bar to load"
   wait_for '[[ "$(harness_ipc environments)" == *"\"name\":\"Semente\""*"\"left\":[\"pomodoro\",\"note\"]"* ]]' "the environments saved in settings.json to load"
+  wait_for '[[ "$(harness_ipc appearance)" == *"\"fill\":\"solid\""*"\"shape\":\"square\""* ]]' "the appearance saved in settings.json to load"
   for i in $(seq 1 "$SMOKE_RELOADS"); do
     harness_ipc reload >/dev/null
     wait_for '[[ "$(harness_status)" == *"\"bar\":true"*"\"reloads\":$i"* ]]' "reload $i"

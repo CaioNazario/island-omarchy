@@ -6,6 +6,7 @@ import {
   appearancePreset,
   matchingPreset,
   sanitizeAppearance,
+  withAppearanceOption,
   type Appearance,
 } from './appearance.js';
 
@@ -123,5 +124,22 @@ describe('presets', () => {
     expect(matchingPreset(DEFAULT_APPEARANCE)).toBe('default');
     expect(matchingPreset(appearancePreset('glass'))).toBe('glass');
     expect(matchingPreset({ ...DEFAULT_APPEARANCE, blur: true })).toBe('');
+  });
+});
+
+describe('withAppearanceOption', () => {
+  it('troca uma opção e mantém as outras', () => {
+    const look = withAppearanceOption(DEFAULT_APPEARANCE, 'blur', true);
+    expect(look).toEqual({ ...DEFAULT_APPEARANCE, blur: true });
+    expect(DEFAULT_APPEARANCE.blur).toBe(false);
+  });
+
+  it('valor inválido não muda nada; número sai limitado', () => {
+    expect(withAppearanceOption(DEFAULT_APPEARANCE, 'fill', 'xadrez')).toEqual(DEFAULT_APPEARANCE);
+    expect(withAppearanceOption(DEFAULT_APPEARANCE, 'borderWidth', 10).borderWidth).toBe(6);
+  });
+
+  it('opção desconhecida é ignorada', () => {
+    expect(withAppearanceOption(DEFAULT_APPEARANCE, 'neon', true)).toEqual(DEFAULT_APPEARANCE);
   });
 });

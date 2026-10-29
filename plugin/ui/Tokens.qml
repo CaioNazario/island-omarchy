@@ -2,6 +2,7 @@ pragma Singleton
 
 import QtQuick
 import "../core/themes.mjs" as ThemeCore
+import "../core/appearance.mjs" as AppearanceCore
 
 // Tokens Nocturne (design/tokens.css, bloco `:root`) e as cores que o design
 // calcula em oklch()/color-mix(), já convertidas. specs/01-design-tokens.md
@@ -14,6 +15,9 @@ QtObject {
   // Cor de realce (spec 01 "Realce"): `accent` já é a cor, daí o nome.
   property string accentName: "Roxo"
   readonly property var palette: ThemeCore.themeColors(theme, accentName)
+  // Opções de aparência (specs/19-aparencia.md), ligadas pelo Bar.qml ao
+  // `settings.json`. O padrão é o visual do design.
+  property var appearance: AppearanceCore.DEFAULT_APPEARANCE
 
   readonly property color bg: palette.bg
   readonly property color surface: palette.surface

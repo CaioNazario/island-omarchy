@@ -99,7 +99,7 @@ ShellRoot {
     // Ação do editor sem ponteiro (o aninhado não simula mouse): `place
     // <id> <left|right> [índice]`, `select <id>`, `step <-1|1>`, `move`,
     // `remove`, `add`, `delete`, `rename <nome>`, `icon <glifo>`, `switch <i>`, `theme <nome>`,
-    // `accent <nome>`.
+    // `accent <nome>`, `appearance <chave> <valor JSON>`, `preset <id>`.
     function editorDo(action: string, arg: string): string {
       const bar = barLoader.item; // qmllint disable missing-property
       if (!bar) return "no bar";
@@ -116,7 +116,9 @@ ShellRoot {
         icon: () => bar.editorSetIcon(arg),
         "switch": () => bar.editorSwitch(Number(arg)),
         theme: () => bar.setTheme(arg),
-        accent: () => bar.setAccent(arg)
+        accent: () => bar.setAccent(arg),
+        appearance: () => bar.service.setAppearanceOption(parts[0], JSON.parse(parts.slice(1).join(" "))),
+        preset: () => bar.service.applyAppearancePreset(arg)
       }; // qmllint disable missing-property
       if (!actions[action]) return "unknown action " + action;
       actions[action]();
@@ -129,6 +131,13 @@ ShellRoot {
       const bar = barLoader.item; // qmllint disable missing-property
       if (!bar) return "no bar";
       return JSON.stringify(bar.environments); // qmllint disable missing-property
+    }
+
+    // Aparência como o serviço a entrega à barra (já saneada do settings.json).
+    function appearance(): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar || !bar.service) return "no bar"; // qmllint disable missing-property
+      return JSON.stringify(bar.service.appearance); // qmllint disable missing-property
     }
 
     // Clique na ilha do monitor capturado (regra 5 da spec 03).

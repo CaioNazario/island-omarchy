@@ -82,6 +82,12 @@ Paleta **Tema**:
 
 Um id desconhecido no `settings.json` usa a paleta Tema.
 
+## Persistência
+
+O `Service.qml` lê `settings.json` `appearance` com `sanitizeAppearance` a cada mudança do arquivo e entrega o resultado à barra, que o liga ao `Tokens.appearance`. Uma troca pela UI (`setAppearanceOption`, `withAppearanceOption` no core) grava o objeto inteiro já saneado; um valor inválido não muda nada. Aplicar um preset (`applyAppearancePreset`) grava o preset inteiro. O `make smoke` semeia uma aparência com uma opção inválida e confere o que a barra recebe.
+
 ## Critérios de aceite
 
+
 - [ ] Com o `settings.json` sem a chave de aparência, a barra fica igual à de antes.
+- [x] Editar `appearance` no arquivo vale na hora, e um valor inválido volta ao padrão.
