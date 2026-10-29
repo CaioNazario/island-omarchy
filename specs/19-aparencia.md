@@ -18,6 +18,43 @@ Decisões (2026-10-28):
 - **Tinta sobre um fundo** (`blackOrWhiteOn`): `#141414` ou `#f2f2f2`, o que contrastar mais.
 - **Matiz** (`hslOf`): em voltas de 0 a 1, e -1 para cinza, como o `hslHue` do Qt.
 
+## Opções
+
+`src/core/appearance.ts`. Ficam em `settings.json` `appearance` (spec 13). `sanitizeAppearance` devolve a chave ausente, de tipo errado ou fora da lista ao padrão, limita os números à faixa e arredonda ao passo do controle.
+
+| Chave | Tipo e faixa | Padrão |
+|---|---|---|
+| `background` | bool | `true` |
+| `fill` | `solid` \| `gradient` | `solid` |
+| `color` | `theme` \| `none` \| `#rrggbb` | `theme` |
+| `gradient` | `theme` ou id de paleta (abaixo) | `theme` |
+| `gradientStrength` | 0–1, passo 0.01 | 0.6 |
+| `opacityFromTheme` | bool | `true` |
+| `opacity` | 0–1, passo 0.01 | 1 |
+| `border` | bool | `true` |
+| `borderWidth` | 1–6 px, passo 0.5 | 1 |
+| `borderOpacityAuto` | bool | `true` |
+| `borderOpacity` | 0–1, passo 0.01 | 0.05 |
+| `shadow` | bool | `true` |
+| `shadowStrength` | 0–1, passo 0.01 | 0.5 |
+| `shape` | `default` \| `rounded` \| `square` \| `theme` | `default` |
+| `cornerRadius` | 2–24 px, passo 1 | 12 |
+| `grain` | 0–1, passo 0.01 | 0 |
+| `blur` | bool | `false` |
+
+- O padrão reproduz o design: o anel de 1px a 5% (`borderWidth` 1, `borderOpacity` 0.05), a sombra de 0.5 das pílulas (a ilha aberta usa 1.2×, os 0.6 do design) e os raios de `SIZES` (`shape` `default`).
+- `color` com alfa (`#AARRGGBB`) volta a `theme`: a opacidade é uma opção à parte.
+- Cores sólidas oferecidas, as do omadock, todas escuras: `#000000` `#181825` `#1e1e2e` `#0f172a` `#111827` `#062e24` `#1c1917` `#2c0b16` `#1e102d` `#334155`.
+
+### Presets
+
+| Preset | O que muda do padrão |
+|---|---|
+| Padrão | nada |
+| Vidro | o Glass do omadock: gradiente Aurora a 0.55 e grão 0.18 |
+
+`matchingPreset` diz qual preset a aparência atual é, ou vazio quando alguma opção foi ajustada à mão.
+
 ## Gradiente
 
 `src/core/gradients.ts`. Paletas de 3 cores:
