@@ -142,6 +142,13 @@ ShellRoot {
       return JSON.stringify(bar.service.appearance); // qmllint disable missing-property
     }
 
+    // Cores do tema do Omarchy como a barra as lê (spec 19 "Gradiente").
+    function themeColors(): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      return JSON.stringify(bar.system.omarchyTheme.named); // qmllint disable missing-property
+    }
+
     // Clique na ilha do monitor capturado (regra 5 da spec 03).
     function click(): string {
       const bar = barLoader.item; // qmllint disable missing-property

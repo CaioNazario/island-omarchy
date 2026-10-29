@@ -167,6 +167,13 @@ Item {
     value: sources.hyprOptions.blurEnabled
   }
 
+  // Paleta Tema do gradiente (spec 19 "Gradiente"): cores do tema do Omarchy.
+  Binding {
+    target: Tokens
+    property: "omarchyColors"
+    value: sources.omarchyTheme.named
+  }
+
   // Aparência das pílulas e da ilha (spec 19), também global.
   Binding {
     target: Tokens
