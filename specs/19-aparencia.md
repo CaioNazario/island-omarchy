@@ -150,6 +150,17 @@ Aba Aparência do editor (`AppearancePage`), em duas colunas com gap 14px. Uma l
 | Opacidade do tema — "Opaca, ou 82% com o blur ligado, como no design." | switch | fundo ligado e cor diferente de Nenhuma |
 | Opacidade | slider 0–100% | idem, com "Opacidade do tema" desligada |
 
+**Borda**
+
+| Linha | Controle | Visível se |
+|---|---|---|
+| Borda — "Contorno fino em volta das pílulas e da ilha." | switch | sempre |
+| Largura | slider 1–6 px | borda ligada |
+| Opacidade automática — "Discreta como no design, e mais forte quando o fundo quase some." | switch | borda ligada |
+| Opacidade da borda | slider 0–100% | borda ligada, automática desligada |
+
+A borda fica por dentro da superfície (um `Rectangle` com `border` sobre o fundo), então não muda o tamanho de nada.
+
 **Efeitos**
 
 | Linha | Controle | Visível se |
