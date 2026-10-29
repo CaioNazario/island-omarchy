@@ -80,7 +80,7 @@ Regra pura em `src/core/stackScroll.ts` (`StackScroll`); a ligação é `Bar.whe
 
 ## Banner
 
-- 380px de largura, centralizado, `top` = altura atual da ilha + 8px (acompanha a ilha com a mesma mola). 58px de altura, raio 22, fundo `bg`, anel `neutral-800`, sem a sombra escura e o brilho do design (spec 03, "Animação").
+- 380px de largura, centralizado, `top` = altura atual da ilha + 8px (acompanha a ilha com a mesma mola). 58px de altura, raio 22, fundo `bg`, anel `neutral-800`, sem a sombra escura e o brilho do design (spec 03, "Animação"). Fundo, gradiente, grão, cantos e borda seguem a aparência da ilha (spec 19 "Banner").
 - Mesmo conteúdo do `notif` (bloco 34×34, ícone 19px, × 24×24).
 - Entra de `translateY(-16px)`, fica 2600ms. Clique abre `stack`; × dispensa só o banner.
 

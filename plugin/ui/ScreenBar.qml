@@ -77,7 +77,7 @@ Scope {
       }
       Region {
         item: barRow.banner.visible ? barRow.banner : null
-        radius: 22
+        radius: barRow.banner.surfaceRadius
       }
     }
 

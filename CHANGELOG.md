@@ -14,6 +14,7 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 - Borda configurável: ligada ou não, largura e opacidade (seção Borda).
 - Sombra configurável: ligada ou não, e força (seção Sombra).
 - Cantos das pílulas e da ilha, compacta e aberta: os do design, arredondados com raio escolhido, quadrados ou os das janelas do Hyprland (seção Forma).
+- O banner de notificação segue a aparência da ilha.
 
 ### Mudado
 

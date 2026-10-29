@@ -5,13 +5,18 @@ import QtQuick
 // Banner (specs/04-notificacoes.md "Banner"): 380×58, raio 22, `bg` com anel
 // `neutral-800`, 8px abaixo da ilha (acompanha a mola dela). Entra de
 // `translateY(-16px)`; fica 2600ms (o timer é do Bar.qml). Clique abre
-// `stack`; × dispensa só o banner.
+// `stack`; × dispensa só o banner. Fundo, gradiente, grão, cantos e borda
+// seguem a aparência da ilha (specs/19-aparencia.md "Banner"); no padrão,
+// o design.
 Item {
   id: banner
 
   required property var bar
   required property var entry
   readonly property bool shown: entry !== null
+
+  readonly property var style: Tokens.islandStyle
+  readonly property real surfaceRadius: Tokens.radiusFor(22, height)
 
   signal opened
 
@@ -43,10 +48,39 @@ Item {
 
   Rectangle {
     anchors.fill: parent
-    radius: 22
-    color: Tokens.islandBg
-    border.width: 1
-    border.color: Tokens.neutral800
+    radius: banner.surfaceRadius
+    color: banner.style.fill
+
+    Loader {
+      anchors.fill: parent
+      active: banner.style.gradient !== null
+
+      sourceComponent: SurfaceGradient {
+        gradient: banner.style.gradient
+        cornerRadius: banner.surfaceRadius
+      }
+    }
+
+    Loader {
+      anchors.fill: parent
+      active: banner.style.grain > 0
+
+      sourceComponent: SurfaceGrain {
+        strength: banner.style.grain
+        cornerRadius: banner.surfaceRadius
+      }
+    }
+
+    // O anel do banner no design é `neutral-800`; com a opacidade da borda
+    // manual, vale a cor das outras superfícies.
+    Rectangle {
+      anchors.fill: parent
+      visible: banner.style.borderWidth > 0
+      radius: banner.surfaceRadius
+      color: "transparent"
+      border.width: banner.style.borderWidth
+      border.color: Tokens.look.borderOpacityAuto ? Tokens.neutral800 : banner.style.borderColor
+    }
 
     MouseArea {
       anchors.fill: parent
