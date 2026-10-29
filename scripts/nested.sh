@@ -134,6 +134,12 @@ smoke() {
   wait_for '[[ "$(harness_ipc pluginWidget status)" == *"\"opened\":true,\"popupY\":33,\"active\":true"* ]]' "the plugin popout below the bar"
   harness_ipc open quick >/dev/null
   wait_for '[[ "$(harness_ipc pluginWidget status)" == *"\"opened\":false"*"\"active\":false"* ]]' "a fixed island mode to close the plugin popout"
+  # Regressão: o componente do catálogo sumia depois que as instâncias dele
+  # morriam numa troca de ambiente, e o widget não voltava.
+  harness_ipc editorDo add "" >/dev/null
+  wait_for '[[ "$(harness_ipc pluginWidget status)" == "{\"count\":0}" ]]' "an environment without the plugin widget"
+  harness_ipc editorDo switch 0 >/dev/null
+  wait_for '[[ "$(harness_ipc pluginWidget status)" == *"\"opened\":false"* ]]' "the plugin widget back after switching environments"
   for i in $(seq 1 "$SMOKE_RELOADS"); do
     harness_ipc reload >/dev/null
     wait_for '[[ "$(harness_status)" == *"\"bar\":true"*"\"reloads\":$i"* ]]' "reload $i"
