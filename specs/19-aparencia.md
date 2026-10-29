@@ -82,6 +82,8 @@ Paleta **Tema**:
 
 Um id desconhecido no `settings.json` usa a paleta Tema.
 
+Leitura (`OmarchyThemeColors.qml`): `~/.local/state/omarchy/current/theme/colors.toml`, no caminho fixo que o `omarchy-theme-set` usa. Na troca de tema, o `omarchy-theme-set` apaga o diretório do tema e põe o novo no lugar (`rm -rf` + `mv`), o que mataria um watch no `colors.toml`. Por isso a Island vigia o `current/theme.name`, regravado no mesmo arquivo depois do `mv`, e relê as cores quando ele muda.
+
 ## Superfície
 
 `src/core/surfaceStyle.ts` calcula o estilo de cada superfície (pílula ou ilha) a partir das opções, do fundo do tema (`lane` ou `island`), da paleta e do blur do sistema. O QML só pinta.
