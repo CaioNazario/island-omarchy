@@ -178,6 +178,48 @@ RowLayout {
 
     SettingsSection {
       Layout.fillWidth: true
+      title: "Forma"
+
+      SettingRow {
+        Layout.fillWidth: true
+        label: "Cantos"
+        hint: "Padrão são os do design; Tema segue o arredondamento das janelas do Hyprland."
+      }
+
+      // Quatro opções não cabem ao lado do rótulo na meia coluna.
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 6
+
+        Repeater {
+          model: [{ id: "default", label: "Padrão" }, { id: "rounded", label: "Arredondado" }, { id: "square", label: "Quadrado" }, { id: "theme", label: "Tema" }]
+
+          ChoiceButton {
+            required property var modelData
+
+            Layout.fillWidth: true
+            label: modelData.label
+            active: page.look.shape === modelData.id
+            onClicked: page.set("shape", modelData.id)
+          }
+        }
+      }
+
+      SliderRow {
+        Layout.fillWidth: true
+        visible: page.look.shape === "rounded"
+        label: "Raio"
+        hint: "Nas pílulas, até 9px: mais que isso já é uma pílula."
+        from: 2
+        to: 24
+        unit: "px"
+        value: page.look.cornerRadius
+        onMoved: value => page.set("cornerRadius", value)
+      }
+    }
+
+    SettingsSection {
+      Layout.fillWidth: true
       title: "Borda"
 
       SwitchRow {

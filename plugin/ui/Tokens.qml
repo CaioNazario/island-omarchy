@@ -5,6 +5,7 @@ import "../core/themes.mjs" as ThemeCore
 import "../core/appearance.mjs" as AppearanceCore
 import "../core/gradients.mjs" as GradientCore
 import "../core/surfaceStyle.mjs" as SurfaceCore
+import "../core/shapes.mjs" as ShapeCore
 
 // Tokens Nocturne (design/tokens.css, bloco `:root`) e as cores que o design
 // calcula em oklch()/color-mix(), já convertidas. specs/01-design-tokens.md
@@ -36,6 +37,12 @@ QtObject {
   // dos painéis) continuarem legíveis.
   readonly property var pillStyle: surfaceStyleFor(palette.lane)
   readonly property var islandStyle: surfaceStyleFor(palette.island)
+
+  // Raio de uma superfície com a forma escolhida (spec 19 "Cantos"): `design`
+  // é o raio do design dela, `height` a altura.
+  function radiusFor(design, height) {
+    return ShapeCore.shapedRadius(look.shape, { design: design, height: height }, look.cornerRadius, hyprRounding);
+  }
 
   function surfaceStyleFor(base) {
     const inks = [{ color: palette.text, min: 4.5 }, { color: palette.neutrals[4], min: 3 }];
