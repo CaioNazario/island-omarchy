@@ -13,6 +13,9 @@ Item {
   required property string glyph
   property color color: Tokens.text
   property int size: 16
+  // Pixels do monitor por pixel do design: DPR vezes o zoom da barra
+  // (spec 02 "Tamanho"), que chega como `scale` de um pai.
+  readonly property real density: Screen.devicePixelRatio * Tokens.zoomFor(Screen.width, Screen.height)
 
   implicitWidth: size
   implicitHeight: size
@@ -24,10 +27,12 @@ Item {
     source: Qt.resolvedUrl("../icons/" + icon.glyph + "-symbolic.svg")
     // Rasteriza na densidade do monitor: com escala fracionária, um SVG
     // rasterizado em 1x fica borrado.
-    sourceSize: Qt.size(Math.ceil(icon.size * Screen.devicePixelRatio), Math.ceil(icon.size * Screen.devicePixelRatio))
+    sourceSize: Qt.size(Math.ceil(icon.size * icon.density), Math.ceil(icon.size * icon.density))
     smooth: true
     visible: false
     layer.enabled: true
+    // A camada sai no tamanho do item vezes o DPR, sem o zoom do pai.
+    layer.textureSize: sourceSize
   }
 
   MultiEffect {

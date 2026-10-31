@@ -27,6 +27,9 @@ Item {
   readonly property Item widget: loader.item as Item
   // Janela da pílula (a camada de tela cheia da ScreenBar).
   readonly property QsWindow overlay: place.QsWindow.window as QsWindow
+  // Zoom do monitor (spec 02 "Tamanho"): a faixa é outra janela, fora do
+  // `scale` da barra, então o widget recebe o mesmo zoom aqui.
+  readonly property real zoom: overlay && overlay.screen ? Tokens.zoomFor(overlay.screen.width, overlay.screen.height) : 1
   // O item já some quando a destruição chega: guarda o que foi registrado.
   property Item registered: null
   // `transform` e `shift` só entram como dependências do binding.
@@ -58,7 +61,7 @@ Item {
       left: true
       right: true
     }
-    implicitHeight: Tokens.barReserved
+    implicitHeight: Math.ceil(Tokens.barReserved * place.zoom)
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
     WlrLayershell.namespace: "island-plugin-widget"
@@ -79,10 +82,12 @@ Item {
       id: frame
 
       x: place.origin.x
-      y: place.origin.y + (place.height - height) / 2
+      y: place.origin.y + (place.height - height) * place.zoom / 2
       width: place.widget ? place.widget.implicitWidth : 0
       height: place.widget ? place.widget.implicitHeight : 0
       opacity: place.fade
+      scale: place.zoom
+      transformOrigin: Item.TopLeft
 
       Loader {
         id: loader

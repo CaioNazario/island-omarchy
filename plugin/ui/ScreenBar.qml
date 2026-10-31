@@ -5,7 +5,7 @@ import Quickshell
 import Quickshell.Wayland
 
 // Barra de um monitor (specs/02-barra.md). Duas superfícies: uma faixa
-// invisível que reserva os 28px do topo, e uma camada transparente de tela
+// invisível que reserva os 28px do topo (vezes o zoom), e uma camada transparente de tela
 // cheia onde a ilha cresce para baixo. Uma superfície só não serve: ancorada
 // nas quatro bordas, o layer-shell ignora a zona exclusiva.
 Scope {
@@ -21,6 +21,10 @@ Scope {
   readonly property string mode: !isTarget ? "compact" : bar.cardOpen ? "card" : bar.mode
   readonly property bool holdsFocus: isTarget && (bar.fixed || bar.editorOpen)
   readonly property bool editing: isTarget && bar.editorOpen
+  // Zoom da UI neste monitor (specs/02-barra.md "Tamanho"): tudo o que a
+  // barra desenha fica dentro de `zoomed`, medido no tamanho do design.
+  readonly property real zoom: screen ? Tokens.zoomFor(screen.width, screen.height) : 1
+  readonly property int reserved: Math.ceil(Tokens.barReserved * zoom)
 
   PanelWindow {
     screen: screenBar.screen
@@ -29,8 +33,8 @@ Scope {
       left: true
       right: true
     }
-    implicitHeight: Tokens.barReserved
-    exclusiveZone: Tokens.barReserved
+    implicitHeight: screenBar.reserved
+    exclusiveZone: screenBar.reserved
     color: "transparent"
     WlrLayershell.namespace: "island-strut"
     WlrLayershell.layer: WlrLayer.Bottom
@@ -60,24 +64,26 @@ Scope {
     // inteira, sombras incluídas.
     BackgroundEffect.blurRegion: Tokens.pillStyle.blur ? blurRegion : null
 
+    // As regiões com `item` saem em coordenadas da cena, com o zoom; os raios
+    // não (quickshell src/core/region.cpp `PendingRegion::build`, 0.3.2).
     Region {
       id: blurRegion
 
       Region {
         item: barRow.leftPill
-        radius: barRow.leftPill.surfaceRadius
+        radius: barRow.leftPill.surfaceRadius * screenBar.zoom
       }
       Region {
         item: barRow.island
-        radius: barRow.island.surfaceRadius
+        radius: barRow.island.surfaceRadius * screenBar.zoom
       }
       Region {
         item: barRow.rightPill
-        radius: barRow.rightPill.surfaceRadius
+        radius: barRow.rightPill.surfaceRadius * screenBar.zoom
       }
       Region {
         item: barRow.banner.visible ? barRow.banner : null
-        radius: barRow.banner.surfaceRadius
+        radius: barRow.banner.surfaceRadius * screenBar.zoom
       }
     }
 
@@ -117,34 +123,43 @@ Scope {
       }
     }
 
-    BarRow {
-      id: barRow
+    Item {
+      id: zoomed
 
-      anchors.top: parent.top
-      anchors.left: parent.left
-      anchors.right: parent.right
-      anchors.topMargin: Tokens.barTopMargin
-      anchors.leftMargin: Tokens.sideMargin
-      anchors.rightMargin: Tokens.sideMargin
-      bar: screenBar.bar
-      mode: screenBar.mode
-      screenName: screenBar.screenName
-      dragProxy: editorDragProxy
-    }
+      width: parent.width / scale
+      height: parent.height / scale
+      scale: screenBar.zoom
+      transformOrigin: Item.TopLeft
 
-    EditorPanel {
-      anchors.horizontalCenter: parent.horizontalCenter
-      y: 48
-      width: 880
-      visible: screenBar.editing
-      bar: screenBar.bar
-      dragProxy: editorDragProxy
-    }
+      BarRow {
+        id: barRow
 
-    EditorDragProxy {
-      id: editorDragProxy
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.topMargin: Tokens.barTopMargin
+        anchors.leftMargin: Tokens.sideMargin
+        anchors.rightMargin: Tokens.sideMargin
+        bar: screenBar.bar
+        mode: screenBar.mode
+        screenName: screenBar.screenName
+        dragProxy: editorDragProxy
+      }
 
-      bar: screenBar.bar
+      EditorPanel {
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: 48
+        width: 880
+        visible: screenBar.editing
+        bar: screenBar.bar
+        dragProxy: editorDragProxy
+      }
+
+      EditorDragProxy {
+        id: editorDragProxy
+
+        bar: screenBar.bar
+      }
     }
 
     Shortcut {

@@ -6,6 +6,7 @@ import "../core/appearance.mjs" as AppearanceCore
 import "../core/gradients.mjs" as GradientCore
 import "../core/surfaceStyle.mjs" as SurfaceCore
 import "../core/shapes.mjs" as ShapeCore
+import "../core/barZoom.mjs" as BarZoomCore
 
 // Tokens Nocturne (design/tokens.css, bloco `:root`) e as cores que o design
 // calcula em oklch()/color-mix(), já convertidas. specs/01-design-tokens.md
@@ -42,6 +43,17 @@ QtObject {
   // é o raio do design dela, `height` a altura.
   function radiusFor(design, height) {
     return ShapeCore.shapedRadius(look.shape, { design: design, height: height }, look.cornerRadius, hyprRounding);
+  }
+
+  // Tamanho da barra (spec 02 "Tamanho"), ligado pelo Bar.qml ao
+  // `settings.json` (já validado). Vale por monitor: Automático depende do
+  // tamanho dele.
+  property string barSize: "auto"
+
+  // Zoom da UI num monitor de `width`×`height` lógicos. Os componentes usam
+  // as medidas do design; a `ScreenBar` aplica o zoom num `scale` só.
+  function zoomFor(width, height) {
+    return BarZoomCore.barZoom(barSize, { width: width, height: height });
   }
 
   function surfaceStyleFor(base) {
@@ -115,7 +127,8 @@ QtObject {
 
   readonly property int barHeight: 26
   readonly property int barTopMargin: 2
-  // 2px de margem + 26px de barra (specs/02-barra.md "Espaço reservado").
+  // 2px de margem + 26px de barra (specs/02-barra.md "Espaço reservado"),
+  // antes do zoom do monitor.
   readonly property int barReserved: barTopMargin + barHeight
   readonly property int sideMargin: 12
   readonly property int pillGap: 6

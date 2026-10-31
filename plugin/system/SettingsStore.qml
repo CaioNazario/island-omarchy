@@ -51,6 +51,8 @@ Scope {
       property var environments: []
       property int environmentIndex: 0
       property bool autoHide: false
+      // `auto`, `small`, `medium` ou `large` (spec 02 "Tamanho"; `BAR_SIZE_IDS` em barZoom.ts).
+      property string barSize: "auto"
       // Tema do design (spec 01 "Temas"; `THEME_IDS` em themes.ts).
       property string theme: "Nocturne"
       // Cor de realce (spec 01 "Realce"; `ACCENT_IDS` em themes.ts).

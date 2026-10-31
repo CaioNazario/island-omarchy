@@ -27,16 +27,34 @@ Botões: 30×22, raio 11px, fundo transparente, hover `neutral-900`, gap 2px ent
 
 Clicar num gatilho cujo modo já está aberto fecha a ilha (`openFromBar`).
 
+## Tamanho
+
+`src/core/barZoom.ts`. O tamanho é um zoom de toda a UI da Island num monitor: barra, ilha (compacta e aberta), banner, editor e widgets de plugins. Os componentes continuam medidos no tamanho do design; a `ScreenBar` desenha tudo num item com `scale` igual ao zoom e com `1/zoom` da tela, então o layout (pílulas, ilha centralizada, corte de widgets da spec 16) se refaz no espaço que sobra.
+
+| `barSize` (spec 13) | Zoom | Altura da barra |
+|---|---|---|
+| `small` | 0.85 | ~22px |
+| `medium` | 1 | 26px (o design) |
+| `large` | 1.2 | ~31px |
+| `auto` (padrão) | pelo monitor, abaixo | |
+
+- **Automático**, por monitor, pelo tamanho lógico (já dividido pela escala do Hyprland): largura < 1600 ou altura < 900 → pequena (notebooks, escala fracionária); largura ≥ 2560 e altura ≥ 1400 → grande (QHD e 4K em escala 1); o resto → média. Cada monitor pode ficar com um zoom diferente.
+- **Cabe sempre**: o zoom nunca passa de `min(largura / 1280, altura / 720)`, a área lógica em que o layout do design cabe (a ilha aberta tem até 660px, o editor 880px). Quando corta, arredonda para baixo em passos de 0.05. Um monitor de 1024px fica em 0.8 mesmo com a pequena; um de 1280px fica em 1 mesmo com a grande.
+- A faixa reserva `ceil(28 × zoom)` (spec "Espaço reservado"). As regiões de clique e de blur com `item` saem em coordenadas da cena, já com o zoom (quickshell `src/core/region.cpp`, 0.3.2); os raios do blur multiplicam pelo zoom à parte.
+- Ícones (`PhIcon`, ícone de notificação) rasterizam em `tamanho × DPR × zoom`, e a camada deles também (`layer.textureSize`): sem isso, o zoom maior que 1 os borraria. Texto escala sem perda (`Text.QtRendering`, o padrão).
+- O widget de outro plugin é desenhado na faixa dele, outra janela (spec 16): recebe o mesmo zoom num `scale` próprio, e a faixa tem `ceil(28 × zoom)`. O `barSize` que o widget recebe continua 28, a medida antes do zoom.
+- Trocar o tamanho vale na hora, sem recarregar a barra.
+
 ## Largura mínima
 
-- Suporte a partir de **1280px lógicos** por monitor.
+- O layout pede **1280px lógicos** depois do zoom; o zoom automático garante isso em monitores menores (acima, "Cabe sempre").
 - Botão de ambiente e botões fixos da pílula direita nunca somem. Quando os widgets não cabem, a regra de corte é a da spec 16 (primeiro NET → GPU → TEMP do hardware, depois widgets inteiros, do mais longe da ilha para o mais perto).
 
 ## Superfícies
 
 Cada monitor tem duas superfícies layer-shell (`plugin/ui/ScreenBar.qml`):
 
-- **Faixa** (`island-strut`, camada `Bottom`): 28px no topo, transparente, sem entrada (`mask` vazia). Só reserva o espaço.
+- **Faixa** (`island-strut`, camada `Bottom`): 28px no topo (vezes o zoom, "Tamanho"), transparente, sem entrada (`mask` vazia). Só reserva o espaço.
 - **Camada** (`island`, camada `Top`): tela cheia, transparente, `ExclusionMode.Ignore`. Desenha pílulas, ilha e banner. A `mask` é a união dos retângulos das pílulas e da ilha, então o resto da tela recebe cliques normalmente.
 
 Uma superfície só não serve: ancorada nas quatro bordas (para a ilha crescer para baixo), o layer-shell ignora a zona exclusiva.
@@ -55,7 +73,7 @@ Uma superfície só não serve: ancorada nas quatro bordas (para a ilha crescer 
 
 ## Espaço reservado
 
-A faixa reserva 28px no topo de cada monitor (2px de margem + 26px); janela maximizada começa em y=28. Com auto-ocultar ligado, não reserva nada (spec 18).
+A faixa reserva 28px no topo de cada monitor (2px de margem + 26px) no tamanho médio, e `ceil(28 × zoom)` nos outros ("Tamanho"); janela maximizada começa logo abaixo. Com auto-ocultar ligado, não reserva nada (spec 18).
 
 ## Clique fora
 
@@ -69,3 +87,6 @@ Com modo fixo (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `music`
 - [ ] Conectar/desconectar um segundo monitor cria/remove a barra dele sem reiniciar o shell.
 - [ ] Uma janela em tela cheia esconde a barra só no monitor dela.
 - [ ] Clique fora de um modo fixo fecha a ilha e não ativa a janela clicada.
+- [x] Testes de `barZoom`: fator de cada tamanho, Automático por monitor, corte para caber em 1280×720 e passo de 0.05.
+- [x] Pequena e grande mudam barra, ilha aberta e editor na hora, com ícones nítidos (capturas no aninhado de 1600×900).
+- [ ] Com a grande, cliques nas pílulas e na ilha caem no lugar certo, e o arraste do editor solta na pílula certa (o aninhado não simula ponteiro: conferir na sessão).

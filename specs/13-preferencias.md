@@ -17,6 +17,7 @@ O design v3 muda o padrão de `clickAction` para "Calendário compacto" e só ap
 | `environments` | `[[nome, ícone, [esquerda], [direita]], …]` | `[]` (= os 4 ambientes iniciais da spec 15) | spec 15, 17 |
 | `environmentIndex` | int | `0` | spec 15 |
 | `autoHide` | bool | `false` | spec 18 |
+| `barSize` | `"auto"` \| `"small"` \| `"medium"` \| `"large"` (outro valor cai no `auto`) | `"auto"` | spec 02 "Tamanho", spec 19 |
 | `accent` | `"Roxo"` \| `"Branco"` (outro valor cai no Roxo) | `"Roxo"` | spec 01 "Realce", spec 17 |
 | `theme` | `"Nocturne"` \| `"Alto contraste"` (outro valor cai no Nocturne) | `"Nocturne"` | spec 01 "Temas", spec 17 |
 | `appearance` | objeto com as opções da spec 19 ou `null` | `null` (= visual do design) | spec 19 |

@@ -240,6 +240,36 @@ RowLayout {
     Layout.alignment: Qt.AlignTop
     spacing: 14
 
+    // Zoom de toda a UI (spec 02 "Tamanho"); Automático escolhe por monitor.
+    SettingsSection {
+      Layout.fillWidth: true
+      title: "Tamanho"
+
+      SettingRow {
+        Layout.fillWidth: true
+        label: "Tamanho da barra"
+        hint: "Aumenta ou reduz a barra, a ilha e os painéis. Automático escolhe pelo tamanho de cada monitor."
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 6
+
+        Repeater {
+          model: [{ id: "auto", label: "Automático" }, { id: "small", label: "Pequena" }, { id: "medium", label: "Média" }, { id: "large", label: "Grande" }]
+
+          ChoiceButton {
+            required property var modelData
+
+            Layout.fillWidth: true
+            label: modelData.label
+            active: Tokens.barSize === modelData.id
+            onClicked: page.bar.setBarSize(modelData.id)
+          }
+        }
+      }
+    }
+
     SettingsSection {
       Layout.fillWidth: true
       title: "Estilo"

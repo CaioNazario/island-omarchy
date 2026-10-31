@@ -140,6 +140,10 @@ smoke() {
   wait_for '[[ "$(harness_ipc pluginWidget status)" == "{\"count\":0}" ]]' "an environment without the plugin widget"
   harness_ipc editorDo switch 0 >/dev/null
   wait_for '[[ "$(harness_ipc pluginWidget status)" == *"\"opened\":false"* ]]' "the plugin widget back after switching environments"
+  # Zoom grande nos hot-reloads (spec 02 "Tamanho"): as regiões com zoom
+  # passam pelo motor real.
+  harness_ipc editorDo barSize large >/dev/null
+  wait_for '[[ "$(harness_ipc prefs)" == *"\"barSize\":\"large\""* ]]' "the bar size saved in settings.json"
   for i in $(seq 1 "$SMOKE_RELOADS"); do
     harness_ipc reload >/dev/null
     wait_for '[[ "$(harness_status)" == *"\"bar\":true"*"\"reloads\":$i"* ]]' "reload $i"

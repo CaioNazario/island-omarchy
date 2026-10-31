@@ -15,6 +15,7 @@ import "core/environments.mjs" as EnvironmentsCore
 import "core/environmentEditor.mjs" as EditorCore
 import "core/stackScroll.mjs" as StackScrollCore
 import "core/pluginWidgets.mjs" as PluginWidgetsCore
+import "core/barZoom.mjs" as BarZoomCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
 // este item a cada hot-reload; o que precisa sobreviver mora no Service.qml.
@@ -162,6 +163,17 @@ Item {
 
   function setAccent(id) {
     if (service) service.settings.values.accent = id;
+  }
+
+  // Tamanho da barra (spec 02 "Tamanho"), global; o zoom sai por monitor.
+  Binding {
+    target: Tokens
+    property: "barSize"
+    value: BarZoomCore.sanitizeBarSize(root.service ? root.service.settings.values.barSize : "auto")
+  }
+
+  function setBarSize(id) {
+    if (service) service.settings.values.barSize = id;
   }
 
   // Blur do Hyprland ligado (spec 19 "Blur"): sem ele, o fundo fica opaco.

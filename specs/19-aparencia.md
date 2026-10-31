@@ -157,7 +157,15 @@ O `Service.qml` lê `settings.json` `appearance` com `sanitizeAppearance` a cada
 
 Aba Aparência do editor (`AppearancePage`), em duas colunas com gap 14px. Uma linha só aparece quando faz sentido, sem ficar desabilitada.
 
-Coluna da esquerda: Tema, Fundo e Sombra. Da direita: Estilo, Forma, Borda e Efeitos.
+Coluna da esquerda: Tema, Fundo e Sombra. Da direita: Tamanho, Estilo, Forma, Borda e Efeitos.
+
+**Tamanho**
+
+| Linha | Controle | Visível se |
+|---|---|---|
+| Tamanho da barra — "Aumenta ou reduz a barra, a ilha e os painéis. Automático escolhe pelo tamanho de cada monitor." | Automático · Pequena · Média · Grande, embaixo do rótulo (quatro opções não cabem ao lado dele) | sempre |
+
+Grava `barSize` (spec 13), fora de `appearance`: o preset Padrão não mexe no tamanho. O zoom e a regra do Automático estão na spec 02 "Tamanho".
 
 **Estilo**
 

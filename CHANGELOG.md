@@ -4,6 +4,15 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 
 ## [Não lançada]
 
+### Adicionado
+
+- Tamanho da barra na aba Aparência (seção Tamanho): Automático, Pequena, Média ou Grande. É um zoom de toda a UI (barra, ilha aberta, painéis e editor), chave `barSize` do `settings.json`.
+- No Automático, cada monitor ganha o tamanho que combina com ele: pequena em notebooks e escala fracionária, grande em QHD e 4K em escala 1.
+
+### Mudado
+
+- A barra se adapta a monitores com menos de 1280×720 lógicos: o zoom cai até o layout caber, em vez de cortar a ilha e o editor.
+
 ## [0.7.0] - 2026-10-31
 
 ### Adicionado
