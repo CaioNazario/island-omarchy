@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Added
+
+- A preview image (`preview.png`) at the root of the published plugin, for the Omarchy plugin marketplace card.
+
 ## [0.7.2] - 2026-10-31
 
 ### Fixed
