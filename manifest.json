@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "caionazario.island",
-  "name": "Island",
-  "version": "0.7.2",
+  "name": "Island Desktop",
+  "version": "0.7.3",
   "author": "Caio Nazario",
   "license": "GPL-3.0-or-later",
   "description": "Three floating pills with a Dynamic Island: notifications, music, volume, calendar, quick controls and AI usage",
