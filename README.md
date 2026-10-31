@@ -368,6 +368,28 @@ omarchy plugin update caionazario.island
 
 ---
 
+## Uninstalling
+
+Remove the plugin, then bring back Omarchy's bar, notifications and OSD:
+
+```bash
+omarchy plugin remove caionazario.island
+omarchy plugin enable omarchy.bar
+omarchy plugin enable omarchy.notifications
+omarchy plugin enable omarchy.osd
+```
+
+If you turned on the shortcuts and gestures, delete the `dofile(...)` line you added to `~/.config/hypr/hyprland.lua`. For a source install, `./install.sh --uninstall` does all of this.
+
+Your settings and state stay behind, in case you install it again. To remove them too:
+
+```bash
+rm -rf ~/.config/island ~/.local/state/island
+secret-tool clear service island kind calendar-ics   # only if you set up the calendar
+```
+
+---
+
 ## AI usage: read first
 
 The Island doesn't read credentials or call usage APIs on its own. It runs `omarchy-agent-usage-update` (the same collector as Omarchy's agents widget) every 15 minutes, while the AI widget is in the active environment, and reads its records in `~/.local/state/omarchy/agents/usage/`.
