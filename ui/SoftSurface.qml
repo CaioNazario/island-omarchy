@@ -1,8 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Effects
-import QtQuick.Shapes
 import Quickshell.Widgets
 
 // Acabamento do design v5 (specs/01-design-tokens.md "Superfícies") das
@@ -16,165 +14,82 @@ Item {
 
   property real radius: height / 2
   property bool expanded: false
-  // Pílula: `radial-gradient(80% 150% at 50% 135%, accent 9%, transparent 65%)`.
-  // Ilha: `radial-gradient(70% 120% at 50% 125%, accent 8%, transparent 60%)`.
+  // Pílula ou ilha: o halo e o brilho têm medidas diferentes (SurfaceHalo,
+  // SurfaceGloss).
   property bool island: false
+  // Opções de aparência (specs/19-aparencia.md "Superfície"), já resolvidas
+  // pelo core.
+  readonly property var style: island ? Tokens.islandStyle : Tokens.pillStyle
+  // No gradiente o fundo é a base do shader, e não o retângulo.
+  readonly property color paint: style.gradient ? style.gradient.base : style.fill
+  readonly property bool opaqueFill: paint.a >= 1
 
-  readonly property real haloRx: width * (island ? 0.7 : 0.8)
-  readonly property real haloRy: height * (island ? 1.2 : 1.5)
-  readonly property real haloCy: height * (island ? 1.25 : 1.35)
-
-  component Glow: RectangularShadow {
-    // `box-shadow` com espalhamento negativo: a sombra encolhe pelas margens.
-    property real spreadIn: 0
-    property bool forExpanded: false
-
+  SurfaceShadow {
     anchors.fill: parent
-    anchors.margins: spreadIn
-    radius: Math.max(0, soft.radius - spreadIn)
-    opacity: forExpanded === soft.expanded ? 1 : 0
-
-    Behavior on opacity {
-      NumberAnimation {
-        duration: 300
-      }
-    }
-  }
-
-  // SOFT_OUT sem os dois brilhos `accent` do design: em volta da barra eles
-  // viravam um vazamento roxo (pedido do usuário). Fica a sombra escura.
-  Glow {
-    offset: Qt.vector2d(0, 16)
-    blur: 36
-    spreadIn: 14
-    color: Qt.rgba(0, 0, 0, 0.5)
-  }
-
-  // Ilha expandida: `--isl-drop`, também sem o brilho `accent` em volta.
-  Glow {
-    forExpanded: true
-    offset: Qt.vector2d(0, 18)
-    blur: 44
-    color: Qt.rgba(0, 0, 0, 0.6)
+    radius: soft.radius
+    expanded: soft.expanded
+    strength: soft.style.shadow
+    expandedStrength: soft.style.shadowExpanded
   }
 
   // `inset 0 1px 0 rgba(255,255,255,.07)`: o fundo deixa 1px do brilho à
-  // mostra no topo, acompanhando o raio.
+  // mostra no topo, acompanhando o raio. Com fundo translúcido o branco
+  // apareceria por trás dele inteiro: o brilho só fica sobre fundo opaco.
   ClippingRectangle {
     anchors.fill: parent
     radius: soft.radius
-    color: Qt.rgba(1, 1, 1, 0.07)
+    color: soft.style.finish && soft.opaqueFill ? Qt.rgba(1, 1, 1, 0.07) : "transparent"
 
     Rectangle {
+      id: fillRect
+
       anchors.fill: parent
-      anchors.topMargin: 1
+      anchors.topMargin: soft.opaqueFill ? 1 : 0
       radius: soft.radius
-      color: soft.island ? Tokens.islandBg : Tokens.laneBg
+      color: soft.style.fill
     }
 
-    // O halo é um círculo de raio `haloRx` esticado na vertical até `haloRy`.
-    Shape {
+    Loader {
+      anchors.fill: fillRect
+      active: soft.style.gradient !== null
+
+      sourceComponent: SurfaceGradient {
+        gradient: soft.style.gradient
+        cornerRadius: soft.radius
+      }
+    }
+
+    Loader {
       anchors.fill: parent
-      preferredRendererType: Shape.CurveRenderer
-      transform: Scale {
-        origin.y: soft.haloCy
-        yScale: soft.haloRy / Math.max(1, soft.haloRx)
-      }
+      active: soft.style.grain > 0
 
-      ShapePath {
-        id: halo
-
-        readonly property real k: soft.haloRx / Math.max(1, soft.haloRy)
-        readonly property real top: soft.haloCy - soft.haloCy * k
-        readonly property real bottom: soft.haloCy + (soft.height - soft.haloCy) * k
-
-        strokeColor: "transparent"
-        fillGradient: RadialGradient {
-          centerX: soft.width / 2
-          centerY: soft.haloCy
-          centerRadius: soft.haloRx
-          focalX: soft.width / 2
-          focalY: soft.haloCy
-
-          GradientStop {
-            position: 0
-            color: Qt.alpha(Tokens.accent, soft.island ? 0.08 : 0.09)
-          }
-          GradientStop {
-            position: soft.island ? 0.6 : 0.65
-            color: Qt.alpha(Tokens.accent, 0)
-          }
-        }
-        startX: 0
-        startY: top
-        PathLine {
-          x: soft.width
-          y: halo.top
-        }
-        PathLine {
-          x: soft.width
-          y: halo.bottom
-        }
-        PathLine {
-          x: 0
-          y: halo.bottom
-        }
-        PathLine {
-          x: 0
-          y: halo.top
-        }
+      sourceComponent: SurfaceGrain {
+        strength: soft.style.grain
+        cornerRadius: soft.radius
       }
     }
 
-    // Brilho de cima para baixo (pílula: .045 → .01 em 46% → preto .05;
-    // ilha: .04 → .01 em 22% → transparente em 55% → preto .05).
-    Rectangle {
+    SurfaceHalo {
       anchors.fill: parent
-      gradient: Gradient {
-        GradientStop {
-          position: 0
-          color: Qt.rgba(1, 1, 1, soft.island ? 0.04 : 0.045)
-        }
-        GradientStop {
-          position: soft.island ? 0.22 : 0.46
-          color: Qt.rgba(1, 1, 1, 0.01)
-        }
-        GradientStop {
-          position: soft.island ? 0.55 : 0.46
-          color: soft.island ? Qt.rgba(0, 0, 0, 0) : Qt.rgba(1, 1, 1, 0.01)
-        }
-        GradientStop {
-          position: 1
-          color: Qt.rgba(0, 0, 0, 0.05)
-        }
-      }
+      visible: soft.style.finish
+      island: soft.island
     }
 
-    // `inset 0 -2px 6px rgba(0,0,0,.14)`
-    Rectangle {
-      anchors.left: parent.left
-      anchors.right: parent.right
-      anchors.bottom: parent.bottom
-      height: 8
-      gradient: Gradient {
-        GradientStop {
-          position: 0
-          color: Qt.rgba(0, 0, 0, 0)
-        }
-        GradientStop {
-          position: 1
-          color: Qt.rgba(0, 0, 0, 0.14)
-        }
-      }
+    SurfaceGloss {
+      anchors.fill: parent
+      visible: soft.style.finish
+      island: soft.island
     }
   }
 
-  // `inset 0 0 0 1px rgba(255,255,255,.05)`
+  // `inset 0 0 0 1px rgba(255,255,255,.05)` no padrão; largura e opacidade
+  // vêm das opções (spec 19 "Superfície"). Por dentro: não muda o tamanho.
   Rectangle {
     anchors.fill: parent
+    visible: soft.style.borderWidth > 0
     radius: soft.radius
     color: "transparent"
-    border.width: 1
-    border.color: Qt.rgba(1, 1, 1, 0.05)
+    border.width: soft.style.borderWidth
+    border.color: soft.style.borderColor
   }
 }

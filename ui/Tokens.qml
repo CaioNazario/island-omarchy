@@ -2,6 +2,10 @@ pragma Singleton
 
 import QtQuick
 import "../core/themes.mjs" as ThemeCore
+import "../core/appearance.mjs" as AppearanceCore
+import "../core/gradients.mjs" as GradientCore
+import "../core/surfaceStyle.mjs" as SurfaceCore
+import "../core/shapes.mjs" as ShapeCore
 
 // Tokens Nocturne (design/tokens.css, bloco `:root`) e as cores que o design
 // calcula em oklch()/color-mix(), já convertidas. specs/01-design-tokens.md
@@ -14,6 +18,36 @@ QtObject {
   // Cor de realce (spec 01 "Realce"): `accent` já é a cor, daí o nome.
   property string accentName: "Roxo"
   readonly property var palette: ThemeCore.themeColors(theme, accentName)
+  // Opções de aparência (specs/19-aparencia.md), ligadas pelo Bar.qml ao
+  // `settings.json`. O padrão é o visual do design.
+  property var appearance: AppearanceCore.DEFAULT_APPEARANCE
+  // A `Binding` do Bar.qml pode entregar `null` enquanto o serviço sobe.
+  readonly property var look: appearance || AppearanceCore.DEFAULT_APPEARANCE
+  // Cores nomeadas do `colors.toml` do tema do Omarchy (spec 19 "Gradiente");
+  // vazio sem o arquivo.
+  property var omarchyColors: ({})
+  // `decoration:blur:enabled` do Hyprland (spec 14, S9).
+  property bool blurAvailable: false
+  // `decoration:rounding` do Hyprland, para os cantos Tema; -1 sem o valor.
+  property int hyprRounding: -1
+  // Sem paleta do Omarchy, os tons do realce: `accent-300/500/700`.
+  readonly property var gradientColors: GradientCore.gradientColors(look.gradient, omarchyColors, [palette.accents[2], palette.accents[4], palette.accents[6]])
+  // Estilo de cada superfície (spec 19 "Superfície"). O gradiente cede para
+  // o texto e para os rótulos `neutral-500` (widget de hardware, rótulos
+  // dos painéis) continuarem legíveis.
+  readonly property var pillStyle: surfaceStyleFor(palette.lane)
+  readonly property var islandStyle: surfaceStyleFor(palette.island)
+
+  // Raio de uma superfície com a forma escolhida (spec 19 "Cantos"): `design`
+  // é o raio do design dela, `height` a altura.
+  function radiusFor(design, height) {
+    return ShapeCore.shapedRadius(look.shape, { design: design, height: height }, look.cornerRadius, hyprRounding);
+  }
+
+  function surfaceStyleFor(base) {
+    const inks = [{ color: palette.text, min: 4.5 }, { color: palette.neutrals[4], min: 3 }];
+    return SurfaceCore.surfaceStyle({ look: look, base: base, gradientColors: gradientColors, inks: inks, blurAvailable: blurAvailable });
+  }
 
   readonly property color bg: palette.bg
   readonly property color surface: palette.surface

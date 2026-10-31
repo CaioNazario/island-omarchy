@@ -30,6 +30,8 @@ Scope {
   readonly property alias wifiDetails: wifiDetails
   readonly property alias wifiShare: wifiShare
   readonly property alias speedTest: speedTest
+  readonly property alias hyprOptions: hyprOptions
+  readonly property alias omarchyTheme: omarchyTheme
 
   AudioSource {
     id: audio
@@ -94,5 +96,11 @@ Scope {
   }
   SpeedTestSource {
     id: speedTest
+  }
+  HyprOptionsSource {
+    id: hyprOptions
+  }
+  OmarchyThemeColors {
+    id: omarchyTheme
   }
 }

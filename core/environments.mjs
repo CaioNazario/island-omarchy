@@ -13,6 +13,8 @@ export const WIDGET_IDS = [
     'countdown',
     'note',
 ];
+const PLUGIN_PREFIX = 'plugin:';
+const PLUGIN_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 /** Cartão do catálogo (specs/16-widgets.md "Catálogo"); ícone como em `ui/icons.ts`. */
 export const WIDGET_CATALOG = {
     ai: { name: 'Uso de IA', icon: 'sparkle', description: 'Sessão e limite semanal' },
@@ -68,6 +70,21 @@ export function defaultEnvironments() {
 function isWidgetId(id) {
     return WIDGET_IDS.includes(id);
 }
+export function isPluginWidgetId(id) {
+    return id.startsWith(PLUGIN_PREFIX) && PLUGIN_ID_PATTERN.test(id.slice(PLUGIN_PREFIX.length));
+}
+/** `omaplug` → `plugin:omaplug`; id fora do formato do Omarchy dá `null`. */
+export function pluginWidgetId(pluginId) {
+    const id = `${PLUGIN_PREFIX}${pluginId}`;
+    return isPluginWidgetId(id) ? id : null;
+}
+/** `plugin:omaplug` → `omaplug`; widget da Island dá `''`. */
+export function pluginIdOf(id) {
+    return isPluginWidgetId(id) ? id.slice(PLUGIN_PREFIX.length) : '';
+}
+function isPlacedWidgetId(id) {
+    return isWidgetId(id) || isPluginWidgetId(id);
+}
 function isEnvIcon(icon) {
     return ENV_ICONS.includes(icon);
 }
@@ -80,8 +97,10 @@ function isEnvIcon(icon) {
 export function sanitizeEnvironments(stored) {
     const envs = stored.slice(0, MAX_ENVIRONMENTS).map(([name, icon, left, right]) => {
         const seen = new Set();
+        // Widget de plugin fica mesmo sem o plugin instalado agora: ele pode
+        // estar carregando, e a barra só não o desenha (specs/16-widgets.md).
         const keep = (ids) => ids.filter((id) => {
-            if (!isWidgetId(id) || seen.has(id))
+            if (!isPlacedWidgetId(id) || seen.has(id))
                 return false;
             seen.add(id);
             return true;
@@ -104,7 +123,7 @@ const MAX_LIST_LENGTH = 1000;
  * tudo e a Island subia com os ambientes iniciais, apagando as edições do
  * usuário na gravação seguinte.
  */
-function asList(value) {
+export function asList(value) {
     if (Array.isArray(value))
         return value;
     if (typeof value !== 'object' || value === null)

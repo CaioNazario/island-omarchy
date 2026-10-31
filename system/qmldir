@@ -10,11 +10,13 @@ DisplaySource 1.0 DisplaySource.qml
 GithubSource 1.0 GithubSource.qml
 HardwareSource 1.0 HardwareSource.qml
 HttpGet 1.0 HttpGet.qml
+HyprOptionsSource 1.0 HyprOptionsSource.qml
 IdleSource 1.0 IdleSource.qml
 MusicSource 1.0 MusicSource.qml
 NightLightSource 1.0 NightLightSource.qml
 NotificationFeed 1.0 NotificationFeed.qml
 NotificationRouter 1.0 NotificationRouter.qml
+OmarchyThemeColors 1.0 OmarchyThemeColors.qml
 PomodoroSource 1.0 PomodoroSource.qml
 QmlScheduler 1.0 QmlScheduler.qml
 ScreenRecordSource 1.0 ScreenRecordSource.qml

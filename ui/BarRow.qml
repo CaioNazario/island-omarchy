@@ -15,12 +15,12 @@ Item {
   property var dragProxy: null
 
   readonly property alias leftPill: leftPill
-  readonly property alias island: island
+  readonly property alias island: centerIsland
   readonly property alias rightPill: rightPill
   readonly property alias banner: banner
-  readonly property real pillWidth: Math.max(0, (width - island.width - 2 * Tokens.pillGap) / 2)
+  readonly property real pillWidth: Math.max(0, (width - centerIsland.width - 2 * Tokens.pillGap) / 2)
 
-  height: island.height
+  height: centerIsland.height
 
   // Rolagem sobre a barra troca de ambiente (specs/15 "Rolagem suave"). No
   // Qt, touchpad chega com `pixelDelta` e fase; roda inclinada só com
@@ -94,7 +94,7 @@ Item {
   }
 
   Island {
-    id: island
+    id: centerIsland
 
     anchors.horizontalCenter: parent.horizontalCenter
     bar: row.bar
@@ -114,8 +114,8 @@ Item {
   Banner {
     id: banner
 
-    anchors.horizontalCenter: island.horizontalCenter
-    y: island.height + 8
+    anchors.horizontalCenter: centerIsland.horizontalCenter
+    y: centerIsland.height + 8
     bar: row.bar
     entry: row.bar.targetScreen === row.screenName ? row.bar.bannerEntry : null
     onOpened: row.bar.openFromBar(row.screenName, "stack")

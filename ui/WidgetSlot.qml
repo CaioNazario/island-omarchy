@@ -5,6 +5,7 @@ import "../core/calendar.mjs" as CalendarCore
 import "../core/countdown.mjs" as CountdownCore
 import "../core/dayProgress.mjs" as DayProgress
 import "../core/pomodoro.mjs" as PomodoroCore
+import "../core/environments.mjs" as EnvironmentsCore
 
 // Um widget do catálogo (specs/16-widgets.md "Widgets"), montado a partir das
 // fontes. `naturalWidth`/`minWidth` alimentam o encaixe da área; só o `hw`
@@ -18,6 +19,10 @@ Item {
   property real budget: 100000
   property string side: ""
   property var dragProxy: null
+  // Deslocamento e opacidade do conteúdo na troca de ambiente: o widget de
+  // plugin, desenhado em outra janela, segue os dois (PluginWidget.qml).
+  property real shift: 0
+  property real fade: 1
 
   readonly property var system: bar.system
   readonly property var service: bar.service
@@ -44,7 +49,19 @@ Item {
         progress: progressWidget,
         countdown: countdownWidget,
         note: noteWidget
-      })[slot.widgetId] || null
+      })[slot.widgetId] || (EnvironmentsCore.isPluginWidgetId(slot.widgetId) ? pluginWidget : null)
+  }
+
+  Component {
+    id: pluginWidget
+
+    PluginWidget {
+      widgetId: slot.widgetId
+      host: slot.bar.pluginWidgets
+      editing: slot.bar.editingOn(slot.screenName)
+      shift: slot.shift
+      fade: slot.fade
+    }
   }
 
   Component {

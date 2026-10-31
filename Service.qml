@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import "system"
 import "core/environments.mjs" as EnvironmentsCore
+import "core/appearance.mjs" as AppearanceCore
 
 // Entrada `service` do plugin (keepLoaded: specs/14-spikes.md, S6). Vive até
 // o shell reiniciar: guarda o estado visível que não pode se perder quando a
@@ -20,15 +21,17 @@ Item {
 
   readonly property string pluginId: "caionazario.island"
 
-  readonly property alias notifications: feed
+  readonly property alias notifications: notificationFeed
   readonly property alias settings: settingsStore
-  readonly property alias stateStore: store
+  readonly property alias stateStore: persistedState
   readonly property alias pomodoro: pomodoro
   // Ambientes (spec 15): saneados a cada leitura, um ativo para todos os monitores.
   readonly property var environments: EnvironmentsCore.environmentsFromJson(settingsStore.values.environments)
   readonly property int environmentIndex: EnvironmentsCore.sanitizeIndex(settingsStore.values.environmentIndex, environments.length)
-  readonly property bool doNotDisturb: store.values.doNotDisturb
-  readonly property bool hasUnread: feed.hasUnread
+  // Aparência (spec 19), saneada a cada leitura como os ambientes.
+  readonly property var appearance: AppearanceCore.sanitizeAppearance(settingsStore.values.appearance)
+  readonly property bool doNotDisturb: persistedState.values.doNotDisturb
+  readonly property bool hasUnread: notificationFeed.hasUnread
 
   signal osdRequested(string payload)
   signal osdCloseRequested
@@ -38,7 +41,7 @@ Item {
   signal environmentStepRequested(int direction)
 
   function setDoNotDisturb(on) {
-    store.values.doNotDisturb = on;
+    persistedState.values.doNotDisturb = on;
   }
 
   /** Troca de ambiente; a barra anima e abre `env` (spec 15). */
@@ -50,8 +53,17 @@ Item {
     settingsStore.values.environments = EnvironmentsCore.toStored(list);
   }
 
+  /** Uma opção da aparência; o arquivo guarda o objeto inteiro já saneado. */
+  function setAppearanceOption(key, value) {
+    settingsStore.values.appearance = AppearanceCore.withAppearanceOption(appearance, key, value);
+  }
+
+  function applyAppearancePreset(id) {
+    settingsStore.values.appearance = AppearanceCore.appearancePreset(id);
+  }
+
   StateStore {
-    id: store
+    id: persistedState
   }
 
   SettingsStore {
@@ -61,12 +73,12 @@ Item {
   PomodoroSource {
     id: pomodoro
 
-    store: store
-    feed: feed
+    store: persistedState
+    feed: notificationFeed
   }
 
   NotificationFeed {
-    id: feed
+    id: notificationFeed
   }
 
   // Mesmo contrato do `plugins/notifications/Service.qml` do Omarchy 4.0.4:
@@ -94,27 +106,27 @@ Item {
       return "ok";
     }
     function clear(): string {
-      feed.clearAll();
+      notificationFeed.clearAll();
       return "ok";
     }
     function dismissAll(): string {
-      feed.clearAll();
+      notificationFeed.clearAll();
       return "ok";
     }
     function dismissOne(): string {
-      if (feed.entries.length === 0) return "none";
-      feed.dismiss(feed.entries[0].key);
+      if (notificationFeed.entries.length === 0) return "none";
+      notificationFeed.dismiss(notificationFeed.entries[0].key);
       return "ok";
     }
     function invokeLast(): string {
-      if (feed.entries.length === 0) return "none";
-      feed.activate(feed.entries[0].key);
+      if (notificationFeed.entries.length === 0) return "none";
+      notificationFeed.activate(notificationFeed.entries[0].key);
       return "ok";
     }
     function dismiss(summary: string): string {
-      const match = feed.entries.find(entry => entry.ref && String(entry.ref.summary).includes(summary));
+      const match = notificationFeed.entries.find(entry => entry.ref && String(entry.ref.summary).includes(summary));
       if (!match) return "none";
-      feed.dismiss(match.key);
+      notificationFeed.dismiss(match.key);
       return "ok";
     }
     function ping(): string {

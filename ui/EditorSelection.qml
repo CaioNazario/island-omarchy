@@ -14,7 +14,7 @@ Rectangle {
   required property var bar
   readonly property string selected: bar.editorSelected
   readonly property var place: selected !== "" ? EnvironmentsCore.findWidget(bar.environment, selected) : null
-  readonly property var info: selected !== "" ? EnvironmentsCore.WIDGET_CATALOG[selected] : null
+  readonly property var info: selected !== "" ? bar.widgetInfo(selected) : null
 
   implicitHeight: 40
   radius: 12

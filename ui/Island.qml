@@ -10,7 +10,7 @@ import "../core/osd.mjs" as OsdCore
 // do conteúdo (`overflow: hidden` no design) na `surface`; cada modo é uma
 // `ModeLayer`.
 Item {
-  id: island
+  id: root
 
   required property var bar
   // O que este monitor mostra: o modo do alvo, ou `compact` nos demais.
@@ -59,20 +59,26 @@ Item {
   // modos os cliques são do conteúdo.
   MouseArea {
     anchors.fill: parent
-    enabled: island.displayMode === "compact" || island.displayMode === "notif"
+    enabled: root.displayMode === "compact" || root.displayMode === "notif"
     cursorShape: Qt.PointingHandCursor
-    onClicked: island.clicked()
+    onClicked: root.clicked()
   }
 
   HoverHandler {
-    onHoveredChanged: island.bar.islandHovered(hovered)
+    onHoveredChanged: root.bar.islandHovered(hovered)
   }
 
+  // Raio animado da superfície: a região de blur da ScreenBar acompanha.
+  readonly property real surfaceRadius: softSurface.radius
+
   SoftSurface {
+    id: softSurface
+
     anchors.fill: parent
-    radius: IslandCore.displayRadius(island.size)
+    // O raio do design para o modo, ou o da forma escolhida (spec 19 "Cantos").
+    radius: Tokens.radiusFor(IslandCore.displayRadius(root.size), root.size.height)
     island: true
-    expanded: island.displayMode !== "compact"
+    expanded: root.displayMode !== "compact"
 
     // "Raio: 460ms ease" (specs/03-ilha.md "Animação").
     Behavior on radius {
@@ -93,11 +99,11 @@ Item {
       anchors.top: parent.top
       anchors.horizontalCenter: parent.horizontalCenter
       // Cada camada tem o tamanho do seu modo, dentro do anel de 1px.
-      width: island.sizeOf(layerId).width - 2
-      height: island.sizeOf(layerId).height - 2
+      width: root.sizeOf(layerId).width - 2
+      height: root.sizeOf(layerId).height - 2
       anchors.topMargin: 1
-      shownLayer: island.shownLayer
-      instant: island.instantSwitch
+      shownLayer: root.shownLayer
+      instant: root.instantSwitch
     }
 
     Layer {
@@ -108,7 +114,7 @@ Item {
       Item {
         CompactContent {
           anchors.centerIn: parent
-          weather: island.bar.system.weather
+          weather: root.bar.system.weather
         }
       }
     }
@@ -117,10 +123,10 @@ Item {
       layerId: "notif"
 
       NotificationCard {
-        entry: island.bar.notifEntry || ({ name: "", text: "", timeMs: 0, glyph: "bell-fill", appIcon: "" })
-        nowMs: island.bar.nowMs
+        entry: root.bar.notifEntry || ({ name: "", text: "", timeMs: 0, glyph: "bell-fill", appIcon: "" })
+        nowMs: root.bar.nowMs
         // × fecha a ilha; a notificação continua na lista.
-        onClosed: island.bar.closeAll()
+        onClosed: root.bar.closeAll()
       }
     }
 
@@ -128,7 +134,7 @@ Item {
       layerId: "stack"
 
       StackView {
-        bar: island.bar
+        bar: root.bar
       }
     }
 
@@ -136,7 +142,7 @@ Item {
       layerId: "music"
 
       MusicRow {
-        bar: island.bar
+        bar: root.bar
       }
     }
 
@@ -144,7 +150,7 @@ Item {
       layerId: "calendar"
 
       CalendarModeView {
-        bar: island.bar
+        bar: root.bar
       }
     }
 
@@ -154,9 +160,9 @@ Item {
       Item {
         CenterCard {
           width: parent.width
-          bar: island.bar
-          onImplicitHeightChanged: island.cardHeight = implicitHeight
-          Component.onCompleted: island.cardHeight = implicitHeight
+          bar: root.bar
+          onImplicitHeightChanged: root.cardHeight = implicitHeight
+          Component.onCompleted: root.cardHeight = implicitHeight
         }
       }
     }
@@ -165,7 +171,7 @@ Item {
       layerId: "env"
 
       EnvRow {
-        bar: island.bar
+        bar: root.bar
       }
     }
 
@@ -173,7 +179,7 @@ Item {
       layerId: "note"
 
       NoteView {
-        bar: island.bar
+        bar: root.bar
       }
     }
 
@@ -181,7 +187,7 @@ Item {
       layerId: "ai"
 
       AiView {
-        bar: island.bar
+        bar: root.bar
       }
     }
 
@@ -193,16 +199,16 @@ Item {
         MouseArea {
           anchors.fill: parent
           cursorShape: Qt.PointingHandCursor
-          onClicked: island.bar.openFromBar(island.bar.targetScreen, "mixer")
+          onClicked: root.bar.openFromBar(root.bar.targetScreen, "mixer")
         }
 
         LevelRow {
           anchors.fill: parent
-          glyph: OsdCore.volumeGlyph(island.bar.system.audio.percent, island.bar.system.audio.muted)
-          value: island.bar.system.audio.percent
-          onMoved: value => island.bar.system.audio.setPercent(value)
-          onDragStarted: island.bar.islandState.dragStart()
-          onDragEnded: island.bar.islandState.dragEnd()
+          glyph: OsdCore.volumeGlyph(root.bar.system.audio.percent, root.bar.system.audio.muted)
+          value: root.bar.system.audio.percent
+          onMoved: value => root.bar.system.audio.setPercent(value)
+          onDragStarted: root.bar.islandState.dragStart()
+          onDragEnded: root.bar.islandState.dragEnd()
         }
       }
     }
@@ -211,7 +217,7 @@ Item {
       layerId: "mixer"
 
       MixerView {
-        bar: island.bar
+        bar: root.bar
       }
     }
 
@@ -219,7 +225,7 @@ Item {
       layerId: "display"
 
       DisplayView {
-        bar: island.bar
+        bar: root.bar
       }
     }
 
@@ -227,7 +233,7 @@ Item {
       layerId: "battery"
 
       BatteryView {
-        bar: island.bar
+        bar: root.bar
       }
     }
 
@@ -236,10 +242,10 @@ Item {
 
       LevelRow {
         glyph: "sun"
-        value: island.bar.system.brightness.percent
-        onMoved: value => island.bar.system.brightness.setPercent(value)
-        onDragStarted: island.bar.islandState.dragStart()
-        onDragEnded: island.bar.islandState.dragEnd()
+        value: root.bar.system.brightness.percent
+        onMoved: value => root.bar.system.brightness.setPercent(value)
+        onDragStarted: root.bar.islandState.dragStart()
+        onDragEnded: root.bar.islandState.dragEnd()
       }
     }
 
@@ -247,9 +253,9 @@ Item {
       layerId: "osd"
 
       LevelRow {
-        glyph: island.bar.osd.glyph
-        value: island.bar.osd.percent
-        message: island.bar.osd.text
+        glyph: root.bar.osd.glyph
+        value: root.bar.osd.percent
+        message: root.bar.osd.text
         interactive: false
       }
     }
@@ -262,12 +268,12 @@ Item {
 
         ControlsRow {
           Layout.fillWidth: true
-          bar: island.bar
+          bar: root.bar
         }
 
         PowerRow {
           Layout.fillWidth: true
-          bar: island.bar
+          bar: root.bar
         }
 
         Item {
@@ -280,7 +286,7 @@ Item {
       layerId: "wifi"
 
       WifiView {
-        bar: island.bar
+        bar: root.bar
       }
     }
 
@@ -288,7 +294,7 @@ Item {
       layerId: "bt"
 
       BtView {
-        bar: island.bar
+        bar: root.bar
       }
     }
   }
@@ -302,7 +308,7 @@ Item {
     bottomLeftRadius: 2
     bottomRightRadius: 2
     color: Tokens.accent
-    opacity: island.displayMode === "compact" ? 0 : 1
+    opacity: root.displayMode === "compact" ? 0 : 1
 
     Behavior on opacity {
       NumberAnimation {
