@@ -219,8 +219,8 @@ O `src/core` é compilado para módulos ES (`.mjs`) que o QML importa direto.
 ***
 ## Instalação
 ```
-git clone https://github.com/CaioNazario/island-desktop.git
-cd island-desktop
+git clone -b dev https://github.com/CaioNazario/island-omarchy.git
+cd island-omarchy
 
 npm ci
 ./install.sh
@@ -251,12 +251,12 @@ Sem login no CLI, o widget continua disponível, mas mostra apenas **"IA"**. Par
 ***
 ## Limitações
 Atualmente:
-- Apenas Omarchy.
-- Ainda não feitos: auto-ocultar e a janela de preferências.
-- O calendário só lê (feed ICS): não cria nem edita eventos. Não suporta `RDATE` nem `RRULE` com `BYSETPOS`, `BYWEEKNO` ou frequência abaixo de dia.
-- GPUs NVIDIA não aparecem no bloco de hardware.
+- Ainda não feitos: auto-ocultar (as regras existem no core, mas a barra não as usa) e a janela de preferências (as preferências se editam no `settings.json`).
+- O calendário só lê (feed ICS): não cria nem edita eventos. Não suporta `RDATE` nem `RRULE` com `BYSETPOS`, `BYWEEKNO`, `BYYEARDAY`, `WKST` (a semana começa na segunda) ou frequência abaixo de dia: esses eventos aparecem só na primeira ocorrência.
+- O bloco de hardware lê GPUs AMD e Intel. NVIDIA não aparece.
 - Notificações do Firefox não mostram o serviço web de origem.
-- Não há tema claro nem botões de ação nas notificações.
+- Não há tema claro nem botões de ação nas notificações: o clique abre o app ou o site.
+- Não há bandeja do sistema (AppIndicator) nem troca de layout de teclado.
 - A barra fica só no topo, e monitores com menos de 1280px lógicos não são suportados.
 ***
 ## Desenvolvimento
