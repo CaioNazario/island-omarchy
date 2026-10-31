@@ -6,8 +6,6 @@ The middle pill, the **Island**, works like a Dynamic Island for the desktop: it
 
 ![The Island bar with the music and calendar card open](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/hero.png)
 
-> The interface is currently in Brazilian Portuguese. English is planned.
-
 ---
 
 ## Features
@@ -32,13 +30,17 @@ When expanded, it can show:
 
 Only one mode is open at a time.
 
-| Calendar | Battery |
+| Music and calendar | AI usage |
 |---|---|
-| ![Calendar](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/calendar.png) | ![Battery](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/battery.png) |
+| ![The center card with music and the calendar](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/center-card.png) | ![AI usage](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/ai.png) |
 
-| Quick controls with Wi‑Fi | AI usage |
+| Wi‑Fi | Bluetooth |
 |---|---|
-| ![Quick controls with the Wi‑Fi panel](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/quick-wifi.png) | ![AI usage](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/ai.png) |
+| ![Quick controls with the Wi‑Fi panel](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/quick-wifi.png) | ![Quick controls with the Bluetooth panel](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/bluetooth.png) |
+
+| Volume mixer | Battery |
+|---|---|
+| ![Volume mixer](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/mixer.png) | ![Battery](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/battery.png) |
 
 ### Environments
 
@@ -54,8 +56,8 @@ Island ships with four:
 |---|---|---|
 | Default | AI usage | Hardware |
 | Work | Next event, Pomodoro, AI usage | Hardware, GitHub |
-| Study | Day progress, Pomodoro | Note |
-| Weekend | Music | Countdown |
+| Studies | Day progress, Pomodoro | Note |
+| Weekend | Music | Date countdown |
 
 You can have up to six. The first one can be renamed and changed, but not deleted.
 
@@ -77,10 +79,10 @@ To switch environments:
 | Music | What's playing now | Opens the music player |
 | GitHub | Your open PRs and how many wait for your review | — |
 | Day progress | How much of the day has passed | — |
-| Countdown | Days until a date | — |
+| Date countdown | Days until a date | — |
 | Note | A short note pinned to the bar | Edits the note |
 
-The countdown's name and date are set in `settings.json` (`countdownName` and `countdownDate`, as `YYYY-MM-DD`).
+The date countdown's name and date are set in `settings.json` (`countdownName` and `countdownDate`, as `YYYY-MM-DD`).
 
 Widgets never push the Island or the fixed buttons. When space runs out, the Hardware widget drops its blocks (network, GPU, temperature), and then whole widgets disappear, starting with the one farthest from the Island.
 
@@ -88,29 +90,34 @@ Data sources used only by widgets (hardware, AI usage, GitHub) run only while on
 
 #### Widgets from other plugins
 
-Bar widgets from other Omarchy plugins, such as [omaplug](https://github.com/fross100/omaplug) or [OmaSettings](https://github.com/twiking/omasettings), can live in the pills next to the Island's own widgets. They show up in the editor under **Omarchy plugins** (*Plugins do Omarchy*), and you add, move and remove them like any other widget. Their panels open right below the bar, one at a time, and opening an Island mode closes them.
+Bar widgets from other Omarchy plugins, such as [omaplug](https://github.com/fross100/omaplug) or [OmaSettings](https://github.com/twiking/omasettings), can live in the pills next to the Island's own widgets. They show up in the editor under **Omarchy plugins**, and you add, move and remove them like any other widget. Their panels open right below the bar, one at a time, and opening an Island mode closes them.
 
 Omarchy's own widgets (clock, audio, Bluetooth…) aren't offered: they expect Omarchy's full bar. A widget that needs its plugin's own service won't fully work, because Omarchy doesn't hand that service to third-party bars. If a plugin is removed, its widget stays in the environment and simply isn't drawn.
 
 ### Environment editor
 
-Click the environment button, at the start of the left pill, to open the editor. In the **Environments** tab (*Ambientes*) you can:
+Click the environment button, at the start of the left pill, to open the editor. In the **Environments** tab you can:
 
 - Create, rename, change the icon of and delete environments
 - Add widgets by clicking them in the catalog, or by dragging them onto a pill
 - Choose which pill a click adds to (left or right)
 - Reorder widgets by dragging them on the bar itself, or click a widget on the bar to move it one step, send it to the other pill or remove it
 
-![The environment editor](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/editor-environments.png)
+![The environment editor](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/editor.png)
 
-Every change is saved right away. **Done** (*Concluir*), `Esc`, a click on the dimmed background or another click on the environment button closes the editor.
+Every change is saved right away. **Done**, `Esc`, a click on the dimmed background or another click on the environment button closes the editor.
+
+### Language
+
+The interface is in English by default. The **Language** switch in the footer of the editor's Environments tab changes it to Portuguese (Brazil) and back, right away (`language` in `settings.json`). Environment names you've edited stay as you wrote them.
 
 ### Appearance
 
-The **Appearance** tab (*Aparência*) of the editor styles the pills, the Island and the notification banner together. Each section only shows the controls that apply to the current choice, and every change shows up on the bar as you make it.
+The **Appearance** tab of the editor styles the pills, the Island and the notification banner together. Each section only shows the controls that apply to the current choice, and every change shows up on the bar as you make it.
 
-![The Appearance tab of the editor](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/editor-appearance.png)
+![The Appearance tab of the editor](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/appearance.png)
 
+- **Size**: Automatic, Small, Medium or Large. It scales the whole Island UI (bar, open Island, panels and editor). On Automatic, each monitor gets its own size: small on laptops and fractional scaling, large on QHD and 4K at scale 1. On small monitors the size drops until everything fits.
 - **Style**: two presets. *Default* is the original design and undoes every tweak; *Glass* is a gradient with film grain.
 - **Theme**: Nocturne or High contrast, with a purple or white accent.
 - **Background**: on or off; solid (the theme color, none, or one of 10 dark colors) or a gradient (9 palettes, plus one taken from your Omarchy theme). The gradient strength backs off as needed to keep text readable. Opacity follows the theme or is set by hand.
@@ -171,7 +178,11 @@ Without a city, the weather disappears from the Island (there's no IP geolocatio
 
 ### Quick controls
 
-Open them with the arrow on the right pill or with `Super+S`. They include:
+Open them with the arrow on the right pill or with `Super+S`.
+
+![Quick controls](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/quick.png)
+
+They include:
 
 - Volume (the icon opens the volume mixer) and brightness
 - Wi‑Fi and Bluetooth
@@ -183,6 +194,8 @@ Open them with the arrow on the right pill or with `Super+S`. They include:
 - Dictation (Voxtype, if installed)
 - Settings (Omarchy's setup menu)
 - Power: suspend, restart, shut down, log out and lock, through Omarchy's commands
+
+![The power row](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/power.png)
 
 Omarchy's volume and brightness keys open the Island instead of Omarchy's OSD. Other OSD messages (microphone, shutting down…) show up in a mode of their own.
 
@@ -361,7 +374,7 @@ The Island doesn't read credentials or call usage APIs on its own. It runs `omar
 
 The limits depend on Omarchy's collector: Claude's uses Claude Code's credential to call a usage endpoint that isn't a public API and may change.
 
-Without a CLI login, the widget is still there but only shows **"IA"**. To stop using this feature, turn the providers off with `aiClaudeEnabled` and `aiCodexEnabled` in `settings.json`.
+Without a CLI login, the widget is still there but only shows **"AI"**. To stop using this feature, turn the providers off with `aiClaudeEnabled` and `aiCodexEnabled` in `settings.json`.
 
 ---
 
@@ -369,14 +382,13 @@ Without a CLI login, the widget is still there but only shows **"IA"**. To stop 
 
 Currently:
 
-- The interface is only in Brazilian Portuguese.
 - Not built yet: auto-hide (the rules exist in the core, but the bar doesn't use them) and the settings window (settings are edited in `settings.json`).
 - The calendar is read-only (ICS feed): it doesn't create or edit events. It doesn't support `RDATE`, or `RRULE` with `BYSETPOS`, `BYWEEKNO`, `BYYEARDAY`, `WKST` (weeks always start on Monday) or a frequency below daily: those events only show their first occurrence.
 - The hardware widget reads AMD and Intel GPUs. NVIDIA doesn't show up.
 - Firefox notifications don't show the web service they came from.
 - There's no light theme and no action buttons on notifications: a click opens the app or the site.
 - There's no system tray (AppIndicator) and no keyboard layout switcher.
-- The bar only sits at the top, and monitors narrower than 1280 logical pixels aren't supported.
+- The bar only sits at the top of the screen.
 
 ---
 
