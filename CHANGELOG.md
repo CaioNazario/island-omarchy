@@ -7,6 +7,7 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 ### Fixed
 
 - The README explains how to uninstall a plugin installed with `omarchy plugin add`, and how to remove its settings.
+- The manifest declares the same license as the README: GPL-3.0-or-later.
 
 ## [0.7.1] - 2026-10-31
 
