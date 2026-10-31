@@ -6,6 +6,7 @@
 
 import { parseHex, toHex } from './color.js';
 import { GRADIENT_IDS } from './gradients.js';
+import { msg } from './i18n.js';
 
 export const FILL_IDS = ['solid', 'gradient'] as const;
 export type FillId = (typeof FILL_IDS)[number];
@@ -165,17 +166,18 @@ export function withAppearanceOption(look: Appearance, key: string, value: unkno
 
 export interface AppearancePreset {
   id: string;
+  /** Em inglês: a UI traduz na hora de mostrar. */
   name: string;
   /** Só o que difere do padrão. */
   look: Partial<Appearance>;
 }
 
 export const APPEARANCE_PRESETS: readonly AppearancePreset[] = [
-  { id: 'default', name: 'Padrão', look: {} },
+  { id: 'default', name: msg('Default'), look: {} },
   // O Glass do omadock (`DockPresets.js` `builtin_glass`), sem as chaves de dock.
   {
     id: 'glass',
-    name: 'Vidro',
+    name: msg('Glass'),
     look: { fill: 'gradient', gradient: 'aurora', gradientStrength: 0.55, grain: 0.18 },
   },
 ];

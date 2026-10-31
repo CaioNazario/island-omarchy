@@ -19,13 +19,13 @@ describe('pomodoro', () => {
   it('começa em Foco 25:00, pausado', () => {
     const state = initialPomodoro();
     expect(formatRemaining(remainingAt(state, 0))).toBe('25:00');
-    expect(phaseLabel(state)).toBe('Pausado');
+    expect(phaseLabel(state, 'pt-BR')).toBe('Pausado');
     expect(elapsedFraction(state, 0)).toBe(0);
   });
 
   it('rodando conta pelo horário de término', () => {
     const state = toggle(initialPomodoro(), 1000);
-    expect(phaseLabel(state)).toBe('Foco');
+    expect(phaseLabel(state, 'pt-BR')).toBe('Foco');
     expect(formatRemaining(remainingAt(state, 1000 + 10 * MIN + 500))).toBe('15:00');
     expect(elapsedFraction(state, 1000 + 5 * MIN)).toBeCloseTo(0.2);
   });
@@ -44,7 +44,7 @@ describe('pomodoro', () => {
     expect(advance(running, 25 * MIN - 1).started).toBeNull();
     const { state, started } = advance(running, 25 * MIN);
     expect(started).toBe('break');
-    expect(phaseLabel(state)).toBe('Pausa');
+    expect(phaseLabel(state, 'pt-BR')).toBe('Pausa');
     expect(remainingAt(state, 25 * MIN)).toBe(PHASE_MS.break);
   });
 
@@ -76,8 +76,18 @@ describe('pomodoro', () => {
   });
 
   it('textos da notificação de cada fase', () => {
-    expect(phaseNotification('break')).toEqual({ title: 'Hora da pausa', body: '5 min de pausa' });
-    expect(phaseNotification('focus')).toEqual({ title: 'Hora de focar', body: '25 min de foco' });
+    expect(phaseNotification('break', 'pt-BR')).toEqual({
+      title: 'Hora da pausa',
+      body: '5 min de pausa',
+    });
+    expect(phaseNotification('focus', 'pt-BR')).toEqual({
+      title: 'Hora de focar',
+      body: '25 min de foco',
+    });
+    expect(phaseNotification('break', 'en')).toEqual({
+      title: 'Time for a break',
+      body: '5 min break',
+    });
   });
 });
 

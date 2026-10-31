@@ -2,6 +2,8 @@
 // (`Quickshell.Bluetooth`) vive em plugin/system/BluetoothSource.qml e traduz
 // cada dispositivo para `BtDeviceInfo`; aqui só entra dado puro.
 
+import { tr, trCount, type Language } from './i18n.js';
+
 export type DeviceKind =
   'headphones' | 'mouse' | 'keyboard' | 'speaker' | 'phone' | 'computer' | 'gamepad' | 'other';
 
@@ -101,7 +103,7 @@ export function visibleBattery(device: BtDevice): number | null {
   return device.connected ? device.battery : null;
 }
 
-export function btHeaderStatus(radioOn: boolean, connectedCount: number): string {
-  if (!radioOn) return 'Desligado';
-  return connectedCount === 1 ? '1 conectado' : `${connectedCount} conectados`;
+export function btHeaderStatus(radioOn: boolean, connectedCount: number, lang: Language): string {
+  if (!radioOn) return tr(lang, 'Off');
+  return trCount(lang, connectedCount, '1 connected', '{n} connected');
 }

@@ -33,14 +33,24 @@ describe('formatSessionReset', () => {
     [0, 'em 1min'],
     [-5 * min, 'em 1min'],
   ])('%i ms ahead is %s', (ahead, label) => {
-    expect(formatSessionReset(now + ahead, now)).toBe(label);
+    expect(formatSessionReset(now + ahead, now, 'pt-BR')).toBe(label);
+  });
+
+  it('in English', () => {
+    expect(formatSessionReset(now + (2 * 60 + 14) * min, now, 'en')).toBe('in 2h 14m');
+    expect(formatSessionReset(now + 45 * min, now, 'en')).toBe('in 45m');
+    expect(formatSessionReset(now + 2 * 60 * min, now, 'en')).toBe('in 2h');
   });
 });
 
 describe('formatWeeklyReset', () => {
   it('shows the lowercase weekday and local time', () => {
     // 28/09/2026 é uma segunda.
-    expect(formatWeeklyReset(new Date(2026, 8, 28, 9, 0).getTime())).toBe('seg, 09:00');
-    expect(formatWeeklyReset(new Date(2026, 9, 3, 23, 5).getTime())).toBe('sáb, 23:05');
+    expect(formatWeeklyReset(new Date(2026, 8, 28, 9, 0).getTime(), 'pt-BR')).toBe('seg, 09:00');
+    expect(formatWeeklyReset(new Date(2026, 9, 3, 23, 5).getTime(), 'pt-BR')).toBe('sáb, 23:05');
+  });
+
+  it('in English, capitalized and without a comma', () => {
+    expect(formatWeeklyReset(new Date(2026, 8, 28, 9, 0).getTime(), 'en')).toBe('Mon 09:00');
   });
 });

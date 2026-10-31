@@ -26,53 +26,69 @@ const finish: ScrollInput = { kind: 'smooth', dx: 0, dy: 0, finished: true };
 describe('sanitizeEnvironments', () => {
   it('keeps a valid list as is', () => {
     const stored: StoredEnvironment[] = [['Casa', 'coffee', ['ai', 'note'], ['hw']]];
-    expect(sanitizeEnvironments(stored)).toEqual([
+    expect(sanitizeEnvironments(stored, 'pt-BR')).toEqual([
       { name: 'Casa', icon: 'coffee', left: ['ai', 'note'], right: ['hw'] },
     ]);
   });
 
   it('drops unknown widgets', () => {
-    const [env] = sanitizeEnvironments([['A', 'house', ['ai', 'clock'], ['weather', 'hw']]]);
+    const [env] = sanitizeEnvironments(
+      [['A', 'house', ['ai', 'clock'], ['weather', 'hw']]],
+      'pt-BR',
+    );
     expect(env).toMatchObject({ left: ['ai'], right: ['hw'] });
   });
 
   it('keeps plugin widgets, even of a plugin not loaded now', () => {
-    const [env] = sanitizeEnvironments([['A', 'house', ['plugin:omaplug', 'ai'], ['plugin:gone']]]);
+    const [env] = sanitizeEnvironments(
+      [['A', 'house', ['plugin:omaplug', 'ai'], ['plugin:gone']]],
+      'pt-BR',
+    );
     expect(env).toMatchObject({ left: ['plugin:omaplug', 'ai'], right: ['plugin:gone'] });
   });
 
   it('drops plugin widgets outside the Omarchy id format', () => {
-    const [env] = sanitizeEnvironments([
-      ['A', 'house', ['plugin:', 'plugin:../x', 'plugin:-a', 'plugin:a b'], ['plugin:ok.id_2-b']],
-    ]);
+    const [env] = sanitizeEnvironments(
+      [['A', 'house', ['plugin:', 'plugin:../x', 'plugin:-a', 'plugin:a b'], ['plugin:ok.id_2-b']]],
+      'pt-BR',
+    );
     expect(env).toMatchObject({ left: [], right: ['plugin:ok.id_2-b'] });
   });
 
   it('keeps only the first occurrence of a repeated plugin widget', () => {
-    const [env] = sanitizeEnvironments([['A', 'house', ['plugin:omaplug'], ['plugin:omaplug']]]);
+    const [env] = sanitizeEnvironments(
+      [['A', 'house', ['plugin:omaplug'], ['plugin:omaplug']]],
+      'pt-BR',
+    );
     expect(env).toMatchObject({ left: ['plugin:omaplug'], right: [] });
   });
 
   it('keeps only the first occurrence of a repeated widget, left before right', () => {
-    const [env] = sanitizeEnvironments([['A', 'house', ['ai', 'ai', 'hw'], ['hw', 'note']]]);
+    const [env] = sanitizeEnvironments(
+      [['A', 'house', ['ai', 'ai', 'hw'], ['hw', 'note']]],
+      'pt-BR',
+    );
     expect(env).toMatchObject({ left: ['ai', 'hw'], right: ['note'] });
   });
 
   it('lets different environments repeat a widget', () => {
-    const envs = sanitizeEnvironments([
-      ['A', 'house', ['ai'], []],
-      ['B', 'house', ['ai'], []],
-    ]);
+    const envs = sanitizeEnvironments(
+      [
+        ['A', 'house', ['ai'], []],
+        ['B', 'house', ['ai'], []],
+      ],
+      'pt-BR',
+    );
     expect(envs.map((env) => env.left)).toEqual([['ai'], ['ai']]);
   });
 
   it('replaces an unknown icon with the house', () => {
-    const [env] = sanitizeEnvironments([['A', 'ph ph-rocket', [], []]]);
+    const [env] = sanitizeEnvironments([['A', 'ph ph-rocket', [], []]], 'pt-BR');
     expect(env?.icon).toBe('house');
   });
 
   it('falls back to the initial environments when the list is empty', () => {
-    expect(sanitizeEnvironments([])).toEqual(defaultEnvironments());
+    expect(sanitizeEnvironments([], 'pt-BR')).toEqual(defaultEnvironments('pt-BR'));
   });
 
   it('keeps at most 6 environments', () => {
@@ -82,7 +98,7 @@ describe('sanitizeEnvironments', () => {
       [],
       [],
     ]);
-    expect(sanitizeEnvironments(stored).map((env) => env.name)).toEqual([
+    expect(sanitizeEnvironments(stored, 'pt-BR').map((env) => env.name)).toEqual([
       'E0',
       'E1',
       'E2',
@@ -93,12 +109,17 @@ describe('sanitizeEnvironments', () => {
   });
 
   it('cuts names at 20 characters', () => {
-    const [env] = sanitizeEnvironments([['Um nome comprido demais aqui', 'house', [], []]]);
+    const [env] = sanitizeEnvironments(
+      [['Um nome comprido demais aqui', 'house', [], []]],
+      'pt-BR',
+    );
     expect(env?.name).toBe('Um nome comprido dem');
   });
 
   it('round-trips through the stored form', () => {
-    expect(sanitizeEnvironments(toStored(defaultEnvironments()))).toEqual(defaultEnvironments());
+    expect(sanitizeEnvironments(toStored(defaultEnvironments('pt-BR')), 'pt-BR')).toEqual(
+      defaultEnvironments('pt-BR'),
+    );
   });
 });
 
@@ -133,8 +154,17 @@ describe('plugin widget ids', () => {
 });
 
 describe('defaultEnvironments', () => {
+  it('names the environments in the interface language', () => {
+    expect(defaultEnvironments('en').map((env) => env.name)).toEqual([
+      'Default',
+      'Work',
+      'Studies',
+      'Weekend',
+    ]);
+  });
+
   it('starts with Padrão: ai on the left, hardware on the right', () => {
-    expect(defaultEnvironments()[0]).toEqual({
+    expect(defaultEnvironments('pt-BR')[0]).toEqual({
       name: 'Padrão',
       icon: 'house',
       left: ['ai'],
@@ -143,9 +173,9 @@ describe('defaultEnvironments', () => {
   });
 
   it('returns a fresh copy each time', () => {
-    const envs = defaultEnvironments();
+    const envs = defaultEnvironments('pt-BR');
     envs[0]!.left.push('note');
-    expect(defaultEnvironments()[0]!.left).toEqual(['ai']);
+    expect(defaultEnvironments('pt-BR')[0]!.left).toEqual(['ai']);
   });
 });
 
@@ -178,17 +208,17 @@ describe('stepIndex', () => {
 
 describe('removeEnvironment', () => {
   it('removes a non-default environment', () => {
-    const envs = removeEnvironment(defaultEnvironments(), 2);
+    const envs = removeEnvironment(defaultEnvironments('pt-BR'), 2);
     expect(envs.map((env) => env.name)).toEqual(['Padrão', 'Trabalho', 'Fim de semana']);
   });
 
   it('never removes Padrão', () => {
-    const envs = removeEnvironment(defaultEnvironments(), 0);
-    expect(envs).toEqual(defaultEnvironments());
+    const envs = removeEnvironment(defaultEnvironments('pt-BR'), 0);
+    expect(envs).toEqual(defaultEnvironments('pt-BR'));
   });
 
   it('ignores an index out of range', () => {
-    expect(removeEnvironment(defaultEnvironments(), 7)).toHaveLength(4);
+    expect(removeEnvironment(defaultEnvironments('pt-BR'), 7)).toHaveLength(4);
   });
 });
 
@@ -268,24 +298,24 @@ describe('removeWidget', () => {
 
 describe('addEnvironment', () => {
   it('appends "Ambiente N" with the next icon and empty pills', () => {
-    const envs = defaultEnvironments();
-    expect(addEnvironment(envs)).toEqual([
+    const envs = defaultEnvironments('pt-BR');
+    expect(addEnvironment(envs, 'pt-BR')).toEqual([
       ...envs,
       { name: 'Ambiente 5', icon: 'code', left: [], right: [] },
     ]);
   });
 
   it('picks the icon by the environment count', () => {
-    const envs = [...defaultEnvironments(), defaultEnvironments()[0]!];
-    expect(addEnvironment(envs).at(-1)).toMatchObject({
+    const envs = [...defaultEnvironments('pt-BR'), defaultEnvironments('pt-BR')[0]!];
+    expect(addEnvironment(envs, 'pt-BR').at(-1)).toMatchObject({
       name: 'Ambiente 6',
       icon: 'game-controller',
     });
   });
 
   it('does nothing with 6 environments', () => {
-    const envs = [...defaultEnvironments(), ...defaultEnvironments().slice(0, 2)];
-    expect(addEnvironment(envs)).toEqual(envs);
+    const envs = [...defaultEnvironments('pt-BR'), ...defaultEnvironments('pt-BR').slice(0, 2)];
+    expect(addEnvironment(envs, 'pt-BR')).toEqual(envs);
   });
 });
 
@@ -352,23 +382,24 @@ describe('EnvironmentScroll', () => {
 describe('environmentsFromJson', () => {
   it('lê a forma guardada e saneia como sanitizeEnvironments', () => {
     const stored = [['Foco', 'code', ['ai', 'xyz'], ['hw']]];
-    expect(environmentsFromJson(stored)).toEqual([
+    expect(environmentsFromJson(stored, 'pt-BR')).toEqual([
       { name: 'Foco', icon: 'code', left: ['ai'], right: ['hw'] },
     ]);
   });
 
   it('valor que não é lista, ou sem nenhum ambiente válido → ambientes iniciais', () => {
-    expect(environmentsFromJson(null)).toEqual(defaultEnvironments());
-    expect(environmentsFromJson('x')).toEqual(defaultEnvironments());
-    expect(environmentsFromJson([42, ['só nome'], { name: 'x' }])).toEqual(defaultEnvironments());
+    expect(environmentsFromJson(null, 'pt-BR')).toEqual(defaultEnvironments('pt-BR'));
+    expect(environmentsFromJson('x', 'pt-BR')).toEqual(defaultEnvironments('pt-BR'));
+    expect(environmentsFromJson([42, ['só nome'], { name: 'x' }], 'pt-BR')).toEqual(
+      defaultEnvironments('pt-BR'),
+    );
   });
 
   it('descarta só as entradas fora da forma', () => {
-    const result = environmentsFromJson([
-      ['A', 'house', [], ['note']],
-      'lixo',
-      ['B', 'coffee', 'x', []],
-    ]);
+    const result = environmentsFromJson(
+      [['A', 'house', [], ['note']], 'lixo', ['B', 'coffee', 'x', []]],
+      'pt-BR',
+    );
     expect(result.map((env) => env.name)).toEqual(['A']);
   });
   // Regressão: o `JsonAdapter` do Quickshell entrega os `var` lidos do arquivo
@@ -394,7 +425,7 @@ describe('environmentsFromJson', () => {
         qmlList(['Padrão', 'house', qmlList(['music', 'ai']), qmlList(['note', 'progress', 'hw'])]),
         qmlList(['Trabalho', 'briefcase', qmlList(['event']), qmlList(['github'])]),
       ]);
-      expect(environmentsFromJson(fromFile)).toEqual([
+      expect(environmentsFromJson(fromFile, 'pt-BR')).toEqual([
         { name: 'Padrão', icon: 'house', left: ['music', 'ai'], right: ['note', 'progress', 'hw'] },
         { name: 'Trabalho', icon: 'briefcase', left: ['event'], right: ['github'] },
       ]);
@@ -402,14 +433,14 @@ describe('environmentsFromJson', () => {
 
     it('aceita a mistura: lista de verdade com listas internas do motor, e o contrário', () => {
       const mixed = [['A', 'house', qmlList(['ai']), ['hw']]];
-      expect(environmentsFromJson(mixed)[0]).toEqual({
+      expect(environmentsFromJson(mixed, 'pt-BR')[0]).toEqual({
         name: 'A',
         icon: 'house',
         left: ['ai'],
         right: ['hw'],
       });
       const outer = qmlList([['B', 'coffee', ['note'], ['hw']]]);
-      expect(environmentsFromJson(outer)[0]?.name).toBe('B');
+      expect(environmentsFromJson(outer, 'pt-BR')[0]?.name).toBe('B');
     });
 
     it('ainda descarta a entrada fora da forma dentro da lista do motor', () => {
@@ -418,7 +449,7 @@ describe('environmentsFromJson', () => {
         'lixo',
         qmlList(['B', 'coffee', 'x', qmlList([])]),
       ]);
-      expect(environmentsFromJson(fromFile).map((env) => env.name)).toEqual(['A']);
+      expect(environmentsFromJson(fromFile, 'pt-BR').map((env) => env.name)).toEqual(['A']);
     });
 
     it('ida e volta: o que a barra grava volta igual na leitura seguinte', () => {
@@ -428,13 +459,13 @@ describe('environmentsFromJson', () => {
       const stored = toStored(envs).map(([name, icon, left, right]) =>
         qmlList([name, icon, qmlList(left), qmlList(right)]),
       );
-      expect(environmentsFromJson(qmlList(stored))).toEqual(envs);
+      expect(environmentsFromJson(qmlList(stored), 'pt-BR')).toEqual(envs);
     });
 
     it('objeto com `length` absurdo ou que não é lista não vira lista gigante', () => {
-      expect(environmentsFromJson({ length: 1e9 })).toEqual(defaultEnvironments());
-      expect(environmentsFromJson({ length: -1 })).toEqual(defaultEnvironments());
-      expect(environmentsFromJson({ nome: 'x' })).toEqual(defaultEnvironments());
+      expect(environmentsFromJson({ length: 1e9 }, 'pt-BR')).toEqual(defaultEnvironments('pt-BR'));
+      expect(environmentsFromJson({ length: -1 }, 'pt-BR')).toEqual(defaultEnvironments('pt-BR'));
+      expect(environmentsFromJson({ nome: 'x' }, 'pt-BR')).toEqual(defaultEnvironments('pt-BR'));
     });
   });
 });

@@ -2,24 +2,12 @@
 // `calendar`, `calWeeks`, `todayLabel`, `events`).
 
 import { formatClock, formatDay } from './clock.js';
+import { monthName, tr, weekdayShort, type Language } from './i18n.js';
 
-// Semana começando na segunda, mês completo em semanas inteiras.
-export const WEEKDAY_HEADERS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-
-const MONTHS = [
-  'Janeiro',
-  'Fevereiro',
-  'Março',
-  'Abril',
-  'Maio',
-  'Junho',
-  'Julho',
-  'Agosto',
-  'Setembro',
-  'Outubro',
-  'Novembro',
-  'Dezembro',
-];
+/** Semana começando na segunda, mês completo em semanas inteiras. */
+export function weekdayHeaders(lang: Language): string[] {
+  return [1, 2, 3, 4, 5, 6, 0].map((day) => weekdayShort(lang, day));
+}
 
 export type CalendarView = 'week' | 'month';
 /** `today` vale mesmo fora do mês, como no design (`isToday` antes de `inMonth`). */
@@ -31,7 +19,7 @@ export interface CalendarDay {
 }
 
 export interface MonthGrid {
-  /** `Setembro 2026`: capitalizado, sem "de". */
+  /** `September 2026` (`Setembro 2026`): capitalizado, sem "de". */
   title: string;
   weeks: CalendarDay[][];
   /** Linha mostrada em Semana: a de hoje no mês atual, a primeira nos outros. */
@@ -47,7 +35,7 @@ function sameDate(a: Date, b: Date): boolean {
 }
 
 /** Mês a `offset` meses do de `today` (0 = atual). */
-export function monthGrid(today: Date, offset: number): MonthGrid {
+export function monthGrid(today: Date, offset: number, lang: Language): MonthGrid {
   const first = new Date(today.getFullYear(), today.getMonth() + offset, 1);
   const year = first.getFullYear();
   const month = first.getMonth();
@@ -70,7 +58,7 @@ export function monthGrid(today: Date, offset: number): MonthGrid {
 
   const todayWeek = weeks.findIndex((week) => week.some((d) => d.kind === 'today'));
   return {
-    title: `${MONTHS[month]} ${year}`,
+    title: `${monthName(lang, month)} ${year}`,
     weeks,
     weekIndex: offset === 0 ? Math.max(0, todayWeek) : 0,
   };
@@ -116,8 +104,8 @@ function isAllDay(event: CalendarEvent, dayBegin: Date, dayEnd: Date): boolean {
   return event.start <= dayBegin && event.end >= dayEnd;
 }
 
-function eventTime(event: CalendarEvent, dayBegin: Date, dayEnd: Date): string {
-  if (isAllDay(event, dayBegin, dayEnd)) return 'Dia inteiro';
+function eventTime(event: CalendarEvent, dayBegin: Date, dayEnd: Date, lang: Language): string {
+  if (isAllDay(event, dayBegin, dayEnd)) return tr(lang, 'All day');
   const start = formatClock(event.start);
   if (event.start.getTime() === event.end.getTime()) return start;
   return `${start} – ${formatClock(event.end)}`;
@@ -131,7 +119,11 @@ function sourceOf(event: CalendarEvent): string {
  * Eventos que tocam hoje, por início, no máximo 10; a cor gira pela ordem em
  * que cada calendário aparece.
  */
-export function todayEvents(events: readonly CalendarEvent[], today: Date): TodayEvent[] {
+export function todayEvents(
+  events: readonly CalendarEvent[],
+  today: Date,
+  lang: Language,
+): TodayEvent[] {
   const dayBegin = startOfDay(today);
   const dayEnd = new Date(dayBegin.getFullYear(), dayBegin.getMonth(), dayBegin.getDate() + 1);
   const sources = new Map<string, EventDot>();
@@ -147,7 +139,7 @@ export function todayEvents(events: readonly CalendarEvent[], today: Date): Toda
         dot = EVENT_DOTS[sources.size % EVENT_DOTS.length]!;
         sources.set(source, dot);
       }
-      return { name: event.summary, time: eventTime(event, dayBegin, dayEnd), dot };
+      return { name: event.summary, time: eventTime(event, dayBegin, dayEnd, lang), dot };
     });
 }
 
@@ -164,24 +156,30 @@ const SOON_MINUTES = 90;
  * inteiro começa às 00:00, então nunca começa depois de agora; sem próximo,
  * ele é a reserva.
  */
-export function nextEvent(events: readonly CalendarEvent[], now: Date): NextEventView {
+export function nextEvent(
+  events: readonly CalendarEvent[],
+  now: Date,
+  lang: Language,
+): NextEventView {
   const dayBegin = startOfDay(now);
   const dayEnd = new Date(dayBegin.getFullYear(), dayBegin.getMonth(), dayBegin.getDate() + 1);
   const byStart = [...events].sort((a, b) => a.start.getTime() - b.start.getTime());
   const next = byStart.find((event) => event.start > now && event.start < dayEnd);
   if (!next) {
     const allDay = byStart.find((event) => isAllDay(event, dayBegin, dayEnd));
-    if (allDay) return { label: allDay.summary, sub: 'dia inteiro' };
-    return { label: 'Sem eventos', sub: 'hoje' };
+    if (allDay) return { label: allDay.summary, sub: tr(lang, 'all day') };
+    return { label: tr(lang, 'No events'), sub: tr(lang, 'today') };
   }
 
   const minutes = Math.ceil((next.start.getTime() - now.getTime()) / 60_000);
-  const sub = minutes <= SOON_MINUTES ? `em ${minutes} min` : formatClock(next.start);
+  const sub =
+    minutes <= SOON_MINUTES ? tr(lang, 'in {n} min', { n: minutes }) : formatClock(next.start);
   return { label: next.summary, sub };
 }
 
-/** `Hoje, sex, 25`: dia da semana minúsculo, como no design. */
-export function todayTitle(today: Date): string {
-  const day = formatDay(today);
-  return `Hoje, ${day.charAt(0).toLowerCase()}${day.slice(1)}`;
+/** `Today, Fri 25`; em português `Hoje, sex, 25`, minúsculo como no design. */
+export function todayTitle(today: Date, lang: Language): string {
+  const day = formatDay(today, lang);
+  const shown = lang === 'pt-BR' ? `${day.charAt(0).toLowerCase()}${day.slice(1)}` : day;
+  return tr(lang, 'Today, {day}', { day: shown });
 }

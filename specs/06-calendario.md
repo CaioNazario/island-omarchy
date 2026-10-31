@@ -7,7 +7,7 @@ Origem: `design/logic.js` `calendar(off)`, `calWeeks`, `toggleCal`, `prevMonth`/
 Regra pura em `src/core/calendar.ts`:
 - Semana começa na **segunda**: cabeçalho `Seg Ter Qua Qui Sex Sáb Dom`.
 - Mês completo em semanas inteiras (inclui dias do mês anterior/seguinte).
-- Título `Mês Ano` em pt-BR, capitalizado, sem "de" (`Setembro 2026`).
+- Título `Mês Ano` no idioma da interface, capitalizado, sem "de" (`September 2026`, `Setembro 2026`; spec 13 "Idioma").
 - **Semana**: só a linha que contém hoje (no mês atual) ou a primeira linha (em outro mês).
 - Botão alterna **Mês** (`ph ph-caret-down`) ↔ **Semana** (`ph ph-caret-up`). Abre sempre em Semana.
 - `‹` `›` navegam meses; reabrir a ilha/cartão volta ao mês atual.

@@ -100,7 +100,7 @@ Scope {
     interval: 30000
     onTriggered: {
       const network = wifi.networkFor(wifi.pendingSsid);
-      if (network && !network.connected) wifi.fail(network, "Não foi possível conectar");
+      if (network && !network.connected) wifi.fail(network, WifiCore.CONNECT_FAILED);
     }
   }
 

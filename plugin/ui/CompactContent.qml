@@ -53,7 +53,7 @@ Row {
 
   IslandText {
     anchors.verticalCenter: parent.verticalCenter
-    text: Clock.formatDay(clock.date)
+    text: Clock.formatDay(clock.date, I18n.language)
   }
 
   component Dot: Rectangle {

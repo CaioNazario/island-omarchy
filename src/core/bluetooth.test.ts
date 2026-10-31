@@ -101,13 +101,15 @@ describe('visibleBattery', () => {
 
 describe('btHeaderStatus', () => {
   it('reads off when the radio is off', () => {
-    expect(btHeaderStatus(false, 2)).toBe('Desligado');
+    expect(btHeaderStatus(false, 2, 'pt-BR')).toBe('Desligado');
   });
 
   it('counts connected devices', () => {
-    expect(btHeaderStatus(true, 0)).toBe('0 conectados');
-    expect(btHeaderStatus(true, 1)).toBe('1 conectado');
-    expect(btHeaderStatus(true, 2)).toBe('2 conectados');
+    expect(btHeaderStatus(true, 0, 'pt-BR')).toBe('0 conectados');
+    expect(btHeaderStatus(true, 1, 'pt-BR')).toBe('1 conectado');
+    expect(btHeaderStatus(true, 2, 'pt-BR')).toBe('2 conectados');
+    expect(btHeaderStatus(true, 1, 'en')).toBe('1 connected');
+    expect(btHeaderStatus(false, 0, 'en')).toBe('Off');
   });
 });
 

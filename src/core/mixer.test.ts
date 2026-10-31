@@ -10,15 +10,20 @@ import {
 describe('outputDevice', () => {
   it('alto-falante interno: ícone de notebook e "Integrado"', () => {
     expect(
-      outputDevice({
-        name: 'alsa_output.pci-0000_00_1f.3.analog-stereo',
-        description: 'Built-in Audio Analog Stereo',
-      }),
+      outputDevice(
+        {
+          name: 'alsa_output.pci-0000_00_1f.3.analog-stereo',
+          description: 'Built-in Audio Analog Stereo',
+        },
+        'pt-BR',
+      ),
     ).toEqual({ label: 'Analog Stereo', glyph: 'laptop', sub: 'Integrado' });
   });
 
   it('fone Bluetooth: ícone de fone e "Bluetooth"', () => {
-    expect(outputDevice({ name: 'bluez_output.AA_BB.1', description: 'AirPods Pro' })).toEqual({
+    expect(
+      outputDevice({ name: 'bluez_output.AA_BB.1', description: 'AirPods Pro' }, 'pt-BR'),
+    ).toEqual({
       label: 'AirPods Pro',
       glyph: 'headphones-fill',
       sub: 'Bluetooth',
@@ -26,31 +31,34 @@ describe('outputDevice', () => {
   });
 
   it('caixa Bluetooth sem cara de fone: ícone de Bluetooth', () => {
-    expect(outputDevice({ name: 'bluez_output.CC_DD.1', description: 'JBL Flip 5' }).glyph).toBe(
-      'bluetooth-fill',
-    );
+    expect(
+      outputDevice({ name: 'bluez_output.CC_DD.1', description: 'JBL Flip 5' }, 'pt-BR').glyph,
+    ).toBe('bluetooth-fill');
   });
 
   it('HDMI: ícone de monitor e "HDMI", com o apelido do nó', () => {
     expect(
-      outputDevice({
-        name: 'alsa_output.hdmi-stereo',
-        description: 'HDMI / DisplayPort',
-        nickname: 'LG HDR 4K',
-      }),
+      outputDevice(
+        {
+          name: 'alsa_output.hdmi-stereo',
+          description: 'HDMI / DisplayPort',
+          nickname: 'LG HDR 4K',
+        },
+        'pt-BR',
+      ),
     ).toEqual({ label: 'LG HDR 4K', glyph: 'monitor', sub: 'HDMI' });
   });
 
   it('limpa os prefixos e sufixos do ALSA como o painel de áudio do Omarchy', () => {
-    expect(outputDevice({ name: 'x', description: 'sof-soundwire Speaker Output' }).label).toBe(
-      'Speaker',
-    );
+    expect(
+      outputDevice({ name: 'x', description: 'sof-soundwire Speaker Output' }, 'pt-BR').label,
+    ).toBe('Speaker');
   });
 });
 
 describe('streamApp', () => {
   it('Spotify: nome bonito, ícone da marca e a faixa como sub', () => {
-    expect(streamApp({ appName: 'spotify', mediaName: 'Get Lucky' })).toEqual({
+    expect(streamApp({ appName: 'spotify', mediaName: 'Get Lucky' }, 'pt-BR')).toEqual({
       label: 'Spotify',
       glyph: 'spotify-logo-fill',
       sub: 'Get Lucky',
@@ -58,18 +66,22 @@ describe('streamApp', () => {
   });
 
   it('navegador: ícone de navegador, aba como sub', () => {
-    expect(streamApp({ appName: 'Firefox', mediaName: 'YouTube — Lo-fi' }).glyph).toBe('browser');
+    expect(streamApp({ appName: 'Firefox', mediaName: 'YouTube — Lo-fi' }, 'pt-BR').glyph).toBe(
+      'browser',
+    );
   });
 
   it('Discord e sons do sistema têm ícone próprio', () => {
-    expect(streamApp({ appName: 'WEBRTC VoiceEngine', binary: 'Discord' }).glyph).toBe(
+    expect(streamApp({ appName: 'WEBRTC VoiceEngine', binary: 'Discord' }, 'pt-BR').glyph).toBe(
       'discord-logo-fill',
     );
-    expect(streamApp({ appName: 'libcanberra', mediaName: 'bell' }).glyph).toBe('bell-simple-fill');
+    expect(streamApp({ appName: 'libcanberra', mediaName: 'bell' }, 'pt-BR').glyph).toBe(
+      'bell-simple-fill',
+    );
   });
 
   it('sem nome de app: cai na descrição e no ícone genérico; sub repetida some', () => {
-    expect(streamApp({ description: 'mpv', mediaName: 'mpv' })).toEqual({
+    expect(streamApp({ description: 'mpv', mediaName: 'mpv' }, 'pt-BR')).toEqual({
       label: 'mpv',
       glyph: 'speaker-high-fill',
       sub: '',

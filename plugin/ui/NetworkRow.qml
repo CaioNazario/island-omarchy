@@ -43,7 +43,7 @@ ListRow {
 
       IslandText {
         visible: row.known
-        text: row.connected ? "Conectado" : row.connecting ? "Conectando…" : "Salva"
+        text: row.connected ? I18n.tr("Connected") : row.connecting ? I18n.tr("Connecting…") : I18n.tr("Saved")
         px: 11
         font.weight: Tokens.weightBody
         color: row.connected ? Tokens.accent300 : Tokens.neutral400
@@ -52,7 +52,7 @@ ListRow {
 
     IslandText {
       visible: !row.known && row.connecting
-      text: "Conectando…"
+      text: I18n.tr("Connecting…")
       px: 11
       font.weight: Tokens.weightBody
       color: Tokens.neutral400

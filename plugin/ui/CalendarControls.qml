@@ -32,7 +32,7 @@ Row {
 
       IslandText {
         anchors.verticalCenter: parent.verticalCenter
-        text: controls.bar.calendarView === "week" ? "Mês" : "Semana"
+        text: controls.bar.calendarView === "week" ? I18n.tr("Month") : I18n.tr("Week")
         px: controls.textPx
         font.weight: Tokens.weightBody
       }

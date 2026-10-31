@@ -121,7 +121,7 @@ ShellRoot {
     // <id> <left|right> [índice]`, `select <id>`, `step <-1|1>`, `move`,
     // `remove`, `add`, `delete`, `rename <nome>`, `icon <glifo>`, `switch <i>`, `theme <nome>`,
     // `accent <nome>`, `appearance <chave> <valor JSON>`, `preset <id>`,
-    // `page <environments|appearance>`, `barSize <id>`.
+    // `page <environments|appearance>`, `language <en|pt-BR>`, `barSize <id>`.
     function editorDo(action: string, arg: string): string {
       const bar = barLoader.item; // qmllint disable missing-property
       if (!bar) return "no bar";
@@ -142,6 +142,7 @@ ShellRoot {
         appearance: () => bar.service.setAppearanceOption(parts[0], JSON.parse(parts.slice(1).join(" "))),
         preset: () => bar.service.applyAppearancePreset(arg),
         page: () => bar.editorPage = arg,
+        language: () => bar.setLanguage(arg),
         barSize: () => bar.setBarSize(arg)
       }; // qmllint disable missing-property
       if (!actions[action]) return "unknown action " + action;
@@ -157,11 +158,11 @@ ShellRoot {
       return JSON.stringify(bar.environments); // qmllint disable missing-property
     }
 
-    // Tamanho da barra como o serviço o guarda (spec 02 "Tamanho").
+    // Idioma e tamanho da barra como o serviço os guarda (specs/13 e 02).
     function prefs(): string {
       const bar = barLoader.item; // qmllint disable missing-property
       if (!bar || !bar.service) return "no service"; // qmllint disable missing-property
-      return JSON.stringify({ barSize: bar.service.settings.values.barSize }); // qmllint disable missing-property
+      return JSON.stringify({ language: bar.service.language, barSize: bar.service.settings.values.barSize }); // qmllint disable missing-property
     }
 
     // Aparência como o serviço a entrega à barra (já saneada do settings.json).

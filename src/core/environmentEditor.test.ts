@@ -19,9 +19,13 @@ const env: Environment = {
 
 describe('renomear e trocar ícone', () => {
   it('troca só o ambiente escolhido e corta o nome em 20 caracteres', () => {
-    const envs = renameEnvironment(defaultEnvironments(), 1, 'Um nome comprido demais para caber');
+    const envs = renameEnvironment(
+      defaultEnvironments('pt-BR'),
+      1,
+      'Um nome comprido demais para caber',
+    );
     expect(envs[1]?.name).toBe('Um nome comprido dem');
-    expect(envs[0]?.name).toBe(defaultEnvironments()[0]?.name);
+    expect(envs[0]?.name).toBe(defaultEnvironments('pt-BR')[0]?.name);
   });
 
   it('ícone fora de ENV_ICONS não muda nada', () => {
@@ -57,9 +61,10 @@ describe('moveToOtherSide', () => {
 
 describe('selectionLabel', () => {
   it('"Pílula esquerda · 2 de 3"', () => {
-    expect(selectionLabel(env, 'pomodoro')).toBe('Pílula esquerda · 2 de 3');
-    expect(selectionLabel(env, 'hw')).toBe('Pílula direita · 1 de 1');
-    expect(selectionLabel(env, 'note')).toBe('');
+    expect(selectionLabel(env, 'pomodoro', 'pt-BR')).toBe('Pílula esquerda · 2 de 3');
+    expect(selectionLabel(env, 'hw', 'pt-BR')).toBe('Pílula direita · 1 de 1');
+    expect(selectionLabel(env, 'note', 'pt-BR')).toBe('');
+    expect(selectionLabel(env, 'pomodoro', 'en')).toBe('Left pill · 2 of 3');
   });
 });
 

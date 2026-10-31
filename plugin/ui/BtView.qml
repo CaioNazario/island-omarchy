@@ -43,7 +43,7 @@ ColumnLayout {
     Layout.bottomMargin: 4
     glyph: "bluetooth-bold"
     title: "Bluetooth"
-    status: BluetoothCore.btHeaderStatus(view.bluetooth.radioOn, view.bluetooth.connectedCount)
+    status: BluetoothCore.btHeaderStatus(view.bluetooth.radioOn, view.bluetooth.connectedCount, I18n.language)
     radioOn: view.bluetooth.radioOn
     onToggled: view.bluetooth.setRadio(!view.bluetooth.radioOn)
   }
@@ -53,7 +53,7 @@ ColumnLayout {
     Layout.preferredHeight: 190
     visible: !view.bluetooth.radioOn
     glyph: "bluetooth-slash"
-    text: "Bluetooth desligado"
+    text: I18n.tr("Bluetooth off")
   }
 
   Flickable {
@@ -75,7 +75,7 @@ ColumnLayout {
       width: deviceArea.width
 
       GroupLabel {
-        text: "Meus dispositivos"
+        text: I18n.tr("My devices")
         topPadding: 4
         visible: view.bluetooth.lists.paired.length > 0
       }
@@ -97,7 +97,7 @@ ColumnLayout {
         visible: view.bluetooth.lists.nearby.length > 0 || view.bluetooth.searching
 
         GroupLabel {
-          text: "Disponíveis"
+          text: I18n.tr("Available")
           topPadding: 8
         }
 

@@ -31,7 +31,7 @@ describe('parseBatteryStatus', () => {
 
 describe('batteryPanel', () => {
   it('carregando: tempo até a carga total e potência de carga', () => {
-    const panel = batteryPanel(parseBatteryStatus(CHARGING));
+    const panel = batteryPanel(parseBatteryStatus(CHARGING), 'pt-BR');
     expect(panel.status).toBe('Carregando');
     expect(panel.stats).toEqual([
       { label: 'Capacidade', value: '29 Wh' },
@@ -42,7 +42,7 @@ describe('batteryPanel', () => {
   });
 
   it('na bateria: tempo restante e consumo', () => {
-    const panel = batteryPanel(parseBatteryStatus(DISCHARGING));
+    const panel = batteryPanel(parseBatteryStatus(DISCHARGING), 'pt-BR');
     expect(panel.status).toBe('Na bateria');
     expect(panel.stats.map((stat) => stat.label)).toEqual([
       'Capacidade',
@@ -54,17 +54,21 @@ describe('batteryPanel', () => {
   });
 
   it('cheia ou parada no limite de carga: sem tempo nem potência', () => {
-    expect(batteryPanel(parseBatteryStatus('state\tfully-charged\nsize\t52Wh\n')).status).toBe(
-      'Carga completa',
+    expect(
+      batteryPanel(parseBatteryStatus('state\tfully-charged\nsize\t52Wh\n'), 'pt-BR').status,
+    ).toBe('Carga completa');
+    const pending = batteryPanel(
+      parseBatteryStatus('state\tpending-charge\nthreshold\t75-80%\n'),
+      'pt-BR',
     );
-    const pending = batteryPanel(parseBatteryStatus('state\tpending-charge\nthreshold\t75-80%\n'));
     expect(pending.status).toBe('Limite de carga · 80%');
+    expect(batteryPanel(parseBatteryStatus(CHARGING), 'en').status).toBe('Charging');
     expect(pending.stats[1]?.value).toBe('—');
     expect(pending.stats[3]?.value).toBe('—');
   });
 
   it('campo ausente vira travessão', () => {
-    expect(batteryPanel({}).stats.every((stat) => stat.value === '—')).toBe(true);
+    expect(batteryPanel({}, 'pt-BR').stats.every((stat) => stat.value === '—')).toBe(true);
   });
 });
 
@@ -82,9 +86,9 @@ describe('batteryGlyph', () => {
 describe('parsePowerProfiles', () => {
   it('lê omarchy-powerprofiles-list --active-state, com rótulo e ícone do design', () => {
     expect(parsePowerProfiles('power-saver\t0\nbalanced\t1\nperformance\t0\n')).toEqual([
-      { id: 'power-saver', label: 'Economia', glyph: 'leaf', active: false },
-      { id: 'balanced', label: 'Equilibrado', glyph: 'scales', active: true },
-      { id: 'performance', label: 'Desempenho', glyph: 'lightning', active: false },
+      { id: 'power-saver', label: 'Power saver', glyph: 'leaf', active: false },
+      { id: 'balanced', label: 'Balanced', glyph: 'scales', active: true },
+      { id: 'performance', label: 'Performance', glyph: 'lightning', active: false },
     ]);
   });
 

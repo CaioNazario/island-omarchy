@@ -5,7 +5,8 @@ import QtQuick.Layouts
 import "../core/environments.mjs" as EnvironmentsCore
 
 // Aba Ambientes do editor (specs/17-editor-ambientes.md): linhas com gap
-// 14px: ambientes · ambiente ativo · seleção · catálogo · rodapé. O
+// 14px: ambientes · ambiente ativo · seleção · catálogo · rodapé (dica e
+// idioma). O
 // "Concluir" fica no cabeçalho do `EditorPanel`; Tema e Realce, na aba
 // Aparência.
 ColumnLayout {
@@ -55,7 +56,7 @@ ColumnLayout {
 
           IslandText {
             anchors.verticalCenter: parent.verticalCenter
-            text: tab.modelData.name || "Sem nome"
+            text: tab.modelData.name || I18n.tr("Untitled")
             px: 12.5
             font.weight: Tokens.weightBody
             color: tab.active ? Tokens.accent100 : Tokens.neutral300
@@ -142,7 +143,7 @@ ColumnLayout {
 
           IslandText {
             visible: nameField.text === ""
-            text: "Nome do ambiente"
+            text: I18n.tr("Environment name")
             px: 12.5
             font.weight: Tokens.weightBody
             color: Tokens.neutral500
@@ -211,7 +212,7 @@ ColumnLayout {
 
         IslandText {
           anchors.verticalCenter: parent.verticalCenter
-          text: "Excluir ambiente"
+          text: I18n.tr("Delete environment")
           px: 12
           font.weight: Tokens.weightBody
           color: Tokens.powerOffText
@@ -252,11 +253,27 @@ ColumnLayout {
 
     IslandText {
       Layout.fillWidth: true
-      text: "Deslize com dois dedos sobre a barra para trocar de ambiente. No teclado: Super+Ctrl+Alt+← / Super+Ctrl+Alt+→."
+      text: I18n.tr("Swipe with two fingers on the bar to switch environments. On the keyboard: Super+Ctrl+Alt+← / Super+Ctrl+Alt+→.")
       px: 11.5
       font.weight: Tokens.weightBody
       color: Tokens.neutral500
       elide: Text.ElideRight
+    }
+
+    // Idioma da interface (specs/13 "Idioma"): vale para a Island inteira.
+    // Cada idioma aparece no próprio nome, como de costume.
+    IslandText {
+      Layout.leftMargin: 8
+      text: I18n.tr("Language")
+      px: 11.5
+      font.weight: Tokens.weightBody
+      color: Tokens.neutral400
+    }
+
+    SegmentedSwitch {
+      options: [{ id: "en", label: "English" }, { id: "pt-BR", label: "Português" }]
+      current: I18n.language
+      onChosen: id => page.bar.setLanguage(id)
     }
   }
 }

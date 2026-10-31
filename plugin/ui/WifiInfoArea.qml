@@ -40,7 +40,7 @@ Item {
 
         IslandText {
           Layout.fillWidth: true
-          text: stat.modelData.label
+          text: I18n.tr(stat.modelData.label)
           px: 12
           font.weight: Tokens.weightBody
           color: Tokens.neutral500
@@ -103,7 +103,7 @@ Item {
 
       IslandText {
         Layout.fillWidth: true
-        text: area.share.error !== "" ? area.share.error : "Compartilhar " + area.share.qr.ssid
+        text: area.share.error !== "" ? area.share.error : I18n.tr("Share {ssid}", { ssid: area.share.qr.ssid })
         px: area.share.error !== "" ? 12 : 13
         elide: Text.ElideRight
       }
@@ -129,7 +129,7 @@ Item {
 
           IslandText {
             Layout.fillWidth: true
-            text: !area.share.qr.secured ? "Rede aberta · sem senha"
+            text: !area.share.qr.secured ? I18n.tr("Open network · no password")
               : area.share.revealed && area.share.password !== "" ? area.share.password : "••••••••••"
             px: 12
             font.weight: Tokens.weightBody
@@ -154,7 +154,7 @@ Item {
 
       IslandText {
         visible: area.share.error === ""
-        text: "Aponte a câmera do celular para entrar na rede"
+        text: I18n.tr("Point your phone camera here to join the network")
         px: 11
         font.weight: Tokens.weightBody
         color: Tokens.neutral500
@@ -174,8 +174,8 @@ Item {
 
       PanelLabel {
         Layout.fillWidth: true
-        text: "Teste de velocidade"
-        value: PanelCore.speedStatus(area.speed.phase, area.details.current ? area.details.current.internetPingMs : null)
+        text: I18n.tr("Speed test")
+        value: PanelCore.speedStatus(area.speed.phase, area.details.current ? area.details.current.internetPingMs : null, I18n.language)
       }
 
       SmallButton {

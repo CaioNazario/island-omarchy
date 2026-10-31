@@ -102,7 +102,7 @@ describe('sanitizeAppearance', () => {
 
 describe('presets', () => {
   it('Padrão e Vidro', () => {
-    expect(APPEARANCE_PRESETS.map((preset) => preset.name)).toEqual(['Padrão', 'Vidro']);
+    expect(APPEARANCE_PRESETS.map((preset) => preset.name)).toEqual(['Default', 'Glass']);
   });
 
   it('Padrão é o padrão; Vidro é o Glass do omadock', () => {

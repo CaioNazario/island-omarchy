@@ -19,7 +19,8 @@ describe('sanitizeNote', () => {
 
 describe('noteCounter', () => {
   it('conta caracteres', () => {
-    expect(noteCounter('')).toBe('0/80 · Enter para salvar');
-    expect(noteCounter('olá')).toBe('3/80 · Enter para salvar');
+    expect(noteCounter('', 'pt-BR')).toBe('0/80 · Enter para salvar');
+    expect(noteCounter('olá', 'pt-BR')).toBe('3/80 · Enter para salvar');
+    expect(noteCounter('hi', 'en')).toBe('2/80 · Enter to save');
   });
 });

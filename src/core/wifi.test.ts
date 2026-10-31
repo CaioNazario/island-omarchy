@@ -143,7 +143,7 @@ describe('splitNetworks', () => {
 
 describe('wifiHeader', () => {
   it('radio off: "Wi‑Fi", "Desligado" and the slashed glyph', () => {
-    expect(wifiHeader(false, null)).toEqual({
+    expect(wifiHeader(false, null, 'pt-BR')).toEqual({
       title: 'Wi‑Fi',
       status: 'Desligado',
       glyph: 'wifi-slash-fill',
@@ -152,7 +152,7 @@ describe('wifiHeader', () => {
   });
 
   it('connected: the network as title (design v5 "Transmitindo pacotes")', () => {
-    expect(wifiHeader(true, { ssid: 'Casa', status: 'connected' })).toEqual({
+    expect(wifiHeader(true, { ssid: 'Casa', status: 'connected' }, 'pt-BR')).toEqual({
       title: 'Casa',
       status: 'Transmitindo pacotes',
       glyph: 'wifi-high-fill',
@@ -161,8 +161,14 @@ describe('wifiHeader', () => {
   });
 
   it('connecting and disconnected', () => {
-    expect(wifiHeader(true, { ssid: 'Casa', status: 'connecting' }).status).toBe('Conectando…');
-    expect(wifiHeader(true, null)).toMatchObject({ title: 'Wi‑Fi', status: 'Desconectado' });
+    expect(wifiHeader(true, { ssid: 'Casa', status: 'connecting' }, 'pt-BR').status).toBe(
+      'Conectando…',
+    );
+    expect(wifiHeader(true, null, 'pt-BR')).toMatchObject({
+      title: 'Wi‑Fi',
+      status: 'Desconectado',
+    });
+    expect(wifiHeader(true, null, 'en')).toMatchObject({ title: 'Wi‑Fi', status: 'Disconnected' });
   });
 });
 
@@ -190,13 +196,13 @@ describe('securityFromQuickshell', () => {
 
 describe('connectFailureMessage', () => {
   it('falta de segredo ou autenticação expirada → senha incorreta', () => {
-    expect(connectFailureMessage('NoSecrets')).toBe('Senha incorreta');
-    expect(connectFailureMessage('WifiAuthTimeout')).toBe('Senha incorreta');
+    expect(connectFailureMessage('NoSecrets')).toBe('Wrong password');
+    expect(connectFailureMessage('WifiAuthTimeout')).toBe('Wrong password');
   });
 
   it('outras falhas → não foi possível conectar', () => {
-    expect(connectFailureMessage('WifiClientDisconnected')).toBe('Não foi possível conectar');
-    expect(connectFailureMessage('WifiNetworkLost')).toBe('Não foi possível conectar');
-    expect(connectFailureMessage('Unknown')).toBe('Não foi possível conectar');
+    expect(connectFailureMessage('WifiClientDisconnected')).toBe("Couldn't connect");
+    expect(connectFailureMessage('WifiNetworkLost')).toBe("Couldn't connect");
+    expect(connectFailureMessage('Unknown')).toBe("Couldn't connect");
   });
 });

@@ -53,24 +53,36 @@ describe('countdownView', () => {
   const today = new Date(2026, 8, 30, 10, 0);
 
   it('mostra o nome e os dias no singular ou plural', () => {
-    expect(countdownView('Viagem', '2026-10-01', today)).toEqual({
+    expect(countdownView('Viagem', '2026-10-01', today, 'pt-BR')).toEqual({
       label: 'Viagem',
       missingDate: false,
       sub: '1 dia',
     });
-    expect(countdownView('Viagem', '2026-10-12', today).sub).toBe('12 dias');
+    expect(countdownView('Viagem', '2026-10-12', today, 'pt-BR').sub).toBe('12 dias');
   });
 
   it('diz hoje e encerrada', () => {
-    expect(countdownView('Viagem', '2026-09-30', today).sub).toBe('hoje');
-    expect(countdownView('Viagem', '2026-09-01', today).sub).toBe('encerrada');
+    expect(countdownView('Viagem', '2026-09-30', today, 'pt-BR').sub).toBe('hoje');
+    expect(countdownView('Viagem', '2026-09-01', today, 'pt-BR').sub).toBe('encerrada');
+  });
+
+  it('em inglês', () => {
+    expect(countdownView('Trip', '2026-10-12', today, 'en').sub).toBe('12 days');
+    expect(countdownView('  ', '2026-09-01', today, 'en')).toEqual({
+      label: 'Countdown',
+      missingDate: false,
+      sub: 'over',
+    });
   });
 
   it('usa "Contagem" com o nome vazio', () => {
-    expect(countdownView('  ', '2026-10-01', today).label).toBe('Contagem');
+    expect(countdownView('  ', '2026-10-01', today, 'pt-BR').label).toBe('Contagem');
   });
 
   it('sem data não tem sub, com qualquer nome', () => {
-    expect(countdownView('Viagem', '', today)).toEqual({ label: 'Sem data', missingDate: true });
+    expect(countdownView('Viagem', '', today, 'pt-BR')).toEqual({
+      label: 'Sem data',
+      missingDate: true,
+    });
   });
 });

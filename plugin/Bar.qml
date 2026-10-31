@@ -66,7 +66,7 @@ Item {
   property int calendarOffset: 0
 
   // Ambientes (spec 15): um ativo para todos os monitores, guardado no serviço.
-  readonly property var environments: service ? service.environments : EnvironmentsCore.defaultEnvironments()
+  readonly property var environments: service ? service.environments : EnvironmentsCore.defaultEnvironments(I18n.language)
   readonly property int environmentIndex: service ? service.environmentIndex : 0
   readonly property var environment: environments[environmentIndex]
   readonly property var activeWidgets: environment.left.concat(environment.right)
@@ -163,6 +163,17 @@ Item {
 
   function setAccent(id) {
     if (service) service.settings.values.accent = id;
+  }
+
+  // Idioma da interface (specs/13 "Idioma"), já saneado pelo serviço.
+  Binding {
+    target: I18n
+    property: "language"
+    value: root.service ? root.service.language : "en"
+  }
+
+  function setLanguage(id) {
+    if (service) service.setLanguage(id);
   }
 
   // Tamanho da barra (spec 02 "Tamanho"), global; o zoom sai por monitor.
@@ -484,7 +495,7 @@ Item {
   }
 
   function editorAddEnvironment() {
-    const list = EnvironmentsCore.addEnvironment(environments);
+    const list = EnvironmentsCore.addEnvironment(environments, I18n.language);
     if (list.length === environments.length) return;
     saveEnvironments(list);
     editorSwitch(list.length - 1);

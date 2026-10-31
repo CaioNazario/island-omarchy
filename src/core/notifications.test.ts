@@ -70,22 +70,28 @@ describe('formatRelativeTime', () => {
   const MIN = 60_000;
 
   it('"agora" abaixo de 1 min', () => {
-    expect(formatRelativeTime(0)).toBe('agora');
-    expect(formatRelativeTime(MIN - 1)).toBe('agora');
+    expect(formatRelativeTime(0, 'pt-BR')).toBe('agora');
+    expect(formatRelativeTime(MIN - 1, 'pt-BR')).toBe('agora');
   });
 
   it('"há N min" abaixo de 60 min', () => {
-    expect(formatRelativeTime(MIN)).toBe('há 1 min');
-    expect(formatRelativeTime(59 * MIN + 59_000)).toBe('há 59 min');
+    expect(formatRelativeTime(MIN, 'pt-BR')).toBe('há 1 min');
+    expect(formatRelativeTime(59 * MIN + 59_000, 'pt-BR')).toBe('há 59 min');
   });
 
   it('"há N h" a partir de 60 min', () => {
-    expect(formatRelativeTime(60 * MIN)).toBe('há 1 h');
-    expect(formatRelativeTime(26 * 60 * MIN)).toBe('há 26 h');
+    expect(formatRelativeTime(60 * MIN, 'pt-BR')).toBe('há 1 h');
+    expect(formatRelativeTime(26 * 60 * MIN, 'pt-BR')).toBe('há 26 h');
+  });
+
+  it('em inglês', () => {
+    expect(formatRelativeTime(0, 'en')).toBe('now');
+    expect(formatRelativeTime(5 * MIN, 'en')).toBe('5 min ago');
+    expect(formatRelativeTime(120 * MIN, 'en')).toBe('2 h ago');
   });
 
   it('relógio andando para trás conta como "agora"', () => {
-    expect(formatRelativeTime(-5 * MIN)).toBe('agora');
+    expect(formatRelativeTime(-5 * MIN, 'pt-BR')).toBe('agora');
   });
 });
 

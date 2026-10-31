@@ -6,11 +6,14 @@ Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](ht
 
 ### Adicionado
 
+- Interface em inglês, com um switch "Language" no rodapé da aba Ambientes do editor para voltar ao português. A troca vale na hora, chave `language` do `settings.json`.
 - Tamanho da barra na aba Aparência (seção Tamanho): Automático, Pequena, Média ou Grande. É um zoom de toda a UI (barra, ilha aberta, painéis e editor), chave `barSize` do `settings.json`.
 - No Automático, cada monitor ganha o tamanho que combina com ele: pequena em notebooks e escala fracionária, grande em QHD e 4K em escala 1.
 
 ### Mudado
 
+- O inglês passa a ser o idioma padrão. Quem prefere português escolhe "Português" no editor de ambientes; ambientes já editados guardam o nome como estão.
+- O teste de velocidade do Wi‑Fi termina em "Complete" ("Concluído") e o widget de contagem aparece no catálogo como "Date countdown" ("Contagem regressiva").
 - A barra se adapta a monitores com menos de 1280×720 lógicos: o zoom cai até o layout caber, em vez de cortar a ilha e o editor.
 
 ## [0.7.0] - 2026-10-31

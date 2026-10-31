@@ -52,18 +52,22 @@ describe('parseTotalCount', () => {
 
 describe('githubView', () => {
   it('PRs no singular e no plural', () => {
-    expect(githubView({ mine: 1, review: 0 })).toEqual({ label: '1 PR', unavailable: false });
-    expect(githubView({ mine: 0, review: 0 }).label).toBe('0 PRs');
-    expect(githubView({ mine: 4, review: 0 }).label).toBe('4 PRs');
+    expect(githubView({ mine: 1, review: 0 }, 'pt-BR')).toEqual({
+      label: '1 PR',
+      unavailable: false,
+    });
+    expect(githubView({ mine: 0, review: 0 }, 'pt-BR').label).toBe('0 PRs');
+    expect(githubView({ mine: 4, review: 0 }, 'pt-BR').label).toBe('4 PRs');
   });
 
   it('sub com revisões pedidas, e some com zero', () => {
-    expect(githubView({ mine: 2, review: 1 }).sub).toBe('1 para revisar');
-    expect(githubView({ mine: 2, review: 3 }).sub).toBe('3 para revisar');
-    expect(githubView({ mine: 2, review: 0 }).sub).toBeUndefined();
+    expect(githubView({ mine: 2, review: 1 }, 'pt-BR').sub).toBe('1 para revisar');
+    expect(githubView({ mine: 2, review: 3 }, 'pt-BR').sub).toBe('3 para revisar');
+    expect(githubView({ mine: 2, review: 0 }, 'pt-BR').sub).toBeUndefined();
+    expect(githubView({ mine: 2, review: 3 }, 'en').sub).toBe('3 to review');
   });
 
   it('sem credencial: "GitHub" sem sub', () => {
-    expect(githubView(null)).toEqual({ label: 'GitHub', unavailable: true });
+    expect(githubView(null, 'pt-BR')).toEqual({ label: 'GitHub', unavailable: true });
   });
 });

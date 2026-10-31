@@ -44,9 +44,9 @@ describe('widgetInfo', () => {
 
   it('describes an Island widget from its catalog', () => {
     expect(widgetInfo('ai', catalog)).toEqual({
-      name: 'Uso de IA',
+      name: 'AI usage',
       icon: 'sparkle',
-      description: 'Sessão e limite semanal',
+      description: 'Session and weekly limit',
     });
   });
 
@@ -58,7 +58,7 @@ describe('widgetInfo', () => {
     expect(widgetInfo('plugin:gone', catalog)).toEqual({
       name: 'gone',
       icon: 'puzzle-piece',
-      description: 'Plugin não carregado',
+      description: 'Plugin not loaded',
     });
   });
 

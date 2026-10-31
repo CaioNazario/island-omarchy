@@ -1,6 +1,8 @@
 // Widget Contagem regressiva (specs/16-widgets.md `countdown`): a data vem de
 // `countdownDate` do `settings.json` como `AAAA-MM-DD` (specs/13-preferencias.md).
 
+import { tr, trCount, type Language } from './i18n.js';
+
 export const MAX_COUNTDOWN_NAME = 20;
 
 export interface CalendarDate {
@@ -49,18 +51,23 @@ export interface CountdownView {
   sub?: string;
 }
 
-function remaining(days: number): string {
-  if (days < 0) return 'encerrada';
-  if (days === 0) return 'hoje';
-  return days === 1 ? '1 dia' : `${days} dias`;
+function remaining(days: number, lang: Language): string {
+  if (days < 0) return tr(lang, 'over');
+  if (days === 0) return tr(lang, 'today');
+  return trCount(lang, days, '1 day', '{n} days');
 }
 
-export function countdownView(name: string, dateText: string, today: Date): CountdownView {
+export function countdownView(
+  name: string,
+  dateText: string,
+  today: Date,
+  lang: Language,
+): CountdownView {
   const date = parseIsoDate(dateText);
-  if (!date) return { label: 'Sem data', missingDate: true };
+  if (!date) return { label: tr(lang, 'No date'), missingDate: true };
   return {
-    label: name.trim() || 'Contagem',
+    label: name.trim() || tr(lang, 'Countdown'),
     missingDate: false,
-    sub: remaining(daysUntil(today, date)),
+    sub: remaining(daysUntil(today, date), lang),
   };
 }

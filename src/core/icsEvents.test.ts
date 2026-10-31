@@ -172,7 +172,7 @@ describe('parseIcsEvents · com o todayEvents', () => {
         'UID:b\nSUMMARY:Feriado\nDTSTART;VALUE=DATE:20261018\nDTEND;VALUE=DATE:20261019',
       ),
     );
-    const today = todayEvents(events, new Date(2026, 9, 18, 10));
+    const today = todayEvents(events, new Date(2026, 9, 18, 10), 'pt-BR');
     expect(today.map((e) => [e.name, e.time])).toEqual([
       ['Feriado', 'Dia inteiro'],
       ['Tarde', '15:00 – 16:00'],

@@ -29,7 +29,7 @@ WidgetFrame {
 
     IslandText {
       anchors.verticalCenter: parent.verticalCenter
-      text: "IA"
+      text: I18n.tr("AI")
       px: 12
       color: Tokens.neutral400
     }

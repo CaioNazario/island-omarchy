@@ -40,7 +40,7 @@ O cartão central (spec 05) também é um estado da ilha: 440 × altura do conte
 
 - Clima: `ph-fill` da condição 15px `accent-300` + temperatura `neutral-300` (gap 4px). Spec 07; sem clima, o item e seu separador somem.
 - Separador: ponto 3×3 `neutral-600`.
-- Hora: `HH:MM` 24h, locale pt-BR.
+- Hora: `HH:MM` 24h nos dois idiomas. Dia: `Sat 31` em inglês, `Sáb, 31` em português (spec 13 "Idioma").
 - Dia: dia da semana abreviado sem ponto, capitalizado, + dia do mês (`Sex, 25`).
 
 ## Animação

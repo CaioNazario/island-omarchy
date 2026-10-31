@@ -24,7 +24,7 @@ Item {
     PanelHeader {
       Layout.fillWidth: true
       glyph: "monitor"
-      title: "Tela"
+      title: I18n.tr("Display")
       subtitle: view.display.subtitle
     }
 
@@ -34,7 +34,7 @@ Item {
       PanelLabel {
         Layout.fillWidth: true
         Layout.bottomMargin: 6
-        text: "Brilho"
+        text: I18n.tr("Brightness")
         value: view.brightness.percent + "%"
         valueColor: Tokens.neutral300
       }
@@ -51,7 +51,7 @@ Item {
       PanelLabel {
         Layout.fillWidth: true
         Layout.bottomMargin: 6
-        text: "Tamanho do texto"
+        text: I18n.tr("Text size")
         value: view.display.textSize + "px"
         valueColor: Tokens.neutral300
       }
@@ -112,7 +112,7 @@ Item {
       PanelLabel {
         Layout.fillWidth: true
         Layout.bottomMargin: 6
-        text: "Escala"
+        text: I18n.tr("Scale")
       }
 
       RowLayout {

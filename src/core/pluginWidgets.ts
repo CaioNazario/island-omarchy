@@ -12,6 +12,7 @@ import {
   type PluginWidgetId,
   type WidgetId,
 } from './environments.js';
+import { msg } from './i18n.js';
 
 export interface WidgetInfo {
   name: string;
@@ -66,7 +67,7 @@ export function widgetInfo(id: string, catalog: readonly PluginWidgetInfo[]): Wi
   if (!isPluginWidgetId(id)) return null;
   const found = catalog.find((info) => info.id === id);
   if (found) return { name: found.name, icon: found.icon, description: found.description };
-  return { name: pluginIdOf(id), icon: PLUGIN_ICON, description: 'Plugin não carregado' };
+  return { name: pluginIdOf(id), icon: PLUGIN_ICON, description: msg('Plugin not loaded') };
 }
 
 /**

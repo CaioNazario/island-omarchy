@@ -47,14 +47,14 @@ Rectangle {
 
       IslandText {
         Layout.fillWidth: true
-        text: card.info.name
+        text: I18n.tr(card.info.name)
         px: 12.5
         elide: Text.ElideRight
       }
 
       IslandText {
         Layout.fillWidth: true
-        text: card.info.description
+        text: I18n.tr(card.info.description)
         px: 11
         font.weight: Tokens.weightBody
         color: Tokens.neutral500

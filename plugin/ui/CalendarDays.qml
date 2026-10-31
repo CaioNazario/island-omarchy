@@ -20,7 +20,7 @@ Column {
     width: parent.width
 
     Repeater {
-      model: CalendarCore.WEEKDAY_HEADERS
+      model: CalendarCore.weekdayHeaders(I18n.language)
 
       delegate: IslandText {
         required property string modelData

@@ -2,6 +2,8 @@
 // → Foco…, trocando de fase sozinho ao zerar. O bloqueio de tela pausa: o
 // estado salvo em `pomodoroState` do `state.json` é sempre pausado.
 
+import { tr, type Language } from './i18n.js';
+
 export type PomodoroPhase = 'focus' | 'break';
 
 export const PHASE_MS: Readonly<Record<PomodoroPhase, number>> = {
@@ -63,15 +65,18 @@ export function formatRemaining(ms: number): string {
   return `${mm}:${ss}`;
 }
 
-export function phaseLabel(state: PomodoroState): string {
-  if (state.endsAt === null) return 'Pausado';
-  return state.phase === 'focus' ? 'Foco' : 'Pausa';
+export function phaseLabel(state: PomodoroState, lang: Language): string {
+  if (state.endsAt === null) return tr(lang, 'Paused');
+  return state.phase === 'focus' ? tr(lang, 'Focus') : tr(lang, 'Break');
 }
 
-export function phaseNotification(started: PomodoroPhase): { title: string; body: string } {
+export function phaseNotification(
+  started: PomodoroPhase,
+  lang: Language,
+): { title: string; body: string } {
   return started === 'break'
-    ? { title: 'Hora da pausa', body: '5 min de pausa' }
-    : { title: 'Hora de focar', body: '25 min de foco' };
+    ? { title: tr(lang, 'Time for a break'), body: tr(lang, '5 min break') }
+    : { title: tr(lang, 'Time to focus'), body: tr(lang, '25 min of focus') };
 }
 
 /** Sempre salvo pausado. */

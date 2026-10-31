@@ -2,6 +2,8 @@
 // A fonte (`Quickshell.Networking`) vive em plugin/system/WifiSource.qml e
 // traduz cada rede para `AccessPointInfo`; aqui só entra dado puro.
 
+import { msg, tr, type Language } from './i18n.js';
+
 export type WifiSecurity = 'open' | 'personal' | 'enterprise';
 
 export type NetworkStatus = 'idle' | 'connecting' | 'connected';
@@ -89,6 +91,9 @@ export function validatePassword(password: string): 'too-short' | null {
   return password.length < MIN_PASSWORD_LENGTH ? 'too-short' : null;
 }
 
+/** Erro de `too-short` no painel de senha, em inglês: a UI traduz ao mostrar. */
+export const PASSWORD_TOO_SHORT = msg('Password must be at least 8 characters');
+
 export interface WifiHeader {
   title: string;
   status: string;
@@ -98,10 +103,17 @@ export interface WifiHeader {
 }
 
 /** Cabeçalho do design v5: a rede como título, o estado em maiúsculas embaixo. */
-export function wifiHeader(radioOn: boolean, active: ActiveNetwork | null): WifiHeader {
-  if (!radioOn) return { title: 'Wi‑Fi', status: 'Desligado', glyph: 'wifi-slash-fill', on: false };
-  if (!active) return { title: 'Wi‑Fi', status: 'Desconectado', glyph: 'wifi-high-fill', on: true };
-  const status = active.status === 'connecting' ? 'Conectando…' : 'Transmitindo pacotes';
+export function wifiHeader(
+  radioOn: boolean,
+  active: ActiveNetwork | null,
+  lang: Language,
+): WifiHeader {
+  if (!radioOn)
+    return { title: 'Wi‑Fi', status: tr(lang, 'Off'), glyph: 'wifi-slash-fill', on: false };
+  if (!active)
+    return { title: 'Wi‑Fi', status: tr(lang, 'Disconnected'), glyph: 'wifi-high-fill', on: true };
+  const status =
+    active.status === 'connecting' ? tr(lang, 'Connecting…') : tr(lang, 'Transmitting packets');
   return { title: active.ssid, status, glyph: 'wifi-high-fill', on: true };
 }
 
@@ -120,7 +132,13 @@ export function securityFromQuickshell(name: string): WifiSecurity {
 // como falta de segredo ou como autenticação expirada.
 const WRONG_PASSWORD_REASONS = new Set(['NoSecrets', 'WifiAuthTimeout']);
 
-/** Nome do `ConnectionFailReason` do Quickshell → texto do painel de senha. */
+/** Falha sem motivo conhecido, também a do tempo esgotado em WifiSource.qml. */
+export const CONNECT_FAILED = msg("Couldn't connect");
+
+/**
+ * Nome do `ConnectionFailReason` do Quickshell → texto do painel de senha, em
+ * inglês: a UI traduz na hora de mostrar.
+ */
 export function connectFailureMessage(reason: string): string {
-  return WRONG_PASSWORD_REASONS.has(reason) ? 'Senha incorreta' : 'Não foi possível conectar';
+  return WRONG_PASSWORD_REASONS.has(reason) ? msg('Wrong password') : CONNECT_FAILED;
 }

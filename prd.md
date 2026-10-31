@@ -105,7 +105,7 @@ Abre abaixo da ilha ao clicar nela compacta: música + calendário (semana/mês)
 - Todo elemento interativo tem hover e pressed do ramp de acento e anel de foco de 2px no acento.
 - Tooltips em todo elemento condensado (hardware, IA).
 - Números com dígitos tabulares.
-- Interface em pt-BR.
+- Interface em inglês (en-US) por padrão, com troca para o português (pt-BR) no editor de ambientes.
 
 ## 9. Preferências
 

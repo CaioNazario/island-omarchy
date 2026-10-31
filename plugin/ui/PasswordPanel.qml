@@ -80,7 +80,7 @@ Item {
 
               IslandText {
                 visible: input.text === ""
-                text: "Senha de " + panel.ssid
+                text: I18n.tr("Password for {ssid}", { ssid: panel.ssid })
                 px: 12.5
                 font.weight: Tokens.weightBody
                 color: Tokens.neutral500
@@ -106,12 +106,12 @@ Item {
         }
 
         TextButton {
-          label: "Cancelar"
+          label: I18n.tr("Cancel")
           onClicked: panel.canceled()
         }
 
         TextButton {
-          label: "Conectar"
+          label: I18n.tr("Connect")
           primary: true
           opacity: input.text === "" ? 0.45 : 1
           onClicked: panel.submitted(input.text)
@@ -129,7 +129,7 @@ Item {
         }
 
         IslandText {
-          text: panel.error
+          text: I18n.tr(panel.error)
           px: 11
           font.weight: Tokens.weightBody
           color: Tokens.alertText

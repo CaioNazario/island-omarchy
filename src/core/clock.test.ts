@@ -12,8 +12,12 @@ describe('formatClock', () => {
 describe('formatDay', () => {
   it('abrevia o dia da semana sem ponto e junta o dia do mês', () => {
     // 2026-09-25 é uma sexta-feira.
-    expect(formatDay(new Date(2026, 8, 25))).toBe('Sex, 25');
+    expect(formatDay(new Date(2026, 8, 25), 'pt-BR')).toBe('Sex, 25');
     // 2026-09-27 é um domingo.
-    expect(formatDay(new Date(2026, 8, 27))).toBe('Dom, 27');
+    expect(formatDay(new Date(2026, 8, 27), 'pt-BR')).toBe('Dom, 27');
+  });
+
+  it('em inglês, sem vírgula', () => {
+    expect(formatDay(new Date(2026, 8, 25), 'en')).toBe('Fri 25');
   });
 });

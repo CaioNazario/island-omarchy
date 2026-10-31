@@ -29,7 +29,7 @@ Quando o design mudar, rode `python3 scripts/extract-design.py` e atualize as sp
 - UI em QML (QtQuick + módulos `Quickshell.*`). Antes de usar uma API do Quickshell, confira em `/usr/lib/qt6/qml/Quickshell/**/*.qmltypes` ou em quickshell.org/docs na versão instalada (`qs --version`).
 - Lógica em TypeScript (`src/core`), compilada com `tsc` para módulos ES (`.mjs`) que o QML importa (`import "../core/island.mjs" as IslandCore`). O motor JS do QML (V4) não é navegador nem Node: sem DOM, `fetch`, `setTimeout`, `TextDecoder`, `Intl` nem class fields do ES2022. Por isso o core compila com `target: ES2017` (spec 14, S5).
 - HTTP via `XMLHttpRequest` do QML, arquivos via `FileView`, processos via `Process` (`Quickshell.Io`). D-Bus sem módulo dedicado no Quickshell vai por `busctl`/`gdbus` em `Process`.
-- UI em pt-BR; código, identificadores e commits em inglês. O Omarchy não usa gettext, então os textos ficam em pt-BR no código.
+- UI em inglês (en-US) com troca para pt-BR (specs/13 "Idioma"); código, identificadores e commits em inglês; specs e comentários em pt-BR. O Omarchy não usa gettext: o texto-fonte inglês fica no código, marcado com `I18n.tr("…")` no QML ou `tr(lang, '…')`/`msg('…')` no core, e a tradução vai em `src/core/i18nPtBr.ts`. O `make lint` (`scripts/check-i18n.mjs`) falha com texto marcado sem tradução.
 
 ## Arquitetura
 

@@ -98,7 +98,7 @@ describe('limites', () => {
       JSON.stringify({ limits: [], authHelpText: 'Run `codex login` to authenticate.' }),
     );
     expect(record?.session).toBeNull();
-    expect(record?.status).toBe('Faça login no CLI para ver os limites');
+    expect(record?.status).toBe('Log in to the CLI to see the limits');
   });
 
   it('usageStatusText do coletor aparece como veio', () => {
@@ -123,7 +123,7 @@ describe('friendlyModelName', () => {
     expect(friendlyModelName('claude-opus-5-5')).toBe('Opus 5.5');
     expect(friendlyModelName('claude-sonnet-4-5-20250929')).toBe('Sonnet 4.5');
     expect(friendlyModelName('gpt-5.6-sol')).toBe('GPT 5.6 Sol');
-    expect(friendlyModelName('')).toBe('Desconhecido');
+    expect(friendlyModelName('')).toBe('Unknown');
   });
 });
 
@@ -131,7 +131,7 @@ describe('dayRows', () => {
   const days = parseAgentRecord(RECORD)?.days ?? [];
 
   it('sete linhas, a última é "Hoje" em destaque e as outras o dia da semana', () => {
-    const rows = dayRows(days, '2026-10-17');
+    const rows = dayRows(days, '2026-10-17', 'pt-BR');
     expect(rows.map((row) => row.label)).toEqual([
       'Dom',
       'Seg',
@@ -146,7 +146,13 @@ describe('dayRows', () => {
   });
 
   it('dia de hoje ausente no registro (coleta de ontem) não vira "Hoje"', () => {
-    expect(dayRows(days, '2026-10-18').some((row) => row.today)).toBe(false);
+    expect(dayRows(days, '2026-10-18', 'pt-BR').some((row) => row.today)).toBe(false);
+  });
+
+  it('em inglês', () => {
+    const labels = dayRows(days, '2026-10-17', 'en').map((row) => row.label);
+    expect(labels[0]).toBe('Sun');
+    expect(labels[6]).toBe('Today');
   });
 });
 

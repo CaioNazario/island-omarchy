@@ -2,6 +2,8 @@
 // `ENV_ICONS`, `loadEnvs`, `switchEnv`, `wheel`): modelo, saneamento do valor
 // persistido, troca circular e a regra da rolagem que troca de ambiente.
 
+import { msg, tr, type Language } from './i18n.js';
+
 /** Catálogo de widgets (specs/16-widgets.md), na ordem do catálogo. */
 export const WIDGET_IDS = [
   'ai',
@@ -30,30 +32,37 @@ export type PlacedWidgetId = WidgetId | PluginWidgetId;
 const PLUGIN_PREFIX = 'plugin:';
 const PLUGIN_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 
-/** Cartão do catálogo (specs/16-widgets.md "Catálogo"); ícone como em `ui/icons.ts`. */
+/**
+ * Cartão do catálogo (specs/16-widgets.md "Catálogo"); ícone como em `ui/icons.ts`.
+ * Nome e descrição em inglês: a UI traduz na hora de mostrar.
+ */
 export const WIDGET_CATALOG: Record<WidgetId, { name: string; icon: string; description: string }> =
   {
-    ai: { name: 'Uso de IA', icon: 'sparkle', description: 'Sessão e limite semanal' },
-    hw: { name: 'Hardware', icon: 'cpu', description: 'CPU, RAM, GPU, temperatura e rede' },
-    event: {
-      name: 'Próximo evento',
-      icon: 'calendar-blank',
-      description: 'O próximo compromisso do dia',
+    ai: { name: msg('AI usage'), icon: 'sparkle', description: msg('Session and weekly limit') },
+    hw: {
+      name: msg('Hardware'),
+      icon: 'cpu',
+      description: msg('CPU, RAM, GPU, temperature and network'),
     },
-    pomodoro: { name: 'Pomodoro', icon: 'timer', description: 'Ciclos de foco e pausa' },
-    music: { name: 'Música', icon: 'music-note', description: 'O que está tocando agora' },
-    github: { name: 'GitHub', icon: 'github-logo', description: 'PRs esperando revisão' },
+    event: {
+      name: msg('Next event'),
+      icon: 'calendar-blank',
+      description: msg("The day's next appointment"),
+    },
+    pomodoro: { name: msg('Pomodoro'), icon: 'timer', description: msg('Focus and break cycles') },
+    music: { name: msg('Music'), icon: 'music-note', description: msg('What is playing now') },
+    github: { name: msg('GitHub'), icon: 'github-logo', description: msg('PRs awaiting review') },
     progress: {
-      name: 'Progresso do dia',
+      name: msg('Day progress'),
       icon: 'hourglass-medium',
-      description: 'Quanto do dia já passou',
+      description: msg('How much of the day has passed'),
     },
     countdown: {
-      name: 'Contagem regressiva',
+      name: msg('Date countdown'),
       icon: 'airplane-tilt',
-      description: 'Dias até a data que importa',
+      description: msg('Days until the date that matters'),
     },
-    note: { name: 'Nota', icon: 'note', description: 'Um recado fixo na barra' },
+    note: { name: msg('Note'), icon: 'note', description: msg('A note pinned to the bar') },
   };
 
 /** Glifos Phosphor de `ENV_ICONS` (`ph ph-house` → `house`, ver `ui/icons.ts`). */
@@ -84,21 +93,24 @@ export type StoredEnvironment = readonly [string, string, readonly string[], rea
 export const MAX_ENVIRONMENTS = 6;
 export const MAX_NAME_LENGTH = 20;
 
+// Os nomes saem no idioma da interface; editado, o ambiente guarda o nome
+// como está.
 const DEFAULT_ENVIRONMENTS: readonly Environment[] = [
-  { name: 'Padrão', icon: 'house', left: ['ai'], right: ['hw'] },
+  { name: msg('Default'), icon: 'house', left: ['ai'], right: ['hw'] },
   {
-    name: 'Trabalho',
+    name: msg('Work'),
     icon: 'briefcase',
     left: ['event', 'pomodoro', 'ai'],
     right: ['hw', 'github'],
   },
-  { name: 'Estudos', icon: 'book-open', left: ['progress', 'pomodoro'], right: ['note'] },
-  { name: 'Fim de semana', icon: 'sun-horizon', left: ['music'], right: ['countdown'] },
+  { name: msg('Studies'), icon: 'book-open', left: ['progress', 'pomodoro'], right: ['note'] },
+  { name: msg('Weekend'), icon: 'sun-horizon', left: ['music'], right: ['countdown'] },
 ];
 
-export function defaultEnvironments(): Environment[] {
+export function defaultEnvironments(lang: Language): Environment[] {
   return DEFAULT_ENVIRONMENTS.map((env) => ({
     ...env,
+    name: tr(lang, env.name),
     left: [...env.left],
     right: [...env.right],
   }));
@@ -137,7 +149,10 @@ function isEnvIcon(icon: string): icon is EnvIcon {
  * ícone desconhecido por `house`, corta nome e lista. Lista vazia volta aos
  * ambientes iniciais.
  */
-export function sanitizeEnvironments(stored: readonly StoredEnvironment[]): Environment[] {
+export function sanitizeEnvironments(
+  stored: readonly StoredEnvironment[],
+  lang: Language,
+): Environment[] {
   const envs = stored.slice(0, MAX_ENVIRONMENTS).map(([name, icon, left, right]) => {
     const seen = new Set<PlacedWidgetId>();
     // Widget de plugin fica mesmo sem o plugin instalado agora: ele pode
@@ -155,7 +170,7 @@ export function sanitizeEnvironments(stored: readonly StoredEnvironment[]): Envi
       right: keep(right),
     };
   });
-  return envs.length > 0 ? envs : defaultEnvironments();
+  return envs.length > 0 ? envs : defaultEnvironments(lang);
 }
 
 /** Teto de um "array" que não é `Array`: um `{"length": 1e9}` no arquivo não pode alocar. */
@@ -199,11 +214,11 @@ function asStoredEnvironment(value: unknown): StoredEnvironment | null {
  * (inclusive a lista tipo array do JsonAdapter, `asList`): entradas fora de
  * `[nome, ícone, [esquerda], [direita]]` saem antes do saneamento.
  */
-export function environmentsFromJson(value: unknown): Environment[] {
+export function environmentsFromJson(value: unknown, lang: Language): Environment[] {
   const stored = (asList(value) ?? [])
     .map(asStoredEnvironment)
     .filter((env): env is StoredEnvironment => env !== null);
-  return sanitizeEnvironments(stored);
+  return sanitizeEnvironments(stored, lang);
 }
 
 export function toStored(envs: readonly Environment[]): [string, string, string[], string[]][] {
@@ -271,12 +286,17 @@ export function removeWidget(env: Environment, id: PlacedWidgetId): Environment 
 }
 
 /** Novo ambiente no fim (design/logic.js `addEnv`); com 6, nada muda. */
-export function addEnvironment(envs: readonly Environment[]): Environment[] {
+export function addEnvironment(envs: readonly Environment[], lang: Language): Environment[] {
   const n = envs.length;
   if (n >= MAX_ENVIRONMENTS) return [...envs];
   return [
     ...envs,
-    { name: `Ambiente ${n + 1}`, icon: ENV_ICONS[n % ENV_ICONS.length]!, left: [], right: [] },
+    {
+      name: tr(lang, 'Environment {n}', { n: n + 1 }),
+      icon: ENV_ICONS[n % ENV_ICONS.length]!,
+      left: [],
+      right: [],
+    },
   ];
 }
 

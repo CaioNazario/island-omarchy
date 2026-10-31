@@ -37,7 +37,7 @@ Rectangle {
       spacing: 6
 
       Repeater {
-        model: [{ id: "environments", label: "Ambientes" }, { id: "appearance", label: "Aparência" }]
+        model: [{ id: "environments", label: I18n.tr("Environments") }, { id: "appearance", label: I18n.tr("Appearance") }]
 
         EditorTab {
           required property var modelData
@@ -54,7 +54,7 @@ Rectangle {
 
       TextButton {
         implicitHeight: 30
-        label: "Concluir"
+        label: I18n.tr("Done")
         primary: true
         onClicked: panel.bar.closeEditor()
       }

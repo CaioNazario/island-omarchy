@@ -3,6 +3,8 @@
 // (/usr/share/omarchy/shell/plugins/panels/audio/Model.js), que já conhece os
 // nomes que o ALSA e o BlueZ dão aos nós.
 
+import { tr, type Language } from './i18n.js';
+
 export const MIXER_MAX_HEIGHT = 560;
 export const WHEEL_VOLUME_STEP = 5;
 const WHEEL_NOTCH = 120;
@@ -30,21 +32,25 @@ function friendlyDeviceLabel(text: string): string {
 
 const HEADPHONE_WORDS = ['headphone', 'headset', 'earbud', 'earphone', 'airpod', 'buds'];
 
-export function outputDevice(node: OutputNode): MixerRowLook {
+export function outputDevice(node: OutputNode, lang: Language): MixerRowLook {
   const label =
     friendlyDeviceLabel(node.nickname ?? '') ||
     friendlyDeviceLabel(node.description ?? '') ||
     node.name ||
-    'Saída';
+    tr(lang, 'Output');
   const blob = [node.name, node.description, node.nickname].join(' ').toLowerCase();
   const bluetooth = blob.includes('bluez') || blob.includes('bluetooth');
   if (HEADPHONE_WORDS.some((word) => blob.includes(word))) {
-    return { label, glyph: 'headphones-fill', sub: bluetooth ? 'Bluetooth' : 'Fone' };
+    return {
+      label,
+      glyph: 'headphones-fill',
+      sub: bluetooth ? 'Bluetooth' : tr(lang, 'Headphones'),
+    };
   }
   if (bluetooth) return { label, glyph: 'bluetooth-fill', sub: 'Bluetooth' };
   if (blob.includes('hdmi') || blob.includes('displayport'))
     return { label, glyph: 'monitor', sub: 'HDMI' };
-  return { label, glyph: 'laptop', sub: 'Integrado' };
+  return { label, glyph: 'laptop', sub: tr(lang, 'Built-in') };
 }
 
 export interface StreamNode {
@@ -71,8 +77,8 @@ function streamGlyph(blob: string): string {
   return hit ? hit[1] : 'speaker-high-fill';
 }
 
-export function streamApp(node: StreamNode): MixerRowLook {
-  const raw = (node.appName || node.description || node.mediaName || 'Aplicativo').trim();
+export function streamApp(node: StreamNode, lang: Language): MixerRowLook {
+  const raw = (node.appName || node.description || node.mediaName || tr(lang, 'App')).trim();
   const label = KNOWN_APPS[raw.toLowerCase()] ?? raw;
   const blob = [node.appName, node.binary, node.description].join(' ').toLowerCase();
   const media = (node.mediaName ?? '').trim();

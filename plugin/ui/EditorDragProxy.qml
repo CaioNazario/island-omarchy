@@ -64,7 +64,7 @@ Rectangle {
 
     IslandText {
       anchors.verticalCenter: parent.verticalCenter
-      text: proxy.info ? proxy.info.name : ""
+      text: proxy.info ? I18n.tr(proxy.info.name) : ""
       px: 12
       color: Tokens.accent100
     }

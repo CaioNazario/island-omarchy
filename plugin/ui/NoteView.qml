@@ -40,11 +40,11 @@ Item {
 
       IslandText {
         Layout.fillWidth: true
-        text: "Nota"
+        text: I18n.tr("Note")
       }
 
       IslandText {
-        text: NoteCore.noteCounter(field.text)
+        text: NoteCore.noteCounter(field.text, I18n.language)
         px: 11
         font.weight: Tokens.weightBody
         color: Tokens.neutral500
@@ -91,7 +91,7 @@ Item {
 
         IslandText {
           visible: field.text === ""
-          text: "Escreva um recado para a barra"
+          text: I18n.tr("Write a note for the bar")
           font.weight: Tokens.weightBody
           color: Tokens.neutral500
         }

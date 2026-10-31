@@ -1,6 +1,7 @@
 // Roteamento de notificação nova e tempo relativo (specs/04-notificacoes.md;
 // design/logic.js `pushNotif`, ~136).
 
+import { tr, type Language } from './i18n.js';
 import type { Mode } from './island.js';
 
 /** `list`: só entra na lista, sem abrir `notif` nem banner. */
@@ -39,11 +40,11 @@ export function routeNotification(
 
 const MINUTE_MS = 60_000;
 
-export function formatRelativeTime(elapsedMs: number): string {
+export function formatRelativeTime(elapsedMs: number, lang: Language): string {
   const minutes = Math.floor(elapsedMs / MINUTE_MS);
-  if (minutes < 1) return 'agora';
-  if (minutes < 60) return `há ${minutes} min`;
-  return `há ${Math.floor(minutes / 60)} h`;
+  if (minutes < 1) return tr(lang, 'now');
+  if (minutes < 60) return tr(lang, '{n} min ago', { n: minutes });
+  return tr(lang, '{n} h ago', { n: Math.floor(minutes / 60) });
 }
 
 const NAMED_ENTITIES: Readonly<Record<string, string>> = {

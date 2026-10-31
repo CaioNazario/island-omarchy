@@ -11,6 +11,7 @@ import {
   type Environment,
   type PlacedWidgetId,
 } from './environments.js';
+import { tr, type Language } from './i18n.js';
 
 function updateAt(
   envs: readonly Environment[],
@@ -20,7 +21,7 @@ function updateAt(
   return envs.map((env, i) => (i === index ? { ...env, ...patch } : env));
 }
 
-/** Grava enquanto digita; o vazio aparece como "Sem nome" na barra. */
+/** Grava enquanto digita; o vazio aparece como "Untitled" ("Sem nome") na barra. */
 export function renameEnvironment(
   envs: readonly Environment[],
   index: number,
@@ -54,11 +55,13 @@ export function moveToOtherSide(env: Environment, id: PlacedWidgetId): Environme
   return placeWidget(env, id, place.side === 'left' ? 'right' : 'left', null);
 }
 
-export function selectionLabel(env: Environment, id: PlacedWidgetId): string {
+export function selectionLabel(env: Environment, id: PlacedWidgetId, lang: Language): string {
   const place = findWidget(env, id);
   if (!place) return '';
-  const pill = place.side === 'left' ? 'Pílula esquerda' : 'Pílula direita';
-  return `${pill} · ${place.index + 1} de ${place.count}`;
+  const params = { index: place.index + 1, count: place.count };
+  return place.side === 'left'
+    ? tr(lang, 'Left pill · {index} of {count}', params)
+    : tr(lang, 'Right pill · {index} of {count}', params);
 }
 
 export function usedCount(env: Environment): number {

@@ -52,7 +52,7 @@ Item {
         }
 
         IslandText {
-          text: NotificationsCore.formatRelativeTime(card.nowMs - card.entry.timeMs)
+          text: NotificationsCore.formatRelativeTime(card.nowMs - card.entry.timeMs, I18n.language)
           px: 11
           font.weight: Tokens.weightBody
           color: Tokens.neutral500

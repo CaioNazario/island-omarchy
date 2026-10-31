@@ -70,7 +70,9 @@ Logo abaixo, a linha "Realce" com as mesmas opções de 30px: Roxo e Branco (spe
 
 ## Rodapé
 
-`ph ph-hand-swipe-left` 15px + "Deslize com dois dedos sobre a barra para trocar de ambiente. No teclado: Super+Ctrl+Alt+← / Super+Ctrl+Alt+→." 11.5px `neutral-500`.
+`ph ph-hand-swipe-left` 15px + "Deslize com dois dedos sobre a barra para trocar de ambiente. No teclado: Super+Ctrl+Alt+← / Super+Ctrl+Alt+→." 11.5px `neutral-500`, cortado com reticências se faltar espaço.
+
+À direita, o idioma da interface (não existe no design; spec 13 "Idioma"): "Idioma" 11.5px `neutral-400` e um `SegmentedSwitch` com English · Português, cada idioma no próprio nome. É o mesmo controle do "Adicionar em" do catálogo: trilho `neutral-900` de 26px, raio 13; opção de 22px, raio 11, escolhida `accent-800` com texto `accent-100`. Grava `language` e troca a interface inteira na hora.
 
 ## Barra durante a edição
 
@@ -99,3 +101,4 @@ Em QML, sem o arraste do sistema (o layer-shell não tem onde soltar fora da jan
 - [x] O Padrão não mostra "Excluir ambiente"; com 6 ambientes, "Novo" some.
 - [ ] Clicar num widget da barra seleciona; arrastar um widget do catálogo para a pílula direita e reordenar na barra funcionam (o aninhado não simula ponteiro: conferir na sessão).
 - [ ] Esc e clique no fundo fecham o editor; clique no fundo não chega à janela embaixo.
+- [x] O switch de idioma do rodapé troca os textos da barra, da ilha e do editor na hora (visto no aninhado pelo IPC `dev editorDo language`).

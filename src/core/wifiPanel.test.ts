@@ -46,12 +46,12 @@ describe('networkStats', () => {
     const rows = networkStats(first, second);
     expect(rows).toEqual([
       { label: 'Ping', value: '14 ms' },
-      { label: 'Ping do roteador', value: '10 ms' },
-      { label: 'Recebendo', value: '1.3 MB/s' },
-      { label: 'Enviando', value: '1.0 KB/s' },
-      { label: 'Baixado', value: '2.95 GB' },
-      { label: 'Enviado', value: '192.8 MB' },
-      { label: 'Endereço IP', value: '10.0.0.103' },
+      { label: 'Router ping', value: '10 ms' },
+      { label: 'Receiving', value: '1.3 MB/s' },
+      { label: 'Sending', value: '1.0 KB/s' },
+      { label: 'Downloaded', value: '2.95 GB' },
+      { label: 'Uploaded', value: '192.8 MB' },
+      { label: 'IP address', value: '10.0.0.103' },
       { label: 'Gateway', value: '10.0.0.1' },
     ]);
   });
@@ -67,13 +67,13 @@ describe('networkStats', () => {
 
 describe('DNS', () => {
   it('detalhe de cada provedor do omarchy-dns', () => {
-    expect(dnsDetail('DHCP', '10.0.0.1', [])).toBe('Automático · 10.0.0.1');
-    expect(dnsDetail('Cloudflare', '', [])).toBe('1.1.1.1 · 1.0.0.1');
-    expect(dnsDetail('Google', '', [])).toBe('8.8.8.8 · 8.8.4.4');
-    expect(dnsDetail('Custom', '', ['9.9.9.9', '149.112.112.112', '2620:fe::fe'])).toBe(
+    expect(dnsDetail('DHCP', '10.0.0.1', [], 'pt-BR')).toBe('Automático · 10.0.0.1');
+    expect(dnsDetail('Cloudflare', '', [], 'pt-BR')).toBe('1.1.1.1 · 1.0.0.1');
+    expect(dnsDetail('Google', '', [], 'pt-BR')).toBe('8.8.8.8 · 8.8.4.4');
+    expect(dnsDetail('Custom', '', ['9.9.9.9', '149.112.112.112', '2620:fe::fe'], 'pt-BR')).toBe(
       '9.9.9.9 · 149.112.112.112',
     );
-    expect(dnsDetail('Custom', '', [])).toBe('Personalizado');
+    expect(dnsDetail('Custom', '', [], 'pt-BR')).toBe('Personalizado');
   });
 
   it('servidores da linha DNS= do resolved.conf, sem o nome TLS', () => {
@@ -100,10 +100,11 @@ describe('teste de velocidade', () => {
   });
 
   it('texto do estado', () => {
-    expect(speedStatus('down', null)).toBe('Medindo download…');
-    expect(speedStatus('up', null)).toBe('Medindo upload…');
-    expect(speedStatus('done', 14.1)).toBe('Concluído · ping 14 ms');
-    expect(speedStatus('failed', null)).toBe('Falhou');
+    expect(speedStatus('down', null, 'pt-BR')).toBe('Medindo download…');
+    expect(speedStatus('up', null, 'pt-BR')).toBe('Medindo upload…');
+    expect(speedStatus('done', 14.1, 'pt-BR')).toBe('Concluído · ping 14 ms');
+    expect(speedStatus('failed', null, 'pt-BR')).toBe('Falhou');
+    expect(speedStatus('done', 14.1, 'en')).toBe('Complete · ping 14 ms');
   });
 });
 

@@ -22,7 +22,7 @@ ColumnLayout {
     spacing: 8
 
     IslandText {
-      text: "Widgets"
+      text: I18n.tr("Widgets")
     }
 
     Rectangle {
@@ -35,7 +35,7 @@ ColumnLayout {
         id: used
 
         anchors.centerIn: parent
-        text: EditorCore.usedCount(catalog.env) + " em uso"
+        text: I18n.tr("{n} in use", { n: EditorCore.usedCount(catalog.env) })
         px: 11
         font.weight: Tokens.weightBody
         color: Tokens.neutral300
@@ -47,54 +47,16 @@ ColumnLayout {
     }
 
     IslandText {
-      text: "Adicionar em"
+      text: I18n.tr("Add to")
       px: 11.5
       font.weight: Tokens.weightBody
       color: Tokens.neutral400
     }
 
-    Rectangle {
-      implicitWidth: sides.implicitWidth + 4
-      implicitHeight: 26
-      radius: 13
-      color: Tokens.neutral900
-
-      Row {
-        id: sides
-
-        anchors.centerIn: parent
-
-        Repeater {
-          model: [{ side: "left", label: "Esquerda" }, { side: "right", label: "Direita" }]
-
-          Rectangle {
-            id: sideChoice
-
-            required property var modelData
-            readonly property bool chosen: catalog.bar.editorTarget === modelData.side
-
-            implicitWidth: sideLabel.implicitWidth + 20
-            implicitHeight: 22
-            radius: 11
-            color: chosen ? Tokens.accent800 : "transparent"
-
-            IslandText {
-              id: sideLabel
-
-              anchors.centerIn: parent
-              text: sideChoice.modelData.label
-              px: 11.5
-              color: sideChoice.chosen ? Tokens.accent100 : Tokens.neutral400
-            }
-
-            MouseArea {
-              anchors.fill: parent
-              cursorShape: Qt.PointingHandCursor
-              onClicked: catalog.bar.editorPickTarget(sideChoice.modelData.side)
-            }
-          }
-        }
-      }
+    SegmentedSwitch {
+      options: [{ id: "left", label: I18n.tr("Left") }, { id: "right", label: I18n.tr("Right") }]
+      current: catalog.bar.editorTarget
+      onChosen: id => catalog.bar.editorPickTarget(id)
     }
   }
 
@@ -122,7 +84,7 @@ ColumnLayout {
   IslandText {
     Layout.topMargin: 4
     visible: catalog.bar.pluginWidgets.catalog.length > 0
-    text: "Plugins do Omarchy"
+    text: I18n.tr("Omarchy plugins")
   }
 
   GridLayout {

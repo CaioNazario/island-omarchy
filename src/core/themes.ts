@@ -4,11 +4,25 @@
 // painéis (`--isl-panel`). Cores com alfa saem como `#AARRGGBB` (formato do Qt).
 // A cor de realce (spec 01 "Realce") escolhe a escala do acento que o tema usa.
 
+import { msg } from './i18n.js';
+
+// Os ids ficam em português: são o valor guardado no `settings.json`. O nome
+// mostrado sai de `THEME_NAMES`/`ACCENT_NAMES`, traduzido na UI.
 export const THEME_IDS = ['Nocturne', 'Alto contraste'] as const;
 export type ThemeId = (typeof THEME_IDS)[number];
 
+export const THEME_NAMES: Readonly<Record<ThemeId, string>> = {
+  Nocturne: msg('Nocturne'),
+  'Alto contraste': msg('High contrast'),
+};
+
 export const ACCENT_IDS = ['Roxo', 'Branco'] as const;
 export type AccentId = (typeof ACCENT_IDS)[number];
+
+export const ACCENT_NAMES: Readonly<Record<AccentId, string>> = {
+  Roxo: msg('Purple'),
+  Branco: msg('White'),
+};
 
 export interface ThemeColors {
   bg: string;

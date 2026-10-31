@@ -6,6 +6,7 @@
 // vêm do registro (o coletor do Claude consulta o endpoint OAuth de uso).
 
 import type { UsageWindow } from './aiUsage.js';
+import { msg, tr, weekdayShort, type Language } from './i18n.js';
 
 export interface AgentDay {
   date: string;
@@ -78,7 +79,8 @@ function statusText(data: Record<string, unknown>, hasLimits: boolean): string {
   if (typeof data.usageStatusText === 'string' && data.usageStatusText !== '')
     return data.usageStatusText;
   if (!hasLimits && typeof data.authHelpText === 'string' && data.authHelpText !== '') {
-    return 'Faça login no CLI para ver os limites';
+    // Texto do core: a UI traduz `status` na hora de mostrar.
+    return msg('Log in to the CLI to see the limits');
   }
   return '';
 }
@@ -137,10 +139,8 @@ export function friendlyModelName(id: string): string {
     words.push(wordCase(part));
   }
   if (version.length > 0) words.push(version.join('.'));
-  return words.length > 0 ? words.join(' ') : 'Desconhecido';
+  return words.length > 0 ? words.join(' ') : msg('Unknown');
 }
-
-const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
 export interface UsageRow {
   label: string;
@@ -150,15 +150,15 @@ export interface UsageRow {
   today: boolean;
 }
 
-/** Últimos 7 dias; o de hoje (data local `YYYY-MM-DD`) vira "Hoje" em destaque. */
-export function dayRows(days: AgentDay[], today: string): UsageRow[] {
+/** Últimos 7 dias; o de hoje (data local `YYYY-MM-DD`) vira "Today" em destaque. */
+export function dayRows(days: AgentDay[], today: string, lang: Language): UsageRow[] {
   const last = days.slice(-7);
   const peak = Math.max(0, ...last.map((day) => day.tokens));
   return last.map((day) => {
     const isToday = day.date === today;
-    const weekday = WEEKDAYS[new Date(day.date + 'T12:00:00').getDay()] ?? day.date;
+    const weekday = weekdayShort(lang, new Date(day.date + 'T12:00:00').getDay()) || day.date;
     return {
-      label: isToday ? 'Hoje' : weekday,
+      label: isToday ? tr(lang, 'Today') : weekday,
       value: formatTokens(day.tokens),
       fraction: peak > 0 ? day.tokens / peak : 0,
       today: isToday,
