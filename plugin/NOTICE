@@ -1,17 +1,17 @@
-Código de terceiros na Island
-=============================
+Third-party code in Island
+==========================
 
-A Island é GPL-3.0 (LICENSE na raiz do repositório). Partes das opções de
-aparência (specs/19-aparencia.md) vêm do omadock
-(https://github.com/thepathless/omadock; extraído do clone
-https://github.com/priard/omadock no commit 16492e5), sob a licença MIT
-abaixo:
+Island is GPL-3.0-or-later (LICENSE at the root of the repository). Parts of
+the appearance options (specs/19-aparencia.md) come from omadock
+(https://github.com/thepathless/omadock; taken from the clone
+https://github.com/priard/omadock at commit 16492e5), under the MIT license
+below:
 
-- plugin/shaders/gradient.frag e grain.frag (e os .qsb compilados deles)
-- as fórmulas e constantes de src/core/color.ts, gradients.ts,
-  appearance.ts, surfaceStyle.ts, hyprOptions.ts e shapes.ts: contraste,
-  paletas, paleta do tema, cores sólidas, preset Vidro, borda automática, a
-  leitura do hyprctl getoption e os cantos Arredondado e Tema
+- plugin/shaders/gradient.frag and grain.frag (and their compiled .qsb files)
+- the formulas and constants in src/core/color.ts, gradients.ts,
+  appearance.ts, surfaceStyle.ts, hyprOptions.ts and shapes.ts: contrast,
+  palettes, theme palette, solid colors, Glass preset, automatic border, the
+  hyprctl getoption reading, and the Rounded and Theme corners
 
 ---
 
