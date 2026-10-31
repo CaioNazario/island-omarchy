@@ -1,131 +1,131 @@
 # Changelog
 
-Versões da Island, plugin de barra do Omarchy. Formato de [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), numeração [SemVer](https://semver.org/lang/pt-BR/): na série 0.x, uma versão minor pode quebrar compatibilidade.
+Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), numbering from [SemVer](https://semver.org/): in the 0.x series, a minor release may break compatibility.
 
-## [Não lançada]
+## [Unreleased]
 
-### Adicionado
+### Added
 
-- Interface em inglês, com um switch "Language" no rodapé da aba Ambientes do editor para voltar ao português. A troca vale na hora, chave `language` do `settings.json`.
-- Tamanho da barra na aba Aparência (seção Tamanho): Automático, Pequena, Média ou Grande. É um zoom de toda a UI (barra, ilha aberta, painéis e editor), chave `barSize` do `settings.json`.
-- No Automático, cada monitor ganha o tamanho que combina com ele: pequena em notebooks e escala fracionária, grande em QHD e 4K em escala 1.
+- English interface, with a "Language" switch in the footer of the editor's Environments tab to go back to Portuguese. The change applies at once (`language` key in `settings.json`).
+- Bar size in the Appearance tab (Size section): Automatic, Small, Medium or Large. It zooms the whole UI (bar, open island, panels and editor), stored in the `barSize` key of `settings.json`.
+- On Automatic, each monitor gets the size that suits it: small on laptops and fractional scaling, large on QHD and 4K at scale 1.
 
-### Mudado
+### Changed
 
-- O inglês passa a ser o idioma padrão. Quem prefere português escolhe "Português" no editor de ambientes; ambientes já editados guardam o nome como estão.
-- O teste de velocidade do Wi‑Fi termina em "Complete" ("Concluído") e o widget de contagem aparece no catálogo como "Date countdown" ("Contagem regressiva").
-- A barra se adapta a monitores com menos de 1280×720 lógicos: o zoom cai até o layout caber, em vez de cortar a ilha e o editor.
+- English is now the default language. Anyone who prefers Portuguese picks "Português" in the environment editor; environments already edited keep their names as they are.
+- The bar adapts to monitors under 1280×720 logical pixels: the zoom drops until the layout fits, instead of clipping the island and the editor.
+- The Wi‑Fi speed test ends in "Complete", and the countdown widget shows in the catalog as "Date countdown".
 
 ## [0.7.0] - 2026-10-31
 
-### Adicionado
+### Added
 
-- Fundo das pílulas e da ilha configurável na chave `appearance` do `settings.json`: cor do tema, nenhuma ou uma das cores sólidas, e opacidade.
-- Aba Aparência no editor de ambientes, com a seção Fundo. O "Concluir" vai para o cabeçalho, ao lado das abas.
-- Blur atrás das pílulas e da ilha (seção Efeitos), pelo compositor. Com ele, o fundo do tema fica em 82%, como no design.
-- Fundo em gradiente, com 9 paletas e a paleta Tema, tirada das cores do tema do Omarchy. A força cede para os textos continuarem legíveis.
-- Grão de filme sobre o fundo (seção Efeitos).
-- Borda configurável: ligada ou não, largura e opacidade (seção Borda).
-- Sombra configurável: ligada ou não, e força (seção Sombra).
-- Cantos das pílulas e da ilha, compacta e aberta: os do design, arredondados com raio escolhido, quadrados ou os das janelas do Hyprland (seção Forma).
-- O banner de notificação segue a aparência da ilha.
-- Estilos prontos na aba Aparência: Padrão (o design, que desfaz os ajustes) e Vidro.
-- Widgets de barra de outros plugins do Omarchy (como o omaplug) nas pílulas, adicionados pela seção "Plugins do Omarchy" do editor de ambientes. O widget abre o painel dele logo abaixo da barra.
+- Configurable background for the pills and the island in the `appearance` key of `settings.json`: the theme color, none or one of the solid colors, and opacity.
+- Appearance tab in the environment editor, with the Background section. "Done" moves to the header, next to the tabs.
+- Blur behind the pills and the island (Effects section), done by the compositor. With it, the theme background sits at 82%, as in the design.
+- Gradient background, with 9 palettes and the Theme palette, taken from the Omarchy theme colors. The strength backs off so text stays readable.
+- Film grain over the background (Effects section).
+- Configurable border: on or off, width and opacity (Border section).
+- Configurable shadow: on or off, and strength (Shadow section).
+- Corners of the pills and the island, compact and open: the design's, rounded with a chosen radius, square, or the Hyprland window rounding (Shape section).
+- The notification banner follows the island's appearance.
+- Ready-made styles in the Appearance tab: Default (the design, which undoes every tweak) and Glass.
+- Bar widgets from other Omarchy plugins (such as omaplug) in the pills, added from the "Omarchy plugins" section of the environment editor. The widget opens its panel right below the bar.
 
-### Mudado
+### Changed
 
-- Tema e Realce saem da aba Ambientes do editor e vão para a aba Aparência.
-- A CI roda nos pushes da `dev`.
-- A tag de uma versão publica o build na `main` e cria a release no GitHub.
+- Theme and Accent move from the editor's Environments tab to the Appearance tab.
+- CI runs on pushes to `dev`.
+- A release tag publishes the build to `main` and creates the GitHub release.
 
 ## [0.6.0] - 2026-10-27
 
-### Adicionado
+### Added
 
-- Bateria amarela com a economia de energia ligada.
+- Yellow battery while power saver is on.
 
-### Removido
+### Removed
 
-- O que restava da época GNOME: a busca de cidade das antigas preferências e o campo de notificação já reconhecida.
+- What was left from the GNOME days: the city search of the old preferences and the acknowledged-notification field.
 
 ## [0.5.0] - 2026-10-21
 
-### Adicionado
+### Added
 
-- Atalhos e gestos no projeto (`hypr/island.lua`): `Super+S` abre os controles rápidos (no lugar do scratchpad do Omarchy); três dedos para baixo abrem a lista de notificações, e para cima fecham.
-- Realce Roxo ou Branco no editor.
+- Shortcuts and gestures in the project (`hypr/island.lua`): `Super+S` opens the quick controls (instead of the Omarchy scratchpad); three fingers down open the notification list, and up close it.
+- Purple or White accent in the editor.
 
-### Mudado
+### Changed
 
-- Ficam só os temas Nocturne e Alto contraste. Um tema removido salvo nas preferências volta ao Nocturne.
-- Botões dos controles rápidos mais fortes fora do Nocturne com realce Roxo.
+- Only the Nocturne and High contrast themes remain. A removed theme saved in the preferences falls back to Nocturne.
+- Stronger quick-control buttons outside Nocturne with the Purple accent.
 
 ## [0.4.0] - 2026-10-18
 
-### Adicionado
+### Added
 
-- Eventos do calendário lidos de um feed ICS privado (o "endereço secreto no formato iCal" do Google Agenda), com a URL guardada no chaveiro.
-- Rolar sobre a barra abre (para baixo) e fecha (para cima) a lista de notificações.
+- Calendar events read from a private ICS feed (Google Calendar's "secret address in iCal format"), with the URL kept in the keyring.
+- Scrolling over the bar opens (down) and closes (up) the notification list.
 
-### Corrigido
+### Fixed
 
-- Os widgets salvos dos ambientes se perdiam ao reiniciar, e a próxima edição apagava o arquivo de preferências.
+- The widgets saved in environments were lost on restart, and the next edit wiped the preferences file.
 
 ## [0.3.0] - 2026-10-17
 
-### Adicionado
+### Added
 
-- Editor de ambientes: criar, renomear, trocar o ícone e apagar ambientes; adicionar widgets de um catálogo, movê-los entre as pílulas e arrastá-los.
-- Temas do design (Nocturne, Vidro fosco, Sólido, Claro e Alto contraste), escolhidos no editor.
+- Environment editor: create, rename, change the icon of and delete environments; add widgets from a catalog, move them between the pills and drag them.
+- Design themes (Nocturne, Frosted glass, Solid, Light and High contrast), chosen in the editor.
 
-### Corrigido
+### Fixed
 
-- O clima acha a localização como o widget de clima do Omarchy.
-- O clima piscava num ciclo de atualizações.
-- Deslizar dois dedos troca de ambiente.
-- Brilho roxo em volta da barra.
+- The weather finds the location the same way as the Omarchy weather widget.
+- The weather flickered in an update loop.
+- Two-finger swipe switches environments.
+- Purple glow around the bar.
 
 ## [0.2.0] - 2026-10-17
 
 Design v5.
 
-### Adicionado
+### Added
 
-- Gerenciador de volume: volume geral, saídas, cada app tocando e microfone. Rolar no botão de volume muda 5%.
-- Painel de tela: brilho, tamanho do texto e escala do monitor.
-- Painel de bateria, aberto pelo botão da bateria: nível, carga, ciclos, potência e perfis de energia.
-- Wi‑Fi: estatísticas, compartilhamento por QR, teste de velocidade, DNS e redes conhecidas separadas das outras.
-- IA: uma aba por provedor e tokens por dia e por modelo.
-- Controles rápidos com 660px e os botões Manter tela acesa, Gravar tela e Ditado.
-- Ondas na música enquanto ela toca.
+- Volume manager: master volume, outputs, each playing app and the microphone. Scrolling on the volume button changes it by 5%.
+- Display panel: brightness, text size and monitor scale.
+- Battery panel, opened from the battery button: level, charge, cycles, power and power profiles.
+- Wi‑Fi: statistics, QR sharing, speed test, DNS, and known networks split from the others.
+- AI: one tab per provider, and tokens per day and per model.
+- Quick controls at 660px with the Keep screen on, Record screen and Dictation buttons.
+- Waves on the music while it plays.
 
-### Mudado
+### Changed
 
-- Barra com 26px.
-- Expansões de uma linha mais finas.
-- Acabamento v5 nas pílulas e na ilha: brilho, halo e sombras suaves.
-- Limites de IA lidos dos registros do `omarchy-agent-usage-update`: a Island não lê mais as credenciais dos CLIs.
-- Atalhos sugeridos que o Omarchy deixa livres: `Super+I` para os controles rápidos e `Super+Ctrl+Alt+←/→` para trocar de ambiente.
+- 26px bar.
+- Thinner one-line expansions.
+- v5 finish on the pills and the island: gloss, halo and soft shadows.
+- AI limits read from the `omarchy-agent-usage-update` records: Island no longer reads the CLIs' credentials.
+- Suggested shortcuts that Omarchy leaves free: `Super+I` for the quick controls and `Super+Ctrl+Alt+←/→` to switch environments.
 
-### Corrigido
+### Fixed
 
-- Reinstalar reinicia o shell, para a versão nova valer.
+- Reinstalling restarts the shell, so the new version takes effect.
 
 ## [0.1.0] - 2026-10-17
 
-Primeira versão: a Island como plugin de barra do Omarchy.
+First release: Island as an Omarchy bar plugin.
 
-### Adicionado
+### Added
 
-- Barra de três pílulas no lugar da barra do Omarchy, com a ilha no centro.
-- Controles rápidos: volume, brilho, Wi‑Fi (com senha na ilha), Bluetooth e energia.
-- OSD de volume e brilho na ilha.
-- Servidor de notificações próprio: banner, lista e site no lugar do navegador em alertas web.
-- Música via MPRIS, calendário e cartão central.
-- Clima pelo Open-Meteo.
-- Ambientes e widgets nas pílulas laterais, com hardware e uso de IA do Claude e do Codex.
+- Three-pill bar replacing the Omarchy bar, with the island in the middle.
+- Quick controls: volume, brightness, Wi‑Fi (with the password on the island), Bluetooth and power.
+- Volume and brightness OSD on the island.
+- Its own notification server: banner, list, and the site instead of the browser on web alerts.
+- Music via MPRIS, calendar and center card.
+- Weather from Open-Meteo.
+- Environments and widgets on the side pills, with hardware and Claude and Codex AI usage.
 
-[Não lançada]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.0...dev
+[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.0...dev
 [0.7.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.4.0...v0.5.0

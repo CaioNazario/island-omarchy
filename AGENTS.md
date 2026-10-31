@@ -110,8 +110,8 @@ O host recria o `Bar.qml` a cada hot-reload de plugin (qualquer arquivo salvo em
 
 - CI obrigatória: todo push na `dev` e todo PR roda `make lint`, `make test` (todos os testes) e `make build`. CI vermelha não vira release.
 - Só duas branches: `dev` recebe todo o trabalho; `main` só tem o plugin compilado (é o que o `omarchy plugin add` clona e o `omarchy plugin update` avança em fast-forward), com um commit `build: vX.Y.Z` por versão. O README da `main` é o da `dev`, copiado pelo workflow `release`: links e imagens dele usam URL absoluta da `dev`. Nunca commite na `main` à mão.
-- Toda mudança visível entra em `## [Não lançada]` no `CHANGELOG.md`, no mesmo commit.
-- Release: na `dev`, um commit `chore(release): X.Y.Z` move a seção `[Não lançada]` para `[X.Y.Z] - data` e troca a versão em `plugin/manifest.json`, `package.json` e `package-lock.json` (`npm version X.Y.Z --no-git-tag-version`). Depois, tag anotada `vX.Y.Z` nesse commit e push da `dev` e da tag: o workflow `release` confere a versão, publica o build na `main` e cria a GitHub Release com as notas do CHANGELOG.
+- Toda mudança visível entra em `## [Unreleased]` no `CHANGELOG.md`, no mesmo commit. O CHANGELOG é em inglês (vira a nota da GitHub Release).
+- Release: na `dev`, um commit `chore(release): X.Y.Z` move a seção `[Unreleased]` para `[X.Y.Z] - data` e troca a versão em `plugin/manifest.json`, `package.json` e `package-lock.json` (`npm version X.Y.Z --no-git-tag-version`). Depois, tag anotada `vX.Y.Z` nesse commit e push da `dev` e da tag: o workflow `release` confere a versão, publica o build na `main` e cria a GitHub Release com as notas do CHANGELOG.
 - Numeração SemVer na série 0.x: `minor` para feature ou quebra de compatibilidade, `patch` só para correção.
 - Mudou comportamento, atualize a spec correspondente no mesmo commit. Spec e código nunca divergem.
 - API de Quickshell/Qt/Omarchy que você não confirmou nos `.qmltypes`, na doc da versão instalada ou no código do Omarchy: diga "não sei" e verifique, em vez de chutar.
