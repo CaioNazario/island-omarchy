@@ -8,6 +8,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 - A preview image (`preview.png`) at the root of the published plugin, for the Omarchy plugin marketplace card.
 
+### Changed
+
+- The plugin is now named "Island Desktop" in its manifest and README, to stand apart from other plugins called "Island". The id stays `caionazario.island`, so `omarchy plugin update` keeps working.
+
 ## [0.7.2] - 2026-10-31
 
 ### Fixed

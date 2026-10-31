@@ -1,4 +1,4 @@
-# Island
+# Island Desktop
 
 A bar plugin for **[Omarchy](https://omarchy.org/)** (Hyprland + Quickshell) that replaces the default bar with three floating pills.
 
