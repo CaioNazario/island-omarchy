@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-10-31
+
 ### Added
 
 - English interface, with a "Language" switch in the footer of the editor's Environments tab to go back to Portuguese. The change applies at once (`language` key in `settings.json`).
@@ -125,7 +127,8 @@ First release: Island as an Omarchy bar plugin.
 - Weather from Open-Meteo.
 - Environments and widgets on the side pills, with hardware and Claude and Codex AI usage.
 
-[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.0...dev
+[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.1...dev
+[0.7.1]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.4.0...v0.5.0
