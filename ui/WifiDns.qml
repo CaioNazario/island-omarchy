@@ -28,8 +28,8 @@ ColumnLayout {
 
   PanelLabel {
     Layout.fillWidth: true
-    text: "Servidor DNS"
-    value: dns.details.dnsBusy ? "Aplicando…" : dns.details.dnsDetail
+    text: I18n.tr("DNS server")
+    value: dns.details.dnsBusy ? I18n.tr("Applying…") : PanelCore.dnsDetail(dns.details.dnsProvider, dns.details.current ? dns.details.current.gateway : "", dns.details.customServers, I18n.language)
   }
 
   RowLayout {
@@ -43,7 +43,7 @@ ColumnLayout {
         required property var modelData
 
         Layout.fillWidth: true
-        label: modelData.label
+        label: I18n.tr(modelData.label)
         active: dns.bar.wifiDnsEditing ? modelData.id === "Custom" : modelData.id === dns.details.dnsProvider
         onClicked: dns.choose(modelData.id)
       }

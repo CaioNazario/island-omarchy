@@ -28,7 +28,6 @@ Scope {
   readonly property var display: BatteryCore.batteryDisplay(percent, charging)
 
   property var status: ({})
-  readonly property var panel: PanelCore.batteryPanel(status)
   property var profiles: []
 
   onWatchingChanged: if (watching) refresh()

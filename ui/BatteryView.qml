@@ -11,6 +11,7 @@ Item {
 
   required property var bar
   readonly property var battery: bar.system.battery
+  readonly property var panel: PanelCore.batteryPanel(battery.status, I18n.language)
   readonly property color tone: battery.saver ? Tokens.batterySaver : battery.display.tone === "good" ? Tokens.batteryGreen
     : battery.display.tone === "low" ? Tokens.batteryRed : Tokens.neutral300
 
@@ -26,8 +27,8 @@ Item {
       Layout.fillWidth: true
       glyph: PanelCore.batteryGlyph(view.battery.percent, view.battery.charging)
       glyphColor: view.tone
-      title: "Bateria"
-      subtitle: view.battery.panel.status
+      title: I18n.tr("Battery")
+      subtitle: view.panel.status
 
       IslandText {
         text: view.battery.percent + "%"
@@ -66,7 +67,7 @@ Item {
       rowSpacing: 0
 
       Repeater {
-        model: view.battery.panel.stats
+        model: view.panel.stats
 
         RowLayout {
           id: stat
@@ -110,7 +111,7 @@ Item {
       PanelLabel {
         Layout.fillWidth: true
         Layout.bottomMargin: 6
-        text: "Perfil de energia"
+        text: I18n.tr("Power profile")
       }
 
       RowLayout {
@@ -126,7 +127,7 @@ Item {
             Layout.fillWidth: true
             implicitHeight: 36
             radius: 10
-            label: modelData.label
+            label: I18n.tr(modelData.label)
             glyph: modelData.glyph
             active: modelData.active
             onClicked: view.battery.setProfile(modelData.id)

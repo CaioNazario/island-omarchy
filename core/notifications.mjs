@@ -1,5 +1,6 @@
 // Roteamento de notificação nova e tempo relativo (specs/04-notificacoes.md;
 // design/logic.js `pushNotif`, ~136).
+import { tr } from './i18n.mjs';
 // Urgência baixa nunca mostra banner.
 function onlyInList(notification) {
     if (notification.low)
@@ -18,13 +19,13 @@ export function routeNotification(notification, island) {
     return 'banner';
 }
 const MINUTE_MS = 60000;
-export function formatRelativeTime(elapsedMs) {
+export function formatRelativeTime(elapsedMs, lang) {
     const minutes = Math.floor(elapsedMs / MINUTE_MS);
     if (minutes < 1)
-        return 'agora';
+        return tr(lang, 'now');
     if (minutes < 60)
-        return `há ${minutes} min`;
-    return `há ${Math.floor(minutes / 60)} h`;
+        return tr(lang, '{n} min ago', { n: minutes });
+    return tr(lang, '{n} h ago', { n: Math.floor(minutes / 60) });
 }
 const NAMED_ENTITIES = {
     amp: '&',

@@ -2,10 +2,11 @@
 // ambientes e o ambiente ativo; as regras de mover e inserir são as de
 // `placeWidget` em environments.ts.
 import { ENV_ICONS, findWidget, MAX_NAME_LENGTH, placeWidget, } from './environments.mjs';
+import { tr } from './i18n.mjs';
 function updateAt(envs, index, patch) {
     return envs.map((env, i) => (i === index ? Object.assign(Object.assign({}, env), patch) : env));
 }
-/** Grava enquanto digita; o vazio aparece como "Sem nome" na barra. */
+/** Grava enquanto digita; o vazio aparece como "Untitled" ("Sem nome") na barra. */
 export function renameEnvironment(envs, index, name) {
     return updateAt(envs, index, { name: name.slice(0, MAX_NAME_LENGTH) });
 }
@@ -31,12 +32,14 @@ export function moveToOtherSide(env, id) {
         return env;
     return placeWidget(env, id, place.side === 'left' ? 'right' : 'left', null);
 }
-export function selectionLabel(env, id) {
+export function selectionLabel(env, id, lang) {
     const place = findWidget(env, id);
     if (!place)
         return '';
-    const pill = place.side === 'left' ? 'Pílula esquerda' : 'Pílula direita';
-    return `${pill} · ${place.index + 1} de ${place.count}`;
+    const params = { index: place.index + 1, count: place.count };
+    return place.side === 'left'
+        ? tr(lang, 'Left pill · {index} of {count}', params)
+        : tr(lang, 'Right pill · {index} of {count}', params);
 }
 export function usedCount(env) {
     return env.left.length + env.right.length;

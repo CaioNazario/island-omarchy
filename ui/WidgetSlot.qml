@@ -6,6 +6,7 @@ import "../core/countdown.mjs" as CountdownCore
 import "../core/dayProgress.mjs" as DayProgress
 import "../core/pomodoro.mjs" as PomodoroCore
 import "../core/environments.mjs" as EnvironmentsCore
+import "../core/github.mjs" as GithubCore
 
 // Um widget do catálogo (specs/16-widgets.md "Widgets"), montado a partir das
 // fontes. `naturalWidth`/`minWidth` alimentam o encaixe da área; só o `hw`
@@ -87,7 +88,7 @@ Item {
     id: eventWidget
 
     TopbarWidget {
-      readonly property var view: CalendarCore.nextEvent(slot.system.calendar.events, new Date(slot.bar.nowMs))
+      readonly property var view: CalendarCore.nextEvent(slot.system.calendar.events, new Date(slot.bar.nowMs), I18n.language)
 
       clickable: true
       glyph: "calendar-blank"
@@ -110,7 +111,7 @@ Item {
       clickable: slot.service !== null
       ring: PomodoroCore.elapsedFraction(pomodoroState, now)
       label: PomodoroCore.formatRemaining(PomodoroCore.remainingAt(pomodoroState, now))
-      sub: PomodoroCore.phaseLabel(pomodoroState)
+      sub: PomodoroCore.phaseLabel(pomodoroState, I18n.language)
       onClicked: slot.service.pomodoro.toggle()
       onPomodoroStateChanged: now = Date.now()
 
@@ -133,7 +134,7 @@ Item {
       clickable: music.active
       glyph: music.active ? music.sourceGlyph : "music-note"
       glyphColor: music.active ? Tokens.accent400 : Tokens.neutral400
-      label: music.active ? music.title : "Nada tocando"
+      label: music.active ? music.title : I18n.tr("Nothing playing")
       labelColor: music.active ? Tokens.text : Tokens.neutral400
       labelMaxWidth: 120
       sub: music.active ? music.artist : ""
@@ -151,7 +152,7 @@ Item {
     id: githubWidget
 
     TopbarWidget {
-      readonly property var view: slot.system.github.view
+      readonly property var view: GithubCore.githubView(slot.system.github.counts, I18n.language)
 
       glyph: "github-logo-fill"
       label: view.label
@@ -167,7 +168,7 @@ Item {
       readonly property int percent: DayProgress.dayProgress(new Date(slot.bar.nowMs))
 
       glyph: "hourglass-medium"
-      label: "Dia"
+      label: I18n.tr("Day")
       bar: percent / 100
       sub: percent + "%"
     }
@@ -178,7 +179,7 @@ Item {
 
     TopbarWidget {
       readonly property var settings: slot.service ? slot.service.settings.values : null
-      readonly property var view: CountdownCore.countdownView(settings ? settings.countdownName : "", settings ? settings.countdownDate : "", new Date(slot.bar.nowMs))
+      readonly property var view: CountdownCore.countdownView(settings ? settings.countdownName : "", settings ? settings.countdownDate : "", new Date(slot.bar.nowMs), I18n.language)
 
       // Só sem data há clique: leva às preferências (spec 13).
       clickable: view.missingDate
@@ -199,7 +200,7 @@ Item {
       clickable: true
       glyph: "note-fill"
       glyphColor: text === "" ? Tokens.neutral500 : Tokens.accent300
-      label: text === "" ? "Nota vazia" : text
+      label: text === "" ? I18n.tr("Empty note") : text
       labelMaxWidth: 150
       onClicked: slot.open("note")
     }

@@ -13,11 +13,11 @@ Item {
   required property var bar
   readonly property var session: bar.system.session
   readonly property var actions: [
-    { action: "suspend", label: "Suspender", glyph: "moon-stars" },
-    { action: "reboot", label: "Reiniciar", glyph: "arrow-clockwise" },
-    { action: "shutdown", label: "Desligar", glyph: "power-bold" },
-    { action: "logout", label: "Sair", glyph: "sign-out" },
-    { action: "lock", label: "Bloquear", glyph: "lock-simple" }
+    { action: "suspend", label: I18n.tr("Suspend"), glyph: "moon-stars" },
+    { action: "reboot", label: I18n.tr("Restart"), glyph: "arrow-clockwise" },
+    { action: "shutdown", label: I18n.tr("Shut down"), glyph: "power-bold" },
+    { action: "logout", label: I18n.tr("Log out"), glyph: "sign-out" },
+    { action: "lock", label: I18n.tr("Lock"), glyph: "lock-simple" }
   ]
 
   implicitHeight: bar.powerOpen ? 48 : 0

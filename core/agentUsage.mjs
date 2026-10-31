@@ -4,6 +4,7 @@
 // Omarchy (/usr/share/omarchy/shell/plugins/agents). Formatação e nomes dos
 // modelos seguem o `Main.qml` de lá. Os limites de sessão e semanal também
 // vêm do registro (o coletor do Claude consulta o endpoint OAuth de uso).
+import { msg, tr, weekdayShort } from './i18n.mjs';
 function isObject(value) {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -49,7 +50,8 @@ function statusText(data, hasLimits) {
     if (typeof data.usageStatusText === 'string' && data.usageStatusText !== '')
         return data.usageStatusText;
     if (!hasLimits && typeof data.authHelpText === 'string' && data.authHelpText !== '') {
-        return 'Faça login no CLI para ver os limites';
+        // Texto do core: a UI traduz `status` na hora de mostrar.
+        return msg('Log in to the CLI to see the limits');
     }
     return '';
 }
@@ -114,19 +116,17 @@ export function friendlyModelName(id) {
     }
     if (version.length > 0)
         words.push(version.join('.'));
-    return words.length > 0 ? words.join(' ') : 'Desconhecido';
+    return words.length > 0 ? words.join(' ') : msg('Unknown');
 }
-const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-/** Últimos 7 dias; o de hoje (data local `YYYY-MM-DD`) vira "Hoje" em destaque. */
-export function dayRows(days, today) {
+/** Últimos 7 dias; o de hoje (data local `YYYY-MM-DD`) vira "Today" em destaque. */
+export function dayRows(days, today, lang) {
     const last = days.slice(-7);
     const peak = Math.max(0, ...last.map((day) => day.tokens));
     return last.map((day) => {
-        var _a;
         const isToday = day.date === today;
-        const weekday = (_a = WEEKDAYS[new Date(day.date + 'T12:00:00').getDay()]) !== null && _a !== void 0 ? _a : day.date;
+        const weekday = weekdayShort(lang, new Date(day.date + 'T12:00:00').getDay()) || day.date;
         return {
-            label: isToday ? 'Hoje' : weekday,
+            label: isToday ? tr(lang, 'Today') : weekday,
             value: formatTokens(day.tokens),
             fraction: peak > 0 ? day.tokens / peak : 0,
             today: isToday,

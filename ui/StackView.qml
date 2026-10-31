@@ -38,7 +38,7 @@ Item {
       }
 
       IslandText {
-        text: "Notificações"
+        text: I18n.tr("Notifications")
       }
 
       Rectangle {
@@ -72,7 +72,7 @@ Item {
           id: clearLabel
 
           anchors.centerIn: parent
-          text: "Limpar tudo"
+          text: I18n.tr("Clear all")
           px: 11
           font.weight: Tokens.weightBody
         }
@@ -105,7 +105,7 @@ Item {
 
         IslandText {
           anchors.verticalCenter: parent.verticalCenter
-          text: "Nenhuma notificação"
+          text: I18n.tr("No notifications")
           px: 12.5
           font.weight: Tokens.weightBody
           color: Tokens.neutral500
@@ -199,7 +199,7 @@ Item {
           }
 
           IslandText {
-            text: NotificationsCore.formatRelativeTime(item.nowMs - item.entry.timeMs)
+            text: NotificationsCore.formatRelativeTime(item.nowMs - item.entry.timeMs, I18n.language)
             px: 11
             font.weight: Tokens.weightBody
             color: Tokens.neutral500

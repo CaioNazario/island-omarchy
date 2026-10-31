@@ -12,7 +12,7 @@ Item {
 
   required property var bar
   readonly property var music: bar.system.music
-  readonly property var grid: CalendarCore.monthGrid(new Date(bar.nowMs), bar.calendarOffset)
+  readonly property var grid: CalendarCore.monthGrid(new Date(bar.nowMs), bar.calendarOffset, I18n.language)
 
   implicitHeight: content.implicitHeight + 36
 
@@ -134,7 +134,7 @@ Item {
 
       IslandText {
         Layout.fillWidth: true
-        text: "Calendário"
+        text: I18n.tr("Calendar")
         px: 14
       }
 

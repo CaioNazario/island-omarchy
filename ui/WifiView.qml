@@ -48,7 +48,7 @@ ColumnLayout {
     Layout.preferredHeight: 150
     visible: !view.wifi.radioOn
     glyph: "wifi-slash"
-    text: "Wi‑Fi desligado"
+    text: I18n.tr("Wi‑Fi off")
   }
 
   ColumnLayout {
@@ -99,7 +99,7 @@ ColumnLayout {
 
         GroupLabel {
           visible: view.groups.known.length > 0
-          text: "Redes conhecidas"
+          text: I18n.tr("Known networks")
         }
 
         Repeater {
@@ -116,7 +116,7 @@ ColumnLayout {
 
         GroupLabel {
           visible: view.groups.other.length > 0
-          text: "Outras redes"
+          text: I18n.tr("Other networks")
         }
 
         Repeater {
@@ -170,7 +170,7 @@ ColumnLayout {
 
   function submit(ssid, password) {
     if (WifiCore.validatePassword(password) === "too-short") {
-      bar.wifiPasswordError = "Senha precisa ter pelo menos 8 caracteres";
+      bar.wifiPasswordError = WifiCore.PASSWORD_TOO_SHORT;
       return;
     }
     bar.closePassword();

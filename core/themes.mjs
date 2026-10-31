@@ -3,8 +3,19 @@
 // superfícies das pílulas (`--isl-lane`), da ilha (`--isl-surface`) e dos
 // painéis (`--isl-panel`). Cores com alfa saem como `#AARRGGBB` (formato do Qt).
 // A cor de realce (spec 01 "Realce") escolhe a escala do acento que o tema usa.
+import { msg } from './i18n.mjs';
+// Os ids ficam em português: são o valor guardado no `settings.json`. O nome
+// mostrado sai de `THEME_NAMES`/`ACCENT_NAMES`, traduzido na UI.
 export const THEME_IDS = ['Nocturne', 'Alto contraste'];
+export const THEME_NAMES = {
+    Nocturne: msg('Nocturne'),
+    'Alto contraste': msg('High contrast'),
+};
 export const ACCENT_IDS = ['Roxo', 'Branco'];
+export const ACCENT_NAMES = {
+    Roxo: msg('Purple'),
+    Branco: msg('White'),
+};
 const NOCTURNE_NEUTRALS = [
     '#f3f5fe',
     '#e4e7f5',

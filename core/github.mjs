@@ -1,5 +1,6 @@
 // Widget GitHub (specs/16-widgets.md `github`): duas buscas da API de busca,
 // credencial do `gh auth token` (casos do spike S10 na spec).
+import { tr, trCount } from './i18n.mjs';
 export const SEARCH_QUERIES = {
     mine: 'is:pr is:open author:@me',
     review: 'is:pr is:open review-requested:@me',
@@ -32,11 +33,11 @@ export function parseTotalCount(body) {
         return null;
     }
 }
-export function githubView(counts) {
+export function githubView(counts, lang) {
     if (!counts)
         return { label: 'GitHub', unavailable: true };
-    const label = counts.mine === 1 ? '1 PR' : `${counts.mine} PRs`;
+    const label = trCount(lang, counts.mine, '1 PR', '{n} PRs');
     if (counts.review === 0)
         return { label, unavailable: false };
-    return { label, unavailable: false, sub: `${counts.review} para revisar` };
+    return { label, unavailable: false, sub: tr(lang, '{n} to review', { n: counts.review }) };
 }

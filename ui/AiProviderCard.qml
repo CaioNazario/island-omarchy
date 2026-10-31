@@ -16,7 +16,7 @@ Rectangle {
   readonly property string notice: provider.hasLimits ? provider.status : ""
 
   readonly property var record: provider.record
-  readonly property var days: record ? AgentCore.dayRows(record.days, Qt.formatDate(new Date(), "yyyy-MM-dd")) : []
+  readonly property var days: record ? AgentCore.dayRows(record.days, Qt.formatDate(new Date(), "yyyy-MM-dd"), I18n.language) : []
   readonly property var models: record ? AgentCore.modelRows(record.models) : []
 
   implicitHeight: cardColumn.implicitHeight + 22
@@ -91,8 +91,8 @@ Rectangle {
     IslandText {
       Layout.preferredHeight: 46
       visible: !card.provider.hasLimits
-      text: card.provider.status !== "" ? card.provider.status
-        : card.record === null ? "Sem dados do Omarchy ainda" : "Sem limites para mostrar"
+      text: card.provider.status !== "" ? I18n.tr(card.provider.status)
+        : card.record === null ? I18n.tr("No data from Omarchy yet") : I18n.tr("No limits to show")
       px: 12
       font.weight: Tokens.weightBody
       color: Tokens.neutral400
@@ -105,15 +105,15 @@ Rectangle {
       spacing: 14
 
       UsageColumn {
-        title: "Sessão · 5h"
+        title: I18n.tr("Session · 5h")
         window: card.provider.session
-        reset: window && window.resetsAt ? "Reinicia " + AiCore.formatSessionReset(window.resetsAt, Date.now()) : ""
+        reset: window && window.resetsAt ? I18n.tr("Resets {when}", { when: AiCore.formatSessionReset(window.resetsAt, Date.now(), I18n.language) }) : ""
       }
 
       UsageColumn {
-        title: "Semanal"
+        title: I18n.tr("Weekly")
         window: card.provider.weekly
-        reset: window && window.resetsAt ? "Reinicia " + AiCore.formatWeeklyReset(window.resetsAt) : ""
+        reset: window && window.resetsAt ? I18n.tr("Resets {when}", { when: AiCore.formatWeeklyReset(window.resetsAt, I18n.language) }) : ""
       }
     }
 
@@ -131,8 +131,8 @@ Rectangle {
 
       PanelLabel {
         Layout.fillWidth: true
-        text: "Tokens por dia"
-        value: card.record ? AgentCore.formatTokens(card.record.days.slice(-7).reduce((sum, day) => sum + day.tokens, 0)) + " na semana" : ""
+        text: I18n.tr("Tokens per day")
+        value: card.record ? I18n.tr("{tokens} this week", { tokens: AgentCore.formatTokens(card.record.days.slice(-7).reduce((sum, day) => sum + day.tokens, 0)) }) : ""
       }
 
       Repeater {
@@ -201,8 +201,8 @@ Rectangle {
 
       PanelLabel {
         Layout.fillWidth: true
-        text: "Tokens por modelo"
-        value: card.record ? AgentCore.formatTokens(card.record.models.reduce((sum, model) => sum + model.tokens, 0)) + " total" : ""
+        text: I18n.tr("Tokens per model")
+        value: card.record ? I18n.tr("{tokens} total", { tokens: AgentCore.formatTokens(card.record.models.reduce((sum, model) => sum + model.tokens, 0)) }) : ""
       }
 
       Repeater {
@@ -236,7 +236,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 12
             anchors.verticalCenter: parent.verticalCenter
-            text: modelRow.modelData.name
+            text: I18n.tr(modelRow.modelData.name)
             px: 12
             font.weight: Tokens.weightBody
             color: Tokens.neutral200

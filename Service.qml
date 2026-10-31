@@ -6,6 +6,7 @@ import Quickshell.Io
 import "system"
 import "core/environments.mjs" as EnvironmentsCore
 import "core/appearance.mjs" as AppearanceCore
+import "core/i18n.mjs" as I18nCore
 
 // Entrada `service` do plugin (keepLoaded: specs/14-spikes.md, S6). Vive até
 // o shell reiniciar: guarda o estado visível que não pode se perder quando a
@@ -25,8 +26,11 @@ Item {
   readonly property alias settings: settingsStore
   readonly property alias stateStore: persistedState
   readonly property alias pomodoro: pomodoro
+  // Idioma da interface (specs/13 "Idioma"), saneado. A barra o passa ao
+  // `I18n`; o que vive aqui (pomodoro, ambientes iniciais) lê direto.
+  readonly property string language: I18nCore.sanitizeLanguage(settingsStore.values.language)
   // Ambientes (spec 15): saneados a cada leitura, um ativo para todos os monitores.
-  readonly property var environments: EnvironmentsCore.environmentsFromJson(settingsStore.values.environments)
+  readonly property var environments: EnvironmentsCore.environmentsFromJson(settingsStore.values.environments, language)
   readonly property int environmentIndex: EnvironmentsCore.sanitizeIndex(settingsStore.values.environmentIndex, environments.length)
   // Aparência (spec 19), saneada a cada leitura como os ambientes.
   readonly property var appearance: AppearanceCore.sanitizeAppearance(settingsStore.values.appearance)
@@ -47,6 +51,10 @@ Item {
   /** Troca de ambiente; a barra anima e abre `env` (spec 15). */
   function setEnvironmentIndex(index) {
     settingsStore.values.environmentIndex = EnvironmentsCore.sanitizeIndex(index, environments.length);
+  }
+
+  function setLanguage(id) {
+    settingsStore.values.language = I18nCore.sanitizeLanguage(id);
   }
 
   function setEnvironments(list) {
@@ -75,6 +83,7 @@ Item {
 
     store: persistedState
     feed: notificationFeed
+    language: root.language
   }
 
   NotificationFeed {

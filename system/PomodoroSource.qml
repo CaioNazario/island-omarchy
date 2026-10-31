@@ -13,6 +13,8 @@ Scope {
 
   required property var store
   required property var feed
+  // Idioma da notificação de troca de fase (specs/13 "Idioma").
+  property string language: "en"
 
   property var current: PomodoroCore.parse(store.values.pomodoroState)
   readonly property bool running: current.endsAt !== null
@@ -32,7 +34,7 @@ Scope {
     current = result.state;
     if (!result.started) return;
     save();
-    const message = PomodoroCore.phaseNotification(result.started);
+    const message = PomodoroCore.phaseNotification(result.started, pomodoro.language);
     feed.pushInternal(message.title, message.body, "timer");
   }
 

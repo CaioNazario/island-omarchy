@@ -84,7 +84,7 @@ Item {
     anchors.verticalCenter: parent.verticalCenter
     x: area.side === "left" ? parent.width - width - 10 : 10
     visible: area.editing && area.ids.length === 0
-    text: "Solte widgets aqui"
+    text: I18n.tr("Drop widgets here")
     px: 11.5
     font.weight: Tokens.weightBody
     color: Tokens.neutral500

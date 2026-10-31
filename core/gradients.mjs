@@ -4,16 +4,17 @@
 // paleta Tema sai do `colors.toml` do tema do Omarchy; sem ele, dos tons do
 // realce da Island.
 import { hslOf, parseHex } from './color.mjs';
+import { msg } from './i18n.mjs';
 export const GRADIENT_PRESETS = [
-    { id: 'aurora', name: 'Aurora', colors: ['#5dffb0', '#7fc4ff', '#c99cff'] },
-    { id: 'sunset', name: 'Pôr do sol', colors: ['#ff7a59', '#ff4f8b', '#ffc15e'] },
-    { id: 'ocean', name: 'Oceano', colors: ['#1e90ff', '#00c2c7', '#6a5cff'] },
-    { id: 'forest', name: 'Floresta', colors: ['#2e8b57', '#a3c95a', '#1f6f5c'] },
-    { id: 'rose', name: 'Rosa', colors: ['#ff9ac1', '#c86bfa', '#ffd1dc'] },
-    { id: 'lavender', name: 'Lavanda', colors: ['#b8a1ff', '#7aa2ff', '#f0b3ff'] },
-    { id: 'ember', name: 'Brasa', colors: ['#ff5e3a', '#ff9f1c', '#8b1e3f'] },
-    { id: 'citrus', name: 'Cítrico', colors: ['#ffd43b', '#94d82d', '#ff922b'] },
-    { id: 'mono', name: 'Mono', colors: ['#9aa0a6', '#5f6368', '#d0d4d8'] },
+    { id: 'aurora', name: msg('Aurora'), colors: ['#5dffb0', '#7fc4ff', '#c99cff'] },
+    { id: 'sunset', name: msg('Sunset'), colors: ['#ff7a59', '#ff4f8b', '#ffc15e'] },
+    { id: 'ocean', name: msg('Ocean'), colors: ['#1e90ff', '#00c2c7', '#6a5cff'] },
+    { id: 'forest', name: msg('Forest'), colors: ['#2e8b57', '#a3c95a', '#1f6f5c'] },
+    { id: 'rose', name: msg('Rose'), colors: ['#ff9ac1', '#c86bfa', '#ffd1dc'] },
+    { id: 'lavender', name: msg('Lavender'), colors: ['#b8a1ff', '#7aa2ff', '#f0b3ff'] },
+    { id: 'ember', name: msg('Ember'), colors: ['#ff5e3a', '#ff9f1c', '#8b1e3f'] },
+    { id: 'citrus', name: msg('Citrus'), colors: ['#ffd43b', '#94d82d', '#ff922b'] },
+    { id: 'mono', name: msg('Mono'), colors: ['#9aa0a6', '#5f6368', '#d0d4d8'] },
 ];
 /** `theme` primeiro: a paleta tirada do tema do Omarchy. */
 export const GRADIENT_IDS = [

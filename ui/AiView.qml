@@ -35,11 +35,11 @@ Item {
 
       IslandText {
         Layout.fillWidth: true
-        text: "Uso de IA"
+        text: I18n.tr("AI usage")
       }
 
       IslandText {
-        text: view.ai.withLimits.length === 1 ? "1 conectado" : view.ai.withLimits.length + " conectados"
+        text: I18n.count(view.ai.withLimits.length, "1 connected", "{n} connected")
         px: 11
         font.weight: Tokens.weightBody
         color: Tokens.neutral500

@@ -33,9 +33,12 @@ Rectangle {
     Drag.active = true;
   }
 
+  // O pai é o item com o zoom do monitor (ScreenBar `zoomed`): a cena não
+  // está nas coordenadas dele.
   function moveTo(sceneX, sceneY) {
-    x = sceneX - width / 2;
-    y = sceneY - height / 2;
+    const at = parent.mapFromItem(null, sceneX, sceneY);
+    x = at.x - width / 2;
+    y = at.y - height / 2;
   }
 
   /** Solta onde estiver; fora de uma pílula, nada acontece. */
@@ -61,7 +64,7 @@ Rectangle {
 
     IslandText {
       anchors.verticalCenter: parent.verticalCenter
-      text: proxy.info ? proxy.info.name : ""
+      text: proxy.info ? I18n.tr(proxy.info.name) : ""
       px: 12
       color: Tokens.accent100
     }

@@ -12,7 +12,7 @@ Flickable {
 
   required property var bar
   readonly property var audio: bar.system.audio
-  readonly property var current: MixerCore.outputDevice(nodeInfo(audio.defaultSink))
+  readonly property var current: MixerCore.outputDevice(nodeInfo(audio.defaultSink), I18n.language)
 
   contentHeight: column.implicitHeight + 22
   boundsBehavior: Flickable.StopAtBounds
@@ -58,7 +58,7 @@ Flickable {
 
       IslandText {
         Layout.fillWidth: true
-        text: "Volume"
+        text: I18n.tr("Volume")
       }
 
       PhIcon {
@@ -108,7 +108,7 @@ Flickable {
         IslandText {
           Layout.preferredWidth: 38
           horizontalAlignment: Text.AlignRight
-          text: view.audio.muted ? "Mudo" : view.audio.percent + "%"
+          text: view.audio.muted ? I18n.tr("Muted") : view.audio.percent + "%"
           px: 12
           font.weight: Tokens.weightBody
           color: Tokens.neutral300
@@ -117,7 +117,7 @@ Flickable {
     }
 
     SectionLabel {
-      text: "Saída"
+      text: I18n.tr("Output")
     }
 
     Repeater {
@@ -127,7 +127,7 @@ Flickable {
         id: output
 
         required property var modelData
-        readonly property var look: MixerCore.outputDevice(view.nodeInfo(modelData))
+        readonly property var look: MixerCore.outputDevice(view.nodeInfo(modelData), I18n.language)
 
         Layout.fillWidth: true
         implicitHeight: 36
@@ -171,7 +171,7 @@ Flickable {
 
     SectionLabel {
       visible: view.audio.streams.length > 0
-      text: "Aplicativos"
+      text: I18n.tr("Apps")
     }
 
     Repeater {
@@ -181,7 +181,7 @@ Flickable {
         id: app
 
         required property var modelData
-        readonly property var look: MixerCore.streamApp(view.streamInfo(modelData))
+        readonly property var look: MixerCore.streamApp(view.streamInfo(modelData), I18n.language)
 
         Layout.fillWidth: true
         // Com o volume geral no mudo, os apps esmaecem (design: opacidade .45).
@@ -197,7 +197,7 @@ Flickable {
 
     SectionLabel {
       visible: view.audio.micAvailable
-      text: "Entrada"
+      text: I18n.tr("Input")
     }
 
     MixerLevelRow {
@@ -206,8 +206,8 @@ Flickable {
       Layout.fillWidth: true
       visible: view.audio.micAvailable
       node: view.audio.source
-      label: "Microfone"
-      sub: mic.muted ? "Silenciado" : MixerCore.outputDevice(view.nodeInfo(view.audio.source)).label
+      label: I18n.tr("Microphone")
+      sub: mic.muted ? I18n.tr("Silenced") : MixerCore.outputDevice(view.nodeInfo(view.audio.source), I18n.language).label
       glyph: mic.muted ? "microphone-slash-fill" : "microphone-fill"
       muteGlyph: "microphone-slash-fill"
       unmuteGlyph: "microphone"

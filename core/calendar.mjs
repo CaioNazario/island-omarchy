@@ -1,29 +1,18 @@
 // Grade e eventos de hoje do calendário (specs/06-calendario.md; design/logic.js
 // `calendar`, `calWeeks`, `todayLabel`, `events`).
 import { formatClock, formatDay } from './clock.mjs';
-// Semana começando na segunda, mês completo em semanas inteiras.
-export const WEEKDAY_HEADERS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-const MONTHS = [
-    'Janeiro',
-    'Fevereiro',
-    'Março',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro',
-];
+import { monthName, tr, weekdayShort } from './i18n.mjs';
+/** Semana começando na segunda, mês completo em semanas inteiras. */
+export function weekdayHeaders(lang) {
+    return [1, 2, 3, 4, 5, 6, 0].map((day) => weekdayShort(lang, day));
+}
 function sameDate(a, b) {
     return (a.getFullYear() === b.getFullYear() &&
         a.getMonth() === b.getMonth() &&
         a.getDate() === b.getDate());
 }
 /** Mês a `offset` meses do de `today` (0 = atual). */
-export function monthGrid(today, offset) {
+export function monthGrid(today, offset, lang) {
     const first = new Date(today.getFullYear(), today.getMonth() + offset, 1);
     const year = first.getFullYear();
     const month = first.getMonth();
@@ -45,7 +34,7 @@ export function monthGrid(today, offset) {
         weeks.push(cells.slice(i, i + 7));
     const todayWeek = weeks.findIndex((week) => week.some((d) => d.kind === 'today'));
     return {
-        title: `${MONTHS[month]} ${year}`,
+        title: `${monthName(lang, month)} ${year}`,
         weeks,
         weekIndex: offset === 0 ? Math.max(0, todayWeek) : 0,
     };
@@ -67,9 +56,9 @@ function overlaps(event, begin, end) {
 function isAllDay(event, dayBegin, dayEnd) {
     return event.start <= dayBegin && event.end >= dayEnd;
 }
-function eventTime(event, dayBegin, dayEnd) {
+function eventTime(event, dayBegin, dayEnd, lang) {
     if (isAllDay(event, dayBegin, dayEnd))
-        return 'Dia inteiro';
+        return tr(lang, 'All day');
     const start = formatClock(event.start);
     if (event.start.getTime() === event.end.getTime())
         return start;
@@ -82,7 +71,7 @@ function sourceOf(event) {
  * Eventos que tocam hoje, por início, no máximo 10; a cor gira pela ordem em
  * que cada calendário aparece.
  */
-export function todayEvents(events, today) {
+export function todayEvents(events, today, lang) {
     const dayBegin = startOfDay(today);
     const dayEnd = new Date(dayBegin.getFullYear(), dayBegin.getMonth(), dayBegin.getDate() + 1);
     const sources = new Map();
@@ -97,7 +86,7 @@ export function todayEvents(events, today) {
             dot = EVENT_DOTS[sources.size % EVENT_DOTS.length];
             sources.set(source, dot);
         }
-        return { name: event.summary, time: eventTime(event, dayBegin, dayEnd), dot };
+        return { name: event.summary, time: eventTime(event, dayBegin, dayEnd, lang), dot };
     });
 }
 const SOON_MINUTES = 90;
@@ -107,7 +96,7 @@ const SOON_MINUTES = 90;
  * inteiro começa às 00:00, então nunca começa depois de agora; sem próximo,
  * ele é a reserva.
  */
-export function nextEvent(events, now) {
+export function nextEvent(events, now, lang) {
     const dayBegin = startOfDay(now);
     const dayEnd = new Date(dayBegin.getFullYear(), dayBegin.getMonth(), dayBegin.getDate() + 1);
     const byStart = [...events].sort((a, b) => a.start.getTime() - b.start.getTime());
@@ -115,15 +104,16 @@ export function nextEvent(events, now) {
     if (!next) {
         const allDay = byStart.find((event) => isAllDay(event, dayBegin, dayEnd));
         if (allDay)
-            return { label: allDay.summary, sub: 'dia inteiro' };
-        return { label: 'Sem eventos', sub: 'hoje' };
+            return { label: allDay.summary, sub: tr(lang, 'all day') };
+        return { label: tr(lang, 'No events'), sub: tr(lang, 'today') };
     }
     const minutes = Math.ceil((next.start.getTime() - now.getTime()) / 60000);
-    const sub = minutes <= SOON_MINUTES ? `em ${minutes} min` : formatClock(next.start);
+    const sub = minutes <= SOON_MINUTES ? tr(lang, 'in {n} min', { n: minutes }) : formatClock(next.start);
     return { label: next.summary, sub };
 }
-/** `Hoje, sex, 25`: dia da semana minúsculo, como no design. */
-export function todayTitle(today) {
-    const day = formatDay(today);
-    return `Hoje, ${day.charAt(0).toLowerCase()}${day.slice(1)}`;
+/** `Today, Fri 25`; em português `Hoje, sex, 25`, minúsculo como no design. */
+export function todayTitle(today, lang) {
+    const day = formatDay(today, lang);
+    const shown = lang === 'pt-BR' ? `${day.charAt(0).toLowerCase()}${day.slice(1)}` : day;
+    return tr(lang, 'Today, {day}', { day: shown });
 }

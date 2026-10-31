@@ -3,6 +3,7 @@
 // comandos que os painéis de rede, QR e velocidade do Omarchy usam:
 // `omarchy-network-status --verbose`, `omarchy-network-qr --meta`,
 // `omarchy-network-speedtest down|up` e `omarchy-dns`.
+import { msg, tr } from './i18n.mjs';
 import { parseKeyValues } from './keyValue.mjs';
 function numberOrNull(value) {
     const parsed = value === undefined ? NaN : Number(value);
@@ -44,18 +45,19 @@ function rate(prev, cur, pick) {
 }
 /**
  * Oito linhas em duas colunas. O design mostra perda de pacotes, que o
- * `omarchy-network-status` não mede; no lugar entra o ping do roteador.
+ * `omarchy-network-status` não mede; no lugar entra o ping do roteador. Os
+ * rótulos saem em inglês: a UI traduz na hora de mostrar.
  */
 export function networkStats(prev, cur) {
     const labels = [
-        'Ping',
-        'Ping do roteador',
-        'Recebendo',
-        'Enviando',
-        'Baixado',
-        'Enviado',
-        'Endereço IP',
-        'Gateway',
+        msg('Ping'),
+        msg('Router ping'),
+        msg('Receiving'),
+        msg('Sending'),
+        msg('Downloaded'),
+        msg('Uploaded'),
+        msg('IP address'),
+        msg('Gateway'),
     ];
     if (!cur)
         return labels.map((label) => ({ label, value: DASH }));
@@ -71,11 +73,12 @@ export function networkStats(prev, cur) {
     ];
     return labels.map((label, i) => { var _a; return ({ label, value: (_a = values[i]) !== null && _a !== void 0 ? _a : DASH }); });
 }
+/** `label` em inglês: a UI traduz na hora de mostrar. */
 export const DNS_OPTIONS = [
     { id: 'DHCP', label: 'DHCP' },
     { id: 'Cloudflare', label: 'Cloudflare' },
     { id: 'Google', label: 'Google' },
-    { id: 'Custom', label: 'Personalizado' },
+    { id: 'Custom', label: msg('Custom') },
 ];
 /** Servidores da linha `DNS=` do /etc/systemd/resolved.conf, sem o `#nome` do TLS. */
 export function parseResolvedServers(conf) {
@@ -90,16 +93,16 @@ export function parseResolvedServers(conf) {
         .map((server) => server.replace(/#.*$/, ''));
 }
 /** Texto à direita de "Servidor DNS"; IPv4 primeiro, dois no máximo. */
-export function dnsDetail(provider, gateway, customServers) {
+export function dnsDetail(provider, gateway, customServers, lang) {
     if (provider === 'Cloudflare')
         return '1.1.1.1 · 1.0.0.1';
     if (provider === 'Google')
         return '8.8.8.8 · 8.8.4.4';
     if (provider === 'Custom') {
         const shown = customServers.filter((server) => !server.includes(':')).slice(0, 2);
-        return shown.length > 0 ? shown.join(' · ') : 'Personalizado';
+        return shown.length > 0 ? shown.join(' · ') : tr(lang, 'Custom');
     }
-    return gateway ? `Automático · ${gateway}` : 'Automático';
+    return gateway ? tr(lang, 'Automatic · {gateway}', { gateway }) : tr(lang, 'Automatic');
 }
 /** Cada fase dura 5s, como o painel de velocidade do Omarchy. */
 export const SPEED_PHASE_MS = 5000;
@@ -116,15 +119,17 @@ export function speedProgress(phase, elapsedMs) {
         return 0.55 + k * 0.45;
     return phase === 'done' ? 1 : 0;
 }
-export function speedStatus(phase, pingMs) {
+export function speedStatus(phase, pingMs, lang) {
     if (phase === 'down')
-        return 'Medindo download…';
+        return tr(lang, 'Measuring download…');
     if (phase === 'up')
-        return 'Medindo upload…';
+        return tr(lang, 'Measuring upload…');
     if (phase === 'failed')
-        return 'Falhou';
+        return tr(lang, 'Failed');
     if (phase === 'done')
-        return pingMs === null ? 'Concluído' : `Concluído · ping ${Math.round(pingMs)} ms`;
+        return pingMs === null
+            ? tr(lang, 'Complete')
+            : tr(lang, 'Complete · ping {ms} ms', { ms: Math.round(pingMs) });
     return '';
 }
 /** `meta<TAB>iface<TAB>segurança<TAB>ssid` e a matriz (wifiqr/Model.js do Omarchy). */

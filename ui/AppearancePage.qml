@@ -19,7 +19,7 @@ RowLayout {
   // A paleta Tema primeiro, com as cores que ela tem agora.
   readonly property var palettes: [{
       id: "theme",
-      name: "Tema",
+      name: "Theme",
       colors: GradientCore.gradientColors("theme", Tokens.omarchyColors, [Tokens.accent300, Tokens.accent500, Tokens.accent700].map(String))
     }].concat(GradientCore.GRADIENT_PRESETS)
 
@@ -41,7 +41,7 @@ RowLayout {
 
     SettingsSection {
       Layout.fillWidth: true
-      title: "Tema"
+      title: I18n.tr("Theme")
 
       // Tema (spec 01 "Temas"): vale para a barra inteira, não por ambiente.
       RowLayout {
@@ -52,7 +52,7 @@ RowLayout {
         IslandText {
           Layout.rightMargin: 8
           Layout.preferredWidth: accentLabel.implicitWidth
-          text: "Tema"
+          text: I18n.tr("Theme")
           px: 12.5
         }
 
@@ -63,7 +63,7 @@ RowLayout {
             required property string modelData
 
             Layout.fillWidth: true
-            label: modelData
+            label: I18n.tr(ThemeCore.THEME_NAMES[modelData])
             active: Tokens.theme === modelData
             onClicked: page.bar.setTheme(modelData)
           }
@@ -79,7 +79,7 @@ RowLayout {
           id: accentLabel
 
           Layout.rightMargin: 8
-          text: "Realce"
+          text: I18n.tr("Accent")
           px: 12.5
         }
 
@@ -90,7 +90,7 @@ RowLayout {
             required property string modelData
 
             Layout.fillWidth: true
-            label: modelData
+            label: I18n.tr(ThemeCore.ACCENT_NAMES[modelData])
             active: Tokens.accentName === modelData
             onClicked: page.bar.setAccent(modelData)
           }
@@ -100,12 +100,12 @@ RowLayout {
 
     SettingsSection {
       Layout.fillWidth: true
-      title: "Fundo"
+      title: I18n.tr("Background")
 
       SwitchRow {
         Layout.fillWidth: true
-        label: "Fundo"
-        hint: "Desligado, sobram só os ícones e o texto."
+        label: I18n.tr("Background")
+        hint: I18n.tr("Off leaves only the icons and the text.")
         on: page.look.background
         onToggled: on => page.set("background", on)
       }
@@ -113,9 +113,9 @@ RowLayout {
       ChoiceRow {
         Layout.fillWidth: true
         visible: page.look.background
-        label: "Preenchimento"
-        hint: "Uma cor, ou cores que se misturam, como nos temas do Zen e do Arc."
-        options: [{ id: "solid", label: "Sólido" }, { id: "gradient", label: "Gradiente" }]
+        label: I18n.tr("Fill")
+        hint: I18n.tr("One color, or colors that blend, like the Zen and Arc themes.")
+        options: [{ id: "solid", label: I18n.tr("Solid") }, { id: "gradient", label: I18n.tr("Gradient") }]
         current: page.look.fill
         onChosen: id => page.set("fill", id)
       }
@@ -123,19 +123,19 @@ RowLayout {
       SettingRow {
         Layout.fillWidth: true
         visible: page.solid
-        label: "Cor"
-        hint: "A do tema, nenhuma ou uma cor fixa."
+        label: I18n.tr("Color")
+        hint: I18n.tr("The theme's, none or a fixed color.")
 
         ChoiceButton {
           Layout.preferredWidth: 72
-          label: "Tema"
+          label: I18n.tr("Theme")
           active: page.look.color === "theme"
           onClicked: page.set("color", "theme")
         }
 
         ChoiceButton {
           Layout.preferredWidth: 72
-          label: "Nenhuma"
+          label: I18n.tr("None")
           active: page.look.color === "none"
           onClicked: page.set("color", "none")
         }
@@ -162,8 +162,8 @@ RowLayout {
       SettingRow {
         Layout.fillWidth: true
         visible: page.gradient
-        label: "Paleta"
-        hint: "A Tema vem do acento e das cores do tema do Omarchy."
+        label: I18n.tr("Palette")
+        hint: I18n.tr("Theme comes from the accent and the Omarchy theme colors.")
       }
 
       Flow {
@@ -177,7 +177,7 @@ RowLayout {
           GradientTile {
             required property var modelData
 
-            name: modelData.name
+            name: I18n.tr(modelData.name)
             colors: modelData.colors
             chosen: page.look.gradient === modelData.id
             onClicked: page.set("gradient", modelData.id)
@@ -188,8 +188,8 @@ RowLayout {
       SliderRow {
         Layout.fillWidth: true
         visible: page.gradient
-        label: "Força"
-        hint: "Quanto as cores cobrem o fundo. Cede o necessário para os textos continuarem legíveis."
+        label: I18n.tr("Strength")
+        hint: I18n.tr("How much the colors cover the background. Backs off as needed to keep text readable.")
         value: page.look.gradientStrength
         onMoved: value => page.set("gradientStrength", value)
       }
@@ -197,8 +197,8 @@ RowLayout {
       SwitchRow {
         Layout.fillWidth: true
         visible: page.look.background && page.look.color !== "none"
-        label: "Opacidade do tema"
-        hint: "Opaca, ou 82% com o blur ligado, como no design."
+        label: I18n.tr("Theme opacity")
+        hint: I18n.tr("Opaque, or 82% with blur on, as in the design.")
         on: page.look.opacityFromTheme
         onToggled: on => page.set("opacityFromTheme", on)
       }
@@ -206,19 +206,19 @@ RowLayout {
       SliderRow {
         Layout.fillWidth: true
         visible: page.look.background && page.look.color !== "none" && !page.look.opacityFromTheme
-        label: "Opacidade"
+        label: I18n.tr("Opacity")
         value: page.look.opacity
         onMoved: value => page.set("opacity", value)
       }
     }
     SettingsSection {
       Layout.fillWidth: true
-      title: "Sombra"
+      title: I18n.tr("Shadow")
 
       SwitchRow {
         Layout.fillWidth: true
-        label: "Sombra"
-        hint: "Embaixo das pílulas e da ilha. Sem fundo, não há sombra."
+        label: I18n.tr("Shadow")
+        hint: I18n.tr("Under the pills and the island. No background, no shadow.")
         on: page.look.shadow
         onToggled: on => page.set("shadow", on)
       }
@@ -226,8 +226,8 @@ RowLayout {
       SliderRow {
         Layout.fillWidth: true
         visible: page.look.shadow
-        label: "Força"
-        hint: "Na ilha aberta, 1.2× esta força."
+        label: I18n.tr("Strength")
+        hint: I18n.tr("On the open island, 1.2× this strength.")
         value: page.look.shadowStrength
         onMoved: value => page.set("shadowStrength", value)
       }
@@ -240,16 +240,46 @@ RowLayout {
     Layout.alignment: Qt.AlignTop
     spacing: 14
 
+    // Zoom de toda a UI (spec 02 "Tamanho"); Automático escolhe por monitor.
     SettingsSection {
       Layout.fillWidth: true
-      title: "Estilo"
+      title: I18n.tr("Size")
+
+      SettingRow {
+        Layout.fillWidth: true
+        label: I18n.tr("Bar size")
+        hint: I18n.tr("Scales the bar, the island and the panels. Automatic picks by the size of each monitor.")
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+        spacing: 6
+
+        Repeater {
+          model: [{ id: "auto", label: I18n.tr("Automatic") }, { id: "small", label: I18n.tr("Small") }, { id: "medium", label: I18n.tr("Medium") }, { id: "large", label: I18n.tr("Large") }]
+
+          ChoiceButton {
+            required property var modelData
+
+            Layout.fillWidth: true
+            label: modelData.label
+            active: Tokens.barSize === modelData.id
+            onClicked: page.bar.setBarSize(modelData.id)
+          }
+        }
+      }
+    }
+
+    SettingsSection {
+      Layout.fillWidth: true
+      title: I18n.tr("Style")
 
       // Preset igual à aparência atual; ajustar qualquer opção sai dele.
       ChoiceRow {
         Layout.fillWidth: true
-        label: "Estilo"
-        hint: "Padrão desfaz todos os ajustes. Vidro: Aurora com grão."
-        options: AppearanceCore.APPEARANCE_PRESETS.map(preset => ({ id: preset.id, label: preset.name }))
+        label: I18n.tr("Style")
+        hint: I18n.tr("Default undoes every tweak. Glass: Aurora with grain.")
+        options: AppearanceCore.APPEARANCE_PRESETS.map(preset => ({ id: preset.id, label: I18n.tr(preset.name) }))
         current: AppearanceCore.matchingPreset(page.look)
         onChosen: id => page.applyPreset(id)
       }
@@ -257,12 +287,12 @@ RowLayout {
 
     SettingsSection {
       Layout.fillWidth: true
-      title: "Forma"
+      title: I18n.tr("Shape")
 
       SettingRow {
         Layout.fillWidth: true
-        label: "Cantos"
-        hint: "Padrão são os do design; Tema segue o arredondamento das janelas do Hyprland."
+        label: I18n.tr("Corners")
+        hint: I18n.tr("Default uses the design's; Theme follows the Hyprland window rounding.")
       }
 
       // Quatro opções não cabem ao lado do rótulo na meia coluna.
@@ -271,7 +301,7 @@ RowLayout {
         spacing: 6
 
         Repeater {
-          model: [{ id: "default", label: "Padrão" }, { id: "rounded", label: "Arredondado" }, { id: "square", label: "Quadrado" }, { id: "theme", label: "Tema" }]
+          model: [{ id: "default", label: I18n.tr("Default") }, { id: "rounded", label: I18n.tr("Rounded") }, { id: "square", label: I18n.tr("Square") }, { id: "theme", label: I18n.tr("Theme") }]
 
           ChoiceButton {
             required property var modelData
@@ -287,8 +317,8 @@ RowLayout {
       SliderRow {
         Layout.fillWidth: true
         visible: page.look.shape === "rounded"
-        label: "Raio"
-        hint: "Nas pílulas, até 9px: mais que isso já é uma pílula."
+        label: I18n.tr("Radius")
+        hint: I18n.tr("On the pills, up to 9px: more than that is already a pill.")
         from: 2
         to: 24
         unit: "px"
@@ -299,12 +329,12 @@ RowLayout {
 
     SettingsSection {
       Layout.fillWidth: true
-      title: "Borda"
+      title: I18n.tr("Border")
 
       SwitchRow {
         Layout.fillWidth: true
-        label: "Borda"
-        hint: "Contorno fino em volta das pílulas e da ilha."
+        label: I18n.tr("Border")
+        hint: I18n.tr("Thin outline around the pills and the island.")
         on: page.look.border
         onToggled: on => page.set("border", on)
       }
@@ -312,7 +342,7 @@ RowLayout {
       SliderRow {
         Layout.fillWidth: true
         visible: page.look.border
-        label: "Largura"
+        label: I18n.tr("Width")
         from: 1
         to: 6
         unit: "px"
@@ -323,8 +353,8 @@ RowLayout {
       SwitchRow {
         Layout.fillWidth: true
         visible: page.look.border
-        label: "Opacidade automática"
-        hint: "Discreta como no design, e mais forte quando o fundo quase some."
+        label: I18n.tr("Automatic opacity")
+        hint: I18n.tr("Subtle as in the design, and stronger when the background nearly fades.")
         on: page.look.borderOpacityAuto
         onToggled: on => page.set("borderOpacityAuto", on)
       }
@@ -332,7 +362,7 @@ RowLayout {
       SliderRow {
         Layout.fillWidth: true
         visible: page.look.border && !page.look.borderOpacityAuto
-        label: "Opacidade da borda"
+        label: I18n.tr("Border opacity")
         value: page.look.borderOpacity
         onMoved: value => page.set("borderOpacity", value)
       }
@@ -340,13 +370,13 @@ RowLayout {
 
     SettingsSection {
       Layout.fillWidth: true
-      title: "Efeitos"
+      title: I18n.tr("Effects")
 
       SwitchRow {
         Layout.fillWidth: true
         visible: page.look.background
-        label: "Blur"
-        hint: Tokens.blurAvailable ? "Vidro fosco atrás da barra. A força é a do blur do Hyprland." : "O blur do Hyprland está desligado (decoration:blur:enabled): não tem efeito."
+        label: I18n.tr("Blur")
+        hint: Tokens.blurAvailable ? I18n.tr("Frosted glass behind the bar. The strength is Hyprland's blur.") : I18n.tr("Hyprland blur is off (decoration:blur:enabled): no effect.")
         on: page.look.blur
         onToggled: on => page.set("blur", on)
       }
@@ -354,8 +384,8 @@ RowLayout {
       SliderRow {
         Layout.fillWidth: true
         visible: page.look.background
-        label: "Grão"
-        hint: "Granulado de filme sobre o fundo, sólido, translúcido ou com blur."
+        label: I18n.tr("Grain")
+        hint: I18n.tr("Film grain over the background, solid, translucent or blurred.")
         value: page.look.grain
         onMoved: value => page.set("grain", value)
       }

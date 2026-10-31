@@ -12,7 +12,7 @@ RowLayout {
 
   required property var bar
   readonly property var wifi: bar.system.wifi
-  readonly property var look: WifiCore.wifiHeader(wifi.radioOn, wifi.active)
+  readonly property var look: WifiCore.wifiHeader(wifi.radioOn, wifi.active, I18n.language)
   readonly property bool connected: wifi.active !== null && wifi.active.status === "connected"
 
   implicitHeight: 48

@@ -13,12 +13,12 @@ ListRow {
   required property var device
   readonly property var battery: BluetoothCore.visibleBattery(device)
   readonly property var statuses: ({
-      connected: { text: "Conectado", color: Tokens.accent300 },
-      disconnected: { text: "Desconectado", color: Tokens.neutral500 },
-      pair: { text: "Parear", color: Tokens.accent300 },
-      connecting: { text: "Conectando…", color: Tokens.neutral400 },
-      disconnecting: { text: "Desconectando…", color: Tokens.neutral400 },
-      pairing: { text: "Pareando…", color: Tokens.neutral400 }
+      connected: { text: I18n.tr("Connected"), color: Tokens.accent300 },
+      disconnected: { text: I18n.tr("Disconnected"), color: Tokens.neutral500 },
+      pair: { text: I18n.tr("Pair"), color: Tokens.accent300 },
+      connecting: { text: I18n.tr("Connecting…"), color: Tokens.neutral400 },
+      disconnecting: { text: I18n.tr("Disconnecting…"), color: Tokens.neutral400 },
+      pairing: { text: I18n.tr("Pairing…"), color: Tokens.neutral400 }
     })
   readonly property var kindGlyphs: ({
       headphones: "headphones-fill",

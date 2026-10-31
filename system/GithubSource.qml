@@ -17,7 +17,6 @@ Scope {
   property var counts: null
   // Um 401 pede um token novo uma vez; o segundo seguido deixa indisponível.
   property bool retriedAfter401: false
-  readonly property var view: GithubCore.githubView(counts)
 
   property var partial: ({})
 

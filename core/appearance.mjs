@@ -5,6 +5,7 @@
 // não vê diferença.
 import { parseHex, toHex } from './color.mjs';
 import { GRADIENT_IDS } from './gradients.mjs';
+import { msg } from './i18n.mjs';
 export const FILL_IDS = ['solid', 'gradient'];
 /** `default` são os raios do design; `theme`, o `decoration:rounding` do Hyprland. */
 export const SHAPE_IDS = ['default', 'rounded', 'square', 'theme'];
@@ -111,11 +112,11 @@ export function withAppearanceOption(look, key, value) {
     return sanitizeAppearance(Object.assign(Object.assign({}, look), { [key]: value }), look);
 }
 export const APPEARANCE_PRESETS = [
-    { id: 'default', name: 'Padrão', look: {} },
+    { id: 'default', name: msg('Default'), look: {} },
     // O Glass do omadock (`DockPresets.js` `builtin_glass`), sem as chaves de dock.
     {
         id: 'glass',
-        name: 'Vidro',
+        name: msg('Glass'),
         look: { fill: 'gradient', gradient: 'aurora', gradientStrength: 0.55, grain: 0.18 },
     },
 ];

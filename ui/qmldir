@@ -34,6 +34,7 @@ EnvironmentsPage 1.0 EnvironmentsPage.qml
 FadeDivider 1.0 FadeDivider.qml
 GradientTile 1.0 GradientTile.qml
 HwWidget 1.0 HwWidget.qml
+singleton I18n 1.0 I18n.qml
 Island 1.0 Island.qml
 IslandSlider 1.0 IslandSlider.qml
 IslandText 1.0 IslandText.qml
@@ -66,6 +67,7 @@ RadioOffArea 1.0 RadioOffArea.qml
 RightButtons 1.0 RightButtons.qml
 RoundButton 1.0 RoundButton.qml
 ScreenBar 1.0 ScreenBar.qml
+SegmentedSwitch 1.0 SegmentedSwitch.qml
 SettingRow 1.0 SettingRow.qml
 SettingsSection 1.0 SettingsSection.qml
 SliderPill 1.0 SliderPill.qml

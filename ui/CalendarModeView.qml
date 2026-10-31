@@ -10,7 +10,7 @@ Item {
   id: view
 
   required property var bar
-  readonly property var grid: CalendarCore.monthGrid(new Date(bar.nowMs), bar.calendarOffset)
+  readonly property var grid: CalendarCore.monthGrid(new Date(bar.nowMs), bar.calendarOffset, I18n.language)
 
   RowLayout {
     anchors.fill: parent

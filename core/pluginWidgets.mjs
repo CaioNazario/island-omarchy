@@ -3,6 +3,7 @@
 // injeta numa barra de terceiros (shell.qml `publicBarWidgetSnapshot`,
 // Omarchy 4), e as configurações de cada um da entrada dele em `bar.layout`.
 import { asList, isPluginWidgetId, pluginIdOf, pluginWidgetId, WIDGET_CATALOG, } from './environments.mjs';
+import { msg } from './i18n.mjs';
 const PLUGIN_ICON = 'puzzle-piece';
 function isRecord(value) {
     return typeof value === 'object' && value !== null;
@@ -47,7 +48,7 @@ export function widgetInfo(id, catalog) {
     const found = catalog.find((info) => info.id === id);
     if (found)
         return { name: found.name, icon: found.icon, description: found.description };
-    return { name: pluginIdOf(id), icon: PLUGIN_ICON, description: 'Plugin não carregado' };
+    return { name: pluginIdOf(id), icon: PLUGIN_ICON, description: msg('Plugin not loaded') };
 }
 /**
  * Configurações inline da entrada do plugin em `bar.layout` (README do

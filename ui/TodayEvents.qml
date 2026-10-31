@@ -16,14 +16,14 @@ ColumnLayout {
   property bool timeOnRight: false
   property int gap: 12
 
-  readonly property var events: CalendarCore.todayEvents(bar.system.calendar.events, new Date(bar.nowMs))
+  readonly property var events: CalendarCore.todayEvents(bar.system.calendar.events, new Date(bar.nowMs), I18n.language)
   readonly property var dotColors: ({ accent500: Tokens.accent500, accent300: Tokens.accent300, neutral400: Tokens.neutral400 })
 
   spacing: gap
 
   IslandText {
     visible: list.showTitle
-    text: CalendarCore.todayTitle(new Date(list.bar.nowMs))
+    text: CalendarCore.todayTitle(new Date(list.bar.nowMs), I18n.language)
   }
 
   Repeater {

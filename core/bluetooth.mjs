@@ -1,6 +1,7 @@
 // Regras das listas do modo `bt` (specs/08-controles-rapidos.md). A fonte
 // (`Quickshell.Bluetooth`) vive em plugin/system/BluetoothSource.qml e traduz
 // cada dispositivo para `BtDeviceInfo`; aqui só entra dado puro.
+import { tr, trCount } from './i18n.mjs';
 // Propriedade `Icon` do `org.bluez.Device1`, que o Quickshell expõe como
 // `BluetoothDevice.icon` (nomes freedesktop derivados da classe do aparelho).
 const KIND_BY_BLUEZ_ICON = {
@@ -61,8 +62,8 @@ export function btClickAction(device, busy) {
 export function visibleBattery(device) {
     return device.connected ? device.battery : null;
 }
-export function btHeaderStatus(radioOn, connectedCount) {
+export function btHeaderStatus(radioOn, connectedCount, lang) {
     if (!radioOn)
-        return 'Desligado';
-    return connectedCount === 1 ? '1 conectado' : `${connectedCount} conectados`;
+        return tr(lang, 'Off');
+    return trCount(lang, connectedCount, '1 connected', '{n} connected');
 }

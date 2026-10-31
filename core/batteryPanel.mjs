@@ -1,6 +1,7 @@
 // Modo `battery` (specs/11-bateria.md "Modo `battery`"; design v5 `battery`).
 // Os dados vêm dos mesmos comandos do painel de energia do Omarchy:
 // `omarchy-battery-status --shell` e `omarchy-powerprofiles-list --active-state`.
+import { msg, tr } from './i18n.mjs';
 import { parseKeyValues } from './keyValue.mjs';
 /** Linhas `chave<TAB>valor` de `omarchy-battery-status --shell`. */
 export function parseBatteryStatus(raw) {
@@ -24,37 +25,37 @@ function duration(value) {
         return `${minutes} min`;
     return `${match[1]}h ${String(minutes).padStart(2, '0')}min`;
 }
-function statusText(status) {
+function statusText(status, lang) {
     var _a;
     switch (status.state) {
         case 'charging':
-            return 'Carregando';
+            return tr(lang, 'Charging');
         case 'fully-charged':
-            return 'Carga completa';
+            return tr(lang, 'Fully charged');
         case 'pending-charge': {
             const limit = /(\d+)%$/.exec((_a = status.threshold) !== null && _a !== void 0 ? _a : '');
-            return limit ? `Limite de carga · ${limit[1]}%` : 'Na tomada';
+            return limit ? tr(lang, 'Charge limit · {n}%', { n: limit[1] }) : tr(lang, 'Plugged in');
         }
         default:
-            return 'Na bateria';
+            return tr(lang, 'On battery');
     }
 }
-export function batteryPanel(status) {
+export function batteryPanel(status, lang) {
     var _a;
     const plugged = status.state !== 'discharging' && status.state !== undefined;
     // Cheia ou parada no limite: não há tempo nem potência de carga.
     const flowing = status.state === 'charging' || status.state === 'discharging';
     return {
-        status: statusText(status),
+        status: statusText(status, lang),
         stats: [
-            { label: 'Capacidade', value: spacedUnit(status.size) },
+            { label: tr(lang, 'Capacity'), value: spacedUnit(status.size) },
             {
-                label: plugged ? 'Até carga total' : 'Tempo restante',
+                label: plugged ? tr(lang, 'Until full') : tr(lang, 'Time left'),
                 value: flowing ? duration(status.time) : DASH,
             },
-            { label: 'Ciclos de carga', value: (_a = status.cycles) !== null && _a !== void 0 ? _a : DASH },
+            { label: tr(lang, 'Charge cycles'), value: (_a = status.cycles) !== null && _a !== void 0 ? _a : DASH },
             {
-                label: plugged ? 'Potência de carga' : 'Consumo',
+                label: plugged ? tr(lang, 'Charging power') : tr(lang, 'Power draw'),
                 value: flowing ? spacedUnit(status.rate) : DASH,
             },
         ],
@@ -75,11 +76,14 @@ export function batteryGlyph(percent, charging) {
     return 'battery-warning-fill';
 }
 const PROFILE_LOOKS = {
-    'power-saver': { label: 'Economia', glyph: 'leaf' },
-    balanced: { label: 'Equilibrado', glyph: 'scales' },
-    performance: { label: 'Desempenho', glyph: 'lightning' },
+    'power-saver': { label: msg('Power saver'), glyph: 'leaf' },
+    balanced: { label: msg('Balanced'), glyph: 'scales' },
+    performance: { label: msg('Performance'), glyph: 'lightning' },
 };
-/** Linhas `perfil<TAB>0|1`; perfil desconhecido aparece com o próprio nome. */
+/**
+ * Linhas `perfil<TAB>0|1`; perfil desconhecido aparece com o próprio nome. O
+ * rótulo sai em inglês: a UI traduz na hora de mostrar.
+ */
 export function parsePowerProfiles(raw) {
     var _a;
     const profiles = [];

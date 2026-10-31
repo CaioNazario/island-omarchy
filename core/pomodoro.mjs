@@ -1,6 +1,7 @@
 // Widget Pomodoro (specs/16-widgets.md `pomodoro`): Foco 25:00 → Pausa 05:00
 // → Foco…, trocando de fase sozinho ao zerar. O bloqueio de tela pausa: o
 // estado salvo em `pomodoroState` do `state.json` é sempre pausado.
+import { tr } from './i18n.mjs';
 export const PHASE_MS = {
     focus: 25 * 60000,
     break: 5 * 60000,
@@ -40,15 +41,15 @@ export function formatRemaining(ms) {
     const ss = String(seconds % 60).padStart(2, '0');
     return `${mm}:${ss}`;
 }
-export function phaseLabel(state) {
+export function phaseLabel(state, lang) {
     if (state.endsAt === null)
-        return 'Pausado';
-    return state.phase === 'focus' ? 'Foco' : 'Pausa';
+        return tr(lang, 'Paused');
+    return state.phase === 'focus' ? tr(lang, 'Focus') : tr(lang, 'Break');
 }
-export function phaseNotification(started) {
+export function phaseNotification(started, lang) {
     return started === 'break'
-        ? { title: 'Hora da pausa', body: '5 min de pausa' }
-        : { title: 'Hora de focar', body: '25 min de foco' };
+        ? { title: tr(lang, 'Time for a break'), body: tr(lang, '5 min break') }
+        : { title: tr(lang, 'Time to focus'), body: tr(lang, '25 min of focus') };
 }
 /** Sempre salvo pausado. */
 export function serialize(state, now) {

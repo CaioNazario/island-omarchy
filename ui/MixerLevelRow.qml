@@ -81,7 +81,7 @@ Rectangle {
     IslandText {
       Layout.preferredWidth: 34
       horizontalAlignment: Text.AlignRight
-      text: row.muted ? "Mudo" : row.percent + "%"
+      text: row.muted ? I18n.tr("Muted") : row.percent + "%"
       px: 11.5
       font.weight: Tokens.weightBody
       color: Tokens.neutral300

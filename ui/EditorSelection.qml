@@ -35,7 +35,7 @@ Rectangle {
 
     IslandText {
       Layout.fillWidth: true
-      text: "Clique num widget da barra para mover ou remover. Arraste da lista para uma pílula, ou reordene arrastando na própria barra."
+      text: I18n.tr("Click a widget on the bar to move or remove it. Drag from the list onto a pill, or reorder by dragging on the bar itself.")
       px: 12
       font.weight: Tokens.weightBody
       color: Tokens.neutral400
@@ -56,13 +56,13 @@ Rectangle {
     }
 
     IslandText {
-      text: strip.info ? strip.info.name : ""
+      text: strip.info ? I18n.tr(strip.info.name) : ""
       px: 12.5
     }
 
     IslandText {
       Layout.fillWidth: true
-      text: strip.selected !== "" ? EditorCore.selectionLabel(strip.bar.environment, strip.selected) : ""
+      text: strip.selected !== "" ? EditorCore.selectionLabel(strip.bar.environment, strip.selected, I18n.language) : ""
       px: 11.5
       font.weight: Tokens.weightBody
       color: Tokens.neutral500
@@ -90,7 +90,7 @@ Rectangle {
 
     ActionButton {
       glyph: "minus-circle"
-      label: "Remover"
+      label: I18n.tr("Remove")
       textColor: Tokens.powerOffText
       onPressed: strip.bar.editorRemoveSelected()
     }
