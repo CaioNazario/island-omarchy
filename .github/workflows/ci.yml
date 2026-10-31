@@ -31,8 +31,9 @@ jobs:
           node-version: 26
       - run: npm ci
       # O qsb confere que os .qsb commitados são o que os .frag compilam
-      # (scripts/shaders-in-sync.sh, specs/14-spikes.md S10).
-      - run: pacman -S --noconfirm --needed qt6-shadertools
+      # (scripts/shaders-in-sync.sh, specs/14-spikes.md S10). O `cmp` do script
+      # vem do diffutils, que antes chegava como dependência do nodejs do Arch.
+      - run: pacman -S --noconfirm --needed qt6-shadertools diffutils
       - run: make lint
         env:
           REQUIRE_QSB: '1'
