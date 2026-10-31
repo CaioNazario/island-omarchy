@@ -1,298 +1,422 @@
 # Island
-Um plugin de barra do **[Omarchy](https://omarchy.org/)** (Hyprland + Quickshell) que substitui a barra padrão por três pílulas flutuantes.
-A pílula central — a **Island** — funciona como uma Dynamic Island para o desktop: muda de tamanho conforme o contexto e concentra notificações, música, volume, brilho, calendário, controles rápidos e outras informações do sistema.
-As pílulas laterais mostram widgets, organizados em **ambientes** que você troca com um gesto ou atalho.
-***
-## ✦ Recursos
-### Island
-Quando compacta, a Island mostra:
-- Relógio
-- Dia da semana
-- Clima
 
-Quando expandida, pode exibir:
-- Notificações
-- Música e controles de reprodução, com ondas que pulsam enquanto toca
-- Volume e brilho
-- Gerenciador de volume: saídas, volume por app e microfone
-- Calendário
-- Controles rápidos
-- Wi-Fi: estatísticas da conexão, QR para compartilhar, teste de velocidade e DNS
+A bar plugin for **[Omarchy](https://omarchy.org/)** (Hyprland + Quickshell) that replaces the default bar with three floating pills.
+
+The middle pill, the **Island**, works like a Dynamic Island for the desktop: it grows and shrinks with the context and brings together notifications, music, volume, brightness, calendar, quick controls and other system information. The side pills show widgets, grouped into **environments** you switch with a swipe or a shortcut.
+
+![The Island bar with the music and calendar card open](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/hero.png)
+
+> The interface is currently in Brazilian Portuguese. English is planned.
+
+---
+
+## Features
+
+### The Island
+
+When compact, the Island shows the weather, the clock and the day of the week.
+
+When expanded, it can show:
+
+- Notifications
+- Music and playback controls, with waves that pulse while playing
+- Volume and brightness
+- Volume mixer: outputs, per-app volume and microphone
+- Calendar
+- Quick controls
+- Wi‑Fi: connection stats, a QR code to share the network, speed test and DNS
 - Bluetooth
-- Tela: brilho, tamanho do texto e escala do monitor
-- Bateria: detalhes e perfil de energia
-- Uso de IA
+- Display: brightness, text size and monitor scale
+- Battery: details and power profile
+- AI usage
 
-A Island possui diferentes modos de exibição e só mantém um modo ativo por vez.
-### Ambientes
-Um ambiente é um conjunto nomeado de widgets para as duas pílulas laterais. Só um fica ativo por vez, igual em todos os monitores.
-Vêm quatro prontos:
+Only one mode is open at a time.
 
-| Ambiente | Esquerda | Direita |
+| Calendar | Battery |
+|---|---|
+| ![Calendar](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/calendar.png) | ![Battery](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/battery.png) |
+
+| Quick controls with Wi‑Fi | AI usage |
+|---|---|
+| ![Quick controls with the Wi‑Fi panel](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/quick-wifi.png) | ![AI usage](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/ai.png) |
+
+### Environments
+
+An environment is a named set of widgets for the two side pills. The left pill starts with the environment button, followed by the environment's widgets; the right pill holds the environment's widgets next to the fixed buttons (notifications, Wi‑Fi, volume, battery and quick controls). Only one environment is active at a time, the same on every monitor.
+
+![The bar in the default environment](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/bar-default.png)
+
+![The bar in a custom environment with music and widgets from other plugins](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/bar-plugins.png)
+
+Island ships with four:
+
+| Environment | Left | Right |
 |---|---|---|
-| Padrão | IA | Hardware |
-| Trabalho | Próximo evento, Pomodoro, IA | Hardware, GitHub |
-| Estudos | Progresso do dia, Pomodoro | Nota |
-| Fim de semana | Música | Contagem regressiva |
+| Default | AI usage | Hardware |
+| Work | Next event, Pomodoro, AI usage | Hardware, GitHub |
+| Study | Day progress, Pomodoro | Note |
+| Weekend | Music | Countdown |
 
-É possível ter até 6. O Padrão pode ser editado, mas não excluído.
-Para trocar de ambiente:
-- Rolagem horizontal sobre a barra (dois dedos no touchpad ou roda inclinada)
-- `Super+Ctrl+Alt+→` / `Super+Ctrl+Alt+←` (binds do Hyprland que o `install.sh` mostra)
-- Clique num dos pontos do botão de ambiente
+You can have up to six. The first one can be renamed and changed, but not deleted.
+
+To switch environments:
+
+- Scroll horizontally over the bar (two fingers on the touchpad, or a tilting wheel)
+- `Super+Ctrl+Alt+→` / `Super+Ctrl+Alt+←`
+- Click one of the dots on the environment button
+- Click its tab in the environment editor
 
 ### Widgets
-| Widget | Mostra | Clique |
+
+| Widget | Shows | Click |
 |---|---|---|
-| Uso de IA | Sessão e limite semanal | Abre o cartão de IA |
-| Hardware | CPU, RAM, GPU, temperatura e rede | Abre os controles rápidos |
-| Próximo evento | O próximo compromisso do dia | Abre o calendário |
-| Pomodoro | Ciclos de 25 min de foco e 5 min de pausa | Inicia/pausa |
-| Música | O que está tocando agora | Abre a música |
-| GitHub | Seus PRs abertos e quantos esperam sua revisão | — |
-| Progresso do dia | Quanto do dia já passou | — |
-| Contagem regressiva | Dias até uma data | Sem data: abre as preferências |
-| Nota | Um recado fixo na barra | Edita o recado |
+| AI usage | Session and weekly limits | Opens the AI card |
+| Hardware | CPU, RAM, GPU, temperature and network | Opens the quick controls |
+| Next event | Today's next event | Opens the calendar |
+| Pomodoro | 25 min focus and 5 min break cycles | Starts or pauses |
+| Music | What's playing now | Opens the music player |
+| GitHub | Your open PRs and how many wait for your review | — |
+| Day progress | How much of the day has passed | — |
+| Countdown | Days until a date | — |
+| Note | A short note pinned to the bar | Edits the note |
 
-Quando falta espaço, o Hardware perde blocos (rede, GPU, temperatura) e depois somem widgets inteiros, a começar pelo mais longe da Island.
-### Editor de ambientes
-Clique no botão de ambiente, no início da pílula esquerda, para abrir o editor. Na aba **Ambientes** dá para:
-- Criar, renomear, trocar o ícone e excluir ambientes
-- Adicionar widgets clicando ou arrastando do catálogo para uma pílula
-- Reordenar arrastando na própria barra, ou selecionar um widget e movê-lo ou removê-lo
+The countdown's name and date are set in `settings.json` (`countdownName` and `countdownDate`, as `YYYY-MM-DD`).
 
-### Aparência
-Na aba **Aparência** do editor, para as pílulas, a ilha e o banner:
-- Estilo pronto: Padrão (o design) ou Vidro
-- Tema (Nocturne ou Alto contraste) e realce (Roxo ou Branco)
-- Fundo ligado ou não, sólido (a cor do tema, nenhuma ou uma de 10 cores escuras) ou em gradiente (9 paletas, ou a tirada do tema do Omarchy), e a opacidade
-- Blur do compositor atrás da barra e grão de filme
-- Borda, sombra e cantos: os do design, arredondados, quadrados ou os das janelas do Hyprland
+Widgets never push the Island or the fixed buttons. When space runs out, the Hardware widget drops its blocks (network, GPU, temperature), and then whole widgets disappear, starting with the one farthest from the Island.
 
-Tudo vale na hora e fica em `~/.config/island/settings.json` (`appearance`). Sem mexer em nada, a barra é a do design. Detalhes em `specs/19-aparencia.md`.
+Data sources used only by widgets (hardware, AI usage, GitHub) run only while one of their widgets is in the active environment.
 
-### Auto-ocultar
-> Ainda não portado para o Omarchy (spec 18).
+#### Widgets from other plugins
 
-Desligado por padrão. Quando ligado, a barra não reserva espaço no topo e sobe para fora da tela, e reaparece quando a Island abre qualquer modo.
-### Notificações
-A Island é o servidor de notificações da sessão (no lugar dos toasts do Omarchy). As notificações aparecem na Island e ficam numa lista.
-No Chrome, Brave e outros navegadores Chromium, notificações web exibem o serviço de origem — por exemplo, WhatsApp, Discord ou YouTube.
-Isso não funciona no Firefox, que não manda a origem na notificação.
-Também há **Não perturbe**, e os atalhos e scripts de notificação do Omarchy (`Super+vírgula`, `omarchy toggle notification-silencing`…) continuam funcionando.
-### Música
-Compatível com qualquer player que implemente **MPRIS**, incluindo Spotify e players executados no navegador.
-Exibe:
-- Capa do álbum
-- Título
-- Artista
-- Controles de reprodução
+Bar widgets from other Omarchy plugins, such as [omaplug](https://github.com/fross100/omaplug) or [OmaSettings](https://github.com/twiking/omasettings), can live in the pills next to the Island's own widgets. They show up in the editor under **Omarchy plugins** (*Plugins do Omarchy*), and you add, move and remove them like any other widget. Their panels open right below the bar, one at a time, and opening an Island mode closes them.
 
-### Cartão central
-O cartão central combina:
-- Música em reprodução
-- Calendário da semana ou do mês
-- Eventos de hoje, do feed ICS do seu calendário (veja Calendário)
+Omarchy's own widgets (clock, audio, Bluetooth…) aren't offered: they expect Omarchy's full bar. A widget that needs its plugin's own service won't fully work, because Omarchy doesn't hand that service to third-party bars. If a plugin is removed, its widget stays in the environment and simply isn't drawn.
 
-O calendário pode ser aberto ao clicar na Island compacta, dependendo da preferência configurada.
-### Calendário
-Os eventos vêm de um feed ICS privado, por exemplo o do Google Calendar (somente leitura). No Google: **Configurações → (sua agenda) → Integrar agenda → Endereço secreto no formato iCal**. Guarde a URL no chaveiro, sem passar pela linha de comando:
+### Environment editor
+
+Click the environment button, at the start of the left pill, to open the editor. In the **Environments** tab (*Ambientes*) you can:
+
+- Create, rename, change the icon of and delete environments
+- Add widgets by clicking them in the catalog, or by dragging them onto a pill
+- Choose which pill a click adds to (left or right)
+- Reorder widgets by dragging them on the bar itself, or click a widget on the bar to move it one step, send it to the other pill or remove it
+
+![The environment editor](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/editor-environments.png)
+
+Every change is saved right away. **Done** (*Concluir*), `Esc`, a click on the dimmed background or another click on the environment button closes the editor.
+
+### Appearance
+
+The **Appearance** tab (*Aparência*) of the editor styles the pills, the Island and the notification banner together. Each section only shows the controls that apply to the current choice, and every change shows up on the bar as you make it.
+
+![The Appearance tab of the editor](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/editor-appearance.png)
+
+- **Style**: two presets. *Default* is the original design and undoes every tweak; *Glass* is a gradient with film grain.
+- **Theme**: Nocturne or High contrast, with a purple or white accent.
+- **Background**: on or off; solid (the theme color, none, or one of 10 dark colors) or a gradient (9 palettes, plus one taken from your Omarchy theme). The gradient strength backs off as needed to keep text readable. Opacity follows the theme or is set by hand.
+- **Shape**: the design's corners, rounded with a chosen radius, square, or the same rounding as your Hyprland windows.
+- **Shadow** and **border**: on or off, with strength, width and opacity.
+- **Effects**: compositor blur behind the bar and film grain over the background.
+
+The same bar with a gradient background and with a solid one:
+
+![The bar with a gradient background](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/bar-default.png)
+
+![The bar with a solid background](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/bar-solid.png)
+
+Everything is stored under `appearance` in `~/.config/island/settings.json`. Without any change, the bar looks like the original design.
+
+### Auto-hide
+
+> Planned, not available yet.
+
+When it lands, auto-hide will be off by default and switched on in the environment editor. With it on, the bar won't reserve space at the top of the screen: it slides out of view and comes back when the pointer pushes against the top edge, or when the Island opens a mode (a notification, `Super+S`…).
+
+### Notifications
+
+The Island is the session's notification server, in place of Omarchy's toasts. Notifications appear in the Island and are kept in a list.
+
+In Chrome, Brave and other Chromium browsers, web notifications show the service they came from, such as WhatsApp, Discord or YouTube. Firefox doesn't send that information, so its notifications just say Firefox.
+
+There is also **Do not disturb**, and Omarchy's notification shortcuts and scripts (`Super+,`, `omarchy toggle notification-silencing`…) keep working.
+
+### Music
+
+Works with any player that implements **MPRIS**, including Spotify and players running in the browser. Shows the album art, title, artist and playback controls.
+
+### Center card
+
+The center card brings together the music that's playing, the week or month calendar, and today's events from your calendar's ICS feed (see [Calendar](#calendar)). A click on the compact Island opens it, or opens just the calendar, depending on the `clickAction` setting.
+
+### Calendar
+
+Events come from a private ICS feed, for example Google Calendar's (read-only). In Google Calendar: **Settings → (your calendar) → Integrate calendar → Secret address in iCal format**. Store the URL in the keyring, without passing it on the command line:
+
 ```bash
-secret-tool store --label="Island: calendário (ICS)" service island kind calendar-ics
+secret-tool store --label="Island: calendar (ICS)" service island kind calendar-ics
 ```
-O comando pede o valor no terminal: cole a URL. A Island lê a URL do chaveiro a cada atualização do feed (15 min) e a mantém só em memória. Para parar de usar: `secret-tool clear service island kind calendar-ics`.
 
-Suporta eventos únicos, dia inteiro, recorrentes (`RRULE`, `EXDATE`) e ocorrências editadas ou canceladas. Quem tem a URL lê a agenda toda: não a cole em issue, log ou arquivo de configuração, e gere outra no Google se ela vazar. O Google demora a refletir mudanças no feed (de minutos a algumas horas).
-### Clima
-Dados do Open-Meteo, sem chave de API. A cidade vem de:
-- `weatherLocation` em `~/.config/island/settings.json`
-- A cidade do Omarchy (`omarchy weather location`)
+The command asks for the value in the terminal: paste the URL. The Island reads the URL from the keyring each time it refreshes the feed (every 15 minutes) and keeps it only in memory. To stop using it: `secret-tool clear service island kind calendar-ics`.
 
-Sem cidade, o clima some da Island (sem geolocalização por IP).
+Single, all-day and recurring events (`RRULE`, `EXDATE`) are supported, as well as edited or cancelled occurrences. Anyone with the URL can read your whole calendar: don't paste it into an issue, a log or a config file, and create a new one in Google if it leaks. Google takes a while to reflect changes in the feed (from minutes to a few hours).
 
-### Controles rápidos
-Abra pela seta da pílula direita ou com `Super+S` (bind do Hyprland que o `install.sh` instala).
-Inclui:
-- Volume (o ícone abre o gerenciador de volume)
-- Brilho
-- Wi-Fi
-- Bluetooth
-- Modo noturno (hyprsunset do Omarchy)
-- Não perturbe
-- Tela (brilho, `omarchy-display-text-size` e escala do monitor)
-- Manter tela acesa (o mesmo de `omarchy toggle idle`)
-- Gravar tela (menu de captura do Omarchy)
-- Ditado (Voxtype, se instalado)
-- Energia: suspender, reiniciar, desligar, sair e bloquear, pelos comandos do Omarchy
+### Weather
 
-As teclas de volume e brilho do Omarchy abrem a Island no lugar do OSD dele. Outros avisos de OSD (microfone, desligando…) aparecem num modo próprio da Island.
-- Configurações
-- Linha de energia:
-  - Suspender
-  - Reiniciar
-  - Desligar
-  - Sair
-  - Bloquear
+From Open-Meteo, with no API key. The city comes from:
+
+- `weatherLocation` in `~/.config/island/settings.json`
+- Omarchy's city (`omarchy weather location`)
+
+Without a city, the weather disappears from the Island (there's no IP geolocation).
+
+### Quick controls
+
+Open them with the arrow on the right pill or with `Super+S`. They include:
+
+- Volume (the icon opens the volume mixer) and brightness
+- Wi‑Fi and Bluetooth
+- Night light (Omarchy's hyprsunset)
+- Do not disturb
+- Display (brightness, `omarchy-display-text-size` and monitor scale)
+- Keep the screen on (the same as `omarchy toggle idle`)
+- Screen recording (Omarchy's capture menu)
+- Dictation (Voxtype, if installed)
+- Settings (Omarchy's setup menu)
+- Power: suspend, restart, shut down, log out and lock, through Omarchy's commands
+
+Omarchy's volume and brightness keys open the Island instead of Omarchy's OSD. Other OSD messages (microphone, shutting down…) show up in a mode of their own.
 
 ### Hardware
-Informações sobre:
-- CPU
-- RAM
-- GPU Intel/AMD
-- Temperatura
-- Rede
 
-### Bateria
-A barra desenha a bateria com o nível dentro: verde a partir de 80%, vermelha até 20%, e um raio enquanto carrega. O clique abre um painel com capacidade, tempo, ciclos e potência (`omarchy-battery-status`) e o perfil de energia (`omarchy-powerprofiles-set`).
-### Uso de IA
-A Island mostra os limites de uso e os tokens por dia e por modelo do **Claude** e do **Codex** a partir dos registros do `omarchy-agent-usage-update`, que ela roda como o widget de agentes do Omarchy.
-> Veja [Uso de IA: leia antes](#uso-de-ia-leia-antes).
+CPU, RAM, Intel or AMD GPU, temperature and network.
 
-***
-## Como funciona
-A Island possui dois tipos de modos.
-### Transitórios
-São ativados automaticamente por eventos e desaparecem após alguns segundos.
+### Battery
+
+The bar draws the battery with the level inside: green from 80%, red up to 20%, and a bolt while charging. A click opens a panel with capacity, time left, charge cycles and power draw (`omarchy-battery-status`), and the power profile (`omarchy-powerprofiles-set`).
+
+### AI usage
+
+The Island shows the usage limits and the tokens per day and per model for **Claude** and **Codex**, from the records of `omarchy-agent-usage-update`, which it runs the same way Omarchy's agents widget does.
+
+> See [AI usage: read first](#ai-usage-read-first).
+
+---
+
+## How it works
+
+The Island has two kinds of modes.
+
+### Transient
+
+Opened automatically by events, and gone after a few seconds:
+
 - `notif`
 - `music`
 - `volume`
 - `brightness`
-- `env` (nome do ambiente ao trocar)
+- `osd` (other OSD messages)
+- `env` (the environment's name when you switch)
 
-Passar o mouse sobre a Island mantém o modo aberto.
-### Fixos
-São abertos por clique ou atalho e permanecem visíveis até que o usuário:
-- Clique fora
-- Pressione `Esc`
-- Acione outro gatilho
+Hovering the Island keeps the mode open.
 
-Modos fixos:
-- `stack`
-- `calendar`
-- `quick`
-- `wifi`
-- `bt`
-- `ai`
-- `note`
+### Fixed
 
-### Eventos não interrompem o que você abriu
-Eventos automáticos respeitam o modo fixo atualmente aberto.
-Por exemplo:
-- Uma notificação não substitui um calendário aberto. Ela aparece como um banner abaixo da Island.
-- Trocar de música não abre automaticamente o modo de música enquanto outro modo fixo estiver aberto.
+Opened by a click or a shortcut, and kept open until you:
 
-Isso evita que a interface fique pulando de um estado para outro enquanto você está usando algum controle.
-### Interações
-- **Clique na Island compacta:** abre o cartão central ou o calendário, conforme configurado.
-- **Clique em uma notificação:** abre a lista de notificações.
-- **Rolar para baixo sobre a barra** (qualquer uma das três pílulas, mouse ou touchpad): abre a lista de notificações; **para cima**, fecha. Dentro da lista, para cima rola a lista e só fecha quando ela está no topo.
-- **Três dedos para baixo no touchpad:** abre a lista de notificações; **para cima**, fecha. Os gestos são do Hyprland (`openStack` e `closeStack` do alvo IPC `island`; spec 04).
-- **Clique no botão de ambiente:** abre o editor de ambientes.
-- **`Super+S`:** abre os controles rápidos.
-- **`Super+Ctrl+Alt+←/→`:** troca de ambiente.
-- **`Esc`:** fecha o modo fixo atual.
+- Click outside
+- Press `Esc`
+- Trigger something else
 
-***
-## Arquitetura
+Fixed modes: `stack` (notification list), `calendar`, `quick`, `wifi`, `bt`, `mixer`, `display`, `battery`, `ai`, `note`.
+
+### Events don't interrupt what you opened
+
+Automatic events respect the fixed mode that's open. For example:
+
+- A notification doesn't replace an open calendar: it shows up as a banner below the Island.
+- A new song doesn't open the music mode while another fixed mode is open.
+
+This keeps the interface from jumping around while you're using a control.
+
+### Interactions
+
+- **Click the compact Island:** opens the center card or the calendar, depending on the `clickAction` setting.
+- **Click a notification:** opens the notification list.
+- **Scroll down over the bar** (any of the three pills, mouse or touchpad): opens the notification list; **up** closes it. Inside the list, scrolling up scrolls the list and only closes it at the top.
+- **Three fingers down on the touchpad:** opens the notification list; **up** closes it.
+- **Click the environment button:** opens the environment editor.
+- **`Super+S`:** opens the quick controls.
+- **`Super+Ctrl+Alt+←/→`:** switches environments.
+- **`Esc`:** closes the current fixed mode.
+
+The shortcuts and gestures are Hyprland binds that call the Island's `island` IPC target (`toggleQuick`, `openStack`, `closeStack`, `nextEnvironment`, `previousEnvironment`), in `hypr/island.lua`.
+
+---
+
+## Architecture
+
 ```
-src/core/   # Regras em TypeScript puro (estados da ilha, roteamento, limiares, formatação), testadas com Vitest
-plugin/     # O plugin: manifest.json, Bar.qml, Service.qml
-  system/   # Fontes de dados (Pipewire, Mpris, UPower, NetworkManager, BlueZ, /proc, HTTP de IA)
-  ui/       # Componentes QML: pílulas, ilha, modos, cartão central, widgets
-dev/        # Harness que hospeda o plugin num Hyprland aninhado
+src/core/       Pure TypeScript rules (Island states, notification routing, environments,
+                appearance, calendar and weather parsing, formatting), tested with Vitest
+plugin/         The plugin: manifest.json, Bar.qml (one bar per monitor) and Service.qml
+                (state that survives reloads, IPC)
+  system/       Data sources: PipeWire, MPRIS, UPower, NetworkManager, BlueZ, the notification
+                server, /proc and /sys, Open-Meteo and GitHub over HTTP, the AI usage records,
+                the ICS feed and Hyprland options
+  ui/           QML components: pills, Island, modes, center card, widgets, editor
+  shaders/      Gradient and film grain shaders (.frag sources and compiled .qsb)
+hypr/           Island shortcuts and gestures (island.lua)
+dev/            Harness that hosts the plugin in a nested Hyprland
+scripts/        Build, the nested Hyprland driver and the shader check
+specs/          Behavior specs
+design/         Design reference extracted from the prototype
 ```
-O `src/core` é compilado para módulos ES (`.mjs`) que o QML importa direto.
-***
-## Requisitos
+
+`src/core` is compiled to ES modules (`.mjs`) that the QML imports directly.
+
+---
+
+## Requirements
+
 - **Omarchy 4** (Quickshell 0.3, Hyprland 0.56)
-- Node.js 22 e npm, para o build
 
-### Recursos opcionais
-**Clima**: uma cidade (veja Clima acima).
-**Uso de IA**: login em um ou ambos:
+### Optional features
+
+**Weather:** a city (see [Weather](#weather)).
+
+**AI usage:** logged in to one or both:
+
 - Claude Code — `~/.claude/.credentials.json`
 - Codex CLI — `~/.codex/auth.json`
 
-**Calendário**: o `secret-tool` (libsecret) e a URL do feed ICS (veja Calendário acima).
+**Calendar:** `secret-tool` (libsecret) and your feed's ICS URL (see [Calendar](#calendar)).
 
-**GitHub**: o [`gh`](https://cli.github.com/) com login feito (`gh auth login`). A Island só lê o token com `gh auth token` e o mantém em memória.
-***
-## Instalação
+**GitHub:** [`gh`](https://cli.github.com/), logged in (`gh auth login`). The Island only reads the token with `gh auth token` and keeps it in memory.
+
+---
+
+## Installation
+
+```bash
+omarchy plugin add https://github.com/CaioNazario/island-omarchy.git
+omarchy plugin enable caionazario.island
 ```
+
+The Island takes over notifications and the OSD. Disable the Omarchy plugins that do the same, so two servers don't compete for the same IPC targets:
+
+```bash
+omarchy plugin disable omarchy.notifications
+omarchy plugin disable omarchy.osd
+```
+
+### Shortcuts and gestures
+
+The plugin ships the Island's shortcuts and gestures in `hypr/island.lua`. To turn them on, add this to the end of `~/.config/hypr/hyprland.lua`:
+
+```lua
+dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/caionazario.island/hypr/island.lua")
+```
+
+- `Super+S`: quick controls (takes this key away from Omarchy's scratchpad)
+- `Super+Ctrl+Alt+←/→`: switch environments
+- Three fingers down on the touchpad: open the notification list; up: close it
+
+Since the file lives inside the plugin, `omarchy plugin update` updates the shortcuts too. Don't repeat these binds in your `bindings.lua`: Hyprland would run both.
+
+### Settings
+
+Settings live in `~/.config/island/settings.json` (a settings window isn't available yet). Changes to the file apply right away.
+
+### From source
+
+Building needs Node.js and npm (CI uses Node 26).
+
+```bash
 git clone -b dev https://github.com/CaioNazario/island-omarchy.git
 cd island-omarchy
 
 npm ci
 ./install.sh
 ```
-O `install.sh` compila o plugin, copia para `~/.config/omarchy/plugins/caionazario.island/`, desliga as notificações e o OSD do Omarchy (a Island assume os dois) e troca a barra. O shell recarrega sozinho, sem logout.
 
-Ele também instala os atalhos e gestos da Island (`Super+S`, `Super+Ctrl+Alt+←/→` e três dedos para baixo/cima): copia `hypr/island.lua` para `~/.config/hypr/island.lua` e acrescenta `require("hypr.island")` no fim do `~/.config/hypr/hyprland.lua`, com backup. Não repita esses binds no seu `bindings.lua`: o Hyprland rodaria os dois. O `--uninstall` tira a linha e o arquivo.
+`install.sh` builds the plugin, copies it to `~/.config/omarchy/plugins/caionazario.island/`, turns off Omarchy's notifications and OSD, and switches the bar. The shell reloads by itself, without logging out.
 
-As preferências ficam em `~/.config/island/settings.json` (a janela de preferências ainda não foi portada). Mudanças no arquivo valem na hora.
-***
-## Atualização
+It also installs the shortcuts and gestures: it copies `hypr/island.lua` to `~/.config/hypr/island.lua` and adds `require("hypr.island")` to the end of `~/.config/hypr/hyprland.lua`, with a backup. `./install.sh --uninstall` removes the line and the file, goes back to Omarchy's bar and turns its notifications and OSD back on.
+
+To update a source install: `git pull`, `npm ci` and `./install.sh` again.
+
+---
+
+## Updating
+
+```bash
+omarchy plugin update caionazario.island
 ```
-git pull
+
+---
+
+## AI usage: read first
+
+The Island doesn't read credentials or call usage APIs on its own. It runs `omarchy-agent-usage-update` (the same collector as Omarchy's agents widget) every 15 minutes, while the AI widget is in the active environment, and reads its records in `~/.local/state/omarchy/agents/usage/`.
+
+The limits depend on Omarchy's collector: Claude's uses Claude Code's credential to call a usage endpoint that isn't a public API and may change.
+
+Without a CLI login, the widget is still there but only shows **"IA"**. To stop using this feature, turn the providers off with `aiClaudeEnabled` and `aiCodexEnabled` in `settings.json`.
+
+---
+
+## Limitations
+
+Currently:
+
+- The interface is only in Brazilian Portuguese.
+- Not built yet: auto-hide (the rules exist in the core, but the bar doesn't use them) and the settings window (settings are edited in `settings.json`).
+- The calendar is read-only (ICS feed): it doesn't create or edit events. It doesn't support `RDATE`, or `RRULE` with `BYSETPOS`, `BYWEEKNO`, `BYYEARDAY`, `WKST` (weeks always start on Monday) or a frequency below daily: those events only show their first occurrence.
+- The hardware widget reads AMD and Intel GPUs. NVIDIA doesn't show up.
+- Firefox notifications don't show the web service they came from.
+- There's no light theme and no action buttons on notifications: a click opens the app or the site.
+- There's no system tray (AppIndicator) and no keyboard layout switcher.
+- The bar only sits at the top, and monitors narrower than 1280 logical pixels aren't supported.
+
+---
+
+## Development
+
+```bash
 npm ci
-./install.sh
-```
-***
-## Desinstalação
-```
-./install.sh --uninstall
-```
-Volta para a barra do Omarchy e religa as notificações e o OSD dele.
-***
-## Uso de IA: leia antes
-A Island não lê credenciais nem consulta APIs de uso por conta própria. Ela roda o `omarchy-agent-usage-update` (o mesmo coletor do widget de agentes do Omarchy) a cada 15 minutos, com o widget de IA no ambiente ativo, e lê os registros em `~/.local/state/omarchy/agents/usage/`.
-Os limites dependem do coletor do Omarchy: o do Claude consulta o endpoint de uso com a credencial do Claude Code, que não é uma API pública e pode mudar.
-Sem login no CLI, o widget continua disponível, mas mostra apenas **"IA"**. Para não usar esse recurso, desative os provedores nas preferências.
-***
-## Limitações
-Atualmente:
-- Ainda não feitos: auto-ocultar (as regras existem no core, mas a barra não as usa) e a janela de preferências (as preferências se editam no `settings.json`).
-- O calendário só lê (feed ICS): não cria nem edita eventos. Não suporta `RDATE` nem `RRULE` com `BYSETPOS`, `BYWEEKNO`, `BYYEARDAY`, `WKST` (a semana começa na segunda) ou frequência abaixo de dia: esses eventos aparecem só na primeira ocorrência.
-- O bloco de hardware lê GPUs AMD e Intel. NVIDIA não aparece.
-- Notificações do Firefox não mostram o serviço web de origem.
-- Não há tema claro nem botões de ação nas notificações: o clique abre o app ou o site.
-- Não há bandeja do sistema (AppIndicator) nem troca de layout de teclado.
-- A barra fica só no topo, e monitores com menos de 1280px lógicos não são suportados.
-***
-## Desenvolvimento
-```
-npm ci
-make test    # Vitest em src/core
-make lint    # ESLint, Prettier, tsc, módulos do core no motor QML e qmllint
+make test    # Vitest on src/core
+make lint    # ESLint, Prettier, tsc, the core modules in the QML engine, and qmllint
 make build   # dist/caionazario.island/
-make dev     # Hyprland aninhado numa janela, rodando o plugin pelo harness dev/
-make smoke   # o mesmo sem interação: 5 hot-reloads e falha com erro no log
+make dev     # nested Hyprland in a window, running the plugin through the dev/ harness
+make smoke   # the same without interaction: 5 hot reloads, fails on any error in the log
 ```
-O harness roda num D-Bus próprio e com `XDG_CONFIG_HOME`/`XDG_STATE_HOME` em `dist/xdg`: não disputa as notificações da sua sessão nem grava nas suas preferências. Para dirigir a Island de fora: `scripts/nested.sh serve`, `scripts/nested.sh ipc dev open quick`, `scripts/nested.sh notify "Título" "Corpo"`, `scripts/nested.sh shot` e `scripts/nested.sh stop`.
-***
-## Especificações e design
-O comportamento da Island está documentado em `specs/`.
-Comece por:
-```
-specs/00-visao-geral.md
-```
-As referências visuais estão em:
-```
-design/
-```
-As convenções de desenvolvimento estão em:
-```
-AGENTS.md
-```
-***
-## Debug
-Logs do shell do Omarchy, onde o plugin roda:
-```
+
+The harness runs on its own D-Bus, with `XDG_CONFIG_HOME`/`XDG_STATE_HOME` under `dist/xdg`: it doesn't compete for your session's notifications or write to your settings. To drive the Island from outside: `scripts/nested.sh serve`, `scripts/nested.sh ipc dev open quick`, `scripts/nested.sh notify "Title" "Body"`, `scripts/nested.sh shot` and `scripts/nested.sh stop`.
+
+The source lives on the [`dev`](https://github.com/CaioNazario/island-omarchy/tree/dev) branch; `main` only holds the built plugin, one `build: vX.Y.Z` commit per release.
+
+---
+
+## Specs and design
+
+The Island's behavior is documented in [`specs/`](https://github.com/CaioNazario/island-omarchy/tree/dev/specs), starting with [`specs/00-visao-geral.md`](https://github.com/CaioNazario/island-omarchy/blob/dev/specs/00-visao-geral.md). The visual reference is in [`design/`](https://github.com/CaioNazario/island-omarchy/tree/dev/design), and the development conventions in [`AGENTS.md`](https://github.com/CaioNazario/island-omarchy/blob/dev/AGENTS.md). Specs and conventions are written in Brazilian Portuguese.
+
+---
+
+## Debugging
+
+Logs of the Omarchy shell, where the plugin runs:
+
+```bash
 qs log -p /usr/share/omarchy/shell
 ```
-Logs do harness: `dist/dev.log`.
-***
-## Licença
+
+Harness logs: `dist/dev.log`.
+
+---
+
+## License
+
 GPL-3.0-or-later
 
-Os shaders e parte das fórmulas da aparência vêm do [omadock](https://github.com/thepathless/omadock) (MIT); o aviso de licença está em [`plugin/NOTICE`](plugin/NOTICE).
+The shaders and part of the appearance formulas come from [omadock](https://github.com/thepathless/omadock) (MIT); the license notice is in [`plugin/NOTICE`](https://github.com/CaioNazario/island-omarchy/blob/dev/plugin/NOTICE).
