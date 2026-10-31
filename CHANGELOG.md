@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-10-31
+
 ### Fixed
 
 - The README explains how to uninstall a plugin installed with `omarchy plugin add`, and how to remove its settings.
@@ -136,7 +138,8 @@ First release: Island as an Omarchy bar plugin.
 - Weather from Open-Meteo.
 - Environments and widgets on the side pills, with hardware and Claude and Codex AI usage.
 
-[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.1...dev
+[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.2...dev
+[0.7.2]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.5.0...v0.6.0
