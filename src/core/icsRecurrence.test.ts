@@ -26,6 +26,30 @@ describe('parseRule', () => {
     expect(parseRule('FREQ=HOURLY')).toBeNull();
     expect(parseRule('COUNT=3')).toBeNull();
   });
+
+  // Revisão do marketplace (#13501): um feed controlado por terceiros não pode
+  // forçar varreduras inúteis com listas impossíveis ou repetidas.
+  it('ordinal de BYDAY fora de ±1…5 invalida a regra', () => {
+    expect(parseRule('FREQ=MONTHLY;BYDAY=99MO')).toBeNull();
+    expect(parseRule('FREQ=MONTHLY;BYDAY=6MO')).toBeNull();
+    expect(parseRule('FREQ=MONTHLY;BYDAY=0MO')).toBeNull();
+    expect(parseRule('FREQ=MONTHLY;BYDAY=-5MO')?.byDay).toEqual([{ ord: -5, day: 1 }]);
+  });
+
+  it('BYDAY, BYMONTHDAY ou BYMONTH com valor inválido invalida a regra', () => {
+    expect(parseRule('FREQ=MONTHLY;BYDAY=1MO,XX')).toBeNull();
+    expect(parseRule('FREQ=MONTHLY;BYMONTHDAY=32')).toBeNull();
+    expect(parseRule('FREQ=MONTHLY;BYMONTHDAY=0')).toBeNull();
+    expect(parseRule('FREQ=YEARLY;BYMONTH=13')).toBeNull();
+    expect(parseRule('FREQ=YEARLY;BYMONTH=1x')).toBeNull();
+  });
+
+  it('valores repetidos entram uma vez só', () => {
+    const rule = parseRule('FREQ=MONTHLY;BYDAY=1MO,1MO,1MO;BYMONTHDAY=5,5,-1,-1;BYMONTH=3,3');
+    expect(rule?.byDay).toEqual([{ ord: 1, day: 1 }]);
+    expect(rule?.byMonthDay).toEqual([5, -1]);
+    expect(rule?.byMonth).toEqual([2]);
+  });
 });
 
 describe('expandWalls', () => {
@@ -85,6 +109,36 @@ describe('expandWalls', () => {
   it('regra que nunca casa termina (limite de períodos)', () => {
     const rule = parseRule('FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=30');
     expect(rule && expandWalls(rule, at(2026, 1, 1), never)).toEqual([]);
+  });
+
+  it('regra que nunca casa para no fim da janela, sem varrer todos os períodos', () => {
+    // 30 de fevereiro: nenhum período gera data. A janela acaba um ano depois.
+    const rule = parseRule('FREQ=MONTHLY;BYMONTH=2;BYMONTHDAY=30');
+    const end = at(2027, 1, 1);
+    const asked: number[] = [];
+    const walls =
+      rule &&
+      expandWalls(rule, at(2026, 1, 1), (wall) => {
+        asked.push(wall);
+        return wall >= end;
+      });
+    expect(walls).toEqual([]);
+    expect(asked.length).toBeGreaterThan(0);
+    expect(asked.length).toBeLessThan(20);
+  });
+
+  it('com COUNT, a regra que nunca casa também para no fim da janela', () => {
+    const rule = parseRule('FREQ=DAILY;COUNT=3;BYMONTH=2;BYMONTHDAY=30');
+    const asked: number[] = [];
+    const walls =
+      rule &&
+      expandWalls(rule, at(2026, 1, 1), (wall) => {
+        asked.push(wall);
+        return wall >= at(2026, 3, 1);
+      });
+    expect(walls).toEqual([]);
+    expect(asked.length).toBeGreaterThan(0);
+    expect(asked.length).toBeLessThan(80);
   });
 });
 

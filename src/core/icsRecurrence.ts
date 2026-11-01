@@ -3,6 +3,11 @@
 // ordinal), BYMONTHDAY e BYMONTH. Não suporta BYSETPOS, BYWEEKNO, BYYEARDAY,
 // WKST (a semana sempre começa na segunda) nem frequências abaixo de dia: uma
 // regra assim vira `null` ou é ignorada, e o evento aparece só na primeira vez.
+//
+// O feed é de terceiros e a expansão roda na thread da UI do shell: listas
+// com valor impossível (`99MO`, `BYMONTHDAY=32`) invalidam a regra, valores
+// repetidos entram uma vez só, e a varredura para no fim da janela mesmo
+// quando um período não gera data (revisão do marketplace, #13501).
 
 import { DAY_MS, daysInMonth, msToParts, type WallParts } from './icsWall.js';
 
@@ -31,24 +36,41 @@ const WEEKDAYS = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
 /** Teto de períodos varridos: uma regra que nunca casa (30 de fevereiro) termina. */
 const MAX_PERIODS = 20_000;
 
-function parseDayRules(value: string | undefined): DayRule[] {
-  const rules: DayRule[] = [];
-  for (const part of (value ?? '').split(',')) {
-    const match = /^([+-]?\d{1,2})?(SU|MO|TU|WE|TH|FR|SA)$/.exec(part.trim());
-    if (match)
-      rules.push({
-        ord: match[1] ? parseInt(match[1], 10) : 0,
-        day: WEEKDAYS.indexOf(match[2] ?? ''),
-      });
+/** O ordinal conta dentro do mês (`weekdayDays`): um mês tem no máximo 5 de cada dia. */
+const MAX_WEEKDAY_ORD = 5;
+
+/** Valores de uma lista `BY*`, sem repetição; um valor inválido invalida a lista (`null`). */
+function parseList<T>(
+  value: string | undefined,
+  read: (part: string) => T | null,
+  key: (item: T) => string,
+): T[] | null {
+  if (value === undefined) return [];
+  const items = new Map<string, T>();
+  for (const part of value.split(',')) {
+    const item = read(part.trim());
+    if (item === null) return null;
+    items.set(key(item), item);
   }
-  return rules;
+  return Array.from(items.values());
 }
 
-function parseInts(value: string | undefined): number[] {
-  return (value ?? '')
-    .split(',')
-    .map((part) => parseInt(part, 10))
-    .filter((n) => !isNaN(n));
+function readDayRule(part: string): DayRule | null {
+  const match = /^([+-]?\d{1,2})?(SU|MO|TU|WE|TH|FR|SA)$/.exec(part);
+  if (!match) return null;
+  const ord = match[1] ? parseInt(match[1], 10) : 0;
+  if ((match[1] && ord === 0) || Math.abs(ord) > MAX_WEEKDAY_ORD) return null;
+  return { ord, day: WEEKDAYS.indexOf(match[2] ?? '') };
+}
+
+/** Inteiro de `-max` a `max`, sem o zero (BYMONTHDAY), ou de 1 a `max` (BYMONTH). */
+function intReader(max: number, negative: boolean): (part: string) => number | null {
+  return (part) => {
+    if (!/^[+-]?\d{1,2}$/.test(part)) return null;
+    const n = parseInt(part, 10);
+    if (n === 0 || n > max || n < (negative ? -max : 1)) return null;
+    return n;
+  };
 }
 
 export function parseRule(value: string): Rule | null {
@@ -60,14 +82,18 @@ export function parseRule(value: string): Rule | null {
   const freq = fields.get('FREQ') ?? '';
   if (!FREQS.includes(freq)) return null;
   const count = parseInt(fields.get('COUNT') ?? '', 10);
+  const byDay = parseList(fields.get('BYDAY'), readDayRule, (r) => `${r.ord}${r.day}`);
+  const byMonthDay = parseList(fields.get('BYMONTHDAY'), intReader(31, true), String);
+  const byMonth = parseList(fields.get('BYMONTH'), intReader(12, false), String);
+  if (!byDay || !byMonthDay || !byMonth) return null;
   return {
     freq: freq as RuleFreq,
     interval: Math.max(1, parseInt(fields.get('INTERVAL') ?? '1', 10) || 1),
     count: isNaN(count) ? null : count,
     until: fields.get('UNTIL') ?? null,
-    byDay: parseDayRules(fields.get('BYDAY')),
-    byMonthDay: parseInts(fields.get('BYMONTHDAY')),
-    byMonth: parseInts(fields.get('BYMONTH')).map((month) => month - 1),
+    byDay,
+    byMonthDay,
+    byMonth: byMonth.map((month) => month - 1),
   };
 }
 
@@ -139,6 +165,16 @@ function weeklyWalls(rule: Rule, start: WallParts, step: number): number[] {
     .filter((wall) => !rule.byMonth.length || rule.byMonth.includes(msToParts(wall).m));
 }
 
+/** Meia-noite do primeiro dia do período `k`: nenhuma ocorrência dele vem antes. */
+function periodStart(rule: Rule, start: WallParts, k: number): number {
+  const step = k * rule.interval;
+  if (rule.freq === 'DAILY') return Date.UTC(start.y, start.m, start.d + step);
+  if (rule.freq === 'MONTHLY') return Date.UTC(start.y, start.m + step, 1);
+  if (rule.freq === 'YEARLY') return Date.UTC(start.y + step, 0, 1);
+  const sinceMonday = (new Date(Date.UTC(start.y, start.m, start.d)).getUTCDay() + 6) % 7;
+  return Date.UTC(start.y, start.m, start.d + 7 * step - sinceMonday);
+}
+
 function periodWalls(rule: Rule, start: WallParts, k: number): number[] {
   const step = k * rule.interval;
   if (rule.freq === 'DAILY') return dailyWalls(rule, start, step);
@@ -184,6 +220,8 @@ export function expandWalls(
   const start = msToParts(startMs);
   const out: number[] = [];
   for (let k = firstPeriod(rule, startMs, fromMs); k < MAX_PERIODS; k++) {
+    // Um período que começa depois do fim acaba a série, gere data ou não.
+    if (pastEnd(periodStart(rule, start, k))) return out;
     for (const wall of periodWalls(rule, start, k)) {
       if (wall < startMs) continue;
       if (pastEnd(wall)) return out;
