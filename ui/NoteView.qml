@@ -68,6 +68,8 @@ Item {
         anchors.topMargin: 8
         anchors.bottomMargin: 8
         text: view.settings ? view.settings.noteText : ""
+        // Texto puro, como o `IslandText` (specs/01 "Tipografia").
+        textFormat: TextEdit.PlainText
         color: Tokens.text
         font.family: Tokens.fontFamily
         font.pointSize: 13 * 0.75
