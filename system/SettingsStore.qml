@@ -15,10 +15,10 @@ Scope {
   readonly property alias values: adapter
   property bool ready: false
 
-  Process {
-    running: true
-    command: ["mkdir", "-p", store.dir]
-    onExited: file.path = store.dir + "/settings.json"
+  // A nota e os nomes dos ambientes são do usuário: pasta 0700.
+  PrivateDir {
+    path: store.dir
+    onReady: file.path = store.dir + "/settings.json"
   }
 
   FileView {

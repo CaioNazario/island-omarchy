@@ -16,11 +16,11 @@ Scope {
   readonly property alias values: adapter
   property bool ready: false
 
-  // O FileView não cria o diretório; o arquivo só é lido depois do mkdir.
-  Process {
-    running: true
-    command: ["mkdir", "-p", store.dir]
-    onExited: file.path = store.dir + "/state.json"
+  // O FileView não cria o diretório; o arquivo só é lido depois de a pasta
+  // (0700) existir.
+  PrivateDir {
+    path: store.dir
+    onReady: file.path = store.dir + "/state.json"
   }
 
   FileView {

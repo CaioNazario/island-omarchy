@@ -18,6 +18,7 @@ NotificationFeed 1.0 NotificationFeed.qml
 NotificationRouter 1.0 NotificationRouter.qml
 OmarchyThemeColors 1.0 OmarchyThemeColors.qml
 PomodoroSource 1.0 PomodoroSource.qml
+PrivateDir 1.0 PrivateDir.qml
 QmlScheduler 1.0 QmlScheduler.qml
 ScreenRecordSource 1.0 ScreenRecordSource.qml
 SessionActions 1.0 SessionActions.qml
