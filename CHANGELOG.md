@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Fixed
+
+- Every text is shown as plain text. A notification title (or a song or network name) carrying an HTML image no longer makes the desktop fetch that image from the sender's server.
+
 ## [0.7.4] - 2026-11-01
 
 ### Fixed

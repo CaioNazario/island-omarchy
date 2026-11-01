@@ -52,6 +52,7 @@ O QML não entende `oklch()` nem `color-mix()`. Valores convertidos (alfa via `Q
 - **Inter** peso 500 para rótulos e 400 para corpo, conforme o design. Sem Inter instalada, o Qt cai no fallback do fontconfig.
 - Tamanhos usados: 8.5 (rótulo hardware, `letter-spacing .08em`), 8 (número dentro da bateria, peso 600), 10, 10.5, 11, 11.5, 12, 12.5, 13, 14px.
 - Números sempre com dígitos tabulares (`font.features: { "tnum": 1 }`, em `IslandText.qml`).
+- Todo texto é **texto puro** (`textFormat: Text.PlainText` no `IslandText` e no campo da nota). Título de notificação, música, nome de rede, de dispositivo e de plugin vêm de fora: no `AutoText` padrão do Qt, um `<img src="http://…">` vira um pedido de rede a cada exibição (testado com o `qml` offscreen e um servidor local). O corpo da notificação já chega sem marcação (`stripMarkup`, spec 04), e um título com tags aparece como foi escrito. O `make lint` roda `scripts/check-plain-text.mjs`, que falha com um `Text`/`TextEdit` sem a regra.
 
 ## Ícones
 
