@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Effects
 import QtQuick.Window
 import Quickshell
+import "../core/notificationSource.mjs" as SourceCore
 
 // Bloco do ícone de notificação (specs/04-notificacoes.md): fundo
 // `accent-900` e ícone `accent-300`. Site da tabela → glifo Phosphor dele;
@@ -18,12 +19,10 @@ Rectangle {
   // (spec 02 "Tamanho"), que chega como `scale` de um pai.
   readonly property real density: Screen.devicePixelRatio * Tokens.zoomFor(Screen.width, Screen.height)
 
-  // `check`: devolve vazio quando o tema não tem o ícone. O nome vem de quem
-  // manda a notificação: só nome de ícone do tema, nunca caminho (`/`, `../`,
-  // `file:`).
-  readonly property string themeIcon: entry.glyph || entry.appIcon === "" ? ""
-    : entry.appIcon.indexOf("/") >= 0 || entry.appIcon.startsWith("file:") ? ""
-    : Quickshell.iconPath(entry.appIcon.endsWith("-symbolic") ? entry.appIcon : entry.appIcon + "-symbolic", true)
+  // Nome do ícone do tema, sem caminho (`themeIconName`). `check`: devolve
+  // vazio quando o tema não tem o ícone.
+  readonly property string iconName: entry.glyph ? "" : SourceCore.themeIconName(entry.appIcon || "")
+  readonly property string themeIcon: iconName === "" ? "" : Quickshell.iconPath(iconName, true)
 
   color: Tokens.accent900
 

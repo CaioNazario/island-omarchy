@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { identifySource, isBrowserApp } from './notificationSource.js';
+import { identifySource, isBrowserApp, themeIconName } from './notificationSource.js';
 
 // Payloads reais (spike S1): `new Notification(título, {body: "oi"})` em
 // web.whatsapp.com, vistos pelo `dbus-monitor`. `appName` é o `Name=` do
@@ -111,5 +111,21 @@ describe('isBrowserApp', () => {
 
   it('app nativo não é navegador', () => {
     expect(isBrowserApp('Telegram')).toBe(false);
+  });
+});
+
+describe('themeIconName', () => {
+  // O nome do ícone vem de quem manda a notificação: só nome de ícone do tema.
+  it('pede a variante simbólica do ícone do tema', () => {
+    expect(themeIconName('telegram')).toBe('telegram-symbolic');
+    expect(themeIconName('discord-symbolic')).toBe('discord-symbolic');
+  });
+
+  it('recusa caminho e URL de arquivo', () => {
+    expect(themeIconName('/usr/share/icons/x.png')).toBe('');
+    expect(themeIconName('../../../home/user/x')).toBe('');
+    expect(themeIconName('dir/icon')).toBe('');
+    expect(themeIconName('file:///tmp/x.svg')).toBe('');
+    expect(themeIconName('')).toBe('');
   });
 });
