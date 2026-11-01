@@ -25,7 +25,8 @@ Process {
     headerText = Object.keys(headers).map(name => name + ": " + headers[name]).join("\n") + "\n";
     exitStatus = -1;
     streamDone = false;
-    command = ["curl", "-sS", "--max-time", "10", "-H", "@-", "-w", "\n%{http_code}", url];
+    // Respostas de API pequenas: uma gigante não chega à thread da UI.
+    command = ["curl", "-sS", "--max-time", "10", "--max-filesize", "1048576", "-H", "@-", "-w", "\n%{http_code}", url];
     stdinEnabled = true;
     running = true;
   }

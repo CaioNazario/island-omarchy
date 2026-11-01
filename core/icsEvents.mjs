@@ -8,6 +8,12 @@ import { dropFarEvents } from './icsPrefilter.mjs';
 import { expandWalls, parseRule } from './icsRecurrence.mjs';
 import { DAY_MS, msToParts, parseDuration, parseWallValue } from './icsWall.mjs';
 import { parseZones, zoneOffsetMinutes } from './icsZones.mjs';
+/**
+ * Períodos de recorrência que um feed inteiro pode varrer (~0,1 s no Node). Um
+ * feed real gasta poucos: sem COUNT a varredura salta até a janela. Esgotado,
+ * as séries seguintes param e os eventos simples continuam.
+ */
+const FEED_PERIOD_BUDGET = 100000;
 // Sem fuso (flutuante) e dia inteiro valem no relógio local da máquina.
 function localInstant(wallMs) {
     const p = msToParts(wallMs);
@@ -54,17 +60,17 @@ function untilInstant(rule, start) {
         return until.ms;
     return start.toInstant(until.hasTime ? until.ms : until.ms + DAY_MS - 1);
 }
-function occurrenceWalls(vevent, start, window) {
+function occurrenceWalls(vevent, start, context) {
     const rrule = findProp(vevent, 'RRULE');
     const rule = rrule ? parseRule(rrule.value) : null;
     if (!rule)
         return [start.wallMs];
     const until = untilInstant(rule, start);
-    const limit = until === null ? window.toMs : Math.min(window.toMs, until + 1);
+    const limit = until === null ? context.toMs : Math.min(context.toMs, until + 1);
     // O relógio de parede difere do instante em menos de um dia: longe do limite nem converte.
     const pastEnd = (wall) => wall >= limit - 2 * DAY_MS && start.toInstant(wall) >= limit;
     // Sem COUNT a varredura começa perto da janela, não no início da série (anos atrás).
-    return expandWalls(rule, start.wallMs, pastEnd, window.fromMs - 2 * DAY_MS);
+    return expandWalls(rule, start.wallMs, pastEnd, context.fromMs - 2 * DAY_MS, context.budget);
 }
 function exdateInstants(vevent, zones) {
     const instants = new Set();
@@ -143,6 +149,7 @@ export function parseIcsEvents(text, from, to) {
         calendarId: ((_a = findProp(calendar, 'X-WR-CALNAME')) === null || _a === void 0 ? void 0 : _a.value) || 'ics',
         fromMs: from.getTime(),
         toMs: to.getTime(),
+        budget: { periods: FEED_PERIOD_BUDGET },
     };
     const vevents = calendar.children.filter((child) => child.name === 'VEVENT');
     const overrides = vevents.filter((e) => findProp(e, 'RECURRENCE-ID'));

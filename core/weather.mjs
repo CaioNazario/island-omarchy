@@ -2,6 +2,8 @@
 // Open-Meteo e a localização.
 /** Falha de rede: o último valor vale por até 3h; depois o clima some. */
 export const READING_TTL_MS = 3 * 60 * 60 * 1000;
+/** Teto das respostas do Open-Meteo e do wttr.in (~50 KB): o `curl` recusa o resto. */
+export const MAX_RESPONSE_BYTES = 1024 * 1024;
 /** °C arredondado, sem casa decimal: `22°`. */
 export function formatTemperature(celsius) {
     // `Math.round(-0.4)` é `-0`, que viraria `-0°`.

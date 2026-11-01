@@ -405,7 +405,7 @@ Without a CLI login, the widget is still there but only shows **"AI"**. To stop 
 Currently:
 
 - Not built yet: auto-hide (the rules exist in the core, but the bar doesn't use them) and the settings window (settings are edited in `settings.json`).
-- The calendar is read-only (ICS feed): it doesn't create or edit events. It doesn't support `RDATE`, or `RRULE` with `BYSETPOS`, `BYWEEKNO`, `BYYEARDAY`, `WKST` (weeks always start on Monday) or a frequency below daily: those events only show their first occurrence.
+- The calendar is read-only (ICS feed): it doesn't create or edit events. It doesn't support `RDATE`, or `RRULE` with `BYSETPOS`, `BYWEEKNO`, `BYYEARDAY`, `WKST` (weeks always start on Monday), a `BYDAY` ordinal beyond ±5 (it counts within the month) or a frequency below daily: those events only show their first occurrence.
 - The hardware widget reads AMD and Intel GPUs. NVIDIA doesn't show up.
 - Firefox notifications don't show the web service they came from.
 - There's no light theme and no action buttons on notifications: a click opens the app or the site.

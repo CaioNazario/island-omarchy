@@ -71,3 +71,13 @@ export function identifySource(appName, body) {
         return Object.assign(Object.assign({}, service), { body: shownBody });
     return { name: capitalize(registrableLabel(host)), glyph: UNKNOWN_SITE_GLYPH, body: shownBody };
 }
+/**
+ * Nome do ícone simbólico do tema para o `appIcon` da notificação, ou vazio. O
+ * nome vem de quem manda a notificação: caminho (qualquer `/`, `../`) e
+ * `file:` ficam de fora, e a UI usa o sino.
+ */
+export function themeIconName(appIcon) {
+    if (appIcon === '' || appIcon.includes('/') || appIcon.startsWith('file:'))
+        return '';
+    return appIcon.endsWith('-symbolic') ? appIcon : `${appIcon}-symbolic`;
+}
