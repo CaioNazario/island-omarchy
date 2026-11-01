@@ -30,6 +30,8 @@ Listas lidas do arquivo chegam ao JS como objetos com `length` e índices em que
 
 Estado que não é preferência fica em `$XDG_STATE_HOME/island/state.json` (`StateStore.qml`): `doNotDisturb` (spec 04), `pomodoroState` (spec 16), `weatherHintShown` (spec 07).
 
+As duas pastas, `$XDG_CONFIG_HOME/island` e `$XDG_STATE_HOME/island`, são privadas (0700, `PrivateDir.qml`): a nota, os nomes dos ambientes e o estado não ficam legíveis por outros usuários da máquina. Os arquivos saem com o umask do usuário e a gravação atômica os recria a cada salvamento, então quem protege é a pasta; cada início também fecha a pasta de uma instalação antiga e põe os `.json` que já existem em 0600. O `make smoke` parte de uma pasta 0755 e falha se ela não virar 0700.
+
 ## Idioma
 
 `src/core/i18n.ts` e `src/core/i18nPtBr.ts`. A interface sai em inglês (en-US) por padrão; o switch "Language" no rodapé da aba Ambientes do editor (spec 17) troca para o português (pt-BR) e grava `language`. A troca vale na hora, em todos os monitores, sem recarregar a barra.

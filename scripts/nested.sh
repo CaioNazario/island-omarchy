@@ -121,6 +121,10 @@ smoke() {
   wait_for '[[ "$(harness_status)" == *"\"bar\":true"* ]]' "the bar to load"
   wait_for '[[ "$(harness_ipc environments)" == *"\"name\":\"Semente\""*"\"left\":[\"pomodoro\",\"note\"]"* ]]' "the environments saved in settings.json to load"
   wait_for '[[ "$(harness_ipc appearance)" == *"\"fill\":\"solid\""*"\"shape\":\"square\""* ]]' "the appearance saved in settings.json to load"
+  # Regressão: a nota e os ambientes ficavam legíveis por outros usuários
+  # (pasta 0755 e arquivo 0644 com o umask 022). A semente cria a pasta como
+  # uma instalação antiga; as duas pastas da Island têm de virar 0700.
+  wait_for '[[ "$(stat -c %a "$DIST/xdg/config/island")" == 700 && "$(stat -c %a "$DIST/xdg/state/island")" == 700 ]]' "private settings and state folders"
   # Aparência fora do padrão nos hot-reloads (spec 19): os shaders de
   # gradiente e grão, os cantos quadrados e as regiões de blur.
   harness_ipc editorDo preset glass >/dev/null

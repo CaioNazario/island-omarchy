@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Fixed
+
+- The settings and state folders (`~/.config/island` and `~/.local/state/island`) are private (0700): other accounts on the same machine can no longer read the note or the environment names. Existing installs are fixed on the next start.
+
 ## [0.7.3] - 2026-10-31
 
 ### Added
