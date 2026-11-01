@@ -36,6 +36,15 @@ const WEEKDAYS = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
 /** Teto de períodos varridos: uma regra que nunca casa (30 de fevereiro) termina. */
 const MAX_PERIODS = 20_000;
 
+/**
+ * Períodos que ainda podem ser varridos, compartilhado entre as séries de um
+ * feed: com COUNT não há salto até a janela, e muitas séries antigas somariam
+ * segundos na thread da UI. Cada período gasta um.
+ */
+export interface ExpansionBudget {
+  periods: number;
+}
+
 /** O ordinal conta dentro do mês (`weekdayDays`): um mês tem no máximo 5 de cada dia. */
 const MAX_WEEKDAY_ORD = 5;
 
@@ -216,10 +225,12 @@ export function expandWalls(
   startMs: number,
   pastEnd: (wallMs: number) => boolean,
   fromMs: number = startMs,
+  budget: ExpansionBudget = { periods: MAX_PERIODS },
 ): number[] {
   const start = msToParts(startMs);
   const out: number[] = [];
-  for (let k = firstPeriod(rule, startMs, fromMs); k < MAX_PERIODS; k++) {
+  for (let k = firstPeriod(rule, startMs, fromMs); k < MAX_PERIODS && budget.periods > 0; k++) {
+    budget.periods--;
     // Um período que começa depois do fim acaba a série, gere data ou não.
     if (pastEnd(periodStart(rule, start, k))) return out;
     for (const wall of periodWalls(rule, start, k)) {

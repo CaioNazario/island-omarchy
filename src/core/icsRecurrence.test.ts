@@ -127,6 +127,28 @@ describe('expandWalls', () => {
     expect(asked.length).toBeLessThan(20);
   });
 
+  it('para quando o orçamento de períodos compartilhado acaba', () => {
+    // COUNT impede o salto até a janela: sem orçamento, varreria 20.000 dias.
+    const rule = parseRule('FREQ=DAILY;COUNT=999999;BYMONTH=2;BYMONTHDAY=30');
+    const budget = { periods: 100 };
+    const asked: number[] = [];
+    const walls =
+      rule &&
+      expandWalls(
+        rule,
+        at(1970, 1, 1),
+        (wall) => {
+          asked.push(wall);
+          return wall >= at(2026, 11, 1);
+        },
+        at(1970, 1, 1),
+        budget,
+      );
+    expect(walls).toEqual([]);
+    expect(budget.periods).toBe(0);
+    expect(asked.length).toBeLessThanOrEqual(100);
+  });
+
   it('com COUNT, a regra que nunca casa também para no fim da janela', () => {
     const rule = parseRule('FREQ=DAILY;COUNT=3;BYMONTH=2;BYMONTHDAY=30');
     const asked: number[] = [];

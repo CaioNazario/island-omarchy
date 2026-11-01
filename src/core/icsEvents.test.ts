@@ -21,6 +21,26 @@ const FROM = new Date(2026, 9, 18);
 const TO = new Date(2026, 9, 19);
 const parse = (text: string, from = FROM, to = TO) => parseIcsEvents(text, from, to);
 
+describe('parseIcsEvents · feed hostil', () => {
+  // Revisão do marketplace (#13501): com COUNT a expansão não salta até a
+  // janela, e cada série varria até 20.000 dias desde 1970. O orçamento é do
+  // feed inteiro: esgotado, as séries seguintes param, e o evento simples
+  // continua aparecendo.
+  it('muitas séries COUNT que nunca casam não tiram o evento simples', () => {
+    const hostile = Array.from(
+      { length: 200 },
+      (_, i) =>
+        `UID:h${i}\nSUMMARY:x\nDTSTART:19700101T090000Z\nDTEND:19700101T100000Z\nRRULE:FREQ=DAILY;COUNT=999999;BYMONTH=2;BYMONTHDAY=30`,
+    );
+    const simple = 'UID:a\nSUMMARY:Dentista\nDTSTART:20261018T120000Z\nDTEND:20261018T130000Z';
+    const started = Date.now();
+    const events = parse(feed(...hostile, simple));
+    expect(events.map((e) => e.summary)).toEqual(['Dentista']);
+    // Folga larga para máquina lenta; sem o orçamento passava de 3 s.
+    expect(Date.now() - started).toBeLessThan(1500);
+  });
+});
+
 describe('parseIcsEvents · evento único', () => {
   it('UTC vira o instante certo', () => {
     const [event] = parse(

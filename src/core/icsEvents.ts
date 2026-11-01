@@ -13,7 +13,7 @@ import {
   type IcsProperty,
 } from './icsParse.js';
 import { dropFarEvents } from './icsPrefilter.js';
-import { expandWalls, parseRule, type Rule } from './icsRecurrence.js';
+import { expandWalls, parseRule, type ExpansionBudget, type Rule } from './icsRecurrence.js';
 import { DAY_MS, msToParts, parseDuration, parseWallValue } from './icsWall.js';
 import { parseZones, zoneOffsetMinutes, type Observance } from './icsZones.js';
 
@@ -35,7 +35,15 @@ interface Window {
 interface Context extends Window {
   zones: Zones;
   calendarId: string;
+  budget: ExpansionBudget;
 }
+
+/**
+ * Períodos de recorrência que um feed inteiro pode varrer (~0,1 s no Node). Um
+ * feed real gasta poucos: sem COUNT a varredura salta até a janela. Esgotado,
+ * as séries seguintes param e os eventos simples continuam.
+ */
+const FEED_PERIOD_BUDGET = 100_000;
 
 // Sem fuso (flutuante) e dia inteiro valem no relógio local da máquina.
 function localInstant(wallMs: number): number {
@@ -82,16 +90,16 @@ function untilInstant(rule: Rule, start: Moment): number | null {
   return start.toInstant(until.hasTime ? until.ms : until.ms + DAY_MS - 1);
 }
 
-function occurrenceWalls(vevent: IcsComponent, start: Moment, window: Window): number[] {
+function occurrenceWalls(vevent: IcsComponent, start: Moment, context: Context): number[] {
   const rrule = findProp(vevent, 'RRULE');
   const rule = rrule ? parseRule(rrule.value) : null;
   if (!rule) return [start.wallMs];
   const until = untilInstant(rule, start);
-  const limit = until === null ? window.toMs : Math.min(window.toMs, until + 1);
+  const limit = until === null ? context.toMs : Math.min(context.toMs, until + 1);
   // O relógio de parede difere do instante em menos de um dia: longe do limite nem converte.
   const pastEnd = (wall: number) => wall >= limit - 2 * DAY_MS && start.toInstant(wall) >= limit;
   // Sem COUNT a varredura começa perto da janela, não no início da série (anos atrás).
-  return expandWalls(rule, start.wallMs, pastEnd, window.fromMs - 2 * DAY_MS);
+  return expandWalls(rule, start.wallMs, pastEnd, context.fromMs - 2 * DAY_MS, context.budget);
 }
 
 function exdateInstants(vevent: IcsComponent, zones: Zones): Set<number> {
@@ -181,6 +189,7 @@ export function parseIcsEvents(text: string, from: Date, to: Date): CalendarEven
     calendarId: findProp(calendar, 'X-WR-CALNAME')?.value || 'ics',
     fromMs: from.getTime(),
     toMs: to.getTime(),
+    budget: { periods: FEED_PERIOD_BUDGET },
   };
   const vevents = calendar.children.filter((child) => child.name === 'VEVENT');
   const overrides = vevents.filter((e) => findProp(e, 'RECURRENCE-ID'));
