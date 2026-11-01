@@ -18,9 +18,11 @@ Rectangle {
   // (spec 02 "Tamanho"), que chega como `scale` de um pai.
   readonly property real density: Screen.devicePixelRatio * Tokens.zoomFor(Screen.width, Screen.height)
 
-  // `check`: devolve vazio quando o tema não tem o ícone.
+  // `check`: devolve vazio quando o tema não tem o ícone. O nome vem de quem
+  // manda a notificação: só nome de ícone do tema, nunca caminho (`/`, `../`,
+  // `file:`).
   readonly property string themeIcon: entry.glyph || entry.appIcon === "" ? ""
-    : entry.appIcon.startsWith("/") || entry.appIcon.startsWith("file:") ? ""
+    : entry.appIcon.indexOf("/") >= 0 || entry.appIcon.startsWith("file:") ? ""
     : Quickshell.iconPath(entry.appIcon.endsWith("-symbolic") ? entry.appIcon : entry.appIcon + "-symbolic", true)
 
   color: Tokens.accent900

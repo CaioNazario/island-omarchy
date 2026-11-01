@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Mode } from './island.js';
 import {
   formatRelativeTime,
+  MAX_NOTIFICATION_CHARS,
   notificationText,
   routeNotification,
   type IncomingNotification,
@@ -136,5 +137,15 @@ describe('notificationText', () => {
 
   it('sem markup, mantém o texto literal', () => {
     expect(notificationText('App', '', '<b>x</b> &amp;', false)).toBe('<b>x</b> &amp;');
+  });
+});
+
+describe('notificationText · tamanho', () => {
+  // Quem manda a notificação escolhe o texto: um corpo de megabytes não pode
+  // chegar inteiro ao layout da ilha, que mostra uma linha só.
+  it('corta em MAX_NOTIFICATION_CHARS, contando emoji como um', () => {
+    const text = notificationText('App', 'Título', '🎉'.repeat(5000), false);
+    expect([...text]).toHaveLength(MAX_NOTIFICATION_CHARS);
+    expect(text.startsWith('Título: 🎉')).toBe(true);
   });
 });

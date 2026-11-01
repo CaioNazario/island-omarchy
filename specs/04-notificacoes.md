@@ -33,7 +33,8 @@ Regra pura em `src/core/notificationSource.ts`, com a tabela como constante no m
    A comparação ignora `www.` e casa o subdomínio mais específico primeiro.
 3. Domínio fora da tabela → nome = rótulo principal do domínio registrável, capitalizado (`twitch.tv` → "Twitch", `www.github.com` → "Github"); ícone `ph ph-globe`. Sem a Public Suffix List: uma lista curta de sufixos de segundo nível (`com.br`, `co.uk`…) evita que `globo.com.br` vire "Com".
 4. A linha do domínio é removida do texto exibido. Nunca mostrar "Brave" nem `www.youtube.com`.
-5. **App nativo**: nome do app; ícone simbólico do tema (`<ícone>-symbolic`, por `Quickshell.iconPath`) tingido de `accent-300`, ou `ph-fill ph-bell` se o tema não tiver o simbólico ou o ícone for um caminho de arquivo.
+5. **App nativo**: nome do app; ícone simbólico do tema (`<ícone>-symbolic`, por `Quickshell.iconPath`) tingido de `accent-300`, ou `ph-fill ph-bell` se o tema não tiver o simbólico ou o ícone for um caminho (qualquer nome com `/`, ou `file:`): quem manda a notificação escolhe o nome.
+6. **Tamanho**: o texto mostrado ("título: corpo") para em 500 caracteres (`MAX_NOTIFICATION_CHARS`, contando emoji como um). A ilha mostra uma linha só, e o texto é de quem manda a notificação.
 
 ## Roteamento de uma notificação nova
 

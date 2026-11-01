@@ -74,6 +74,19 @@ function singleLine(text: string): string {
   return text.replace(/\s+/g, ' ').trim();
 }
 
+/**
+ * Teto do texto de uma notificação: quem a manda escolhe o conteúdo, e a ilha
+ * mostra uma linha só. Conta caracteres, não unidades UTF-16.
+ */
+export const MAX_NOTIFICATION_CHARS = 500;
+
+function clip(text: string): string {
+  const chars = [...text];
+  return chars.length > MAX_NOTIFICATION_CHARS
+    ? chars.slice(0, MAX_NOTIFICATION_CHARS).join('')
+    : text;
+}
+
 /** Linha de texto do `notif`/`stack`/banner: "título: corpo", como `latest.text` no design. */
 export function notificationText(
   appName: string,
@@ -84,6 +97,6 @@ export function notificationText(
   const cleanTitle = singleLine(title);
   const cleanBody = singleLine(useBodyMarkup ? stripMarkup(body) : body);
   const shownTitle = cleanTitle === appName ? '' : cleanTitle;
-  if (shownTitle && cleanBody) return `${shownTitle}: ${cleanBody}`;
-  return shownTitle || cleanBody;
+  if (shownTitle && cleanBody) return clip(`${shownTitle}: ${cleanBody}`);
+  return clip(shownTitle || cleanBody);
 }
