@@ -10,6 +10,7 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 - Old recurring events with `COUNT` could still freeze the shell for seconds per few hundred events: a whole feed now has a shared expansion budget, and plain events keep showing.
 - Network responses are size-capped: the calendar feed at 10 MB, weather and GitHub at 1 MB.
 - A notification's text is cut at 500 characters, and its icon name can no longer point at a file path.
+- Album art is decoded at the size it's shown, not at whatever size the player sends.
 
 ## [0.7.5] - 2026-11-01
 
