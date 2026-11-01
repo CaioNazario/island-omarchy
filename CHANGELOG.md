@@ -8,6 +8,7 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 - A crafted ICS feed could freeze the shell for minutes: recurrence rules with impossible or repeated `BYDAY`, `BYMONTHDAY` or `BYMONTH` values are now rejected or deduplicated, and expansion stops at the end of the visible window even when a rule never produces a date.
 - Old recurring events with `COUNT` could still freeze the shell for seconds per few hundred events: a whole feed now has a shared expansion budget, and plain events keep showing.
+- Network responses are size-capped: the calendar feed at 10 MB, weather and GitHub at 1 MB.
 
 ## [0.7.5] - 2026-11-01
 

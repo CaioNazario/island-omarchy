@@ -38,7 +38,7 @@ Scope {
   function refresh() {
     if (!preferredLocation && !omarchyLocation) detectArea();
     if (!location || fetcher.running) return;
-    fetcher.command = ["curl", "-fsS", "--max-time", "10", WeatherCore.openMeteoUrl(location)];
+    fetcher.command = ["curl", "-fsS", "--max-time", "10", "--max-filesize", String(WeatherCore.MAX_RESPONSE_BYTES), WeatherCore.openMeteoUrl(location)];
     fetcher.running = true;
   }
 
@@ -71,7 +71,7 @@ Scope {
 
   function detectArea() {
     if (areaFetcher.running) return;
-    areaFetcher.command = ["curl", "-fsS", "--max-time", "10", WeatherCore.wttrUrl(omarchyName)];
+    areaFetcher.command = ["curl", "-fsS", "--max-time", "10", "--max-filesize", String(WeatherCore.MAX_RESPONSE_BYTES), WeatherCore.wttrUrl(omarchyName)];
     areaFetcher.running = true;
   }
 

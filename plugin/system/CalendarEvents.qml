@@ -85,7 +85,8 @@ Scope {
 
     property string configText: ""
 
-    command: ["curl", "-fsS", "--max-time", "20", "-K", "-"]
+    // O servidor do feed é de terceiros: resposta grande demais é recusada.
+    command: ["curl", "-fsS", "--max-time", "20", "--max-filesize", String(IcsFeed.MAX_FEED_BYTES), "-K", "-"]
     stdinEnabled: true
     onStarted: {
       write(configText);

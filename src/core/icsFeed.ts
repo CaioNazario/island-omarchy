@@ -15,7 +15,14 @@ export function curlConfigLine(url: string): string {
   return `url = "${url}"\n`;
 }
 
+/**
+ * Teto do feed: o servidor é de terceiros e o texto vai inteiro para a thread
+ * da UI. O `curl` recebe o mesmo valor (`--max-filesize`); um feed real de
+ * 3000 eventos tem ~1,4 MB.
+ */
+export const MAX_FEED_BYTES = 10 * 1024 * 1024;
+
 /** Página de login ou erro HTML no lugar do feed não pode apagar os eventos. */
 export function isIcsFeed(body: string): boolean {
-  return body.includes('BEGIN:VCALENDAR');
+  return body.length <= MAX_FEED_BYTES && body.includes('BEGIN:VCALENDAR');
 }

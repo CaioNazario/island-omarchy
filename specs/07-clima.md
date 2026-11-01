@@ -6,7 +6,7 @@ Código: `plugin/system/WeatherSource.qml`, regras em `src/core/weather.ts` e `w
 
 ## Fonte
 
-Open-Meteo (`api.open-meteo.com/v1/forecast`, bloco `current`: `temperature_2m`, `weather_code`, `is_day`), sem chave de API, por `curl` como o widget de clima do Omarchy.
+Open-Meteo (`api.open-meteo.com/v1/forecast`, bloco `current`: `temperature_2m`, `weather_code`, `is_day`), sem chave de API, por `curl` como o widget de clima do Omarchy. As respostas do Open-Meteo e do wttr.in passam por `--max-filesize` de 1 MB (`MAX_RESPONSE_BYTES`); o GitHub (spec 16), pelo mesmo teto no `HttpGet.qml`.
 
 ### Cadeia de localização
 

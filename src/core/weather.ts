@@ -4,6 +4,9 @@
 /** Falha de rede: o último valor vale por até 3h; depois o clima some. */
 export const READING_TTL_MS = 3 * 60 * 60 * 1000;
 
+/** Teto das respostas do Open-Meteo e do wttr.in (~50 KB): o `curl` recusa o resto. */
+export const MAX_RESPONSE_BYTES = 1024 * 1024;
+
 export interface WeatherReading {
   /** Glifo Phosphor, de `weatherGlyph`. */
   glyph: string;
