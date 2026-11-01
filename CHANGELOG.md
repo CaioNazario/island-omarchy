@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.7.5] - 2026-11-01
+
 ### Fixed
 
 - Every text is shown as plain text. A notification title (or a song or network name) carrying an HTML image no longer makes the desktop fetch that image from the sender's server.
@@ -158,7 +160,8 @@ First release: Island as an Omarchy bar plugin.
 - Weather from Open-Meteo.
 - Environments and widgets on the side pills, with hardware and Claude and Codex AI usage.
 
-[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.4...dev
+[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.5...dev
+[0.7.5]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.4...v0.7.5
 [0.7.4]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.2...v0.7.3
 [0.7.2]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.1...v0.7.2
