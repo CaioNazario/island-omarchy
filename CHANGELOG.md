@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.7.4] - 2026-11-01
+
 ### Fixed
 
 - The settings and state folders (`~/.config/island` and `~/.local/state/island`) are private (0700): other accounts on the same machine can no longer read the note or the environment names. Existing installs are fixed on the next start.
@@ -152,7 +154,8 @@ First release: Island as an Omarchy bar plugin.
 - Weather from Open-Meteo.
 - Environments and widgets on the side pills, with hardware and Claude and Codex AI usage.
 
-[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.3...dev
+[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.4...dev
+[0.7.4]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.2...v0.7.3
 [0.7.2]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.0...v0.7.1
