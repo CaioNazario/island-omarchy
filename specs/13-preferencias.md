@@ -30,7 +30,7 @@ Listas lidas do arquivo chegam ao JS como objetos com `length` e índices em que
 
 Estado que não é preferência fica em `$XDG_STATE_HOME/island/state.json` (`StateStore.qml`): `doNotDisturb` (spec 04), `pomodoroState` (spec 16), `weatherHintShown` (spec 07).
 
-As duas pastas, `$XDG_CONFIG_HOME/island` e `$XDG_STATE_HOME/island`, são privadas (0700, `PrivateDir.qml`): a nota, os nomes dos ambientes e o estado não ficam legíveis por outros usuários da máquina. Os arquivos saem com o umask do usuário e a gravação atômica os recria a cada salvamento, então quem protege é a pasta; cada início também fecha a pasta de uma instalação antiga e põe os `.json` que já existem em 0600. O `make smoke` parte de uma pasta 0755 e falha se ela não virar 0700.
+As duas pastas, `$XDG_CONFIG_HOME/island` e `$XDG_STATE_HOME/island`, são privadas (0700, `PrivateDir.qml` com o script de `src/core/privateDir.ts`): a nota, os nomes dos ambientes e o estado não ficam legíveis por outros usuários da máquina. Os arquivos saem com o umask do usuário e a gravação atômica os recria a cada salvamento, então quem protege é a pasta; cada início também fecha a pasta de uma instalação antiga e põe os `.json` que já existem em 0600. O `make lint` roda o script de verdade contra uma pasta 0755 com JSON 0644 e uma nova (`scripts/check-private-dir.mjs`, na CI), e o `make smoke` confere o mesmo no motor real.
 
 ## Idioma
 

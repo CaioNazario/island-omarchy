@@ -23,6 +23,7 @@ lint: build
 	node scripts/check-core.mjs $(DIST)/core
 	node scripts/check-i18n.mjs $(DIST)/core
 	node scripts/check-plain-text.mjs plugin
+	node scripts/check-private-dir.mjs $(DIST)/core
 	scripts/shaders-in-sync.sh
 	$(QMLLINT) --max-warnings 0 --uncreatable-type disable --signal-handler-parameters disable -I /usr/lib/qt6/qml $(QML_FILES)
 	# O validador do Omarchy só existe numa máquina com Omarchy (não na CI).
