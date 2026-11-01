@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.7.6] - 2026-11-01
+
 ### Fixed
 
 - A crafted ICS feed could freeze the shell for minutes: recurrence rules with impossible or repeated `BYDAY`, `BYMONTHDAY` or `BYMONTH` values are now rejected or deduplicated, and expansion stops at the end of the visible window even when a rule never produces a date.
@@ -168,7 +170,8 @@ First release: Island as an Omarchy bar plugin.
 - Weather from Open-Meteo.
 - Environments and widgets on the side pills, with hardware and Claude and Codex AI usage.
 
-[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.5...dev
+[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.6...dev
+[0.7.6]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.5...v0.7.6
 [0.7.5]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.4...v0.7.5
 [0.7.4]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.2...v0.7.3
