@@ -6,8 +6,9 @@
 //
 // O feed é de terceiros e a expansão roda na thread da UI do shell: listas
 // com valor impossível (`99MO`, `BYMONTHDAY=32`) invalidam a regra, valores
-// repetidos entram uma vez só, e a varredura para no fim da janela mesmo
-// quando um período não gera data (revisão do marketplace, #13501).
+// repetidos entram uma vez só, a varredura para no fim da janela mesmo
+// quando um período não gera data, e o orçamento do feed conta o trabalho
+// de cada período, não só os períodos (revisão do marketplace, #13501).
 
 import { DAY_MS, daysInMonth, msToParts, type WallParts } from './icsWall.js';
 
@@ -37,12 +38,14 @@ const WEEKDAYS = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
 const MAX_PERIODS = 20_000;
 
 /**
- * Períodos que ainda podem ser varridos, compartilhado entre as séries de um
- * feed: com COUNT não há salto até a janela, e muitas séries antigas somariam
- * segundos na thread da UI. Cada período gasta um.
+ * Trabalho que ainda pode ser feito, compartilhado entre as séries de um feed:
+ * com COUNT não há salto até a janela, e muitas séries antigas somariam
+ * segundos na thread da UI. Cada período gasta o custo dele (`periodCost`)
+ * mais as datas que gerou: contar só períodos deixava um YEARLY com os 12
+ * meses e os 77 BYDAY custar milhares de checagens por período.
  */
 export interface ExpansionBudget {
-  periods: number;
+  steps: number;
 }
 
 /** O ordinal conta dentro do mês (`weekdayDays`): um mês tem no máximo 5 de cada dia. */
@@ -115,9 +118,7 @@ function timeOfDayMs(start: WallParts): number {
  * O primeiro sai da aritmética e os seguintes vêm de 7 em 7: varrer o mês dia
  * a dia custava 31 `Date` por item do BYDAY, e um feed hostil tem 77 itens.
  */
-function weekdayDays(year: number, month: number, rule: DayRule): number[] {
-  const total = daysInMonth(year, month);
-  const firstWeekday = new Date(Date.UTC(year, month, 1)).getUTCDay();
+function weekdayDays(firstWeekday: number, total: number, rule: DayRule): number[] {
   const matching: number[] = [];
   for (let d = 1 + ((rule.day - firstWeekday + 7) % 7); d <= total; d += 7) matching.push(d);
   if (rule.ord === 0) return matching;
@@ -125,12 +126,24 @@ function weekdayDays(year: number, month: number, rule: DayRule): number[] {
   return picked === undefined ? [] : [picked];
 }
 
+/**
+ * Dias de todos os itens do BYDAY. O dia da semana do dia 1 sai uma vez por
+ * mês, e sem `concat` a cada item: recopiar a lista deixava o custo
+ * quadrático nos itens, e o `periodCost` cobra linear.
+ */
+function byDayDays(rule: Rule, year: number, month: number): number[] {
+  const total = daysInMonth(year, month);
+  const firstWeekday = new Date(Date.UTC(year, month, 1)).getUTCDay();
+  const days: number[] = [];
+  for (const dayRule of rule.byDay) days.push(...weekdayDays(firstWeekday, total, dayRule));
+  return days;
+}
+
 function monthDays(rule: Rule, year: number, month: number, fallbackDay: number): number[] {
   const total = daysInMonth(year, month);
   let days: number[] = [fallbackDay];
   if (rule.byMonthDay.length) days = rule.byMonthDay.map((d) => (d > 0 ? d : total + d + 1));
-  else if (rule.byDay.length)
-    days = rule.byDay.reduce<number[]>((all, r) => all.concat(weekdayDays(year, month, r)), []);
+  else if (rule.byDay.length) days = byDayDays(rule, year, month);
   return Array.from(new Set(days))
     .filter((d) => d >= 1 && d <= total)
     .sort((a, b) => a - b);
@@ -198,6 +211,16 @@ function periodWalls(rule: Rule, start: WallParts, k: number): number[] {
     : monthWalls(rule, start, start.y, start.m + step);
 }
 
+/**
+ * Passos para montar um período: cada mês varrido custa 1 mais um por item
+ * das listas `BY*`, que é o que `monthDays` e `limitedBy` percorrem.
+ */
+function periodCost(rule: Rule): number {
+  const months = rule.freq === 'YEARLY' ? Math.max(1, rule.byMonth.length) : 1;
+  const lists = rule.byMonth.length + rule.byDay.length + rule.byMonthDay.length;
+  return months * (1 + lists);
+}
+
 /** Maior duração de um período da frequência, em ms (mês = 31 dias, ano = 366). */
 function longestPeriodMs(rule: Rule): number {
   const days = { DAILY: 1, WEEKLY: 7, MONTHLY: 31, YEARLY: 366 }[rule.freq];
@@ -228,15 +251,17 @@ export function expandWalls(
   startMs: number,
   pastEnd: (wallMs: number) => boolean,
   fromMs: number = startMs,
-  budget: ExpansionBudget = { periods: MAX_PERIODS },
+  budget: ExpansionBudget = { steps: Infinity },
 ): number[] {
   const start = msToParts(startMs);
+  const cost = periodCost(rule);
   const out: number[] = [];
-  for (let k = firstPeriod(rule, startMs, fromMs); k < MAX_PERIODS && budget.periods > 0; k++) {
-    budget.periods--;
+  for (let k = firstPeriod(rule, startMs, fromMs); k < MAX_PERIODS && budget.steps > 0; k++) {
     // Um período que começa depois do fim acaba a série, gere data ou não.
     if (pastEnd(periodStart(rule, start, k))) return out;
-    for (const wall of periodWalls(rule, start, k)) {
+    const walls = periodWalls(rule, start, k);
+    budget.steps -= cost + walls.length;
+    for (const wall of walls) {
       if (wall < startMs) continue;
       if (pastEnd(wall)) return out;
       out.push(wall);

@@ -39,6 +39,26 @@ describe('parseIcsEvents · feed hostil', () => {
     // Folga larga para máquina lenta; sem o orçamento passava de 3 s.
     expect(Date.now() - started).toBeLessThan(1500);
   });
+
+  // 4º apontamento: o orçamento contava períodos, e um período YEARLY com os
+  // 12 meses e os 77 BYDAY custa milhares de checagens. Agora conta trabalho.
+  it('séries YEARLY com todos os meses e todos os BYDAY não travam o feed', () => {
+    const byDay = ['', '1', '2', '3', '4', '5', '-1', '-2', '-3', '-4', '-5']
+      .flatMap((ord) => ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'].map((day) => ord + day))
+      .join(',');
+    const rule = `FREQ=YEARLY;COUNT=999999999;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYDAY=${byDay}`;
+    const hostile = Array.from(
+      { length: 30 },
+      (_, i) =>
+        `UID:y${i}\nSUMMARY:x\nDTSTART:19000101T090000Z\nDTEND:19000101T100000Z\nRRULE:${rule}`,
+    );
+    const simple = 'UID:a\nSUMMARY:Dentista\nDTSTART:20261018T120000Z\nDTEND:20261018T130000Z';
+    const started = Date.now();
+    const events = parse(feed(...hostile, simple));
+    expect(events.map((e) => e.summary)).toContain('Dentista');
+    // Contando períodos, 30 séries levavam ~3,6 s no Node.
+    expect(Date.now() - started).toBeLessThan(1500);
+  });
 });
 
 describe('parseIcsEvents · evento único', () => {

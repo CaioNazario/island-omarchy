@@ -39,11 +39,14 @@ interface Context extends Window {
 }
 
 /**
- * Períodos de recorrência que um feed inteiro pode varrer (~0,1 s no Node). Um
- * feed real gasta poucos: sem COUNT a varredura salta até a janela. Esgotado,
- * as séries seguintes param e os eventos simples continuam.
+ * Passos de recorrência que um feed inteiro pode gastar (`ExpansionBudget`).
+ * Medido no Node: o formato de regra mais caro leva ~0,15 s para gastar tudo,
+ * com ou sem fuso; contando períodos, 1000 séries YEARLY com todos os meses
+ * e BYDAY levavam minutos. Um feed real gasta poucos: sem COUNT a varredura
+ * salta até a janela. Esgotado, as séries seguintes param e os eventos
+ * simples continuam.
  */
-const FEED_PERIOD_BUDGET = 100_000;
+const FEED_STEP_BUDGET = 500_000;
 
 // Sem fuso (flutuante) e dia inteiro valem no relógio local da máquina.
 function localInstant(wallMs: number): number {
@@ -102,6 +105,20 @@ function occurrenceWalls(vevent: IcsComponent, start: Moment, context: Context):
   return expandWalls(rule, start.wallMs, pastEnd, context.fromMs - 2 * DAY_MS, context.budget);
 }
 
+/**
+ * Com COUNT a série vem desde o início: o que termina antes da janela (com a
+ * folga do relógio de parede) nem passa pela conversão de fuso.
+ */
+function windowWalls(
+  vevent: IcsComponent,
+  start: Moment,
+  durationMs: number,
+  context: Context,
+): number[] {
+  const earliest = context.fromMs - durationMs - 2 * DAY_MS;
+  return occurrenceWalls(vevent, start, context).filter((wall) => wall >= earliest);
+}
+
 function exdateInstants(vevent: IcsComponent, zones: Zones): Set<number> {
   const instants = new Set<number>();
   for (const prop of vevent.props.filter((p) => p.name === 'EXDATE')) {
@@ -157,7 +174,7 @@ function seriesEvents(
   const skipped = exdateInstants(master, context.zones);
   const uid = findProp(master, 'UID')?.value ?? '';
   const found: CalendarEvent[] = [];
-  for (const wall of occurrenceWalls(master, start, context)) {
+  for (const wall of windowWalls(master, start, duration, context)) {
     const instant = start.toInstant(wall);
     if (skipped.has(instant) || replaced.has(`${uid}|${instant}`)) continue;
     const event = eventAt(master, start, duration, wall, context);
@@ -189,7 +206,7 @@ export function parseIcsEvents(text: string, from: Date, to: Date): CalendarEven
     calendarId: findProp(calendar, 'X-WR-CALNAME')?.value || 'ics',
     fromMs: from.getTime(),
     toMs: to.getTime(),
-    budget: { periods: FEED_PERIOD_BUDGET },
+    budget: { steps: FEED_STEP_BUDGET },
   };
   const vevents = calendar.children.filter((child) => child.name === 'VEVENT');
   const overrides = vevents.filter((e) => findProp(e, 'RECURRENCE-ID'));

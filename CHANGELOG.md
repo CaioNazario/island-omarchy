@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Fixed
+
+- A crafted ICS feed could still freeze the shell: the recurrence budget counted periods, and one yearly period with every month and every `BYDAY` value cost thousands of day checks. The budget now counts the work each period does, `BYDAY` days are computed instead of scanned, and occurrences that end before the visible window skip the time zone conversion.
+
 ## [0.7.6] - 2026-11-01
 
 ### Fixed

@@ -6,6 +6,12 @@ const at = (y: number, m: number, d: number, h = 9) => Date.UTC(y, m - 1, d, h);
 const days = (walls: number[]) => walls.map((w) => msToParts(w).d);
 const never = () => false;
 
+// Regra mais pesada que o parser aceita: os 12 meses e os 77 BYDAY distintos.
+const ALL_MONTHS = 'BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12';
+const ALL_BYDAY = `BYDAY=${['', '1', '2', '3', '4', '5', '-1', '-2', '-3', '-4', '-5']
+  .flatMap((ord) => ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'].map((day) => ord + day))
+  .join(',')}`;
+
 function expand(rule: string, start: number, endWall: number): number[] {
   const parsed = parseRule(rule);
   if (!parsed) throw new Error(`regra inválida: ${rule}`);
@@ -127,10 +133,11 @@ describe('expandWalls', () => {
     expect(asked.length).toBeLessThan(20);
   });
 
-  it('para quando o orçamento de períodos compartilhado acaba', () => {
+  it('para quando o orçamento compartilhado acaba', () => {
     // COUNT impede o salto até a janela: sem orçamento, varreria 20.000 dias.
+    // Cada período desta regra custa 3 passos (o dia, BYMONTH e BYMONTHDAY).
     const rule = parseRule('FREQ=DAILY;COUNT=999999;BYMONTH=2;BYMONTHDAY=30');
-    const budget = { periods: 100 };
+    const budget = { steps: 300 };
     const asked: number[] = [];
     const walls =
       rule &&
@@ -145,8 +152,21 @@ describe('expandWalls', () => {
         budget,
       );
     expect(walls).toEqual([]);
-    expect(budget.periods).toBe(0);
+    expect(budget.steps).toBeLessThanOrEqual(0);
     expect(asked.length).toBeLessThanOrEqual(100);
+  });
+
+  it('o orçamento conta o trabalho de cada período, não só os períodos', () => {
+    // Revisão do marketplace (#13501): um período YEARLY com os 12 meses e os
+    // 77 BYDAY varre o ano inteiro e gera ~365 datas. Contando só períodos,
+    // 100.000 deles custavam bilhões de checagens de dia na thread da UI.
+    const rule = parseRule(`FREQ=YEARLY;COUNT=999999999;${ALL_MONTHS};${ALL_BYDAY}`);
+    const budget = { steps: 10_000 };
+    const pastEnd = (wall: number) => wall >= at(2026, 11, 1);
+    const walls = rule && expandWalls(rule, at(1900, 1, 1), pastEnd, at(1900, 1, 1), budget);
+    expect(budget.steps).toBeLessThanOrEqual(0);
+    // ~1.450 passos por ano: o orçamento acaba em poucos anos, longe de 2026.
+    expect(walls && walls.length).toBeLessThan(10 * 366);
   });
 
   it('com COUNT, a regra que nunca casa também para no fim da janela', () => {
