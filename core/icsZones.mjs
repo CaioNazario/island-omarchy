@@ -53,13 +53,12 @@ function zoneObservances(timezone) {
 export function parseZones(root) {
     var _a;
     const zones = new Map();
-    const calendars = root.children.filter((child) => child.name === 'VCALENDAR');
-    for (const timezone of calendars.reduce((all, c) => all.concat(c.children), [])) {
-        const tzid = (_a = findProp(timezone, 'TZID')) === null || _a === void 0 ? void 0 : _a.value;
-        if (timezone.name !== 'VTIMEZONE' || !tzid)
-            continue;
-        zones.set(tzid, zoneObservances(timezone));
-    }
+    for (const calendar of root.children.filter((child) => child.name === 'VCALENDAR'))
+        for (const timezone of calendar.children) {
+            const tzid = (_a = findProp(timezone, 'TZID')) === null || _a === void 0 ? void 0 : _a.value;
+            if (timezone.name === 'VTIMEZONE' && tzid)
+                zones.set(tzid, zoneObservances(timezone));
+        }
     return zones;
 }
 function yearShape(year) {
