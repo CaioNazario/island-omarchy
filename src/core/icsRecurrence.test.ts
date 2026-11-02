@@ -88,6 +88,13 @@ describe('expandWalls', () => {
     expect(days(first)).toEqual([5, 2]);
   });
 
+  it('BYMONTHDAY=-31 só cai nos meses de 31 dias', () => {
+    // No V4 a escrita fora do array de dias lançava TypeError e o feed sumia.
+    const walls = expand('FREQ=MONTHLY;BYMONTHDAY=-31', at(2026, 1, 1), at(2026, 5, 2));
+    expect(walls.map((w) => msToParts(w).m)).toEqual([0, 2, 4]);
+    expect(days(walls)).toEqual([1, 1, 1]);
+  });
+
   it('mensal por BYMONTHDAY negativo (último dia)', () => {
     const walls = expand('FREQ=MONTHLY;BYMONTHDAY=-1', at(2026, 2, 28), at(2026, 5, 1));
     expect(days(walls)).toEqual([28, 31, 30]);

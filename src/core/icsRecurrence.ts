@@ -114,59 +114,61 @@ function timeOfDayMs(start: WallParts): number {
 }
 
 /**
- * Dias do mês que o BYDAY escolhe (ordinal 0 = todos os dias daquela semana).
- * O primeiro sai da aritmética e os seguintes vêm de 7 em 7: varrer o mês dia
- * a dia custava 31 `Date` por item do BYDAY, e um feed hostil tem 77 itens.
+ * Marca em `picked` os dias do mês que o item do BYDAY escolhe (ordinal 0 =
+ * todos os dias daquela semana). O primeiro sai da aritmética e os seguintes
+ * vêm de 7 em 7: varrer o mês dia a dia custava 31 `Date` por item do BYDAY,
+ * e um feed hostil tem 77 itens. O ordinal vira um índice, sem lista.
  */
-function weekdayDays(firstWeekday: number, total: number, rule: DayRule): number[] {
-  const matching: number[] = [];
-  for (let d = 1 + ((rule.day - firstWeekday + 7) % 7); d <= total; d += 7) matching.push(d);
-  if (rule.ord === 0) return matching;
-  const picked = rule.ord > 0 ? matching[rule.ord - 1] : matching[matching.length + rule.ord];
-  return picked === undefined ? [] : [picked];
+function markWeekday(picked: boolean[], firstWeekday: number, total: number, rule: DayRule): void {
+  const first = 1 + ((rule.day - firstWeekday + 7) % 7);
+  const count = Math.floor((total - first) / 7) + 1;
+  if (rule.ord === 0) {
+    for (let i = 0; i < count; i++) picked[first + 7 * i] = true;
+    return;
+  }
+  const index = rule.ord > 0 ? rule.ord - 1 : count + rule.ord;
+  if (index >= 0 && index < count) picked[first + 7 * index] = true;
 }
 
 /**
- * Dias de todos os itens do BYDAY. O dia da semana do dia 1 sai uma vez por
- * mês, e sem `concat` a cada item: recopiar a lista deixava o custo
- * quadrático nos itens, e o `periodCost` cobra linear.
+ * Dias do mês em ordem, sem repetição. Marcar e ler de 1 a `total` evita
+ * `Set`, `sort` e uma lista por item do BYDAY, que no V4 do QML custavam ~30×
+ * o Node. Um BYMONTHDAY negativo além do início do mês (`-31` em fevereiro)
+ * fica fora: o V4 em módulo (estrito) lança `TypeError` ao escrever fora de
+ * um `Uint8Array`, onde o Node ignora.
  */
-function byDayDays(rule: Rule, year: number, month: number): number[] {
+function monthDays(rule: Rule, year: number, month: number, fallbackDay: number): number[] {
   const total = daysInMonth(year, month);
-  const firstWeekday = new Date(Date.UTC(year, month, 1)).getUTCDay();
+  const picked = new Array<boolean>(32).fill(false);
+  if (rule.byMonthDay.length) {
+    for (const d of rule.byMonthDay) picked[Math.max(0, d > 0 ? d : total + d + 1)] = true;
+  } else if (rule.byDay.length) {
+    const firstWeekday = new Date(Date.UTC(year, month, 1)).getUTCDay();
+    for (const dayRule of rule.byDay) markWeekday(picked, firstWeekday, total, dayRule);
+  } else picked[fallbackDay] = true;
   const days: number[] = [];
-  for (const dayRule of rule.byDay) days.push(...weekdayDays(firstWeekday, total, dayRule));
+  for (let d = 1; d <= total; d++) if (picked[d]) days.push(d);
   return days;
 }
 
-function monthDays(rule: Rule, year: number, month: number, fallbackDay: number): number[] {
-  const total = daysInMonth(year, month);
-  let days: number[] = [fallbackDay];
-  if (rule.byMonthDay.length) days = rule.byMonthDay.map((d) => (d > 0 ? d : total + d + 1));
-  else if (rule.byDay.length) days = byDayDays(rule, year, month);
-  return Array.from(new Set(days))
-    .filter((d) => d >= 1 && d <= total)
-    .sort((a, b) => a - b);
-}
-
+/** Ocorrências do mês; cada dia é uma soma ao dia 1 (UTC não tem horário de verão), sem `Date.UTC` por dia. */
 function monthWalls(rule: Rule, start: WallParts, year: number, month: number): number[] {
   const first = msToParts(Date.UTC(year, month, 1));
-  const time = timeOfDayMs(start);
-  return monthDays(rule, first.y, first.m, start.d).map(
-    (d) => Date.UTC(first.y, first.m, d) + time,
-  );
+  const base = Date.UTC(first.y, first.m, 1) + timeOfDayMs(start) - DAY_MS;
+  return monthDays(rule, first.y, first.m, start.d).map((d) => base + d * DAY_MS);
 }
 
 /** Ocorrências do ano `year` (também usado pelas regras de horário de verão do VTIMEZONE). */
 export function ruleWallsInYear(rule: Rule, start: WallParts, year: number): number[] {
   const months = rule.byMonth.length ? rule.byMonth : [start.m];
-  return months.reduce<number[]>(
-    (all, month) => all.concat(monthWalls(rule, start, year, month)),
-    [],
-  );
+  const walls: number[] = [];
+  for (const month of months) walls.push(...monthWalls(rule, start, year, month));
+  return walls;
 }
 
 function limitedBy(rule: Rule, wall: number): boolean {
+  // Sem listas, nada a conferir: montar as partes da data a cada dia pesava no V4.
+  if (!rule.byMonth.length && !rule.byMonthDay.length && !rule.byDay.length) return true;
   const parts = msToParts(wall);
   const weekday = new Date(wall).getUTCDay();
   if (rule.byMonth.length && !rule.byMonth.includes(parts.m)) return false;
