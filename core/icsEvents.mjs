@@ -9,11 +9,15 @@ import { expandWalls, parseRule } from './icsRecurrence.mjs';
 import { DAY_MS, msToParts, parseDuration, parseWallValue } from './icsWall.mjs';
 import { parseZones, zoneOffsetMinutes } from './icsZones.mjs';
 /**
- * Períodos de recorrência que um feed inteiro pode varrer (~0,1 s no Node). Um
- * feed real gasta poucos: sem COUNT a varredura salta até a janela. Esgotado,
- * as séries seguintes param e os eventos simples continuam.
+ * Passos de recorrência que um feed inteiro pode gastar (`ExpansionBudget`).
+ * Medido no V4 do QML (o motor do shell, 15–30× mais lento que o Node), com
+ * 1000 séries hostis de cada formato de regra: o pior gasta tudo em ~0,16 s,
+ * mais ~55 ms para ler o feed. Contando períodos, 5 séries YEARLY com todos
+ * os meses e BYDAY levavam ~16 s. Um feed real gasta poucos: sem COUNT a
+ * varredura salta até a janela. Esgotado, as séries seguintes param e os
+ * eventos simples continuam.
  */
-const FEED_PERIOD_BUDGET = 100000;
+const FEED_STEP_BUDGET = 150000;
 // Sem fuso (flutuante) e dia inteiro valem no relógio local da máquina.
 function localInstant(wallMs) {
     const p = msToParts(wallMs);
@@ -62,6 +66,9 @@ function untilInstant(rule, start) {
 }
 function occurrenceWalls(vevent, start, context) {
     const rrule = findProp(vevent, 'RRULE');
+    // Orçamento esgotado: a série não gera nada, e ler uma regra longa custaria por série.
+    if (rrule && context.budget.steps <= 0)
+        return [];
     const rule = rrule ? parseRule(rrule.value) : null;
     if (!rule)
         return [start.wallMs];
@@ -71,6 +78,14 @@ function occurrenceWalls(vevent, start, context) {
     const pastEnd = (wall) => wall >= limit - 2 * DAY_MS && start.toInstant(wall) >= limit;
     // Sem COUNT a varredura começa perto da janela, não no início da série (anos atrás).
     return expandWalls(rule, start.wallMs, pastEnd, context.fromMs - 2 * DAY_MS, context.budget);
+}
+/**
+ * Com COUNT a série vem desde o início: o que termina antes da janela (com a
+ * folga do relógio de parede) nem passa pela conversão de fuso.
+ */
+function windowWalls(vevent, start, durationMs, context) {
+    const earliest = context.fromMs - durationMs - 2 * DAY_MS;
+    return occurrenceWalls(vevent, start, context).filter((wall) => wall >= earliest);
 }
 function exdateInstants(vevent, zones) {
     const instants = new Set();
@@ -120,7 +135,7 @@ function seriesEvents(master, replaced, context) {
     const skipped = exdateInstants(master, context.zones);
     const uid = (_b = (_a = findProp(master, 'UID')) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : '';
     const found = [];
-    for (const wall of occurrenceWalls(master, start, context)) {
+    for (const wall of windowWalls(master, start, duration, context)) {
         const instant = start.toInstant(wall);
         if (skipped.has(instant) || replaced.has(`${uid}|${instant}`))
             continue;
@@ -149,7 +164,7 @@ export function parseIcsEvents(text, from, to) {
         calendarId: ((_a = findProp(calendar, 'X-WR-CALNAME')) === null || _a === void 0 ? void 0 : _a.value) || 'ics',
         fromMs: from.getTime(),
         toMs: to.getTime(),
-        budget: { periods: FEED_PERIOD_BUDGET },
+        budget: { steps: FEED_STEP_BUDGET },
     };
     const vevents = calendar.children.filter((child) => child.name === 'VEVENT');
     const overrides = vevents.filter((e) => findProp(e, 'RECURRENCE-ID'));

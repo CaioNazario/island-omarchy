@@ -6,8 +6,9 @@
 //
 // O feed é de terceiros e a expansão roda na thread da UI do shell: listas
 // com valor impossível (`99MO`, `BYMONTHDAY=32`) invalidam a regra, valores
-// repetidos entram uma vez só, e a varredura para no fim da janela mesmo
-// quando um período não gera data (revisão do marketplace, #13501).
+// repetidos entram uma vez só, a varredura para no fim da janela mesmo
+// quando um período não gera data, e o orçamento do feed conta o trabalho
+// de cada período, não só os períodos (revisão do marketplace, #13501).
 import { DAY_MS, daysInMonth, msToParts } from './icsWall.mjs';
 const FREQS = ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'];
 const WEEKDAYS = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
@@ -79,41 +80,69 @@ export function parseRule(value) {
 function timeOfDayMs(start) {
     return (start.h * 3600 + start.mi * 60 + start.s) * 1000;
 }
-/** Dias do mês que o BYDAY escolhe (ordinal 0 = todos os dias daquela semana). */
-function weekdayDays(year, month, rule) {
-    const total = daysInMonth(year, month);
-    const matching = [];
-    for (let d = 1; d <= total; d++) {
-        if (new Date(Date.UTC(year, month, d)).getUTCDay() === rule.day)
-            matching.push(d);
+/**
+ * Marca em `picked` os dias do mês que o item do BYDAY escolhe (ordinal 0 =
+ * todos os dias daquela semana). O primeiro sai da aritmética e os seguintes
+ * vêm de 7 em 7: varrer o mês dia a dia custava 31 `Date` por item do BYDAY,
+ * e um feed hostil tem 77 itens. O ordinal vira um índice, sem lista.
+ */
+function markWeekday(picked, firstWeekday, total, rule) {
+    const first = 1 + ((rule.day - firstWeekday + 7) % 7);
+    const count = Math.floor((total - first) / 7) + 1;
+    if (rule.ord === 0) {
+        for (let i = 0; i < count; i++)
+            picked[first + 7 * i] = true;
+        return;
     }
-    if (rule.ord === 0)
-        return matching;
-    const picked = rule.ord > 0 ? matching[rule.ord - 1] : matching[matching.length + rule.ord];
-    return picked === undefined ? [] : [picked];
+    const index = rule.ord > 0 ? rule.ord - 1 : count + rule.ord;
+    if (index >= 0 && index < count)
+        picked[first + 7 * index] = true;
 }
+/**
+ * Dias do mês em ordem, sem repetição. Marcar e ler de 1 a `total` evita
+ * `Set`, `sort` e uma lista por item do BYDAY, que no V4 do QML custavam ~30×
+ * o Node. Um BYMONTHDAY negativo além do início do mês (`-31` em fevereiro)
+ * fica fora: o V4 em módulo (estrito) lança `TypeError` ao escrever fora de
+ * um `Uint8Array`, onde o Node ignora.
+ */
 function monthDays(rule, year, month, fallbackDay) {
     const total = daysInMonth(year, month);
-    let days = [fallbackDay];
-    if (rule.byMonthDay.length)
-        days = rule.byMonthDay.map((d) => (d > 0 ? d : total + d + 1));
-    else if (rule.byDay.length)
-        days = rule.byDay.reduce((all, r) => all.concat(weekdayDays(year, month, r)), []);
-    return Array.from(new Set(days))
-        .filter((d) => d >= 1 && d <= total)
-        .sort((a, b) => a - b);
+    const picked = new Array(32).fill(false);
+    if (rule.byMonthDay.length) {
+        for (const d of rule.byMonthDay)
+            picked[Math.max(0, d > 0 ? d : total + d + 1)] = true;
+    }
+    else if (rule.byDay.length) {
+        const firstWeekday = new Date(Date.UTC(year, month, 1)).getUTCDay();
+        for (const dayRule of rule.byDay)
+            markWeekday(picked, firstWeekday, total, dayRule);
+    }
+    else
+        picked[fallbackDay] = true;
+    const days = [];
+    for (let d = 1; d <= total; d++)
+        if (picked[d])
+            days.push(d);
+    return days;
 }
+/** Ocorrências do mês; cada dia é uma soma ao dia 1 (UTC não tem horário de verão), sem `Date.UTC` por dia. */
 function monthWalls(rule, start, year, month) {
     const first = msToParts(Date.UTC(year, month, 1));
-    const time = timeOfDayMs(start);
-    return monthDays(rule, first.y, first.m, start.d).map((d) => Date.UTC(first.y, first.m, d) + time);
+    const base = Date.UTC(first.y, first.m, 1) + timeOfDayMs(start) - DAY_MS;
+    return monthDays(rule, first.y, first.m, start.d).map((d) => base + d * DAY_MS);
 }
 /** Ocorrências do ano `year` (também usado pelas regras de horário de verão do VTIMEZONE). */
 export function ruleWallsInYear(rule, start, year) {
     const months = rule.byMonth.length ? rule.byMonth : [start.m];
-    return months.reduce((all, month) => all.concat(monthWalls(rule, start, year, month)), []);
+    const walls = [];
+    for (const month of months)
+        walls.push(...monthWalls(rule, start, year, month));
+    return walls;
 }
 function limitedBy(rule, wall) {
+    // Sem listas, nada a conferir: montar as partes da data a cada dia pesava no V4.
+    if (!rule.byMonth.length && !rule.byMonthDay.length && !rule.byDay.length)
+        return true;
     const parts = msToParts(wall);
     const weekday = new Date(wall).getUTCDay();
     if (rule.byMonth.length && !rule.byMonth.includes(parts.m))
@@ -161,6 +190,15 @@ function periodWalls(rule, start, k) {
         ? []
         : monthWalls(rule, start, start.y, start.m + step);
 }
+/**
+ * Passos para montar um período: cada mês varrido custa 1 mais um por item
+ * das listas `BY*`, que é o que `monthDays` e `limitedBy` percorrem.
+ */
+export function periodCost(rule) {
+    const months = rule.freq === 'YEARLY' ? Math.max(1, rule.byMonth.length) : 1;
+    const lists = rule.byMonth.length + rule.byDay.length + rule.byMonthDay.length;
+    return months * (1 + lists);
+}
 /** Maior duração de um período da frequência, em ms (mês = 31 dias, ano = 366). */
 function longestPeriodMs(rule) {
     const days = { DAILY: 1, WEEKLY: 7, MONTHLY: 31, YEARLY: 366 }[rule.freq];
@@ -185,15 +223,17 @@ function firstPeriod(rule, startMs, fromMs) {
  * junto: o chamador filtra. Sem COUNT, o laço começa perto de `fromMs`
  * (relógio de parede) e devolve só ocorrências a partir daí, aproximadamente.
  */
-export function expandWalls(rule, startMs, pastEnd, fromMs = startMs, budget = { periods: MAX_PERIODS }) {
+export function expandWalls(rule, startMs, pastEnd, fromMs = startMs, budget = { steps: Infinity }) {
     const start = msToParts(startMs);
+    const cost = periodCost(rule);
     const out = [];
-    for (let k = firstPeriod(rule, startMs, fromMs); k < MAX_PERIODS && budget.periods > 0; k++) {
-        budget.periods--;
+    for (let k = firstPeriod(rule, startMs, fromMs); k < MAX_PERIODS && budget.steps > 0; k++) {
         // Um período que começa depois do fim acaba a série, gere data ou não.
         if (pastEnd(periodStart(rule, start, k)))
             return out;
-        for (const wall of periodWalls(rule, start, k)) {
+        const walls = periodWalls(rule, start, k);
+        budget.steps -= cost + walls.length;
+        for (const wall of walls) {
             if (wall < startMs)
                 continue;
             if (pastEnd(wall))

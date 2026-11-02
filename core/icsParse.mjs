@@ -1,10 +1,16 @@
 // Árvore de componentes do iCalendar (RFC 5545): o texto de um feed ICS vira
 // `VCALENDAR > VEVENT/VTIMEZONE > propriedades`. Sem `Intl` nem `TextDecoder`
 // (spec 14, S5): só texto já decodificado.
-/** Linha que começa com espaço ou tab continua a anterior (RFC 5545 §3.1). */
+/**
+ * Linha que começa com espaço ou tab continua a anterior (RFC 5545 §3.1).
+ * Divide por `'\n'` e tira o `'\r'` à mão: no V4 do QML, `split` com regex
+ * estoura a pilha entre 300 mil e 700 mil partes (um feed perto do teto de
+ * 10 MB), e o feed inteiro sumia; com string não.
+ */
 export function unfoldLines(text) {
     const lines = [];
-    for (const raw of text.split(/\r?\n/)) {
+    for (const line of text.split('\n')) {
+        const raw = line.endsWith('\r') ? line.slice(0, -1) : line;
         const last = lines.pop();
         if (last !== undefined && /^[ \t]/.test(raw))
             lines.push(last + raw.slice(1));
