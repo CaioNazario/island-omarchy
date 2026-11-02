@@ -1,6 +1,6 @@
 // Grade e eventos de hoje do calendário (specs/06-calendario.md; design/logic.js
 // `calendar`, `calWeeks`, `todayLabel`, `events`).
-import { formatClock, formatDay } from './clock.mjs';
+import { formatClock, formatClockRange, formatDay } from './clock.mjs';
 import { monthName, tr, weekdayShort } from './i18n.mjs';
 /** Semana começando na segunda, mês completo em semanas inteiras. */
 export function weekdayHeaders(lang) {
@@ -59,10 +59,9 @@ function isAllDay(event, dayBegin, dayEnd) {
 function eventTime(event, dayBegin, dayEnd, lang) {
     if (isAllDay(event, dayBegin, dayEnd))
         return tr(lang, 'All day');
-    const start = formatClock(event.start);
     if (event.start.getTime() === event.end.getTime())
-        return start;
-    return `${start} – ${formatClock(event.end)}`;
+        return formatClock(event.start, lang);
+    return formatClockRange(event.start, event.end, lang);
 }
 function sourceOf(event) {
     return event.id.slice(0, event.id.indexOf('\n'));
@@ -108,7 +107,9 @@ export function nextEvent(events, now, lang) {
         return { label: tr(lang, 'No events'), sub: tr(lang, 'today') };
     }
     const minutes = Math.ceil((next.start.getTime() - now.getTime()) / 60000);
-    const sub = minutes <= SOON_MINUTES ? tr(lang, 'in {n} min', { n: minutes }) : formatClock(next.start);
+    const sub = minutes <= SOON_MINUTES
+        ? tr(lang, 'in {n} min', { n: minutes })
+        : formatClock(next.start, lang);
     return { label: next.summary, sub };
 }
 /** `Today, Fri 25`; em português `Hoje, sex, 25`, minúsculo como no design. */

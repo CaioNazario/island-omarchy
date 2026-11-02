@@ -24,12 +24,12 @@ export function formatSessionReset(resetsAt, now, lang) {
         ? tr(lang, 'in {h}h', { h: hours })
         : tr(lang, 'in {h}h {m}m', { h: hours, m: rest });
 }
-/** "Mon 09:00" ("seg, 09:00": em português, minúsculo como no design), na hora local. */
+/** "Mon 9:00 AM" ("seg, 09:00": em português, minúsculo como no design), na hora local. */
 export function formatWeeklyReset(resetsAt, lang) {
     const date = new Date(resetsAt);
     const weekday = weekdayShort(lang, date.getDay());
     return tr(lang, '{weekday} {time}', {
         weekday: lang === 'pt-BR' ? weekday.toLowerCase() : weekday,
-        time: formatClock(date),
+        time: formatClock(date, lang),
     });
 }

@@ -44,8 +44,23 @@ ColumnLayout {
         color: list.dotColors[event.modelData.dot]
       }
 
+      // O nome encolhe com reticências e o horário fica inteiro: sem isso um
+      // nome longo empurrava o horário para fora da coluna. Com o horário logo
+      // depois do nome, o nome não cresce além do próprio texto, medido à
+      // parte: o `implicitWidth` de um texto cortado encolhia junto, e o nome
+      // ficava cortado mesmo com espaço depois da animação de abertura.
+      TextMetrics {
+        id: nameMetrics
+
+        font: name.font
+        text: name.text
+      }
+
       IslandText {
-        Layout.fillWidth: list.timeOnRight
+        id: name
+
+        Layout.fillWidth: true
+        Layout.maximumWidth: list.timeOnRight ? Number.POSITIVE_INFINITY : Math.ceil(nameMetrics.advanceWidth)
         text: event.modelData.name
         px: list.namePx
         font.weight: Tokens.weightBody
