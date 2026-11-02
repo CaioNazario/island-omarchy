@@ -54,6 +54,15 @@ const SCENARIOS = {
     String.raw`calendar('BEGIN:VTIMEZONE\nTZID:H\n' + repeat(10, (i) => 'BEGIN:DAYLIGHT\nTZOFFSETFROM:-0300\nTZOFFSETTO:-0200\nDTSTART:' + (1970 + i) + '0101T000000\nRRULE:' + heavy + '\nEND:DAYLIGHT') + '\nEND:VTIMEZONE\n' + repeat(1000, (i) => 'BEGIN:VEVENT\nUID:e' + i + '\nSUMMARY:Dentista\nDTSTART;TZID=H:20261018T090000\nDURATION:PT1H\nEND:VEVENT'))`,
     MAX_MS,
   ],
+  // Evento simples não gasta o orçamento da recorrência: o teto é de eventos.
+  '100 mil eventos simples no mesmo dia': [
+    String.raw`calendar(simple + '\n' + repeat(100000, (i) => 'BEGIN:VEVENT\nUID:p' + i + '\nDTSTAMP:20261018T000000Z\nSUMMARY:x\nDTSTART:20261018T120000Z\nEND:VEVENT'))`,
+    MAX_MS,
+  ],
+  '30 mil VCALENDAR': [
+    String.raw`calendar(simple) + '\n' + repeat(30000, () => 'BEGIN:VCALENDAR\nBEGIN:X\nEND:X\nEND:VCALENDAR')`,
+    MAX_MS,
+  ],
 };
 
 function qmlSource(build, maxMs) {

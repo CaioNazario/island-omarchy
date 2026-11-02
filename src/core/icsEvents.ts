@@ -214,14 +214,12 @@ export function parseIcsEvents(text: string, from: Date, to: Date): CalendarEven
   const vevents = calendar.children.filter((child) => child.name === 'VEVENT');
   const overrides = vevents.filter((e) => findProp(e, 'RECURRENCE-ID'));
   const replaced = new Set(overrides.map((e) => replacedKey(e, zones)));
-  const series = vevents
-    .filter((e) => !findProp(e, 'RECURRENCE-ID'))
-    .reduce<CalendarEvent[]>(
-      (all, master) => all.concat(seriesEvents(master, replaced, context)),
-      [],
-    );
-  const edited = overrides
-    .map((e) => overrideEvent(e, context))
-    .filter((e): e is CalendarEvent => e !== null);
-  return series.concat(edited);
+  const found: CalendarEvent[] = [];
+  for (const master of vevents.filter((e) => !findProp(e, 'RECURRENCE-ID')))
+    for (const event of seriesEvents(master, replaced, context)) found.push(event);
+  for (const override of overrides) {
+    const event = overrideEvent(override, context);
+    if (event) found.push(event);
+  }
+  return found;
 }

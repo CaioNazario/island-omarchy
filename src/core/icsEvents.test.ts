@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { parseIcsEvents } from './icsEvents.js';
 import { todayEvents } from './calendar.js';
+import { MAX_FEED_BYTES } from './icsFeed.js';
+import { MAX_FEED_EVENTS } from './icsPrefilter.js';
 
 const SAO_PAULO_ZONE = `BEGIN:VTIMEZONE
 TZID:America/Sao_Paulo
@@ -81,6 +83,35 @@ describe('parseIcsEvents · feed hostil', () => {
     const started = Date.now();
     expect(parse(text)).toHaveLength(1000);
     // Sem limite nas regras do fuso, levava ~3 s no Node.
+    expect(Date.now() - started).toBeLessThan(1500);
+  });
+
+  // 5º apontamento: os eventos se juntavam com `concat`, que copia a lista
+  // inteira a cada evento, e evento simples não gasta o orçamento. 100 mil
+  // eventos no mesmo dia cabem nos 10 MB: ~5 bilhões de cópias.
+  it('100 mil eventos simples no mesmo dia não travam o feed', () => {
+    const plain = Array.from(
+      { length: 100_000 },
+      (_, i) => `UID:p${i}\nDTSTAMP:20261018T000000Z\nSUMMARY:x\nDTSTART:20261018T120000Z`,
+    );
+    const text = feed('UID:a\nSUMMARY:Dentista\nDTSTART:20261018T120000Z', ...plain);
+    expect(text.length).toBeLessThan(MAX_FEED_BYTES);
+    const started = Date.now();
+    const events = parse(text);
+    expect(events[0]?.summary).toBe('Dentista');
+    expect(events).toHaveLength(MAX_FEED_EVENTS);
+    // Com `concat`, levava ~26 s no Node.
+    expect(Date.now() - started).toBeLessThan(1500);
+  });
+
+  it('muitos VCALENDAR não multiplicam a leitura dos fusos', () => {
+    const calendars = Array.from(
+      { length: 50_000 },
+      () => 'BEGIN:VCALENDAR\nBEGIN:X\nEND:X\nEND:VCALENDAR',
+    );
+    const text = `${feed('UID:a\nSUMMARY:Dentista\nDTSTART:20261018T120000Z')}\n${calendars.join('\n')}`;
+    const started = Date.now();
+    expect(parse(text).map((e) => e.summary)).toEqual(['Dentista']);
     expect(Date.now() - started).toBeLessThan(1500);
   });
 });

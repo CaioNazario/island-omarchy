@@ -78,12 +78,11 @@ function zoneObservances(timezone: IcsComponent): Observance[] {
 /** `TZID` → observâncias de todos os `VTIMEZONE` do `VCALENDAR`. */
 export function parseZones(root: IcsComponent): Map<string, Observance[]> {
   const zones = new Map<string, Observance[]>();
-  const calendars = root.children.filter((child) => child.name === 'VCALENDAR');
-  for (const timezone of calendars.reduce<IcsComponent[]>((all, c) => all.concat(c.children), [])) {
-    const tzid = findProp(timezone, 'TZID')?.value;
-    if (timezone.name !== 'VTIMEZONE' || !tzid) continue;
-    zones.set(tzid, zoneObservances(timezone));
-  }
+  for (const calendar of root.children.filter((child) => child.name === 'VCALENDAR'))
+    for (const timezone of calendar.children) {
+      const tzid = findProp(timezone, 'TZID')?.value;
+      if (timezone.name === 'VTIMEZONE' && tzid) zones.set(tzid, zoneObservances(timezone));
+    }
   return zones;
 }
 

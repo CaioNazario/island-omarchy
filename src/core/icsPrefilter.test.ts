@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dropFarEvents } from './icsPrefilter.js';
+import { dropFarEvents, MAX_FEED_EVENTS } from './icsPrefilter.js';
 import { parseIcsEvents } from './icsEvents.js';
 
 const FROM = new Date(2026, 9, 18);
@@ -68,6 +68,20 @@ describe('dropFarEvents', () => {
     expect(parseIcsEvents(dropFarEvents(text, FROM, TO), FROM, TO)).toEqual(
       parseIcsEvents(text, FROM, TO),
     );
+  });
+
+  it('mantém no máximo MAX_FEED_EVENTS eventos, e o fim do feed', () => {
+    const today = vevent('SUMMARY:hoje\nDTSTART:20261018T100000Z');
+    const out = dropFarEvents(wrap(today.repeat(MAX_FEED_EVENTS + 5)), FROM, TO);
+    expect(kept(out)).toHaveLength(MAX_FEED_EVENTS);
+    expect(out.trimEnd().endsWith('END:VCALENDAR')).toBe(true);
+  });
+
+  it('evento descartado por estar longe não conta para o teto', () => {
+    const old = vevent('SUMMARY:antigo\nDTSTART:20200101T100000Z\nDTEND:20200101T110000Z');
+    const today = vevent('SUMMARY:hoje\nDTSTART:20261018T100000Z');
+    const text = wrap(old.repeat(MAX_FEED_EVENTS + 5) + today);
+    expect(kept(dropFarEvents(text, FROM, TO))).toEqual(['hoje']);
   });
 
   it('texto sem VEVENT volta igual', () => {

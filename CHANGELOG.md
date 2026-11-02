@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Fixed
+
+- A crafted ICS feed with many plain events on the same day (about 100,000 fit in the 10 MB cap) could freeze the shell for minutes: events were gathered by copying the whole list for each one. They are now appended to a single list, and at most 10,000 events that may fall in the visible days reach the parser (the same feed now takes about 1.4 s). Time zones from many `VCALENDAR` blocks had the same copying.
+
 ## [0.7.7] - 2026-11-02
 
 ### Fixed

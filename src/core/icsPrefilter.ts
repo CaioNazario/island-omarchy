@@ -37,16 +37,27 @@ function isFarOutside(block: string, fromKey: string, toKey: string): boolean {
   return end < fromKey && start < fromKey;
 }
 
-/** `text` sem os `VEVENT` que certamente não tocam [`from`, `to`). */
+/**
+ * Teto de `VEVENT` que passam para o parser. Evento simples não gasta o
+ * orçamento da recorrência (icsEvents.ts), e 100 mil no mesmo dia cabem nos
+ * 10 MB: levavam ~10 s no V4 do QML. Um feed real fica bem abaixo (sobram as
+ * séries, as ocorrências editadas e os eventos perto da janela); acima do
+ * teto, os seguintes são descartados (revisão do marketplace, #13501).
+ */
+export const MAX_FEED_EVENTS = 10_000;
+
+/** `text` sem os `VEVENT` que certamente não tocam [`from`, `to`), com no máximo `MAX_FEED_EVENTS`. */
 export function dropFarEvents(text: string, from: Date, to: Date): string {
   const parts = text.split(BEGIN);
   const fromKey = dayKey(from.getTime() - MARGIN_MS);
   const toKey = dayKey(to.getTime() + MARGIN_MS);
   const out = [parts[0] ?? ''];
+  let kept = 0;
   for (const part of parts.slice(1)) {
     const end = part.indexOf(END);
-    if (end < 0 || !isFarOutside(part.slice(0, end), fromKey, toKey)) out.push(BEGIN + part);
-    else out.push(part.slice(end + END.length));
+    const keep = end < 0 || !isFarOutside(part.slice(0, end), fromKey, toKey);
+    if (keep && kept++ < MAX_FEED_EVENTS) out.push(BEGIN + part);
+    else if (end >= 0) out.push(part.slice(end + END.length));
   }
   return out.join('');
 }
