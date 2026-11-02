@@ -18,6 +18,13 @@ import { parseZones, zoneOffsetMinutes } from './icsZones.mjs';
  * eventos simples continuam.
  */
 const FEED_STEP_BUDGET = 150000;
+/**
+ * Teto do nome de um evento. O nome vai para um `Text` e um `TextMetrics`
+ * (TodayEvents.qml) toda vez que a lista se refaz, a cada minuto, e o custo
+ * cresce com o texto: 1 milhão de caracteres levava ~0,8 s no QML. A ilha
+ * mostra uma linha; 200 caracteres sobram.
+ */
+export const MAX_SUMMARY_CHARS = 200;
 // Sem fuso (flutuante) e dia inteiro valem no relógio local da máquina.
 function localInstant(wallMs) {
     const p = msToParts(wallMs);
@@ -112,7 +119,7 @@ function eventAt(vevent, start, durationMs, wall, context) {
     const uid = (_b = (_a = findProp(vevent, 'UID')) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : '';
     return {
         id: `${context.calendarId}\n${uid}\n${startMs}`,
-        summary: unescapeText((_d = (_c = findProp(vevent, 'SUMMARY')) === null || _c === void 0 ? void 0 : _c.value) !== null && _d !== void 0 ? _d : ''),
+        summary: unescapeText((_d = (_c = findProp(vevent, 'SUMMARY')) === null || _c === void 0 ? void 0 : _c.value) !== null && _d !== void 0 ? _d : '').slice(0, MAX_SUMMARY_CHARS),
         start: new Date(startMs),
         end: new Date(endMs),
     };
