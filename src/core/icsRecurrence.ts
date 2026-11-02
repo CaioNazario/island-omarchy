@@ -215,7 +215,7 @@ function periodWalls(rule: Rule, start: WallParts, k: number): number[] {
  * Passos para montar um período: cada mês varrido custa 1 mais um por item
  * das listas `BY*`, que é o que `monthDays` e `limitedBy` percorrem.
  */
-function periodCost(rule: Rule): number {
+export function periodCost(rule: Rule): number {
   const months = rule.freq === 'YEARLY' ? Math.max(1, rule.byMonth.length) : 1;
   const lists = rule.byMonth.length + rule.byDay.length + rule.byMonthDay.length;
   return months * (1 + lists);

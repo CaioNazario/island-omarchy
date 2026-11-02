@@ -22,6 +22,11 @@ const TO = new Date(2026, 9, 19);
 const parse = (text: string, from = FROM, to = TO) => parseIcsEvents(text, from, to);
 
 describe('parseIcsEvents · feed hostil', () => {
+  // Os 77 BYDAY distintos que o parser aceita: a lista mais pesada possível.
+  const ALL_BYDAY = ['', '1', '2', '3', '4', '5', '-1', '-2', '-3', '-4', '-5']
+    .flatMap((ord) => ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'].map((day) => ord + day))
+    .join(',');
+
   // Revisão do marketplace (#13501): com COUNT a expansão não salta até a
   // janela, e cada série varria até 20.000 dias desde 1970. O orçamento é do
   // feed inteiro: esgotado, as séries seguintes param, e o evento simples
@@ -43,10 +48,7 @@ describe('parseIcsEvents · feed hostil', () => {
   // 4º apontamento: o orçamento contava períodos, e um período YEARLY com os
   // 12 meses e os 77 BYDAY custa milhares de checagens. Agora conta trabalho.
   it('séries YEARLY com todos os meses e todos os BYDAY não travam o feed', () => {
-    const byDay = ['', '1', '2', '3', '4', '5', '-1', '-2', '-3', '-4', '-5']
-      .flatMap((ord) => ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'].map((day) => ord + day))
-      .join(',');
-    const rule = `FREQ=YEARLY;COUNT=999999999;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYDAY=${byDay}`;
+    const rule = `FREQ=YEARLY;COUNT=999999999;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYDAY=${ALL_BYDAY}`;
     const hostile = Array.from(
       { length: 30 },
       (_, i) =>
@@ -57,6 +59,28 @@ describe('parseIcsEvents · feed hostil', () => {
     const events = parse(feed(...hostile, simple));
     expect(events.map((e) => e.summary)).toContain('Dentista');
     // Contando períodos, 30 séries levavam ~3,6 s no Node.
+    expect(Date.now() - started).toBeLessThan(1500);
+  });
+
+  // O VTIMEZONE também é do feed: cada conversão de horário expandia as regras
+  // de todas as observâncias, sem orçamento.
+  it('um fuso com regras pesadas não multiplica o custo de cada evento', () => {
+    const heavy = `FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYDAY=${ALL_BYDAY}`;
+    const observances = Array.from(
+      { length: 10 },
+      (_, i) =>
+        `BEGIN:DAYLIGHT\nTZOFFSETFROM:-0300\nTZOFFSETTO:-0200\nDTSTART:${1970 + i}0101T000000\nRRULE:${heavy}\nEND:DAYLIGHT`,
+    );
+    const zone = `BEGIN:VTIMEZONE\nTZID:Hostil\n${observances.join('\n')}\nEND:VTIMEZONE`;
+    const events = Array.from(
+      { length: 1000 },
+      (_, i) =>
+        `BEGIN:VEVENT\nUID:e${i}\nSUMMARY:x\nDTSTART;TZID=Hostil:20261018T090000\nDURATION:PT1H\nEND:VEVENT`,
+    );
+    const text = `BEGIN:VCALENDAR\n${zone}\n${events.join('\n')}\nEND:VCALENDAR`;
+    const started = Date.now();
+    expect(parse(text)).toHaveLength(1000);
+    // Sem limite nas regras do fuso, levava ~3 s no Node.
     expect(Date.now() - started).toBeLessThan(1500);
   });
 });
