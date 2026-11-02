@@ -6,7 +6,7 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ### Fixed
 
-- A crafted ICS feed could still freeze the shell: the recurrence budget counted periods, and one yearly period with every month and every `BYDAY` value cost thousands of day checks. The budget now counts the work each period does, `BYDAY` days are computed instead of scanned, and occurrences that end before the visible window skip the time zone conversion.
+- A crafted ICS feed could still freeze the shell: the recurrence budget counted periods, and one yearly period with every month and every `BYDAY` value cost thousands of day checks. The budget now counts the work each period does and is sized for the shell's QML engine (the worst hostile feed now takes about 0.2 s instead of minutes), month days are computed without scanning or sorting, and occurrences that end before the visible window skip the time zone conversion.
 - A crafted time zone (`VTIMEZONE`) in the feed could also freeze the shell, since every time conversion of every event expanded its rules. Observances with rules heavier than a daylight saving rule are ignored, a zone keeps its 32 most recent observances, and rule onsets are computed once per kind of year instead of on every conversion.
 
 ## [0.7.6] - 2026-11-01

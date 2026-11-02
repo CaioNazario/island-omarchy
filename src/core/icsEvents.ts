@@ -40,13 +40,14 @@ interface Context extends Window {
 
 /**
  * Passos de recorrência que um feed inteiro pode gastar (`ExpansionBudget`).
- * Medido no Node: o formato de regra mais caro leva ~0,15 s para gastar tudo,
- * com ou sem fuso; contando períodos, 1000 séries YEARLY com todos os meses
- * e BYDAY levavam minutos. Um feed real gasta poucos: sem COUNT a varredura
- * salta até a janela. Esgotado, as séries seguintes param e os eventos
- * simples continuam.
+ * Medido no V4 do QML (o motor do shell, 15–30× mais lento que o Node), com
+ * 1000 séries hostis de cada formato de regra: o pior gasta tudo em ~0,16 s,
+ * mais ~55 ms para ler o feed. Contando períodos, 5 séries YEARLY com todos
+ * os meses e BYDAY levavam ~16 s. Um feed real gasta poucos: sem COUNT a
+ * varredura salta até a janela. Esgotado, as séries seguintes param e os
+ * eventos simples continuam.
  */
-const FEED_STEP_BUDGET = 500_000;
+const FEED_STEP_BUDGET = 150_000;
 
 // Sem fuso (flutuante) e dia inteiro valem no relógio local da máquina.
 function localInstant(wallMs: number): number {
@@ -95,6 +96,8 @@ function untilInstant(rule: Rule, start: Moment): number | null {
 
 function occurrenceWalls(vevent: IcsComponent, start: Moment, context: Context): number[] {
   const rrule = findProp(vevent, 'RRULE');
+  // Orçamento esgotado: a série não gera nada, e ler uma regra longa custaria por série.
+  if (rrule && context.budget.steps <= 0) return [];
   const rule = rrule ? parseRule(rrule.value) : null;
   if (!rule) return [start.wallMs];
   const until = untilInstant(rule, start);
