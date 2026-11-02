@@ -110,13 +110,16 @@ function timeOfDayMs(start: WallParts): number {
   return (start.h * 3600 + start.mi * 60 + start.s) * 1000;
 }
 
-/** Dias do mês que o BYDAY escolhe (ordinal 0 = todos os dias daquela semana). */
+/**
+ * Dias do mês que o BYDAY escolhe (ordinal 0 = todos os dias daquela semana).
+ * O primeiro sai da aritmética e os seguintes vêm de 7 em 7: varrer o mês dia
+ * a dia custava 31 `Date` por item do BYDAY, e um feed hostil tem 77 itens.
+ */
 function weekdayDays(year: number, month: number, rule: DayRule): number[] {
   const total = daysInMonth(year, month);
+  const firstWeekday = new Date(Date.UTC(year, month, 1)).getUTCDay();
   const matching: number[] = [];
-  for (let d = 1; d <= total; d++) {
-    if (new Date(Date.UTC(year, month, d)).getUTCDay() === rule.day) matching.push(d);
-  }
+  for (let d = 1 + ((rule.day - firstWeekday + 7) % 7); d <= total; d += 7) matching.push(d);
   if (rule.ord === 0) return matching;
   const picked = rule.ord > 0 ? matching[rule.ord - 1] : matching[matching.length + rule.ord];
   return picked === undefined ? [] : [picked];

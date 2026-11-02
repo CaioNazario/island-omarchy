@@ -225,4 +225,31 @@ describe('ruleWallsInYear', () => {
     const start = msToParts(at(2007, 11, 4, 2));
     expect(rule && days(ruleWallsInYear(rule, start, 2026))).toEqual([1]);
   });
+
+  it('BYDAY de cada ordinal dá os mesmos dias que a contagem dia a dia', () => {
+    const start = msToParts(at(2024, 1, 1));
+    for (const ord of ['', '1', '2', '3', '4', '5', '-1', '-2', '-3', '-4', '-5']) {
+      for (const [weekday, code] of ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'].entries()) {
+        const rule = parseRule(
+          `FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYDAY=${ord}${code}`,
+        );
+        const counted = countedWeekdays(2024, weekday, ord === '' ? 0 : parseInt(ord, 10));
+        expect(rule && ruleWallsInYear(rule, start, 2024), `${ord}${code}`).toEqual(counted);
+      }
+    }
+  });
 });
+
+/** Dias de `weekday` em cada mês de `year`, dia a dia; `ord` como no BYDAY (0 = todos). */
+function countedWeekdays(year: number, weekday: number, ord: number): number[] {
+  const walls: number[] = [];
+  for (let month = 1; month <= 12; month++) {
+    const matching: number[] = [];
+    for (let d = 1; new Date(Date.UTC(year, month - 1, d)).getUTCMonth() === month - 1; d++) {
+      if (new Date(Date.UTC(year, month - 1, d)).getUTCDay() === weekday) matching.push(d);
+    }
+    const picked = ord === 0 ? matching : [matching.at(ord > 0 ? ord - 1 : ord)];
+    for (const d of picked) if (d !== undefined) walls.push(at(year, month, d));
+  }
+  return walls;
+}
