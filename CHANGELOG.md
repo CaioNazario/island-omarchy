@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Fixed
+
+- An event name is cut at 200 characters. A crafted feed with a name of millions of characters froze the shell for seconds every minute, worse since 0.8.0 measures the name to fit it.
+
 ## [0.8.0] - 2026-11-02
 
 ### Changed

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseIcsEvents } from './icsEvents.js';
+import { MAX_SUMMARY_CHARS, parseIcsEvents } from './icsEvents.js';
 import { todayEvents } from './calendar.js';
 import { MAX_FEED_BYTES } from './icsFeed.js';
 import { MAX_FEED_EVENTS } from './icsPrefilter.js';
@@ -102,6 +102,14 @@ describe('parseIcsEvents · feed hostil', () => {
     expect(events).toHaveLength(MAX_FEED_EVENTS);
     // Com `concat`, levava ~26 s no Node.
     expect(Date.now() - started).toBeLessThan(1500);
+  });
+
+  // O nome vai para um Text (e um TextMetrics) a cada minuto: 1 milhão de
+  // caracteres custava ~0,8 s no QML, e o feed aceita ~10 milhões.
+  it('corta o nome do evento em MAX_SUMMARY_CHARS', () => {
+    const long = 'x'.repeat(100_000);
+    const [event] = parse(feed(`UID:a\nSUMMARY:${long}\nDTSTART:20261018T120000Z`));
+    expect(event?.summary).toBe('x'.repeat(MAX_SUMMARY_CHARS));
   });
 
   it('muitos VCALENDAR não multiplicam a leitura dos fusos', () => {
