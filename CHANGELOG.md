@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.7.8] - 2026-11-02
+
 ### Fixed
 
 - A crafted ICS feed with many plain events on the same day (about 100,000 fit in the 10 MB cap) could freeze the shell for minutes: events were gathered by copying the whole list for each one. They are now appended to a single list, and at most 10,000 events that may fall in the visible days reach the parser (the same feed now takes about 1.4 s). Time zones from many `VCALENDAR` blocks had the same copying.
@@ -182,7 +184,8 @@ First release: Island as an Omarchy bar plugin.
 - Weather from Open-Meteo.
 - Environments and widgets on the side pills, with hardware and Claude and Codex AI usage.
 
-[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.7...dev
+[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.8...dev
+[0.7.8]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.7...v0.7.8
 [0.7.7]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.6...v0.7.7
 [0.7.6]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.5...v0.7.6
 [0.7.5]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.4...v0.7.5
