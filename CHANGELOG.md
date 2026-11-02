@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-02
+
 ### Changed
 
 - In English, times use the 12-hour clock (`9:41 PM`): the island clock, event times and the weekly AI usage reset. Event ranges are compact, like `9 – 10:30 AM`. Portuguese keeps the 24-hour clock.
@@ -192,7 +194,8 @@ First release: Island as an Omarchy bar plugin.
 - Weather from Open-Meteo.
 - Environments and widgets on the side pills, with hardware and Claude and Codex AI usage.
 
-[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.8...dev
+[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.8.0...dev
+[0.8.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.8...v0.8.0
 [0.7.8]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.7...v0.7.8
 [0.7.7]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.6...v0.7.7
 [0.7.6]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.5...v0.7.6
