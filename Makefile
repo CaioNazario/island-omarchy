@@ -21,6 +21,7 @@ lint: build
 	npx tsc --noEmit -p tsconfig.json
 	npx tsc -p tsconfig.test.json
 	node scripts/check-core.mjs $(DIST)/core
+	node scripts/check-ics-engine.mjs $(DIST)/core
 	node scripts/check-i18n.mjs $(DIST)/core
 	node scripts/check-qml-rules.mjs plugin
 	node scripts/check-private-dir.mjs $(DIST)/core
