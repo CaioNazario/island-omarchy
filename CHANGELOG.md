@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-11-02
+
 ### Fixed
 
 - An event name is cut at 200 characters. A crafted feed with a name of millions of characters froze the shell for seconds every minute, worse since 0.8.0 measures the name to fit it.
@@ -198,7 +200,8 @@ First release: Island as an Omarchy bar plugin.
 - Weather from Open-Meteo.
 - Environments and widgets on the side pills, with hardware and Claude and Codex AI usage.
 
-[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.8.0...dev
+[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.8.1...dev
+[0.8.1]: https://github.com/CaioNazario/island-omarchy/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.8...v0.8.0
 [0.7.8]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.7...v0.7.8
 [0.7.7]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.6...v0.7.7
