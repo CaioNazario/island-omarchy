@@ -195,6 +195,15 @@ ShellRoot {
       return "ok";
     }
 
+    // Texto de um feed ICS (spec 06) sem URL no chaveiro nem rede: confere a
+    // lista de eventos na tela.
+    function calendar(icsText: string): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      bar.system.calendar.feedText = icsText; // qmllint disable missing-property
+      return "ok";
+    }
+
     // Modo da ilha no monitor alvo: confere os gestos (`openStack`, `closeStack`).
     function mode(): string {
       const bar = barLoader.item; // qmllint disable missing-property

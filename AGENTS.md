@@ -72,7 +72,7 @@ O host recria o `Bar.qml` a cada hot-reload de plugin (qualquer arquivo salvo em
 
 - Logs do harness: `dist/dev.log`. Logs do omarchy-shell real: `qs log -p /usr/share/omarchy/shell`.
 - Captura do Hyprland aninhado: `make shot` (grim no socket do aninhado) grava `dist/shot.png`.
-- Dirigir o aninhado sem ponteiro (ele não simula mouse): `scripts/nested.sh serve` e `scripts/nested.sh ipc dev <open MODO|click|editor|editorDo AÇÃO ARG>`. Espere uns segundos depois de subir: antes de a barra achar o serviço, nada é gravado.
+- Dirigir o aninhado sem ponteiro (ele não simula mouse): `scripts/nested.sh serve` e `scripts/nested.sh ipc dev <open MODO|click|editor|editorDo AÇÃO ARG|calendar TEXTO_ICS>` (`calendar` põe um feed na lista de eventos, sem chaveiro nem rede). Espere uns segundos depois de subir: antes de a barra achar o serviço, nada é gravado. Não rode `make build` com o aninhado de pé: o build apaga o `dist/` com o `nested.env`, e o `nested.sh stop` perde a instância; pare antes, faça o build e suba de novo.
 
 ## Código
 
