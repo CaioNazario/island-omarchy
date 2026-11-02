@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.7.7] - 2026-11-02
+
 ### Fixed
 
 - A crafted ICS feed could still freeze the shell: the recurrence budget counted periods, and one yearly period with every month and every `BYDAY` value cost thousands of day checks. The budget now counts the work each period does and is sized for the shell's QML engine (the worst hostile feed now takes about 0.2 s instead of minutes), month days are computed without scanning or sorting, and occurrences that end before the visible window skip the time zone conversion.
@@ -176,7 +178,8 @@ First release: Island as an Omarchy bar plugin.
 - Weather from Open-Meteo.
 - Environments and widgets on the side pills, with hardware and Claude and Codex AI usage.
 
-[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.6...dev
+[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.7...dev
+[0.7.7]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.6...v0.7.7
 [0.7.6]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.5...v0.7.6
 [0.7.5]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.4...v0.7.5
 [0.7.4]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.3...v0.7.4
