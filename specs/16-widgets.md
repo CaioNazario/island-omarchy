@@ -65,7 +65,7 @@ Linha de 22px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 
 - Fonte: eventos de hoje da spec 06.
 - Próximo = primeiro evento com hora (não "dia inteiro") que começa depois de agora.
-- Rótulo: nome do evento. Sub: `em N min` se começa em até 90 min, senão `HH:MM`.
+- Rótulo: nome do evento. Sub: `em N min` se começa em até 90 min, senão a hora (`12:00 PM` em inglês, `12:00` em português; spec 13 "Idioma").
 - Sem próximo: o primeiro evento de dia inteiro de hoje, com sub "dia inteiro".
 - Sem nenhum dos dois: rótulo "Sem eventos", sub "hoje".
 - Atualiza a cada minuto e quando os eventos mudam.

@@ -25,7 +25,7 @@ Regra pura em `src/core/calendar.ts`:
   - `scripts/check-ics-engine.mjs` (no `make lint`, inclusive na CI) roda o parser no V4 do QML, um processo por cenário: um feed de 700 mil linhas (só confere que não lança), `BYMONTHDAY=-31` em fevereiro, os feeds hostis de recorrência e de fuso, 100 mil eventos simples no mesmo dia e 30 mil `VCALENDAR`, cada um com teto de 3 s. O Vitest roda no Node, que difere do V4 em velocidade e em erros.
   - O feed tem teto de 10 MB (`MAX_FEED_BYTES`): o `curl` recebe `--max-filesize` com o mesmo valor, e um texto maior não é aceito como feed (os eventos de antes ficam). A janela é ontem a amanhã e `icsPrefilter.ts` descarta antes do parse os `VEVENT` que certamente estão fora dela: no V4 um feed de 1,4 MB (3000 eventos + 60 séries) leva ~55 ms; sem o filtro levava ~1 s na thread da UI.
 - O calendário de origem é identificado por `X-WR-CALNAME` (ou `ics`); um feed é um calendário só.
-- Mostra os eventos de **hoje** em ordem de início, no máximo 10: ponto 8px colorido + nome + intervalo `HH:MM – HH:MM` (dia inteiro: "Dia inteiro").
+- Mostra os eventos de **hoje** em ordem de início, no máximo 10: ponto 8px colorido + nome + intervalo (`09:00 – 10:30` em português, `9 – 10:30 AM` em inglês: spec 13 "Idioma"; dia inteiro: "Dia inteiro").
 - Cor do ponto: da paleta da ilha, não a do calendário de origem. Cada calendário ganha `accent-500`, `accent-300`, `neutral-400` em rotação, na ordem em que aparece na lista.
 - Sem eventos: a coluna de eventos mostra só o título "Hoje, …".
 - Clicar em evento não faz nada.

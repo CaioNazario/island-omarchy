@@ -155,6 +155,11 @@ describe('todayEvents', () => {
     ]);
   });
 
+  it('em inglês, o intervalo sai em 12h', () => {
+    const events = [event('google', 'Study', at(25, 14), at(25, 16, 30))];
+    expect(todayEvents(events, TODAY, 'en')[0]?.time).toBe('2 – 4:30 PM');
+  });
+
   it('mostra "Dia inteiro" para evento que cobre o dia todo', () => {
     const events = [
       event('local', 'Feriado', at(25, 0), at(26, 0)),
@@ -277,6 +282,7 @@ describe('nextEvent', () => {
       sub: '12:00',
     });
     expect(nextEvent([event('Review', at(10, 31))], now, 'pt-BR').sub).toBe('10:31');
+    expect(nextEvent([event('Lunch', at(12, 0))], now, 'en').sub).toBe('12:00 PM');
   });
 
   it('escolhe o que começa primeiro', () => {

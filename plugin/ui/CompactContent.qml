@@ -45,7 +45,7 @@ Row {
 
   IslandText {
     anchors.verticalCenter: parent.verticalCenter
-    text: Clock.formatClock(clock.date)
+    text: Clock.formatClock(clock.date, I18n.language)
     font.weight: Font.DemiBold
   }
 

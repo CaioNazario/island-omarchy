@@ -51,6 +51,6 @@ describe('formatWeeklyReset', () => {
   });
 
   it('in English, capitalized and without a comma', () => {
-    expect(formatWeeklyReset(new Date(2026, 8, 28, 9, 0).getTime(), 'en')).toBe('Mon 09:00');
+    expect(formatWeeklyReset(new Date(2026, 8, 28, 9, 0).getTime(), 'en')).toBe('Mon 9:00 AM');
   });
 });

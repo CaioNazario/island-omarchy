@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Changed
+
+- In English, times use the 12-hour clock (`9:41 PM`): the island clock, event times and the weekly AI usage reset. Event ranges are compact, like `9 – 10:30 AM`. Portuguese keeps the 24-hour clock.
+
 ## [0.7.8] - 2026-11-02
 
 ### Fixed
