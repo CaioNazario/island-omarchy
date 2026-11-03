@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Changed
+
+- New marketplace preview: the top bar, the island panels (media and calendar, AI usage, battery, Wi-Fi, volume) and the theme palette in one image.
+
 ## [0.8.1] - 2026-11-02
 
 ### Fixed
