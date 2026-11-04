@@ -59,3 +59,17 @@ describe('fitWidgets com ícone', () => {
     expect(fitWidgets([fixed(100), note(100)], 140, 2, 'end')).toEqual([100, 30]);
   });
 });
+
+describe('fitWidgets com listas grandes', () => {
+  it('mil widgets com ícone saem rápido e cabem colapsados', () => {
+    const sizes: WidgetSize[] = Array.from({ length: 1000 }, () => ({
+      natural: 100,
+      min: 100,
+      icon: 30,
+    }));
+    const started = performance.now();
+    const widths = fitWidgets(sizes, 32000, 2, 'end');
+    expect(performance.now() - started).toBeLessThan(200);
+    expect(widths.filter((width) => width === null)).toHaveLength(0);
+  });
+});

@@ -61,8 +61,16 @@ Scope {
     updateProc.running = true;
   }
 
+  // Teto de tentativas seguidas: offline, o aviso não some e repetir a cada
+  // 30s para sempre gastaria um processo por tentativa. Depois do teto, vale
+  // o ciclo normal (900s e 180s).
+  readonly property int maxRetries: 5
+  property int retries: 0
+
   function scheduleRetry() {
-    if (providers.some(provider => provider.retryAdvised)) retryTimer.restart();
+    const advising = polling && providers.some(provider => provider.retryAdvised);
+    if (!advising) retries = 0;
+    if (advising && retries < maxRetries) retryTimer.restart();
     else retryTimer.stop();
   }
 
@@ -95,7 +103,10 @@ Scope {
     id: retryTimer
 
     interval: ai.retryMs
-    onTriggered: ai.runUpdate("limits", ai.providers.filter(provider => provider.retryAdvised).map(provider => provider.providerId))
+    onTriggered: {
+      ai.retries += 1;
+      ai.runUpdate("limits", ai.providers.filter(provider => provider.retryAdvised).map(provider => provider.providerId));
+    }
   }
 
   Timer {

@@ -53,6 +53,9 @@ export function parseOpenMeteoCurrent(body: string): OpenMeteoCurrent | null {
   return { celsius, code, isDay: isDay !== 0 };
 }
 
+/** O nome vem de fora (wttr.in, ipwho.is): fica curto, nunca é exibido inteiro. */
+const MAX_AREA_NAME = 100;
+
 export interface WeatherLocation {
   name: string;
   latitude: number;
@@ -114,7 +117,7 @@ export function parseWttrArea(body: string): WeatherLocation | null {
   const names = Array.isArray(area.areaName) ? area.areaName : [];
   const first: unknown = names[0];
   const name = isRecord(first) && typeof first.value === 'string' ? first.value : '';
-  return { name, latitude, longitude };
+  return { name: name.slice(0, MAX_AREA_NAME), latitude, longitude };
 }
 
 /**
@@ -145,7 +148,11 @@ export function parseIpGeo(body: string): WeatherLocation | null {
   const latitude = coordinate(root.latitude, 90);
   const longitude = coordinate(root.longitude, 180);
   if (latitude === null || longitude === null) return null;
-  return { name: typeof root.city === 'string' ? root.city : '', latitude, longitude };
+  return {
+    name: typeof root.city === 'string' ? root.city.slice(0, MAX_AREA_NAME) : '',
+    latitude,
+    longitude,
+  };
 }
 
 export function areaSources(name: string): AreaSource[] {

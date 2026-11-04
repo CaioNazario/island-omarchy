@@ -67,9 +67,19 @@ export function fitWidgets(
   dropFrom: DropFrom,
 ): (number | null)[] {
   const collapsible = sizes.filter((size) => (size.icon ?? 0) > 0).length;
-  for (let count = 0; count <= collapsible; count++) {
-    const widths = shrinkToFit(collapse(sizes, count, dropFrom), budget, gap);
-    if (widths) return widths;
+  // Colapsar mais só estreita: a menor contagem que cabe sai por busca
+  // binária (a lista vem do settings.json e pode ter centenas de ids).
+  let low = 0;
+  let high = collapsible;
+  let best: number[] | null = null;
+  while (low <= high) {
+    const mid = (low + high) >> 1;
+    const widths = shrinkToFit(collapse(sizes, mid, dropFrom), budget, gap);
+    if (widths) {
+      best = widths;
+      high = mid - 1;
+    } else low = mid + 1;
   }
+  if (best) return best;
   return dropToFit(collapse(sizes, collapsible, dropFrom), budget, gap, dropFrom);
 }

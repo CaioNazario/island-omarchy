@@ -72,6 +72,7 @@ Scope {
 
   // Índice da fonte de área em tentativa (`WeatherCore.areaSources`).
   property int areaAttempt: 0
+  property bool nextAreaPending: false
 
   function detectArea() {
     if (areaFetcher.running) return;
@@ -91,8 +92,12 @@ Scope {
     const area = areaAttempt < sources.length ? sources[areaAttempt].parse(body) : null;
     if (!area) {
       // Fonte fora do ar ou sem área: tenta a próxima; sem mais, a próxima atualização recomeça.
+      // O fim do `stdout` pode chegar antes de o `curl` sair: com o processo
+      // ainda rodando, `running = true` não o reinicia, e a próxima fonte só
+      // começa no `onExited`.
       areaAttempt += 1;
-      tryAreaSource();
+      if (areaFetcher.running) nextAreaPending = true;
+      else tryAreaSource();
       return;
     }
     // Só troca com coordenadas novas: trocar o objeto apagaria a leitura,
@@ -109,6 +114,11 @@ Scope {
       onStreamFinished: weather.acceptArea(text)
     }
     // `curl -f` sem corpo (conexão recusada, 5xx): o coletor ainda termina com texto vazio.
+    onExited: {
+      if (!weather.nextAreaPending) return;
+      weather.nextAreaPending = false;
+      weather.tryAreaSource();
+    }
   }
 
   // Falha mantém a última leitura até ela vencer (3h, `isFresh`).

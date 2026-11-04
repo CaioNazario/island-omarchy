@@ -144,6 +144,16 @@ describe('parseIpGeo', () => {
     expect(parseIpGeo(body)).toEqual({ name: 'Camaragibe', latitude: -8.02, longitude: -34.98 });
   });
 
+  it('corta um nome gigante vindo de fora', () => {
+    const body = JSON.stringify({
+      success: true,
+      city: 'x'.repeat(5000),
+      latitude: 1,
+      longitude: 2,
+    });
+    expect(parseIpGeo(body)?.name).toHaveLength(100);
+  });
+
   it('recusa falha, coordenada fora da faixa e lixo', () => {
     expect(parseIpGeo(JSON.stringify({ success: false, message: 'limit' }))).toBeNull();
     expect(parseIpGeo(JSON.stringify({ success: true, latitude: 99, longitude: 0 }))).toBeNull();
