@@ -10,6 +10,7 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ### Fixed
 
+- AI usage lagged behind real use: opening the `ai` mode always re-probes the limits (`--limits-only`), the limits refresh every 3 min while the widget is visible, a new refresh button forces a full update, and a collector `retryAdvised` is retried after 30 s.
 - Weather: without a city, when wttr.in is unreachable, the area now comes from IP geolocation (ipwho.is) instead of hiding the weather.
 
 ## [0.8.2] - 2026-11-02

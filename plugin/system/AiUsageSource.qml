@@ -23,23 +23,79 @@ Scope {
   readonly property var current: providers.find(provider => provider.providerId === selectedId) ?? providers[0] ?? null
 
   readonly property int recordsIntervalMs: 900 * 1000
-  readonly property int recordsStaleMs: 5 * 60 * 1000
+  // Só os limites (barato: o coletor reaproveita a varredura das transcrições
+  // dos últimos 900s), enquanto o widget `ai` está visível.
+  readonly property int limitsIntervalMs: 180 * 1000
+  readonly property int retryMs: 30 * 1000
 
-  function refreshIfStale() {
-    const newest = Math.max(0, ...providers.map(provider => provider.record ? provider.record.updatedAt : 0));
-    if (Date.now() - newest > recordsStaleMs) updateRecords();
+  // `normal`: tudo; `limits`: `--limits-only`; `force`: `--force` (o botão de
+  // atualizar). Como no `agents` do Omarchy, um pedido durante uma rodada vira
+  // uma só rodada depois, e a forçada vale mais que as outras.
+  property string pendingKind: ""
+
+  // Abrir o modo `ai` re-sonda os limites, sem a regra de cache velho.
+  function refreshOnOpen() {
+    runUpdate("limits", []);
+  }
+
+  function refresh() {
+    runUpdate("force", []);
   }
 
   function updateRecords() {
-    if (updateProc.running || providers.length === 0) return;
-    updateProc.command = ["omarchy-agent-usage-update"].concat(providers.map(provider => provider.providerId));
+    runUpdate("normal", []);
+  }
+
+  function updateCommand(kind, ids) {
+    const flag = kind === "force" ? ["--force"] : kind === "limits" ? ["--limits-only"] : [];
+    return ["omarchy-agent-usage-update"].concat(flag, ids.length > 0 ? ids : providers.map(provider => provider.providerId));
+  }
+
+  function runUpdate(kind, ids) {
+    if (providers.length === 0) return;
+    if (updateProc.running) {
+      if (kind === "force" || pendingKind === "") pendingKind = kind;
+      return;
+    }
+    updateProc.command = updateCommand(kind, ids);
     updateProc.running = true;
+  }
+
+  function scheduleRetry() {
+    if (providers.some(provider => provider.retryAdvised)) retryTimer.restart();
+    else retryTimer.stop();
   }
 
   Process {
     id: updateProc
 
-    onExited: ai.providers.forEach(provider => provider.reloadRecord())
+    onExited: {
+      ai.providers.forEach(provider => provider.reloadRecord());
+      retryCheck.restart();
+      if (ai.pendingKind === "") return;
+      const kind = ai.pendingKind;
+      ai.pendingKind = "";
+      ai.runUpdate(kind, []);
+    }
+  }
+
+  readonly property bool running: updateProc.running
+
+  // O registro recarrega de forma assíncrona: confere o aviso logo depois.
+  Timer {
+    id: retryCheck
+
+    interval: 500
+    onTriggered: ai.scheduleRetry()
+  }
+
+  // O coletor avisa (`retryAdvised`) que não alcançou os limites: um retorno
+  // mais cedo só dos provedores que avisaram, em vez de esperar 900s.
+  Timer {
+    id: retryTimer
+
+    interval: ai.retryMs
+    onTriggered: ai.runUpdate("limits", ai.providers.filter(provider => provider.retryAdvised).map(provider => provider.providerId))
   }
 
   Timer {
@@ -48,6 +104,13 @@ Scope {
     running: ai.polling
     triggeredOnStart: true
     onTriggered: ai.updateRecords()
+  }
+
+  Timer {
+    interval: ai.limitsIntervalMs
+    repeat: true
+    running: ai.polling
+    onTriggered: ai.runUpdate("limits", [])
   }
 
   AiProvider {

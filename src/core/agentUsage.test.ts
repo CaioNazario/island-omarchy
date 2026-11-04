@@ -66,7 +66,13 @@ describe('parseAgentRecord', () => {
       session: null,
       weekly: null,
       status: '',
+      retryAdvised: false,
     });
+  });
+
+  it('retryAdvised só vale com true', () => {
+    expect(parseAgentRecord('{"retryAdvised":true}')?.retryAdvised).toBe(true);
+    expect(parseAgentRecord('{"retryAdvised":"yes"}')?.retryAdvised).toBe(false);
   });
 });
 

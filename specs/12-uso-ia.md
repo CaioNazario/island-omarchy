@@ -25,7 +25,7 @@ Os tokens por dia e por modelo do design v5 vêm dos mesmos registros (o coletor
 
 - Campos usados: `updatedAt`, `recentDays[{date, messageCount}]` (`messageCount` são os tokens do dia, como o painel do Omarchy lê) e `modelUsage{modelo: {inputTokens, outputTokens, cacheReadInputTokens, cacheCreationInputTokens}}`, somados por modelo.
 - `FileView` com `watchChanges` em cada registro; como ele não percebe o arquivo nascer, os registros são relidos quando o coletor termina. Registro ausente ou inválido: o cartão mostra só o aviso.
-- Com a Island no lugar da barra, o widget do Omarchy não roda e ninguém mais regenera os registros: a Island roda `omarchy-agent-usage-update <provedores ligados>` a cada 900s (o padrão do Omarchy) com o widget `ai` no ambiente ativo, e ao abrir o modo `ai` se o registro mais novo tiver mais de 5min. O coletor grava o cache dele em `~/.cache/omarchy/agent-usage/`, como quando o widget do Omarchy o roda.
+- Com a Island no lugar da barra, o widget do Omarchy não roda e ninguém mais regenera os registros. A Island roda `omarchy-agent-usage-update <provedores ligados>` a cada 900s (o padrão do Omarchy) e, só os limites (`--limits-only`, barato), a cada 180s, ambos com o widget `ai` no ambiente ativo. Abrir o modo `ai` sempre roda `--limits-only` (o coletor reaproveita a sondagem por 15s e a varredura das transcrições dos últimos 900s). O botão de atualizar do cabeçalho roda `--force`. Um registro com `retryAdvised: true` (o coletor não alcançou os limites, ex.: logo após o login) repete `--limits-only` em 30s, só para os provedores que avisaram. Pedidos durante uma rodada viram uma só depois, e a forçada vale mais. O coletor grava o cache dele em `~/.cache/omarchy/agent-usage/`, como quando o widget do Omarchy o roda.
 - Formatação e nomes (`formatTokens`, `friendlyModelName`) seguem o `Main.qml` do widget do Omarchy: `225.7M`, `503.0K`, `2.4B`; `claude-opus-5-5` → "Opus 5.5", `claude-sonnet-4-5-20250929` → "Sonnet 4.5", `gpt-5.6-sol` → "GPT 5.6 Sol".
 
 ## Cores por nível (sessão e semanal)
@@ -64,4 +64,4 @@ O antigo botão da pílula esquerda virou o widget `ai` (spec 16). No ambiente P
 - [x] Testes de `agentUsage.ts`: limites pelo rótulo, sem limites, aviso do coletor, registro inválido; de `aiUsage.ts`: "Reinicia" e faixas de cor.
 - [x] Sem limites do Codex no registro, o Codex some do widget e o Claude funciona normalmente (visto no `make dev`).
 - [x] Com o registro do Claude, o cartão mostra os 7 dias e os modelos (visto no `make dev` com os registros reais).
-- [ ] Usar o Claude Code com o widget `ai` ativo faz o "Hoje" crescer em até 15min sem reiniciar o shell.
+- [ ] Usar o Claude Code com o widget `ai` ativo faz os limites e o "Hoje" crescerem em até 3min sem reiniciar o shell; abrir o modo `ai` ou clicar em atualizar mostra o valor atual.

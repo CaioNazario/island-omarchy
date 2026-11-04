@@ -29,6 +29,8 @@ export interface AgentRecord {
   weekly: UsageWindow | null;
   /** Aviso do coletor em vez dos limites (sem login, limite de requisições). */
   status: string;
+  /** O coletor não alcançou o endpoint de limites (ex.: logo após o login): tentar de novo logo. */
+  retryAdvised: boolean;
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -104,6 +106,7 @@ export function parseAgentRecord(text: string): AgentRecord | null {
     session,
     weekly,
     status: statusText(data, session !== null || weekly !== null),
+    retryAdvised: data.retryAdvised === true,
   };
 }
 

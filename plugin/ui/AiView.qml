@@ -5,14 +5,14 @@ import QtQuick.Layouts
 
 // Modo `ai` (specs/12-uso-ia.md "Modo `ai`"; design v5): cabeçalho, uma aba
 // por provedor ligado nas preferências (com mais de um) e o cartão do
-// provedor escolhido. Abrir atualiza o cache velho.
+// provedor escolhido. Abrir re-sonda os limites; o botão de atualizar força tudo.
 Item {
   id: view
 
   required property var bar
   readonly property var ai: bar.system.ai
 
-  Component.onCompleted: ai.refreshIfStale()
+  Component.onCompleted: ai.refreshOnOpen()
 
   ColumnLayout {
     anchors.fill: parent
@@ -36,6 +36,15 @@ Item {
       IslandText {
         Layout.fillWidth: true
         text: I18n.tr("AI usage")
+      }
+
+      SmallButton {
+        implicitWidth: 20
+        implicitHeight: 20
+        glyph: "arrow-clockwise"
+        iconSize: 12
+        opacity: view.ai.running ? 0.3 : 1
+        onClicked: view.ai.refresh()
       }
 
       IslandText {
