@@ -25,6 +25,7 @@ Scope {
   readonly property bool hasLimits: enabled && (session !== null || weekly !== null)
   readonly property string plan: record ? record.plan : ""
   readonly property string status: record ? record.status : ""
+  readonly property bool retryAdvised: enabled && record !== null && record.retryAdvised
 
   // `watchChanges` não vê o arquivo nascer: a fonte chama isto quando o
   // coletor termina.

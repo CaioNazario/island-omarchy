@@ -28,9 +28,20 @@ Item {
   readonly property var system: bar.system
   readonly property var service: bar.service
   readonly property real naturalWidth: !loader.item ? 0 : widgetId === "hw" ? (loader.item as HwWidget).fullWidth : (loader.item as Item).implicitWidth
+  // Largura só com o ícone, dos widgets de `TopbarWidget` com ring ou ícone.
+  readonly property real iconWidth: (loader.item as TopbarWidget)?.compactWidth ?? 0
+  // Colapsado: a área deu menos que a natural a um widget que não é o `hw`.
+  readonly property bool collapsed: widgetId !== "hw" && iconWidth > 0 && budget > 0 && budget < naturalWidth
   readonly property real minWidth: loader.item && widgetId === "hw" ? Math.min(naturalWidth, (loader.item as HwWidget).minWidth) : naturalWidth
 
-  implicitWidth: naturalWidth
+  // O que o slot ocupa na linha: o `hw` encolhido ocupa só os blocos que
+  // mostra. Com a largura cheia, os widgets seguintes seriam empurrados para
+  // além do fim da área e sumiriam sob os botões fixos (issue #36).
+  readonly property real shownWidth: loader.item && widgetId === "hw" ? Math.min(naturalWidth, (loader.item as Item).implicitWidth) : naturalWidth
+
+  implicitWidth: collapsed ? iconWidth : shownWidth
+  // O widget desenhado inteiro, cortado na largura do ícone quando colapsa.
+  clip: collapsed
   implicitHeight: 22
 
   function open(mode) {
@@ -51,6 +62,21 @@ Item {
         countdown: countdownWidget,
         note: noteWidget
       })[slot.widgetId] || (EnvironmentsCore.isPluginWidgetId(slot.widgetId) ? pluginWidget : null)
+  }
+
+  // Colapsado, a moldura (e o hover) tem só a largura do ícone.
+  Binding {
+    target: loader.item
+    property: "width"
+    value: slot.iconWidth
+    when: slot.collapsed
+  }
+
+  Binding {
+    target: loader.item as TopbarWidget
+    property: "compact"
+    value: true
+    when: slot.collapsed
   }
 
   Component {

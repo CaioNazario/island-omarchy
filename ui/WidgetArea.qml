@@ -34,7 +34,7 @@ Item {
     const sizes = [];
     for (let i = 0; i < slots.count; i++) {
       const slot = slots.itemAt(i) as WidgetSlot;
-      sizes.push(slot ? { natural: slot.naturalWidth, min: slot.minWidth } : { natural: 0, min: 0 });
+      sizes.push(slot ? { natural: slot.naturalWidth, min: slot.minWidth, icon: slot.iconWidth } : { natural: 0, min: 0 });
     }
     fit = WidgetFit.fitWidgets(sizes, width, 2, side === "left" ? "start" : "end");
   }

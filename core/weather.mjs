@@ -33,6 +33,8 @@ export function parseOpenMeteoCurrent(body) {
         return null;
     return { celsius, code, isDay: isDay !== 0 };
 }
+/** O nome vem de fora (wttr.in, ipwho.is): fica curto, nunca é exibido inteiro. */
+const MAX_AREA_NAME = 100;
 function coordinate(value, limit) {
     const number = typeof value === 'string' ? parseFloat(value) : value;
     if (typeof number !== 'number' || !Number.isFinite(number))
@@ -87,7 +89,7 @@ export function parseWttrArea(body) {
     const names = Array.isArray(area.areaName) ? area.areaName : [];
     const first = names[0];
     const name = isRecord(first) && typeof first.value === 'string' ? first.value : '';
-    return { name, latitude, longitude };
+    return { name: name.slice(0, MAX_AREA_NAME), latitude, longitude };
 }
 /**
  * O wttr.in devolve a área a cada atualização: com as mesmas coordenadas, o
@@ -97,4 +99,26 @@ export function sameLocation(a, b) {
     if (a === null || b === null)
         return a === b;
     return a.latitude === b.latitude && a.longitude === b.longitude;
+}
+export const IP_GEO_URL = 'https://ipwho.is/';
+/** Resposta do ipwho.is (`success`, `latitude`, `longitude`, `city`); falha → `null`. */
+export function parseIpGeo(body) {
+    const root = parseJson(body);
+    if (!isRecord(root) || root.success === false)
+        return null;
+    const latitude = coordinate(root.latitude, 90);
+    const longitude = coordinate(root.longitude, 180);
+    if (latitude === null || longitude === null)
+        return null;
+    return {
+        name: typeof root.city === 'string' ? root.city.slice(0, MAX_AREA_NAME) : '',
+        latitude,
+        longitude,
+    };
+}
+export function areaSources(name) {
+    const sources = [{ url: wttrUrl(name), parse: parseWttrArea }];
+    if (name === '')
+        sources.push({ url: IP_GEO_URL, parse: parseIpGeo });
+    return sources;
 }

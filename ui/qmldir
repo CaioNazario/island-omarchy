@@ -72,6 +72,7 @@ SettingRow 1.0 SettingRow.qml
 SettingsSection 1.0 SettingsSection.qml
 SliderPill 1.0 SliderPill.qml
 SliderRow 1.0 SliderRow.qml
+SmallButton 1.0 SmallButton.qml
 SoftSurface 1.0 SoftSurface.qml
 StackView 1.0 StackView.qml
 SurfaceGloss 1.0 SurfaceGloss.qml

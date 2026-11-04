@@ -72,6 +72,9 @@ Item {
 
             Layout.fillWidth: true
             Layout.preferredHeight: 20
+            // O puxador passa metade para o segmento seguinte: sem isto, o
+            // seguinte (irmão posterior) o pintaria por cima.
+            z: modelData.knob ? 1 : 0
 
             Rectangle {
               anchors.verticalCenter: parent.verticalCenter

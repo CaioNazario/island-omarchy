@@ -76,6 +76,7 @@ export function parseAgentRecord(text) {
         session,
         weekly,
         status: statusText(data, session !== null || weekly !== null),
+        retryAdvised: data.retryAdvised === true,
     };
 }
 export function formatTokens(tokens) {
