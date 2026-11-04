@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  areaSources,
   formatTemperature,
   isFresh,
   openMeteoUrl,
+  parseIpGeo,
   parseOpenMeteoCurrent,
   parseWeatherLocation,
   parseWeatherName,
@@ -128,5 +130,36 @@ describe('sameLocation', () => {
     expect(sameLocation(a, { ...a, latitude: -8.03 })).toBe(false);
     expect(sameLocation(null, a)).toBe(false);
     expect(sameLocation(null, null)).toBe(true);
+  });
+});
+
+describe('parseIpGeo', () => {
+  it('lê coordenadas e cidade do ipwho.is', () => {
+    const body = JSON.stringify({
+      success: true,
+      city: 'Camaragibe',
+      latitude: -8.02,
+      longitude: -34.98,
+    });
+    expect(parseIpGeo(body)).toEqual({ name: 'Camaragibe', latitude: -8.02, longitude: -34.98 });
+  });
+
+  it('recusa falha, coordenada fora da faixa e lixo', () => {
+    expect(parseIpGeo(JSON.stringify({ success: false, message: 'limit' }))).toBeNull();
+    expect(parseIpGeo(JSON.stringify({ success: true, latitude: 99, longitude: 0 }))).toBeNull();
+    expect(parseIpGeo('<html>')).toBeNull();
+  });
+});
+
+describe('areaSources', () => {
+  it('sem nome: wttr.in e depois a geolocalização por IP', () => {
+    expect(areaSources('').map((source) => source.url)).toEqual([
+      'https://wttr.in/?format=j1',
+      'https://ipwho.is/',
+    ]);
+  });
+
+  it('com nome do weather.json: só o wttr.in, que o resolve', () => {
+    expect(areaSources('Recife')).toHaveLength(1);
   });
 });

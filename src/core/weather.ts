@@ -125,3 +125,31 @@ export function sameLocation(a: WeatherLocation | null, b: WeatherLocation | nul
   if (a === null || b === null) return a === b;
   return a.latitude === b.latitude && a.longitude === b.longitude;
 }
+
+/**
+ * Fontes de área em ordem: o wttr.in (que também resolve o nome do
+ * `weather.json`) e, só sem nome, a geolocalização por IP do ipwho.is, para
+ * quando o wttr.in recusa a conexão. Cada fonte tem a URL e o leitor da resposta.
+ */
+export interface AreaSource {
+  url: string;
+  parse: (body: string) => WeatherLocation | null;
+}
+
+export const IP_GEO_URL = 'https://ipwho.is/';
+
+/** Resposta do ipwho.is (`success`, `latitude`, `longitude`, `city`); falha → `null`. */
+export function parseIpGeo(body: string): WeatherLocation | null {
+  const root = parseJson(body);
+  if (!isRecord(root) || root.success === false) return null;
+  const latitude = coordinate(root.latitude, 90);
+  const longitude = coordinate(root.longitude, 180);
+  if (latitude === null || longitude === null) return null;
+  return { name: typeof root.city === 'string' ? root.city : '', latitude, longitude };
+}
+
+export function areaSources(name: string): AreaSource[] {
+  const sources: AreaSource[] = [{ url: wttrUrl(name), parse: parseWttrArea }];
+  if (name === '') sources.push({ url: IP_GEO_URL, parse: parseIpGeo });
+  return sources;
+}

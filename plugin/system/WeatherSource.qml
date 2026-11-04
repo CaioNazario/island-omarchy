@@ -9,7 +9,8 @@ import "../core/weatherIcon.mjs" as WeatherIcon
 // Clima da ilha compacta (specs/07-clima.md), como o widget de clima do
 // Omarchy: a cidade das preferências da Island, senão o `weather.json` do
 // `omarchy-weather-location`; sem coordenadas, o wttr.in acha a área pelo
-// nome guardado ou pela IP (o padrão do Omarchy sem arquivo). O tempo vem do
+// nome guardado ou pela IP (o padrão do Omarchy sem arquivo), e o ipwho.is
+// a acha pela IP quando o wttr.in falha. O tempo vem do
 // Open-Meteo pelas coordenadas, sem chave, pelo mesmo `curl`.
 Scope {
   id: weather
@@ -69,25 +70,45 @@ Scope {
     }
   }
 
+  // Índice da fonte de área em tentativa (`WeatherCore.areaSources`).
+  property int areaAttempt: 0
+
   function detectArea() {
     if (areaFetcher.running) return;
-    areaFetcher.command = ["curl", "-fsS", "--max-time", "10", "--max-filesize", String(WeatherCore.MAX_RESPONSE_BYTES), WeatherCore.wttrUrl(omarchyName)];
+    areaAttempt = 0;
+    tryAreaSource();
+  }
+
+  function tryAreaSource() {
+    const sources = WeatherCore.areaSources(omarchyName);
+    if (areaAttempt >= sources.length) return;
+    areaFetcher.command = ["curl", "-fsS", "--max-time", "10", "--max-filesize", String(WeatherCore.MAX_RESPONSE_BYTES), sources[areaAttempt].url];
     areaFetcher.running = true;
   }
 
-  // O wttr.in é lento ou instável às vezes: sem área, a próxima atualização tenta de novo.
+  function acceptArea(body) {
+    const sources = WeatherCore.areaSources(omarchyName);
+    const area = areaAttempt < sources.length ? sources[areaAttempt].parse(body) : null;
+    if (!area) {
+      // Fonte fora do ar ou sem área: tenta a próxima; sem mais, a próxima atualização recomeça.
+      areaAttempt += 1;
+      tryAreaSource();
+      return;
+    }
+    // Só troca com coordenadas novas: trocar o objeto apagaria a leitura,
+    // buscaria de novo e detectaria a área outra vez, num laço que piscava
+    // o clima na ilha.
+    if (!WeatherCore.sameLocation(area, detectedLocation)) detectedLocation = area;
+  }
+
+  // O wttr.in é lento ou instável às vezes: cai para a geolocalização por IP.
   Process {
     id: areaFetcher
 
     stdout: StdioCollector {
-      onStreamFinished: {
-        const area = WeatherCore.parseWttrArea(text);
-        // Só troca com coordenadas novas: trocar o objeto apagaria a leitura,
-        // buscaria de novo e detectaria a área outra vez, num laço que piscava
-        // o clima na ilha.
-        if (area && !WeatherCore.sameLocation(area, weather.detectedLocation)) weather.detectedLocation = area;
-      }
+      onStreamFinished: weather.acceptArea(text)
     }
+    // `curl -f` sem corpo (conexão recusada, 5xx): o coletor ainda termina com texto vazio.
   }
 
   // Falha mantém a última leitura até ela vencer (3h, `isFresh`).

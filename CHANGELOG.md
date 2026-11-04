@@ -6,7 +6,11 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ### Changed
 
-- New marketplace preview: the bar and the island expanded, with media and calendar, on the theme gradient.
+- New marketplace preview: the bar and the island expanded, with media and calendar, on the theme gradient. New marketplace description.
+
+### Fixed
+
+- Weather: without a city, when wttr.in is unreachable, the area now comes from IP geolocation (ipwho.is) instead of hiding the weather.
 
 ## [0.8.2] - 2026-11-02
 
