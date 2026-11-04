@@ -1,12 +1,14 @@
 // Quando os widgets não cabem (specs/16-widgets.md "Quando não cabe"): o
-// `hw` encolhe (perde NET → GPU → TEMP) antes de qualquer widget sumir;
-// depois somem widgets inteiros, primeiro o mais longe da ilha. Nenhum
-// widget é cortado.
+// `hw` encolhe (perde NET → GPU → TEMP); depois os widgets com ícone colapsam
+// para só o ícone, primeiro o mais longe da ilha; só se nem assim couberem,
+// somem widgets inteiros, também do mais longe. Nenhum widget é cortado.
 
 export interface WidgetSize {
   natural: number;
   /** Só o `hw` encolhe: `min` é a largura com CPU e RAM. Nos outros, igual a `natural`. */
   min: number;
+  /** Largura só com o ícone; ausente ou 0: o widget não colapsa. */
+  icon?: number;
 }
 
 /** De que ponta da lista saem os widgets inteiros: a mais longe da ilha. */
@@ -28,8 +30,15 @@ function shrinkToFit(sizes: readonly WidgetSize[], budget: number, gap: number):
   });
 }
 
-/** Largura de cada widget na ordem de `sizes`; `null` é widget que some. */
-export function fitWidgets(
+// Colapsa `count` widgets colapsáveis, a partir da ponta mais longe da ilha.
+function collapse(sizes: readonly WidgetSize[], count: number, dropFrom: DropFrom): WidgetSize[] {
+  const order = sizes.map((_size, i) => i);
+  if (dropFrom === 'end') order.reverse();
+  const targets = new Set(order.filter((i) => (sizes[i]!.icon ?? 0) > 0).slice(0, count));
+  return sizes.map((size, i) => (targets.has(i) ? { natural: size.icon!, min: size.icon! } : size));
+}
+
+function dropToFit(
   sizes: readonly WidgetSize[],
   budget: number,
   gap: number,
@@ -45,4 +54,22 @@ export function fitWidgets(
     else last--;
   }
   return sizes.map(() => null);
+}
+
+/**
+ * Largura de cada widget na ordem de `sizes`; `null` é widget que some. Um
+ * widget colapsado recebe a largura do ícone (`icon`), menor que a natural.
+ */
+export function fitWidgets(
+  sizes: readonly WidgetSize[],
+  budget: number,
+  gap: number,
+  dropFrom: DropFrom,
+): (number | null)[] {
+  const collapsible = sizes.filter((size) => (size.icon ?? 0) > 0).length;
+  for (let count = 0; count <= collapsible; count++) {
+    const widths = shrinkToFit(collapse(sizes, count, dropFrom), budget, gap);
+    if (widths) return widths;
+  }
+  return dropToFit(collapse(sizes, collapsible, dropFrom), budget, gap, dropFrom);
 }

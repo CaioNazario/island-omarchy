@@ -19,6 +19,12 @@ WidgetFrame {
   property bool waves: false
   property bool wavesPlaying: false
   property string endGlyph: ""
+  // Colapsado (só o ring/ícone da frente): o resto fica invisível, no mesmo lugar,
+  // para a largura natural não mudar e o corte do slot não mostrar sobras.
+  property bool compact: false
+  // Largura só com o ring/ícone da frente (padding 9+9): o que sobra quando o
+  // widget colapsa (spec 16 "Quando não cabe"). 0 sem ring nem ícone: não colapsa.
+  readonly property real compactWidth: ring >= 0 ? 18 + 13 : glyph !== "" ? 18 + 14 : 0
 
   ProgressRing {
     anchors.verticalCenter: parent.verticalCenter
@@ -37,6 +43,7 @@ WidgetFrame {
   IslandText {
     anchors.verticalCenter: parent.verticalCenter
     visible: widget.label !== ""
+    opacity: widget.compact ? 0 : 1
     text: widget.label
     px: 12
     color: widget.labelColor
@@ -47,6 +54,7 @@ WidgetFrame {
   Rectangle {
     anchors.verticalCenter: parent.verticalCenter
     visible: widget.bar >= 0
+    opacity: widget.compact ? 0 : 1
     width: 34
     height: 4
     radius: 2
@@ -63,6 +71,7 @@ WidgetFrame {
   IslandText {
     anchors.verticalCenter: parent.verticalCenter
     visible: widget.sub !== ""
+    opacity: widget.compact ? 0 : 1
     text: widget.sub
     px: 12
     font.weight: Tokens.weightBody
@@ -73,6 +82,7 @@ WidgetFrame {
   MusicWaves {
     anchors.verticalCenter: parent.verticalCenter
     visible: widget.waves
+    opacity: widget.compact ? 0 : 1
     count: 4
     barHeight: 13
     barWidth: 2
@@ -83,6 +93,7 @@ WidgetFrame {
   PhIcon {
     anchors.verticalCenter: parent.verticalCenter
     visible: widget.endGlyph !== ""
+    opacity: widget.compact ? 0 : 1
     glyph: widget.endGlyph || "info"
     size: 13
     color: Tokens.neutral300

@@ -35,3 +35,27 @@ describe('fitWidgets', () => {
     expect(fitWidgets([], 100, 2, 'end')).toEqual([]);
   });
 });
+
+describe('fitWidgets com ícone', () => {
+  const note = (width: number): WidgetSize => ({ natural: width, min: width, icon: 30 });
+
+  it('colapsa para o ícone, do mais longe, antes de sumir', () => {
+    // 100 + 2 + 100 + 2 + 100 = 304; sobra 250: colapsa só o último (direita).
+    expect(fitWidgets([note(100), note(100), note(100)], 250, 2, 'end')).toEqual([100, 100, 30]);
+    // Esquerda: o mais longe da ilha é o primeiro.
+    expect(fitWidgets([note(100), note(100), note(100)], 250, 2, 'start')).toEqual([30, 100, 100]);
+  });
+
+  it('o hw encolhe primeiro; só depois os ícones colapsam', () => {
+    expect(fitWidgets([hw, note(100)], 250, 2, 'end')).toEqual([148, 100]);
+    expect(fitWidgets([hw, note(100)], 150, 2, 'end')).toEqual([118, 30]);
+  });
+
+  it('só some um widget se nem todos colapsados cabem', () => {
+    expect(fitWidgets([note(100), note(100), note(100)], 70, 2, 'end')).toEqual([30, 30, null]);
+  });
+
+  it('widget sem ícone nunca colapsa', () => {
+    expect(fitWidgets([fixed(100), note(100)], 140, 2, 'end')).toEqual([100, 30]);
+  });
+});

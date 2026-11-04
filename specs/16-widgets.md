@@ -29,7 +29,10 @@ Widgets ocupam as pílulas laterais conforme o ambiente ativo (spec 15). Visual 
 A área de widgets nunca empurra a ilha nem os botões fixos. Decisão por medida do espaço, não por breakpoint:
 
 1. O `hw` perde blocos na ordem **NET → GPU → TEMP** (CPU e RAM ficam).
-2. Ainda sem espaço: somem widgets **inteiros**, primeiro o mais longe da ilha (na esquerda, o primeiro da lista; na direita, o último). Nunca corta um widget pela metade, diferente do design.
+2. Ainda sem espaço: os widgets com ring ou ícone na frente (nota, progresso do dia, GitHub, evento, pomodoro, contagem, música) **colapsam para só o ícone**, primeiro o mais longe da ilha (na esquerda, o primeiro da lista; na direita, o último). O `ai`, o `hw` e os widgets de plugins não colapsam.
+3. Ainda sem espaço com todos colapsados: somem widgets **inteiros**, também do mais longe. Nunca corta um widget pela metade, diferente do design.
+
+Cada slot reserva só a largura que o widget ocupa (o `hw` encolhido ou o ícone colapsado), para os seguintes não passarem do fim da área e irem para baixo dos botões fixos (issue #36). O zoom da barra (spec 02 "Tamanho") escala tudo junto, e a área é medida no tamanho do design.
 
 ## Visual comum (`TopbarWidget`)
 
@@ -153,7 +156,7 @@ Fonte de dado usada só por widget (hardware, IA, GitHub) roda apenas enquanto u
 ## Critérios de aceite
 
 - [x] Testes puros: próximo evento (sem eventos, dia inteiro como reserva, ≤90 min, >90 min), fases do pomodoro (troca ao zerar, pausar e retomar), `daysUntil` (hoje, amanhã, passado, virada de ano), progresso do dia, parse das buscas do GitHub e textos no singular/plural.
-- [ ] Com a barra estreita, o `hw` perde NET, GPU e TEMP antes de qualquer widget sumir, e nenhum widget aparece cortado.
+- [ ] Com a barra estreita (ou no tamanho `large`), o `hw` perde NET, GPU e TEMP, depois os widgets colapsam para o ícone antes de qualquer um sumir, e nenhum passa por baixo dos botões da direita.
 - [ ] O pomodoro notifica a troca de fase e continua depois de lock/unlock e hot-reload.
 - [x] Com login no `gh`, o widget mostra a contagem de PRs (`GithubSource` isolado contra a conta real: "0 PRs").
 - [ ] Nota editada na ilha aparece no widget ao fechar e sobrevive ao hot-reload.
