@@ -10,6 +10,7 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ### Fixed
 
+- The text size knob in the display tile was cut on its right side: the next segment painted over it.
 - A crowded bar (worse with bar size `large`) pushed widgets under the right-hand buttons: a shrunk `hw` still reserved its full width. Now a slot takes only the width it shows, and widgets with an icon collapse to just the icon before any widget disappears.
 - AI usage lagged behind real use: opening the `ai` mode always re-probes the limits (`--limits-only`), the limits refresh every 3 min while the widget is visible, a new refresh button forces a full update, and a collector `retryAdvised` is retried after 30 s.
 - Weather: without a city, when wttr.in is unreachable, the area now comes from IP geolocation (ipwho.is) instead of hiding the weather.
