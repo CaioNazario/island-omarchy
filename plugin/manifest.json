@@ -12,5 +12,5 @@
     "bar": "Bar.qml",
     "service": "Service.qml"
   },
-  "tags": ["bar", "notifications", "quickshell", "hyprland"]
+  "tags": ["desktop", "appearance", "media"]
 }
