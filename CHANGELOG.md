@@ -6,7 +6,7 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ### Changed
 
-- New marketplace preview: the bar and the island expanded, with media and calendar, on the theme gradient. New marketplace description and tags (`desktop`, `appearance`, `media`).
+- New marketplace preview: the bar and the island expanded, with media and calendar, on the theme gradient. New marketplace description and tags (`desktop`, `appearance`, `media`, `productivity`).
 
 ### Fixed
 
