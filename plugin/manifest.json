@@ -12,5 +12,5 @@
     "bar": "Bar.qml",
     "service": "Service.qml"
   },
-  "tags": ["desktop", "appearance", "media", "productivity"]
+  "tags": ["bar", "media", "quickshell"]
 }

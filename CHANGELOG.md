@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Changed
+
+- Manifest tags now match the marketplace listing: `bar`, `media`, `quickshell`.
+
 ## [0.8.3] - 2026-11-04
 
 ### Changed
