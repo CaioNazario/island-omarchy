@@ -7,6 +7,7 @@ import "system"
 import "core/environments.mjs" as EnvironmentsCore
 import "core/appearance.mjs" as AppearanceCore
 import "core/i18n.mjs" as I18nCore
+import "core/weather.mjs" as WeatherCore
 
 // Entrada `service` do plugin (keepLoaded: specs/14-spikes.md, S6). Vive até
 // o shell reiniciar: guarda o estado visível que não pode se perder quando a
@@ -34,6 +35,8 @@ Item {
   readonly property int environmentIndex: EnvironmentsCore.sanitizeIndex(settingsStore.values.environmentIndex, environments.length)
   // Aparência (spec 19), saneada a cada leitura como os ambientes.
   readonly property var appearance: AppearanceCore.sanitizeAppearance(settingsStore.values.appearance)
+  // Cidade escolhida (spec 07), saneada a cada leitura; `null` usa a cadeia de fallback.
+  readonly property var weatherLocation: WeatherCore.parseWeatherLocation(JSON.stringify(settingsStore.values.weatherLocation))
   readonly property bool doNotDisturb: persistedState.values.doNotDisturb
   readonly property bool hasUnread: notificationFeed.hasUnread
 
@@ -55,6 +58,10 @@ Item {
 
   function setLanguage(id) {
     settingsStore.values.language = I18nCore.sanitizeLanguage(id);
+  }
+
+  function setWeatherLocation(location) {
+    settingsStore.values.weatherLocation = location ? { name: location.name, latitude: location.latitude, longitude: location.longitude } : null;
   }
 
   function setEnvironments(list) {

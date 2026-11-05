@@ -23,6 +23,8 @@ Scope {
   // Área achada pelo wttr.in quando não há coordenadas.
   property var detectedLocation: null
   readonly property var location: preferredLocation || omarchyLocation || detectedLocation
+  // De onde vem a cidade em uso: `island`, `omarchy`, `auto` ou `none`.
+  readonly property string origin: WeatherCore.weatherOrigin(preferredLocation, omarchyLocation, detectedLocation)
   property var reading: null
   property real nowMs: Date.now()
   readonly property bool available: reading !== null && WeatherCore.isFresh(reading, nowMs)
@@ -30,6 +32,9 @@ Scope {
   readonly property string temperature: available ? WeatherCore.formatTemperature(reading.celsius) : ""
 
   readonly property int refreshMs: 30 * 60 * 1000
+
+  // Nenhuma fonte de área deu cidade, e não há outra: a barra decide a dica.
+  signal detectionFailed
 
   onLocationChanged: {
     reading = null;
@@ -73,18 +78,33 @@ Scope {
   // Índice da fonte de área em tentativa (`WeatherCore.areaSources`).
   property int areaAttempt: 0
   property bool nextAreaPending: false
+  // Rodada de detecção: algum `curl` falou com um servidor? E quantas rodadas
+  // seguidas assim falharam (offline não conta: `WeatherCore.reachedServer`).
+  property bool roundReached: false
+  property int failedRounds: 0
 
   function detectArea() {
     if (areaFetcher.running) return;
     areaAttempt = 0;
+    roundReached = false;
     tryAreaSource();
   }
 
   function tryAreaSource() {
     const sources = WeatherCore.areaSources(omarchyName);
-    if (areaAttempt >= sources.length) return;
+    if (areaAttempt >= sources.length) {
+      endRound();
+      return;
+    }
     areaFetcher.command = ["curl", "-fsS", "--max-time", "10", "--max-filesize", String(WeatherCore.MAX_RESPONSE_BYTES), sources[areaAttempt].url];
     areaFetcher.running = true;
+  }
+
+  // Fim de uma rodada sem área: só com rede (algum servidor respondeu) e
+  // repetida conta para a dica.
+  function endRound() {
+    failedRounds = roundReached ? failedRounds + 1 : 0;
+    if (origin === "none" && failedRounds >= WeatherCore.HINT_AFTER_ROUNDS) detectionFailed();
   }
 
   function acceptArea(body) {
@@ -103,6 +123,7 @@ Scope {
     // Só troca com coordenadas novas: trocar o objeto apagaria a leitura,
     // buscaria de novo e detectaria a área outra vez, num laço que piscava
     // o clima na ilha.
+    failedRounds = 0;
     if (!WeatherCore.sameLocation(area, detectedLocation)) detectedLocation = area;
   }
 
@@ -114,10 +135,52 @@ Scope {
       onStreamFinished: weather.acceptArea(text)
     }
     // `curl -f` sem corpo (conexão recusada, 5xx): o coletor ainda termina com texto vazio.
-    onExited: {
+    onExited: exitCode => {
+      if (WeatherCore.reachedServer(exitCode)) weather.roundReached = true;
       if (!weather.nextAreaPending) return;
       weather.nextAreaPending = false;
       weather.tryAreaSource();
+    }
+  }
+
+  // Busca de cidade por nome (aba Clima do editor, spec 17): até 20 resultados.
+  property var searchResults: []
+  property bool searching: false
+  property string searchQuery: ""
+  // Consulta que chegou enquanto a anterior ainda rodava.
+  property string searchPending: ""
+
+  function search(query) {
+    const text = query.trim();
+    if (text === "") {
+      searchQuery = "";
+      searchPending = "";
+      searchResults = [];
+      searching = false;
+      return;
+    }
+    searching = true;
+    if (searcher.running) {
+      searchPending = text;
+      return;
+    }
+    searchQuery = text;
+    searcher.command = ["curl", "-fsS", "--max-time", "10", "--max-filesize", String(WeatherCore.MAX_RESPONSE_BYTES), WeatherCore.geocodingUrl(text)];
+    searcher.running = true;
+  }
+
+  Process {
+    id: searcher
+
+    stdout: StdioCollector {
+      // Resposta de uma consulta já trocada não entra.
+      onStreamFinished: if (weather.searchPending === "") weather.searchResults = WeatherCore.parseGeocoding(text)
+    }
+    onExited: {
+      const next = weather.searchPending;
+      weather.searchPending = "";
+      if (next === "") weather.searching = false;
+      else weather.search(next);
     }
   }
 

@@ -195,6 +195,42 @@ ShellRoot {
       return "ok";
     }
 
+    // Busca de cidade como a aba Clima a faz: devolve os rótulos achados
+    // (espere a rede) e, com `pick`, escolhe o primeiro como a cidade.
+    function weatherSearch(query: string): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      const weather = bar.system.weather; // qmllint disable missing-property
+      if (query === "clear") bar.service.setWeatherLocation(null); // qmllint disable missing-property
+      else if (query === "pick") bar.service.setWeatherLocation(weather.searchResults[0].location); // qmllint disable missing-property
+      else weather.search(query);
+      return weather.origin + " " + weather.searchResults.length + " " + (weather.searchResults[0] ? weather.searchResults[0].label : "-");
+    }
+
+    // Simula a detecção de área falha (spec 07 "Dica"): sem cidade em lugar
+    // nenhum, a dica sai uma vez e abre a aba Clima ao clicar.
+    function weatherFail(): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      const weather = bar.system.weather; // qmllint disable missing-property
+      weather.preferredLocation = null;
+      weather.omarchyLocation = null;
+      weather.detectedLocation = null;
+      weather.detectionFailed();
+      return bar.service ? String(bar.service.notifications.entries.length) : "no service"; // qmllint disable missing-property
+    }
+
+    // Clica na notificação mais recente da lista (a dica do clima): devolve
+    // se o editor abriu e em que aba.
+    function activateFirst(): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar || !bar.service) return "no service"; // qmllint disable missing-property
+      const first = bar.service.notifications.entries[0]; // qmllint disable missing-property
+      if (!first) return "none";
+      bar.service.notifications.activate(first.key); // qmllint disable missing-property
+      return bar.editorOpen + " " + bar.editorPage; // qmllint disable missing-property
+    }
+
     // Texto de um feed ICS (spec 06) sem URL no chaveiro nem rede: confere a
     // lista de eventos na tela.
     function calendar(icsText: string): string {

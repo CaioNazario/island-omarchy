@@ -52,10 +52,10 @@ Ainda não existe. Ela vai falar só pelo `settings.json`; até lá, as preferê
 
 - **Geral**
   - "Clique na ilha abre": Calendário e música (cartão) · Calendário compacto (ilha)
-- **Clima**
-  - Cidade atual e de onde ela veio, pela mesma cadeia da spec 07: "Escolhida aqui", "Do Omarchy", "Automática" ou "Nenhuma"
+- **Clima** (já existe, como a aba **Clima** do editor da barra, spec 17)
+  - Cidade atual e de onde ela veio, pela mesma cadeia da spec 07: "Escolhida aqui", "Do Omarchy", "Automático" ou "Nenhuma cidade"
   - Botão "Limpar", só com cidade escolhida aqui: volta à cadeia de fallback
-  - Busca de cidade pelo nome, até 20 resultados
+  - Busca de cidade pelo nome (geocodificação do Open-Meteo), até 20 resultados; escolher grava `weatherLocation`
 - **Uso de IA**
   - Um switch por provedor (Claude, Codex) + estado do registro do Omarchy (spec 12): "Com limites", "Faça login no CLI" ou "Sem dados"
 - **Widgets**
@@ -64,7 +64,7 @@ Ainda não existe. Ela vai falar só pelo `settings.json`; até lá, as preferê
 
 Ambientes, auto-ocultar e nota não aparecem na janela: são editados na barra (specs 16 e 17).
 
-A notificação de dica do clima (spec 07) abre esta janela direto na página Clima, e o widget de contagem sem data (spec 16) na página Widgets.
+A notificação de dica do clima (spec 07) abre o editor da barra direto na aba Clima (a janela de preferências ainda não existe), e o widget de contagem sem data (spec 16) na página Widgets.
 
 ## Critérios de aceite
 

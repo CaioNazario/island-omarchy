@@ -17,7 +17,7 @@ Painel na camada da barra (a mesma `PanelWindow` de tela cheia onde a ilha cresc
 
 ## Abas
 
-Cabeçalho do painel (não existe no design): duas abas, **Ambientes** (as linhas abaixo) e **Aparência** (spec 19), e o **Concluir** à direita (`.btn-primary`, 30px, 12.5px). Aba (`EditorTab`): 30px, padding 0 14px, raio 15, 13px; ativa `accent-900`, anel `accent-700`, texto `accent-100`; inativa `neutral-900`, texto `neutral-300`, hover `neutral-800`. A aba escolhida fica no `Bar.qml` (`editorPage`) e continua a mesma ao reabrir o editor. No design, o título "Ambientes" e o "Concluir" ficavam na linha 1.
+Cabeçalho do painel (não existe no design): três abas, **Ambientes** (as linhas abaixo), **Aparência** (spec 19) e **Clima** (cidade em uso, busca e "Limpar"; spec 07), e o **Concluir** à direita (`.btn-primary`, 30px, 12.5px). Aba (`EditorTab`): 30px, padding 0 14px, raio 15, 13px; ativa `accent-900`, anel `accent-700`, texto `accent-100`; inativa `neutral-900`, texto `neutral-300`, hover `neutral-800`. A aba escolhida fica no `Bar.qml` (`editorPage`) e continua a mesma ao reabrir o editor. No design, o título "Ambientes" e o "Concluir" ficavam na linha 1.
 
 ## Linha 1: ambientes
 

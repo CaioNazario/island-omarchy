@@ -127,6 +127,7 @@ Item {
         nowMs: root.bar.nowMs
         // × fecha a ilha; a notificação continua na lista.
         onClosed: root.bar.closeAll()
+        onActivated: root.bar.activateEntry(root.bar.notifEntry)
       }
     }
 

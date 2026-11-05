@@ -16,7 +16,13 @@ Igual ao widget de clima do Omarchy (`plugins/panels/weather`), resolvida na ord
 2. **Cidade do Omarchy com coordenadas**: `~/.local/state/omarchy/settings/weather.json` (`omarchy weather location`), vigiado: mudar a cidade no Omarchy atualiza a ilha.
 3. **Sem coordenadas**: o wttr.in acha a área (`https://wttr.in/<nome>?format=j1` com o nome do `weather.json`, ou `https://wttr.in/?format=j1`, que detecta o lugar pela IP, quando o arquivo não existe — o padrão do Omarchy). As coordenadas de `nearest_area[0]` vão para o Open-Meteo, como o painel do Omarchy faz na detecção automática. A área é buscada de novo a cada atualização.
    Sem nome no `weather.json`, o wttr.in fora do ar ou sem área cai para a geolocalização por IP do ipwho.is (`https://ipwho.is/`, `latitude`/`longitude`); com nome, só o wttr.in o resolve.
-4. Nenhuma fonte deu área: o clima **some** da ilha compacta (fica `hora · dia`) até a próxima tentativa.
+4. Nenhuma fonte deu área: o clima **some** da ilha compacta (fica `hora · dia`) até a próxima tentativa, e a **notificação de dica** aparece (abaixo).
+
+### Dica e escolha da cidade
+
+- Sem cidade da Island, sem cidade do Omarchy e com todas as fontes de área falhas **depois de falar com algum servidor** (`curl` com saída 0 ou 22, `reachedServer`; DNS, conexão e tempo esgotado são "sem rede" e não contam) em **2 rodadas seguidas** (`HINT_AFTER_ROUNDS`, uma por minuto), a Island empurra uma notificação interna "Clima · Não achei sua cidade. Clique para escolher uma." (`WeatherHint.qml`, `hintMessage` no core). Ela só aparece **uma vez**: `weatherHintShown` no `state.json` vira `true` antes de a notificação sair e nunca volta a `false`.
+- Clicar nela (no banner, no `notif` ou na lista) abre o editor na aba **Clima** (spec 17).
+- A aba Clima mostra a cidade em uso e a origem (`weatherOrigin`: Escolhida aqui · Do Omarchy · Automático · Nenhuma cidade), busca por nome (`geocoding-api.open-meteo.com`, `count=20`, mesmo `--max-filesize`) e **Limpar**, que apaga `weatherLocation` e volta à cadeia. A cidade escolhida vale na hora e é saneada ao ler (`parseWeatherLocation`).
 
 ## Exibição
 
@@ -45,5 +51,6 @@ Código desconhecido → o clima some. O mapeamento é uma função pura em `src
 
 - [x] Testes de `weatherIcon.ts` cobrem todos os grupos de código e dia/noite; testes de `weather.ts` cobrem a resposta do Open-Meteo e o `weather.json`.
 - [x] Com cidade nas preferências, a ilha mostra ícone + temperatura dessa cidade (captura no `make dev`).
-- [ ] Sem cidade na Island nem no Omarchy: a ilha mostra só hora e dia, e a notificação de dica aparece uma única vez.
+- [x] Sem cidade na Island nem no Omarchy: a ilha mostra só hora e dia, e a notificação de dica aparece uma única vez.
+- [ ] Na aba Clima: buscar, escolher e limpar uma cidade troca a ilha sem reiniciar (captura no `make dev`).
 - [ ] Trocar a cidade (Island ou `omarchy weather location`) atualiza a ilha sem reiniciar o shell.

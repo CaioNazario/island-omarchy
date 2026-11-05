@@ -37,7 +37,7 @@ Rectangle {
       spacing: 6
 
       Repeater {
-        model: [{ id: "environments", label: I18n.tr("Environments") }, { id: "appearance", label: I18n.tr("Appearance") }]
+        model: [{ id: "environments", label: I18n.tr("Environments") }, { id: "appearance", label: I18n.tr("Appearance") }, { id: "weather", label: I18n.tr("Weather") }]
 
         EditorTab {
           required property var modelData
@@ -70,6 +70,12 @@ Rectangle {
     AppearancePage {
       Layout.fillWidth: true
       visible: panel.bar.editorPage === "appearance"
+      bar: panel.bar
+    }
+
+    WeatherPage {
+      Layout.fillWidth: true
+      visible: panel.bar.editorPage === "weather"
       bar: panel.bar
     }
   }

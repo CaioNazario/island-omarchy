@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   areaSources,
+  geocodingUrl,
+  hintMessage,
+  parseGeocoding,
+  shouldShowHint,
+  weatherOrigin,
   formatTemperature,
   isFresh,
   openMeteoUrl,
@@ -9,6 +14,7 @@ import {
   parseWeatherLocation,
   parseWeatherName,
   parseWttrArea,
+  reachedServer,
   sameLocation,
   wttrUrl,
   READING_TTL_MS,
@@ -171,5 +177,99 @@ describe('areaSources', () => {
 
   it('com nome do weather.json: só o wttr.in, que o resolve', () => {
     expect(areaSources('Recife')).toHaveLength(1);
+  });
+});
+
+describe('weatherOrigin', () => {
+  const city = { name: 'X', latitude: 1, longitude: 2 };
+
+  it('follows the fallback chain', () => {
+    expect(weatherOrigin(city, city, city)).toBe('island');
+    expect(weatherOrigin(null, city, city)).toBe('omarchy');
+    expect(weatherOrigin(null, null, city)).toBe('auto');
+    expect(weatherOrigin(null, null, null)).toBe('none');
+  });
+});
+
+describe('parseGeocoding', () => {
+  it('builds labels without repeated parts and keeps the coordinates', () => {
+    const body = JSON.stringify({
+      results: [
+        {
+          name: 'Paris',
+          admin1: 'Île-de-France',
+          country: 'France',
+          latitude: 48.85,
+          longitude: 2.35,
+        },
+        {
+          name: 'Singapore',
+          admin1: 'Singapore',
+          country: 'Singapore',
+          latitude: 1.28,
+          longitude: 103.85,
+        },
+      ],
+    });
+    expect(parseGeocoding(body)).toEqual([
+      {
+        label: 'Paris, Île-de-France, France',
+        location: { name: 'Paris', latitude: 48.85, longitude: 2.35 },
+      },
+      { label: 'Singapore', location: { name: 'Singapore', latitude: 1.28, longitude: 103.85 } },
+    ]);
+  });
+
+  it('drops items without a name or valid coordinates and tolerates bad bodies', () => {
+    const body = JSON.stringify({
+      results: [
+        { name: '', latitude: 1, longitude: 1 },
+        { name: 'A', latitude: 99, longitude: 1 },
+        7,
+      ],
+    });
+    expect(parseGeocoding(body)).toEqual([]);
+    expect(parseGeocoding('{"generationtime_ms":1}')).toEqual([]);
+    expect(parseGeocoding('nope')).toEqual([]);
+  });
+
+  it('keeps at most 20 results', () => {
+    const results = Array.from({ length: 30 }, (_, i) => ({
+      name: `C${i}`,
+      latitude: 1,
+      longitude: 1,
+    }));
+    expect(parseGeocoding(JSON.stringify({ results }))).toHaveLength(20);
+  });
+});
+
+describe('geocodingUrl', () => {
+  it('encodes the query and asks for 20 results', () => {
+    expect(geocodingUrl(' São Paulo ')).toBe(
+      'https://geocoding-api.open-meteo.com/v1/search?name=S%C3%A3o%20Paulo&count=20&language=en&format=json',
+    );
+  });
+});
+
+describe('shouldShowHint', () => {
+  it('fires once, only when nothing resolved a city', () => {
+    expect(shouldShowHint(false, 'none', true)).toBe(true);
+    expect(shouldShowHint(true, 'none', true)).toBe(false);
+    expect(shouldShowHint(false, 'auto', true)).toBe(false);
+    expect(shouldShowHint(false, 'none', false)).toBe(false);
+  });
+});
+
+describe('hintMessage', () => {
+  it('follows the interface language', () => {
+    expect(hintMessage('en').title).toBe('Weather');
+    expect(hintMessage('pt-BR').title).toBe('Clima');
+  });
+});
+
+describe('reachedServer', () => {
+  it('tells a server answer from a network failure', () => {
+    expect([0, 22].map(reachedServer)).toEqual([true, true]);
+    expect([6, 7, 28, 35, 56].map(reachedServer)).toEqual([false, false, false, false, false]);
   });
 });

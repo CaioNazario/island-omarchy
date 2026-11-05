@@ -23,6 +23,15 @@ Item {
   property int gap: 10
 
   signal closed
+  // Clique no corpo de uma notificação interna com ação (dica do clima).
+  signal activated
+
+  MouseArea {
+    anchors.fill: parent
+    enabled: !!card.entry.action
+    cursorShape: Qt.PointingHandCursor
+    onClicked: card.activated()
+  }
 
   RowLayout {
     anchors.fill: parent

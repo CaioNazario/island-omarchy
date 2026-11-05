@@ -20,6 +20,8 @@ Scope {
 
   // A barra decide o roteamento: o feed só avisa e guarda.
   signal arrived(var entry)
+  // Clique numa notificação interna com ação (`weather`): a barra decide o que abrir.
+  signal actionRequested(string action)
 
   NotificationServer {
     keepOnReload: false
@@ -68,9 +70,10 @@ Scope {
 
   /**
    * Notificação da própria Island (pomodoro, dica do clima): sem app no
-   * D-Bus, entra pelo mesmo roteamento, com glifo Phosphor.
+   * D-Bus, entra pelo mesmo roteamento, com glifo Phosphor. `action`, se
+   * houver, roda ao clicar nela (`actionRequested`).
    */
-  function pushInternal(title, body, glyph) {
+  function pushInternal(title, body, glyph, action) {
     const entry = {
       key: nextKey++,
       ref: null,
@@ -82,7 +85,8 @@ Scope {
       critical: false,
       low: false,
       fromBrowser: false,
-      transient: false
+      transient: false,
+      action: action || ""
     };
     entries = [entry].concat(entries).slice(0, 8);
     hasUnread = true;
@@ -118,6 +122,7 @@ Scope {
   /** Clique num item: ação padrão (abre/foca o app ou site) e sai da lista. */
   function activate(key) {
     const entry = find(key);
+    if (entry && entry.action) actionRequested(entry.action);
     if (!entry || !entry.ref) return forget(key);
     const actions = entry.ref.actions || [];
     const defaultAction = actions.find(action => action.identifier === "default");
