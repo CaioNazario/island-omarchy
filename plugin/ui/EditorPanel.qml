@@ -5,8 +5,8 @@ import QtQuick.Layouts
 
 // Editor de ambientes (specs/17-editor-ambientes.md): 880px, `top: 48px`,
 // padding 16px, raio 20, `bg` 94%, anel `neutral-800`. Cabeçalho com as abas
-// Ambientes e Aparência e o "Concluir"; as linhas ficam na `EnvironmentsPage`
-// e na `AppearancePage`.
+// Ambientes, Aparência, Clima e Ajustes e o "Concluir"; as linhas ficam na
+// `EnvironmentsPage`, na `AppearancePage`, na `WeatherPage` e na `SettingsPage`.
 Rectangle {
   id: panel
 
@@ -37,7 +37,7 @@ Rectangle {
       spacing: 6
 
       Repeater {
-        model: [{ id: "environments", label: I18n.tr("Environments") }, { id: "appearance", label: I18n.tr("Appearance") }, { id: "weather", label: I18n.tr("Weather") }]
+        model: [{ id: "environments", label: I18n.tr("Environments") }, { id: "appearance", label: I18n.tr("Appearance") }, { id: "weather", label: I18n.tr("Weather") }, { id: "settings", label: I18n.tr("Settings") }]
 
         EditorTab {
           required property var modelData
@@ -76,6 +76,12 @@ Rectangle {
     WeatherPage {
       Layout.fillWidth: true
       visible: panel.bar.editorPage === "weather"
+      bar: panel.bar
+    }
+
+    SettingsPage {
+      Layout.fillWidth: true
+      visible: panel.bar.editorPage === "settings"
       bar: panel.bar
     }
   }

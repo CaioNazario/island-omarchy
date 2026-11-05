@@ -4,7 +4,19 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Added
+
+- A **Settings** tab in the editor with an *Island handles notifications and OSD* switch. It turns Omarchy's `omarchy.notifications` and `omarchy.osd` plugins off (one `omarchy plugin disable` each) and the Island takes over, or gives them back. Closes #38.
+- The switch no longer stops halfway when Omarchy is slow to answer: the shell freezes for seconds while it rebuilds the plugin panels, the `omarchy` command gives up after 2 s with the change already applied, and the Island took that for a failure and left one of the two plugins untouched. It now waits for the shell, runs both commands and trusts the plugin list it reads afterwards. The Settings tab says the switch can take a few seconds.
+- Handing the notifications back no longer lets the next server receive, as new ones, the notifications the Island was still tracking: the Island closes them before letting go of the server.
+- Giving the notifications back no longer leaves dead entries in the list (they threw `dismiss is not a function`).
+- The takeover question stays open for 5 s instead of 2.5 s, enough time to read it and click.
+- A one-time notification asks whether the Island should take over notifications and the OSD while Omarchy's plugins are still on. Clicking it opens the Settings tab; nothing changes until you flip the switch, and if you dismiss it by mistake the switch is still there.
+
 ### Changed
+
+- Notifications and the OSD no longer need a manual step after `omarchy plugin add`: until you agree, the Island is only a bar and doesn't claim the notification server or the `notifications` and `osd` IPC targets, so Omarchy's keep working. Setups that already turned both plugins off (`./install.sh`) are unaffected: the Island handles them from the start.
+- The README explains how notifications and the OSD are handled and how to turn that on and off, and documents the Weather tab and the city hint.
 
 - Manifest tags now match the marketplace listing: `bar`, `media`, `quickshell`.
 

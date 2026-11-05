@@ -87,6 +87,12 @@ harness_ipc() {
   WAYLAND_DISPLAY="$NESTED_SOCKET" qs ipc -p "$HARNESS" call dev "$@" 2>/dev/null
 }
 
+# A Island é dona de `org.freedesktop.Notifications` neste D-Bus privado?
+notifications_owned() {
+  busctl --address="$(cat "$DIST/bus")" call org.freedesktop.DBus /org/freedesktop/DBus \
+    org.freedesktop.DBus NameHasOwner s org.freedesktop.Notifications 2>/dev/null | awk '{print $2}'
+}
+
 harness_status() {
   harness_ipc status || true
 }
@@ -125,6 +131,79 @@ smoke() {
   # (pasta 0755 e arquivo 0644 com o umask 022). A semente cria a pasta como
   # uma instalação antiga; as duas pastas da Island têm de virar 0700.
   wait_for '[[ "$(stat -c %a "$DIST/xdg/config/island")" == 700 && "$(stat -c %a "$DIST/xdg/state/island")" == 700 ]]' "private settings and state folders"
+  # Quem cuida das notificações (spec 04, S7): com os built-ins do `omarchy`
+  # falso ligados a Island não cria o servidor (nem pede o nome D-Bus nem os
+  # alvos IPC), e a pergunta aparece uma vez. Ligar passa pelo `omarchy plugin
+  # disable` (um por plugin) e então a Island recebe as notificações. Ao
+  # devolver, ela larga os alvos antes de religar os built-ins. O nome D-Bus
+  # fica com o processo (o Quickshell 0.3.2 não o solta ao destruir o
+  # servidor), então o que se confere depois do primeiro "ligar" é a entrega.
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"status\":\"builtin\""*"\"claimsNotifications\":false"*"\"claimsOsd\":false"* ]]' "the plugin list (built-ins on, Island not claiming)"
+  wait_for '[[ "$(notifications_owned)" == false ]]' "the notifications name to stay free while the built-in handles them"
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"shown\":true"*"\"entries\":1"* ]]' "the one-time takeover prompt"
+  # A pergunta fica 5000ms no card aberto (os avisos comuns, 2500ms): passados
+  # 3,4s ainda está aberta, e depois fecha sozinha.
+  timeout 3.4 tail -f /dev/null || true
+  [[ "$(harness_ipc mode)" == notif ]] || {
+    echo "smoke: the takeover prompt closed before 5 s (mode: $(harness_ipc mode))" >&2
+    exit 1
+  }
+  wait_for '[[ "$(harness_ipc mode)" == compact ]]' "the takeover prompt to close by itself"
+  harness_ipc takeover enable >/dev/null
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"status\":\"island\""*"\"claimsNotifications\":true"*"\"claimsOsd\":true"* ]]' "the Island to claim both targets"
+  wait_for '[[ "$(notifications_owned)" == true ]]' "the Island to own the notifications name"
+  # `-t 0`: não expira, como um aviso de crash ou uma notificação crítica. As que
+  # expiram sozinhas somem do Quickshell antes de o próximo servidor nascer.
+  notify -t 0 "after takeover" >/dev/null
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"entries\":2"* ]]' "a notification to reach the Island after the takeover"
+  # Um aviso de crash do Omarchy: `critical` e sem expiração, não some sozinho.
+  notify -u critical -t 0 "crash-like notice" >/dev/null
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"entries\":3"* ]]' "a critical notification to reach the Island"
+  harness_ipc takeover handback >/dev/null
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"status\":\"builtin\""*"\"claimsNotifications\":false"*"\"claimsOsd\":false"* ]]' "the Island to give the targets back"
+  # Ao devolver, o servidor que nasce no lugar (o do Omarchy) não pode receber de
+  # volta o que a Island já recebeu: o Quickshell entrega ao servidor novo o que
+  # o anterior ainda rastreia. (Os toasts "Process crashed" que voltavam ao
+  # desligar o interruptor na sessão real eram outra coisa: popups persistidos
+  # pelo próprio Omarchy.)
+  harness_ipc omarchySimulator on >/dev/null
+  timeout 2 tail -f /dev/null || true
+  [[ "$(harness_ipc omarchySimulator status)" == 0 ]] || {
+    echo "smoke: the server that takes over on hand-back got $(harness_ipc omarchySimulator status) old notification(s) replayed" >&2
+    exit 1
+  }
+  harness_ipc omarchySimulator off >/dev/null
+  # As notificações do servidor morrem com ele (a referência perde o `dismiss`):
+  # só a pergunta interna fica na lista.
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"entries\":1"* ]]' "the server's notifications to leave the list on the way back"
+  # Falha no meio do liga/desliga: nada de erro mudo, e o estado volta a ser lido.
+  touch "$DIST/xdg/state/fake-plugins.fail"
+  harness_ipc takeover enable >/dev/null
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"status\":\"builtin\""*"\"failed\":true"* ]]' "a failed takeover to be reported"
+  rm -f "$DIST/xdg/state/fake-plugins.fail"
+  # O código de saída mente nos dois sentidos: quem manda é a lista lida depois.
+  # `exit 0` sem aplicar não é sucesso; `exit 1` com a troca aplicada (o shell
+  # ocupado estoura os 2 s do wrapper) não é falha.
+  touch "$DIST/xdg/state/fake-plugins.noop"
+  harness_ipc takeover enable >/dev/null
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"status\":\"builtin\""*"\"busy\":false"*"\"failed\":true"* ]]' "a takeover that exits 0 without applying to be reported as failed"
+  rm -f "$DIST/xdg/state/fake-plugins.noop"
+  touch "$DIST/xdg/state/fake-plugins.applyfail"
+  harness_ipc takeover enable >/dev/null
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"status\":\"island\""*"\"busy\":false"*"\"failed\":false"* ]]' "a takeover that applied but exited 1 to count as done"
+  rm -f "$DIST/xdg/state/fake-plugins.applyfail"
+  harness_ipc takeover enable >/dev/null
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"status\":\"island\""*"\"failed\":false"* ]]' "the takeover to work again after the failure"
+  # O servidor da Island que nasce de novo não recebe de volta a notificação sem
+  # expiração de antes: a lista tem só a pergunta (1). (O servidor que assume ao
+  # devolver recebia: ver o `omarchySimulator` acima.)
+  timeout 2 tail -f /dev/null || true
+  [[ "$(harness_ipc takeover status)" == *"\"entries\":1"* ]] || {
+    echo "smoke: notifications from the old server came back after taking over again: $(harness_ipc takeover status)" >&2
+    exit 1
+  }
+  notify "after second takeover" >/dev/null
+  wait_for '[[ "$(harness_ipc takeover status)" == *"\"entries\":2"* ]]' "one entry per notification after taking over again"
   # Aparência fora do padrão nos hot-reloads (spec 19): os shaders de
   # gradiente e grão, os cantos quadrados e as regiões de blur.
   harness_ipc editorDo preset glass >/dev/null

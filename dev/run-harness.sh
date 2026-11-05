@@ -17,6 +17,9 @@ echo "$DBUS_SESSION_BUS_ADDRESS" >"$bus_file"
 xdg="$(dirname "$log")/xdg"
 mkdir -p "$xdg/config" "$xdg/state"
 export XDG_CONFIG_HOME="$xdg/config" XDG_STATE_HOME="$xdg/state"
+# O `omarchy plugin enable|disable` real mexeria nos plugins do shell do
+# usuário: o harness usa um falso, sobre um arquivo em `$xdg/state`.
+export ISLAND_OMARCHY_CLI="$(cd "$(dirname "$0")" && pwd)/fake-omarchy.sh"
 # Sem o portal: o Qt o ativa neste D-Bus privado e o
 # xdg-desktop-portal-hyprland dele morre com SIGSEGV em `exit()` (libwayland-client,
 # `wl_proxy_marshal_flags`) quando o Hyprland aninhado cai, e o Omarchy mostra uma

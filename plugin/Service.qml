@@ -27,6 +27,8 @@ Item {
   readonly property alias settings: settingsStore
   readonly property alias stateStore: persistedState
   readonly property alias pomodoro: pomodoro
+  // Quem cuida das notificações e do OSD, e a escolha do usuário (spec 04).
+  readonly property alias takeover: notificationTakeover
   // Idioma da interface (specs/13 "Idioma"), saneado. A barra o passa ao
   // `I18n`; o que vive aqui (pomodoro, ambientes iniciais) lê direto.
   readonly property string language: I18nCore.sanitizeLanguage(settingsStore.values.language)
@@ -95,12 +97,26 @@ Item {
 
   NotificationFeed {
     id: notificationFeed
+
+    serverEnabled: notificationTakeover.claimsNotifications
+  }
+
+  NotificationTakeover {
+    id: notificationTakeover
+
+    store: persistedState
+    feed: notificationFeed
+    language: root.language
   }
 
   // Mesmo contrato do `plugins/notifications/Service.qml` do Omarchy 4.0.4:
   // os scripts `omarchy-*` e os atalhos `SUPER + vírgula` chamam estes nomes.
+  // Os dois alvos só valem com o plugin do Omarchy desligado: com ele ligado
+  // o último handler registrado vence e o "não perturbe" ia para o lado
+  // errado (specs/14-spikes.md, S7).
   IpcHandler {
     target: "notifications"
+    enabled: notificationTakeover.claimsNotifications
 
     function dndState(): string {
       return root.doNotDisturb ? "on" : "off";
@@ -153,6 +169,7 @@ Item {
   // Mesmo contrato do `plugins/osd/Osd.qml` do Omarchy 4.0.4.
   IpcHandler {
     target: "osd"
+    enabled: notificationTakeover.claimsOsd
 
     function show(payloadJson: string): string {
       root.osdRequested(payloadJson);

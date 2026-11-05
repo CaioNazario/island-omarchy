@@ -2,11 +2,11 @@
 
 Origem: `design/logic.js` `pushNotif`, `stack`/`latest`/`unreadDot`/`openPeek`; `design/markup.html` modos `notif` e `stack` e o banner.
 
-Código: `plugin/system/NotificationFeed.qml` (no `Service.qml`), roteamento no `Bar.qml`, views `NotificationCard.qml`, `StackView.qml`, `Banner.qml`.
+Código: `plugin/system/NotificationFeed.qml` e `NotificationTakeover.qml` (no `Service.qml`), roteamento no `Bar.qml`, views `NotificationCard.qml`, `StackView.qml`, `Banner.qml`; a escolha de quem cuida fica na aba Ajustes (`SettingsPage.qml`, spec 17).
 
 ## Fonte
 
-- A Island é o servidor de notificações da sessão: um `NotificationServer` (Quickshell) no `Service.qml` é dono de `org.freedesktop.Notifications`, com `omarchy.notifications` desligado (spec 14, S7). Os toasts do Omarchy não existem enquanto a Island está ativa.
+- Com o consentimento do usuário ("Quem cuida das notificações" abaixo), a Island é o servidor de notificações da sessão: um `NotificationServer` (Quickshell) no `Service.qml` é dono de `org.freedesktop.Notifications`, com `omarchy.notifications` desligado (spec 14, S7). Os toasts do Omarchy não existem enquanto a Island cuida delas. Sem o consentimento ela é só barra: não cria o servidor.
 - A lista vive no serviço (`keepLoaded`): sobrevive ao hot-reload da barra e ao lock. Não sobrevive ao reinício do shell (o servidor some junto).
 - Cada notificação fica `tracked` (senão o objeto morre ao fim do handler). Atualização por `replaces_id` chega no mesmo objeto e atualiza o item. Quando o app fecha a notificação (`closed`), o item sai da lista.
 - Hint `transient`: aparece (`notif`/banner) mas não entra na lista.
@@ -15,6 +15,21 @@ Código: `plugin/system/NotificationFeed.qml` (no `Service.qml`), roteamento no 
   - `openStack` (três dedos para baixo) abre `stack` no monitor focado. Com `stack` já aberto, não faz nada: repetir o gesto não fecha a lista.
   - `closeStack` (três dedos para cima) volta a `compact` só se o modo for `stack`. Em outro modo, não faz nada.
   - Os dois gestos vêm em `hypr/island.lua`, que o `install.sh` instala (spec 03 "Atalho").
+
+## Quem cuida das notificações
+
+A Island substitui `omarchy.notifications` e `omarchy.osd`, mas só assume o que o usuário deixou: mudar a configuração do Omarchy sem consentimento é o que o marketplace proíbe, e dois donos do mesmo alvo dividem o controle (spec 14, S7). Código: `src/core/takeover.ts` (decisões e comandos), `NotificationTakeover.qml` (processos e estado).
+
+- **Estado**: `omarchy plugin list --json` diz quais dos dois built-ins estão ligados (`enabledBuiltins`). `builtin` = algum ligado, o Omarchy cuida e a Island é só barra. `island` = os dois desligados, ela cuida. `unknown` = lista ainda não lida (o shell pode não ter o IPC pronto quando o serviço sobe): não assume nada e tenta de novo a cada 3 s. Depois de lida, a lista é conferida a cada minuto, para largar o alvo se alguém religar um built-in à mão.
+- **Cada alvo é reivindicado separadamente**: `NotificationServer` e o IPC `notifications` só existem com `omarchy.notifications` desligado; o IPC `osd`, com `omarchy.osd` desligado. Um liga/desliga que falhou no meio deixa a Island com o que sobrou, nunca com um alvo sem dono.
+- **Quem já desligou os built-ins** (`install.sh`, à mão) não é perguntado: a Island cuida desde o início.
+- **Pergunta (uma vez)**: com `builtin` e `takeoverPromptShown` falso no `state.json`, 4 s depois de a lista chegar (a barra precisa ter carregado), uma notificação interna ("Island can show your notifications and volume. Click to review.", glifo `bell-fill`) é empurrada e o flag é gravado. O card fica aberto **5 s** (`holdMs` do aviso; os comuns ficam 2500 ms), tempo de ler e clicar, também quando ela vira banner. Clicar abre o editor na aba **Ajustes**; ligar nunca acontece só pelo clique, porque mexe na configuração do Omarchy. A pergunta não volta, mesmo apagada sem querer: o caminho de volta são os Ajustes.
+- **Aba Ajustes** (spec 17): um interruptor "Island handles notifications and OSD". Ligar roda `omarchy plugin disable` para cada built-in ligado, um comando por plugin (o script lê só o primeiro id e sai com 0 ignorando o resto), e a Island passa a cuidar assim que o último termina, sem esperar outra leitura da lista. Desligar faz a Island largar os alvos primeiro e só depois roda `omarchy plugin enable` nos dois (equivale ao `./install.sh --uninstall`, sem remover a barra). Os comandos passam pelo `omarchy-shell`, que grava o `shell.json` sozinho: a Island nunca escreve nele. O código de saída não manda: cada `enable|disable` faz o shell reconstruir os painéis de todos os plugins e ele fica sem responder por vários segundos (medido: ~11 s por troca, com o `omaplug` e o `radio-atlas` instalados; são duas trocas), e o wrapper `omarchy-shell` desiste do IPC em 2 s com a troca já aplicada e sai com 1. Por isso os comandos rodam com `OMARCHY_SHELL_IPC_TIMEOUT=60s`, a fila vai até o fim mesmo com um código diferente de 0, e o resultado só vale se a lista lida depois confere com o esperado (`matchesExpected`): troca aplicada com `exit 1` é sucesso, `exit 0` sem aplicar é falha. Enquanto isso o interruptor fica travado e a aba avisa "Switching… the shell can freeze for a few seconds while Omarchy reloads its plugins." (o travamento é do shell, não da Island). Falha: o interruptor volta ao estado lido e aparece "Couldn't change the Omarchy plugins. Try again.".
+- **Perda no meio da troca**: o nome D-Bus fica com o processo do shell, não com o servidor (spec 14, S7); uma notificação enviada quando nenhum servidor existe é descartada. A janela é o intervalo entre o `disable` do Omarchy e a Island criar o dela, e vale o mesmo na volta.
+- **Só barra**: sem notificações próprias na lista (só as internas: pomodoro, dicas), e o "não perturbe", o histórico e o OSD do Omarchy seguem valendo, porque a Island não registra os alvos IPC.
+- **Toasts que voltam ao desligar não são da Island**: o Omarchy grava um arquivo por popup na tela em `~/.local/state/omarchy/notifications/` e o restaura toda vez que o serviço nasce, e é o que acontece ao desligar o interruptor. Um `critical` sem expiração (`expireTimeout: 0`), como o "Process crashed: …" do `omarchy-crash-watch`, fica ali até ser dispensado. Foram 7 empilhados na sessão real, alguns de semanas antes; `omarchy-notification-dismiss "<título>"` os move para o histórico.
+- **O que o interruptor não cobre**: só o servidor de notificações (D-Bus), os alvos IPC `notifications` e `osd`. A música (MPRIS, spec 05) e os demais widgets não dependem dele: um vídeo no YouTube aparece na ilha como música com o interruptor ligado ou desligado.
+- **Ao devolver**, a Island fecha tudo o que o servidor dela rastreia (`releaseServerNotifications`, antes de largá-lo) e a lista fica só com as internas. O Quickshell entrega ao próximo servidor, como se fossem novas, as notificações que o anterior ainda rastreia: sem isso o servidor que assume reexibia todas como novas (reproduzido no harness com um `NotificationServer` de mentira; a Island não o viu na sessão real). O mesmo vale quando alguém religa o Omarchy por fora e a Island percebe na conferência de 1 min. No sentido inverso (a Island assumindo de um servidor do Omarchy) o servidor dela não recebeu reentrega no harness. As referências de um servidor destruído morrem (`dismiss` deixa de ser função), então os `dismiss` da lista são protegidos.
 
 ## Identificação da origem
 
@@ -95,7 +110,12 @@ Regra pura em `src/core/stackScroll.ts` (`StackScroll`); a ligação é `Bar.whe
 - [x] Testes do roteamento cobrem os quatro estados da tabela e o DND com e sem urgência crítica.
 - [ ] Notificação de qualquer site no Brave aparece com o nome do site, sem a linha do domínio: site da tabela com o ícone dele, os outros com o globo (testado com o WhatsApp).
 - [x] Com `wifi` aberto, uma notificação vira banner e o modo `wifi` continua intacto (captura no `make dev`).
-- [ ] Nenhum toast do Omarchy aparece com a Island ativa; `./install.sh --uninstall` os devolve.
+- [ ] Nenhum toast do Omarchy aparece com a Island cuidando das notificações; `./install.sh --uninstall` os devolve.
+- [x] Testes de `takeover.ts`: só `enabled: true` dos dois built-ins conta, formato inesperado vira `null`, a pergunta sai uma vez e só com o Omarchy cuidando, um comando por plugin e nunca outro id.
+- [x] Ao devolver, o servidor que assume no lugar da Island não recebe de volta as notificações dela, nem as `critical` sem expiração (`make smoke`, com um `NotificationServer` de mentira no papel do Omarchy).
+- [x] Com os built-ins ligados a Island não é dona de `org.freedesktop.Notifications`; ao ligar, recebe as notificações; ao devolver, larga os alvos; uma falha é reportada e uma nova tentativa funciona (`make smoke`, com o `omarchy` falso do harness).
+- [x] Caminho padrão na sessão real (2026-11-05): `omarchy plugin add <repositório git local com o build> --enable --yes`, partindo da Island removida (`omarchy plugin remove`) e dos dois built-ins ligados, deixa os built-ins como estão, a Island só barra (sem erro nem handler sombreado no log do shell) e a pergunta aparece uma vez. Testado com um repositório git local, não com a URL do GitHub.
+- [ ] Na sessão real, com os dois built-ins ligados: a pergunta aparece uma vez, clicar abre Ajustes, ligar e desligar o interruptor troca quem mostra as notificações e o volume, e o `Super+,` age em quem está cuidando.
 - [ ] Lock/unlock e hot-reload da barra mantêm a lista de notificações.
 - [x] Testes de `stackScroll.ts`: roda e touchpad, modos que não reagem, lista fora do topo, gesto horizontal, inversão de sentido, trava até a pausa.
 - [ ] Com o mouse sobre a pílula esquerda, a central e a direita, rolar para baixo abre o `stack` e para cima o fecha; sobre o botão de volume a roda continua mudando o volume (conferir na sessão real: o harness não injeta ponteiro).

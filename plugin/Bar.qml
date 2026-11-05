@@ -80,7 +80,7 @@ Item {
   // Editor de ambientes (specs/17): aberto no monitor-alvo, com a pílula onde
   // o catálogo adiciona e o widget selecionado na barra.
   property bool editorOpen: false
-  // Aba do editor: `environments`, `appearance` ou `weather` (specs 17, 19 e 07).
+  // Aba do editor: `environments`, `appearance`, `weather` ou `settings` (specs 17, 19, 07 e 04).
   property string editorPage: "environments"
   property string editorTarget: "left"
   property string editorSelected: ""
@@ -601,6 +601,11 @@ Item {
     feed: root.service ? root.service.notifications : null
     store: root.service ? root.service.stateStore : null
     language: I18n.language
+    bar: root
+  }
+
+  TakeoverHint {
+    feed: root.service ? root.service.notifications : null
     bar: root
   }
 

@@ -1,6 +1,9 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.Notifications
 
 // Hospeda o plugin como o omarchy-shell (shell.qml `configureBar`,
 // `pluginBarLoader`, Omarchy 4.0.4), para rodar fora da sessão do usuário,
@@ -44,6 +47,22 @@ ShellRoot {
           }
         }
       })
+  }
+
+  // Um `NotificationServer` no papel do `omarchy.notifications`: nasce depois
+  // de a Island devolver e conta o que recebe. O Quickshell entrega a ele, como
+  // se fossem novas, as notificações que o servidor anterior ainda rastreia.
+  property int simReceived: 0
+
+  LazyLoader {
+    id: omarchySim
+
+    NotificationServer {
+      onNotification: notification => {
+        notification.tracked = true;
+        host.simReceived++;
+      }
+    }
   }
 
   Loader {
@@ -121,7 +140,7 @@ ShellRoot {
     // <id> <left|right> [índice]`, `select <id>`, `step <-1|1>`, `move`,
     // `remove`, `add`, `delete`, `rename <nome>`, `icon <glifo>`, `switch <i>`, `theme <nome>`,
     // `accent <nome>`, `appearance <chave> <valor JSON>`, `preset <id>`,
-    // `page <environments|appearance>`, `language <en|pt-BR>`, `barSize <id>`.
+    // `page <environments|appearance|weather|settings>`, `language <en|pt-BR>`, `barSize <id>`.
     function editorDo(action: string, arg: string): string {
       const bar = barLoader.item; // qmllint disable missing-property
       if (!bar) return "no bar";
@@ -177,6 +196,40 @@ ShellRoot {
       const bar = barLoader.item; // qmllint disable missing-property
       if (!bar) return "no bar";
       return JSON.stringify(bar.system.omarchyTheme.named); // qmllint disable missing-property
+    }
+
+    // Servidor de mentira no papel do Omarchy (`on`, `off`): devolve quantas
+    // notificações recebeu. Só nasce com a Island sem o servidor dela.
+    function omarchySimulator(action: string): string {
+      if (action === "on") omarchySim.active = true;
+      else if (action === "off") omarchySim.active = false;
+      return String(host.simReceived);
+    }
+
+    // Quem cuida das notificações e do OSD (spec 04), com o `omarchy` falso do
+    // harness: `status` devolve o estado, `enable` liga a Island, `handback`
+    // devolve ao Omarchy e `refresh` relê a lista.
+    function takeover(action: string): string {
+      const service = serviceLoader.item; // qmllint disable missing-property
+      if (!service) return "no service";
+      const control = service.takeover; // qmllint disable missing-property
+      const actions = {
+        enable: () => control.takeOver(),
+        handback: () => control.handBack(),
+        refresh: () => control.refresh()
+      };
+      if (actions[action]) actions[action]();
+      else if (action !== "status") return "unknown action " + action;
+      return JSON.stringify({
+        status: control.status,
+        builtins: control.builtins,
+        claimsNotifications: control.claimsNotifications,
+        claimsOsd: control.claimsOsd,
+        busy: control.busy,
+        failed: control.failed,
+        shown: service.stateStore.values.takeoverPromptShown, // qmllint disable missing-property
+        entries: service.notifications.entries.length // qmllint disable missing-property
+      });
     }
 
     // Clique na ilha do monitor capturado (regra 5 da spec 03).

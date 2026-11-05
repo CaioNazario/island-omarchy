@@ -10,8 +10,21 @@ import "../core/notificationSource.mjs" as SourceCore
 // `omarchy.notifications` desligado, este `NotificationServer` é dono de
 // `org.freedesktop.Notifications` (specs/14-spikes.md, S7). Vive no
 // Service.qml: a lista sobrevive ao hot-reload da barra.
+//
+// O servidor só existe com `serverEnabled`: criado, ele pediria o nome D-Bus
+// mesmo com o plugin do Omarchy ligado (e levaria o nome se carregasse antes
+// dele), então a Island o cria só depois do consentimento
+// (`NotificationTakeover`). As notificações internas (`pushInternal`: pomodoro,
+// dicas) não dependem dele.
 Scope {
   id: feed
+
+  property bool serverEnabled: false
+
+  // Sem o servidor, as referências das notificações que ele entregou morrem
+  // (`dismiss` deixa de ser função) e o Omarchy volta a ser o dono delas: ficam
+  // só as internas.
+  onServerEnabledChanged: if (!serverEnabled) entries = entries.filter(entry => !entry.ref)
 
   // As 8 mais recentes primeiro (specs/04 "Modo `stack`").
   property var entries: []
@@ -23,15 +36,21 @@ Scope {
   // Clique numa notificação interna com ação (`weather`): a barra decide o que abrir.
   signal actionRequested(string action)
 
-  NotificationServer {
-    keepOnReload: false
-    bodySupported: true
-    bodyMarkupSupported: true
-    actionsSupported: true
-    imageSupported: true
-    persistenceSupported: true
+  LazyLoader {
+    id: serverLoader
 
-    onNotification: notification => feed.receive(notification)
+    active: feed.serverEnabled
+
+    NotificationServer {
+      keepOnReload: false
+      bodySupported: true
+      bodyMarkupSupported: true
+      actionsSupported: true
+      imageSupported: true
+      persistenceSupported: true
+
+      onNotification: notification => feed.receive(notification)
+    }
   }
 
   function receive(notification) {
@@ -71,9 +90,11 @@ Scope {
   /**
    * Notificação da própria Island (pomodoro, dica do clima): sem app no
    * D-Bus, entra pelo mesmo roteamento, com glifo Phosphor. `action`, se
-   * houver, roda ao clicar nela (`actionRequested`).
+   * houver, roda ao clicar nela (`actionRequested`). `holdMs`, se vier, é
+   * quanto tempo o card fica aberto (padrão da ilha: 2500 ms; a pergunta de
+   * quem cuida das notificações pede 5000).
    */
-  function pushInternal(title, body, glyph, action) {
+  function pushInternal(title, body, glyph, action, holdMs) {
     const entry = {
       key: nextKey++,
       ref: null,
@@ -86,7 +107,8 @@ Scope {
       low: false,
       fromBrowser: false,
       transient: false,
-      action: action || ""
+      action: action || "",
+      holdMs: holdMs || 0
     };
     entries = [entry].concat(entries).slice(0, 8);
     hasUnread = true;
@@ -107,6 +129,21 @@ Scope {
     return entries.find(entry => entry.key === key) || null;
   }
 
+  /**
+   * Fecha tudo o que o servidor rastreia, antes de a Island largá-lo. O
+   * Quickshell entrega ao próximo servidor, como se fossem novas, as
+   * notificações que o anterior ainda rastreia: ao devolver ao Omarchy ele
+   * reexibia todas, e os avisos de crash `critical` (que não expiram) voltaram
+   * empilhados na tela a cada vez que o interruptor desligava. A Island já as
+   * mostrou, e a lista dela se esvazia ao largar o servidor. Cobre também as
+   * que a lista de 8 já descartou e as `transient`, que nunca entraram nela.
+   */
+  function releaseServerNotifications() {
+    const server = serverLoader.item; // qmllint disable missing-property
+    if (server) server.trackedNotifications.values.slice().forEach(notification => dismissRef(notification)); // qmllint disable missing-property
+    entries = entries.filter(entry => !entry.ref);
+  }
+
   // O app fechou a notificação, ou ela saiu da lista por aqui.
   function forget(key) {
     entries = entries.filter(entry => entry.key !== key);
@@ -116,7 +153,17 @@ Scope {
   function dismiss(key) {
     const entry = find(key);
     forget(key);
-    if (entry && entry.ref) entry.ref.dismiss();
+    if (entry) dismissRef(entry.ref);
+  }
+
+  // Referência de um servidor já destruído: `dismiss` lança TypeError.
+  function dismissRef(ref) {
+    if (!ref) return;
+    try {
+      ref.dismiss();
+    } catch (error) {
+      // Nada a fechar: o objeto morreu com o servidor.
+    }
   }
 
   /** Clique num item: ação padrão (abre/foca o app ou site) e sai da lista. */
@@ -133,7 +180,7 @@ Scope {
   function clearAll() {
     const all = entries;
     entries = [];
-    all.forEach(entry => entry.ref && entry.ref.dismiss());
+    all.forEach(entry => dismissRef(entry.ref));
   }
 
   function markAllRead() {
