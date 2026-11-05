@@ -269,6 +269,41 @@ describe('IslandState', () => {
     expect(state.mode).toBe('compact');
   });
 
+  it('spec 04: aviso que pede 5000ms fica 5000ms em notif, também depois do hover', () => {
+    const scheduler = new FakeScheduler();
+    const state = new IslandState(scheduler);
+    state.openNotification(false, false, 5000);
+    scheduler.advance(2500);
+    expect(state.mode).toBe('notif');
+    scheduler.advance(2499);
+    expect(state.mode).toBe('notif');
+    scheduler.advance(1);
+    expect(state.mode).toBe('compact');
+
+    state.openNotification(false, false, 5000);
+    state.hoverStart();
+    state.hoverEnd();
+    scheduler.advance(5000);
+    expect(state.mode).toBe('compact');
+  });
+
+  it('spec 04: a duração pedida vale só para o aviso que a pediu', () => {
+    const scheduler = new FakeScheduler();
+    const state = new IslandState(scheduler);
+    state.openNotification(false, false, 5000);
+    state.openNotification(false);
+    scheduler.advance(2500);
+    expect(state.mode).toBe('compact');
+  });
+
+  it('spec 04: crítico segue sem fechar sozinho mesmo com duração pedida', () => {
+    const scheduler = new FakeScheduler();
+    const state = new IslandState(scheduler);
+    state.openNotification(true, false, 5000);
+    scheduler.advance(60_000);
+    expect(state.mode).toBe('notif');
+  });
+
   it('onChange dispara em toda transição de mode/cardOpen, mas não em no-ops', () => {
     const scheduler = new FakeScheduler();
     let changes = 0;
