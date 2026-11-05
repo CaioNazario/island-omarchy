@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-05
+
 ### Added
 
 - A **Settings** tab in the editor with an *Island handles notifications and OSD* switch. It turns Omarchy's `omarchy.notifications` and `omarchy.osd` plugins off (one `omarchy plugin disable` each) and the Island takes over, or gives them back. Each swap makes the shell rebuild its plugin panels and freeze for a few seconds; the tab says so and trusts the plugin list it reads afterwards rather than the exit code of the `omarchy` command. Closes #38.
@@ -235,7 +237,9 @@ First release: Island as an Omarchy bar plugin.
 - Weather from Open-Meteo.
 - Environments and widgets on the side pills, with hardware and Claude and Codex AI usage.
 
-[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.8.2...dev
+[Unreleased]: https://github.com/CaioNazario/island-omarchy/compare/v0.9.0...dev
+[0.9.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.8.3...v0.9.0
+[0.8.3]: https://github.com/CaioNazario/island-omarchy/compare/v0.8.2...v0.8.3
 [0.8.2]: https://github.com/CaioNazario/island-omarchy/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/CaioNazario/island-omarchy/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/CaioNazario/island-omarchy/compare/v0.7.8...v0.8.0
