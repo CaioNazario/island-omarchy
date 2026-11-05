@@ -17,5 +17,10 @@ echo "$DBUS_SESSION_BUS_ADDRESS" >"$bus_file"
 xdg="$(dirname "$log")/xdg"
 mkdir -p "$xdg/config" "$xdg/state"
 export XDG_CONFIG_HOME="$xdg/config" XDG_STATE_HOME="$xdg/state"
-# Sem barramento de acessibilidade no D-Bus privado: o atk-bridge só avisaria.
-NO_AT_BRIDGE=1 ISLAND_PLUGIN_DIR="$plugin_dir" exec qs -p "$harness" >"$log" 2>&1
+# Sem o portal: o Qt o ativa neste D-Bus privado e o
+# xdg-desktop-portal-hyprland dele morre com SIGSEGV em `exit()` (libwayland-client,
+# `wl_proxy_marshal_flags`) quando o Hyprland aninhado cai, e o Omarchy mostra uma
+# mensagem de crash para cada core do usuário (um por `make smoke`/`make dev`).
+# Sem barramento de acessibilidade também: o atk-bridge só avisaria.
+NO_AT_BRIDGE=1 QT_NO_XDG_DESKTOP_PORTAL=1 QT_QPA_PLATFORMTHEME=generic \
+  ISLAND_PLUGIN_DIR="$plugin_dir" exec qs -p "$harness" >"$log" 2>&1
