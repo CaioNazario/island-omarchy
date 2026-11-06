@@ -328,6 +328,37 @@ ShellRoot {
       });
     }
 
+    // Pomodoro (spec 20): `toggle`, `skip`, `restart`, `release` (Urgência),
+    // `preview`/`endPreview` (Testar pausa) e `settings` (engrenagem) agem como
+    // os botões; `config <json>` grava a configuração. Devolve o estado.
+    function pomodoro(action: string, arg: string): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      const service = serviceLoader.item; // qmllint disable missing-property
+      if (!bar || !service) return "no bar";
+      const source = service.pomodoro; // qmllint disable missing-property
+      if (action === "toggle") source.toggle();
+      else if (action === "skip") source.skip();
+      else if (action === "restart") source.restart();
+      else if (action === "release") source.release();
+      // Direto na fonte: a barra recém-recriada ainda pode não ter achado o serviço.
+      else if (action === "preview") source.startPreview();
+      else if (action === "endPreview") source.endPreview();
+      else if (action === "settings") bar.togglePomodoroSettings(); // qmllint disable missing-property
+      else if (action === "config") source.setConfig(JSON.parse(arg));
+      return JSON.stringify({
+        phase: source.current.phase,
+        session: source.current.session,
+        running: source.running,
+        locked: source.current.locked,
+        previewing: source.previewing,
+        completed: source.current.completed,
+        remainingMs: source.current.endsAt === null ? source.current.remainingMs : source.current.endsAt - Date.now(),
+        config: source.config,
+        mode: bar.mode, // qmllint disable missing-property
+        settingsOpen: bar.pomodoroSettingsOpen // qmllint disable missing-property
+      });
+    }
+
     function status(): string {
       return JSON.stringify({
         bar: barLoader.status === Loader.Ready,

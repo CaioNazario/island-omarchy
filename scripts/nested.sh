@@ -104,6 +104,14 @@ strip_window_x() {
     jq -r --argjson offset "$offset" '.["HEADLESS-ISLAND"].levels | to_entries[] | .value[] | select(.namespace == "island-plugin-widget") | .x - $offset'
 }
 
+# Janelas da tela de pausa do Pomodoro (spec 20) no monitor virtual.
+break_layers() {
+  # shellcheck source=/dev/null
+  source "$STATE"
+  HYPRLAND_INSTANCE_SIGNATURE="$NESTED_INSTANCE" hyprctl layers -j |
+    jq -r '[.["HEADLESS-ISLAND"].levels | to_entries[] | .value[] | select(.namespace == "island-break")] | length'
+}
+
 harness_status() {
   harness_ipc status || true
 }
@@ -127,7 +135,7 @@ log_errors() {
 # (spec 19) vai junto: um objeto aninhado do arquivo, com uma opção inválida.
 seed_settings() {
   mkdir -p "$DIST/xdg/config/island"
-  printf '{"environments": [["Semente","coffee",["pomodoro","note"],["hw","plugin:dev.fake"]],["Faixa","code",["plugin:dev.fake","music"],["hw"]]], "environmentIndex": 0, "appearance": {"shape": "square", "fill": "xadrez"}}\n' \
+  printf '{"environments": [["Semente","coffee",["pomodoro","note"],["hw","plugin:dev.fake"]],["Faixa","code",["plugin:dev.fake","music"],["hw"]]], "environmentIndex": 0, "appearance": {"shape": "square", "fill": "xadrez"}, "pomodoro": {"cycleLen": 2, "durationMode": "individual", "plan": [{"focusMin": 45, "breakMin": 9}, {"focusMin": 15, "breakMin": 3}]}}\n' \
     >"$DIST/xdg/config/island/settings.json"
 }
 
@@ -138,6 +146,10 @@ smoke() {
   wait_for '[[ "$(harness_status)" == *"\"bar\":true"* ]]' "the bar to load"
   wait_for '[[ "$(harness_ipc environments)" == *"\"name\":\"Semente\""*"\"left\":[\"pomodoro\",\"note\"]"* ]]' "the environments saved in settings.json to load"
   wait_for '[[ "$(harness_ipc appearance)" == *"\"fill\":\"solid\""*"\"shape\":\"square\""* ]]' "the appearance saved in settings.json to load"
+  # Regressão (AGENTS.md "Hurdles"): o plano do Pomodoro também é uma lista do
+  # arquivo, que o JsonAdapter entrega sem ser `Array`; lida com `Array.isArray`
+  # a Island subia com o plano padrão e a gravação seguinte apagava o do usuário.
+  wait_for '[[ "$(harness_ipc pomodoro "" "")" == *"\"cycleLen\":2"*"\"plan\":[{\"focusMin\":45,\"breakMin\":9},{\"focusMin\":15,\"breakMin\":3}]"* ]]' "the pomodoro plan saved in settings.json to load"
   # Regressão: a nota e os ambientes ficavam legíveis por outros usuários
   # (pasta 0755 e arquivo 0644 com o umask 022). A semente cria a pasta como
   # uma instalação antiga; as duas pastas da Island têm de virar 0700.
@@ -264,6 +276,37 @@ smoke() {
     harness_ipc reload >/dev/null
     wait_for '[[ "$(harness_status)" == *"\"bar\":true"*"\"reloads\":$i"* ]]' "reload $i"
   done
+  # Depois dos hot-reloads (o contador deles é conferido no laço), já em português
+  # e com zoom grande. Tela de pausa do Pomodoro (spec 20): "Testar pausa" fecha a ilha e abre uma
+  # janela `overlay` por monitor sem mexer no ciclo; a pausa real sobrevive ao
+  # hot-reload e a Urgência a fecha sem parar o tempo.
+  harness_ipc open pomodoro >/dev/null
+  harness_ipc pomodoro settings "" >/dev/null
+  harness_ipc pomodoro preview "" >/dev/null
+  wait_for '[[ "$(break_layers)" == 1 ]]' "the break screen preview window"
+  # A barra recém-recriada leva até 250ms para achar o serviço: a ilha fecha depois.
+  wait_for '[[ "$(harness_ipc pomodoro "" "")" == *"\"mode\":\"compact\""* ]]' "the island to close for the break preview"
+  [[ "$(harness_ipc pomodoro "" "")" == *"\"session\":1"*"\"completed\":0"* ]] || {
+    echo "smoke: the break preview changed the cycle: $(harness_ipc pomodoro "" "")" >&2
+    exit 1
+  }
+  harness_ipc pomodoro endPreview "" >/dev/null
+  wait_for '[[ "$(break_layers)" == 0 ]]' "the break screen preview to close"
+  harness_ipc pomodoro skip "" >/dev/null
+  wait_for '[[ "$(break_layers)" == 1 ]]' "the break screen of a real break"
+  harness_ipc reload >/dev/null
+  wait_for '[[ "$(harness_status)" == *"\"bar\":true"* && "$(break_layers)" == 1 ]]' "the break screen to survive a hot-reload"
+  harness_ipc pomodoro release "" >/dev/null
+  wait_for '[[ "$(break_layers)" == 0 ]]' "the emergency exit to close the break screen"
+  [[ "$(harness_ipc pomodoro "" "")" == *"\"phase\":\"break\""*"\"running\":true"* ]] || {
+    echo "smoke: the emergency exit stopped the break timer: $(harness_ipc pomodoro "" "")" >&2
+    exit 1
+  }
+  harness_ipc pomodoro restart "" >/dev/null
+  [[ "$(harness_ipc pomodoro "" "")" == *"\"plan\":[{\"focusMin\":45,\"breakMin\":9},{\"focusMin\":15,\"breakMin\":3}]"* ]] || {
+    echo "smoke: the pomodoro plan changed across hot-reloads: $(harness_ipc pomodoro "" "")" >&2
+    exit 1
+  }
   shot "$DIST/smoke.png"
   local errors
   errors="$(log_errors)"
