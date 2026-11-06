@@ -347,6 +347,7 @@ dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/island-desktop/hypr/island
 - `Super+S`: quick controls (takes this key away from Omarchy's scratchpad)
 - `Super+Ctrl+Alt+←/→`: switch environments
 - Three fingers down on the touchpad: open the notification list; up: close it
+- Volume and brightness keys: the same keys, now rebound to the commands that reach the Island's OSD (Omarchy 4.5 handles them inside the shell, which skips the Island)
 
 Since the file lives inside the plugin, `omarchy plugin update` updates the shortcuts too. Don't repeat these binds in your `bindings.lua`: Hyprland would run both.
 
