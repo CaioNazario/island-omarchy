@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-06
+
 ### Changed
 
 - **Breaking:** the plugin id is now `island-desktop` (it was `caionazario.island`), so the install commands read `omarchy plugin add …` and `omarchy plugin enable island-desktop`. Don't run `omarchy plugin update caionazario.island` on an existing install: it would pull the new files into the old folder and leave the plugin half-registered. Reinstall with `omarchy plugin remove caionazario.island`, then add and enable it again (see "Coming from 0.9 or earlier" in the README). Settings in `~/.config/island/` are kept. A source install migrates by itself: `./install.sh` removes the old folder. If you added the shortcuts by hand, point `hyprland.lua` at `plugins/island-desktop/hypr/island.lua`.
