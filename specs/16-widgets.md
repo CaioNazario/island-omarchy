@@ -57,7 +57,7 @@ Linha de 22px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 | `ai` | spec 12 | abre/fecha `ai` |
 | `hw` | spec 10 | abre/fecha `quick` |
 | `event` | ícone `ph-calendar-blank` · rótulo (máx. 130px) · sub | abre `calendar` |
-| `pomodoro` | anel · rótulo `mm:ss` · sub | alterna rodando/pausado |
+| `pomodoro` | anel · rótulo `mm:ss` · sub | abre/fecha `pomodoro` (spec 20) |
 | `music` | ícone da fonte (spec 05) `accent-400` · título (máx. 120px) · sub artista · ícone final `ph-fill ph-play`/`ph-pause` do estado | com player: abre/fecha `music` fixado |
 | `github` | ícone `ph-fill ph-github-logo` · rótulo · sub | nenhum |
 | `progress` | ícone `ph-hourglass-medium` · "Dia" · barra · sub `%` | nenhum |
@@ -75,15 +75,14 @@ Linha de 22px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 
 ### `pomodoro`
 
-- Ciclo: **Foco 25:00 → Pausa 05:00 → Foco…**, trocando de fase sozinho ao zerar.
-- Rótulo: tempo restante `mm:ss`. Sub: "Foco" ou "Pausa" rodando, "Pausado" parado. Anel: fração já decorrida da fase.
-- Estado inicial: Foco 25:00, pausado.
-- Ao trocar de fase, uma notificação da Island entra pelo roteamento da spec 04, com ícone `ph ph-timer`:
-  - fim do foco: "Hora da pausa" / "5 min de pausa"
-  - fim da pausa: "Hora de focar" / "25 min de foco"
-- Sem botão de reiniciar nesta versão.
-- Roda no `Service.qml`: continua no hot-reload da barra e no bloqueio de tela (o Omarchy não descarrega a barra ao bloquear). Estado em `state.json` `pomodoroState` (spec 13); ao reiniciar o shell volta pausado, com o restante guardado.
-- O relógio de 1s só roda com o widget visível e o pomodoro rodando. O vencimento de fase é um timeout único, esteja o widget visível ou não.
+Comportamento completo na [spec 20](20-pomodoro.md): ciclo de sessões com durações configuráveis, tela de pausa e o modo `pomodoro` da ilha. Aqui, só o widget da barra:
+
+- Visual: anel (fração decorrida da etapa) · rótulo `mm:ss` (tempo restante) · sub "Foco" ou "Pausa" rodando, "Pausado" parado.
+- Clique: abre/fecha o modo `pomodoro` da ilha (o card com relógio, Reiniciar/Pular/Iniciar e as configurações). Antes, alternava rodando/pausado; agora isso é o botão do card.
+- Estado inicial: Foco 1/4, 25:00, pausado.
+- Ao fim do tempo de uma etapa, uma notificação da Island entra pelo roteamento da spec 04, com ícone `ph ph-timer`, com os minutos da etapa que começa.
+- Roda no `Service.qml`: continua no hot-reload da barra e no bloqueio de tela (o Omarchy não descarrega a barra ao bloquear). Estado em `state.json` `pomodoroState`, configuração em `settings.json` `pomodoro` (spec 13); ao reiniciar o shell volta parado.
+- O relógio de 1s só roda com o widget visível e o pomodoro rodando. O vencimento da etapa é um timeout único, esteja o widget visível ou não.
 
 ### `music`
 
@@ -158,7 +157,7 @@ Fonte de dado usada só por widget (hardware, IA, GitHub) roda apenas enquanto u
 
 - [x] Testes puros: próximo evento (sem eventos, dia inteiro como reserva, ≤90 min, >90 min), fases do pomodoro (troca ao zerar, pausar e retomar), `daysUntil` (hoje, amanhã, passado, virada de ano), progresso do dia, parse das buscas do GitHub e textos no singular/plural.
 - [ ] Com a barra estreita (ou no tamanho `large`), o `hw` perde NET, GPU e TEMP, depois os widgets colapsam para o ícone antes de qualquer um sumir, e nenhum passa por baixo dos botões da direita.
-- [ ] O pomodoro notifica a troca de fase e continua depois de lock/unlock e hot-reload.
+- [ ] O pomodoro notifica a troca de etapa e continua depois de lock/unlock e hot-reload (o hot-reload é coberto no `make smoke`; lock/unlock só na sessão real).
 - [x] Com login no `gh`, o widget mostra a contagem de PRs (`GithubSource` isolado contra a conta real: "0 PRs").
 - [ ] Nota editada na ilha aparece no widget ao fechar e sobrevive ao hot-reload.
 - [ ] Ambiente sem `hw` nem `ai`: nenhuma leitura de `/proc` e nenhuma chamada HTTP de IA acontecem.

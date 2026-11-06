@@ -4,6 +4,17 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Added
+
+- A full **Pomodoro**, from the Pomodoro Desktop v7 prototype. Clicking the Pomodoro widget now opens a card in the Island with the clock, **Restart**, **Skip** and **Start/Pause** buttons and a progress bar (`Space`, `R`, `S` and `M` work while it is open). The gear opens the settings inside the card: 1 to 24 sessions per cycle, one duration for every session (**Global**) or one per session (**Individual**), **Start automatically**, and the break wallpaper (four presets or your own image, picked with the desktop file chooser). Settings apply at once and live in `settings.json` (`pomodoro`).
+- A **break screen**: every break covers each monitor with the wallpaper, an instruction and the time left, with the entrance animation from the prototype; the monitor with the focus takes the keyboard. Moving the mouse to the top of the screen (or holding `Esc` for 2 seconds) reveals **Skip break** and **Emergency** (which asks first). **Test break** shows the screen without touching the cycle. The break screen survives a hot-reload of the bar.
+- The cycle position and the number of focus sessions finished today are kept in `state.json`; reopening during a break goes back to that session's focus, stopped.
+
+### Changed
+
+- Clicking the Pomodoro widget opens its card instead of starting or pausing the timer; use the card's button (or `Space`) for that.
+- The break and focus times are no longer fixed at 5 and 25 minutes, and the notification when a stage ends names the minutes of the stage that starts.
+
 ## [0.10.2] - 2026-11-06
 
 ### Fixed

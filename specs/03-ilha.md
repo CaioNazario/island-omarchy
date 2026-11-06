@@ -21,6 +21,7 @@ A máquina de estados vive em `src/core/island.ts` (pura, testada). A UI só ren
 | `ai` | 480 × `aiPanelHeight` (abas, cartão do provedor escolhido, tokens) | 24 | fixo | 12 |
 | `env` | 260 × 32 | 16 | transitório 1500ms | 15 |
 | `note` | 420 × 132 | 24 | fixo | 16 |
+| `pomodoro` | 300 × 128; com as configurações 340 × (128 + 24 + lista, até 470) | 24 | fixo | 16, 20 |
 | `osd` | 320 × 36 | 18 | transitório 1500ms ou a duração do pedido | 08 |
 | `mixer` | 440 × altura do conteúdo (`mixerHeight`), até 560 | 24 | fixo | 08 |
 | `display` | 440 × 277, sem backlight 212 | 24 | fixo | 08 |
@@ -69,7 +70,7 @@ O cartão central (spec 05) também é um estado da ilha: 440 × altura do conte
 
 ## Foco de teclado
 
-Modos fixos (inclusive `note` e `music` fixado) e o cartão central tomam o foco de teclado enquanto abertos: a camada do monitor-alvo passa a `WlrKeyboardFocus.Exclusive` (spec 02). É isso que permite Esc, setas nos sliders, digitar a senha de Wi‑Fi e a nota. Ao fechar, volta a `None`. Modos transitórios não tomam foco.
+Modos fixos (inclusive `note`, `pomodoro` e `music` fixado) e o cartão central tomam o foco de teclado enquanto abertos: a camada do monitor-alvo passa a `WlrKeyboardFocus.Exclusive` (spec 02). É isso que permite Esc, setas nos sliders, digitar a senha de Wi‑Fi e a nota. Ao fechar, volta a `None`. Modos transitórios não tomam foco.
 
 ## Atalho `Super+S`
 

@@ -14,9 +14,9 @@ A Island é um plugin de barra do Omarchy (Quickshell sobre Hyprland) que substi
 | **Ambiente** | Conjunto nomeado de widgets para as duas pílulas; um ativo por vez (spec 15) |
 | **Widget** | Bloco de informação numa pílula lateral: IA, hardware, evento, pomodoro etc. (spec 16) |
 | **Ilha** | Pílula central; tem um **modo** por vez |
-| **Modo** | Estado da ilha: `compact`, `notif`, `stack`, `music`, `volume`, `brightness`, `env`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `mixer`, `display`, `battery`, `osd` |
+| **Modo** | Estado da ilha: `compact`, `notif`, `stack`, `music`, `volume`, `brightness`, `env`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `pomodoro`, `mixer`, `display`, `battery`, `osd` |
 | **Modo transitório** | Fecha sozinho após um timer: `notif`, `music`, `volume`, `brightness`, `env` |
-| **Modo fixo** | Fica até clique fora, Esc ou novo gatilho: `stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `mixer`, `display`, `battery` e `music` fixado |
+| **Modo fixo** | Fica até clique fora, Esc ou novo gatilho: `stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `pomodoro`, `mixer`, `display`, `battery` e `music` fixado |
 | **Cartão central** | Ilha expandida com música + calendário (spec 05; `hub` no design) |
 | **Banner** | Notificação que desce abaixo da ilha quando ela está ocupada (spec 04) |
 | **Linha de energia** | Fileira Suspender/Reiniciar/Desligar/Sair/Bloquear (spec 09) |
@@ -44,6 +44,7 @@ A Island é um plugin de barra do Omarchy (Quickshell sobre Hyprland) que substi
 | 17 | [editor-ambientes](17-editor-ambientes.md) | Editor de ambientes e widgets, arrastar e soltar |
 | 18 | [auto-ocultar](18-auto-ocultar.md) | Barra que some e volta pela borda |
 | 19 | [aparencia](19-aparencia.md) | Fundo, gradiente, grão, borda, sombra, cantos e blur das pílulas e da ilha |
+| 20 | [pomodoro](20-pomodoro.md) | Ciclos de foco e pausa, configurações, modo `pomodoro` da ilha e tela de pausa |
 
 ## Ordem de implementação
 
@@ -56,6 +57,7 @@ As specs foram implementadas nesta ordem:
 5. 10 (hardware) → 07 (clima) → 12 (IA)
 6. 15 → 16 → 17 → 18 (ambientes, widgets, editor, auto-ocultar)
 7. 13 (preferências) consolida as opções que cada spec já declarou
+8. 20 (Pomodoro completo: motor, configurações, modo da ilha e tela de pausa), do protótipo Pomodoro Desktop v7 (`design-source/pomodoro/`)
 
 ### Design v5
 

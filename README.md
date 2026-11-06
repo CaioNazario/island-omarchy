@@ -27,6 +27,7 @@ When expanded, it can show:
 - Display: brightness, text size and monitor scale
 - Battery: details and power profile
 - AI usage
+- Pomodoro: focus and break cycles with their settings
 
 Only one mode is open at a time.
 
@@ -75,7 +76,7 @@ To switch environments:
 | AI usage | Session and weekly limits | Opens the AI card |
 | Hardware | CPU, RAM, GPU, temperature and network | Opens the quick controls |
 | Next event | Today's next event | Opens the calendar |
-| Pomodoro | 25 min focus and 5 min break cycles | Starts or pauses |
+| Pomodoro | Time left and the current stage (focus, break or paused) | Opens the Pomodoro card |
 | Music | What's playing now | Opens the music player |
 | GitHub | Your open PRs and how many wait for your review | — |
 | Day progress | How much of the day has passed | — |
@@ -162,6 +163,17 @@ Once the Island handles them, notifications appear in it and are kept in a list.
 In Chrome, Brave and other Chromium browsers, web notifications show the service they came from, such as WhatsApp, Discord or YouTube. Firefox doesn't send that information, so its notifications just say Firefox.
 
 There is also **Do not disturb**, and Omarchy's notification shortcuts and scripts (`Super+,`, `omarchy toggle notification-silencing`…) keep working: they talk to the Island while it handles notifications.
+
+### Pomodoro
+
+Click the Pomodoro widget to open its card: the clock, **Restart**, **Skip** and **Start/Pause** buttons, and a progress bar. The gear opens the settings right inside the Island (shortcuts while the card is open: `Space` starts or pauses, `R` restarts, `S` skips, `M` toggles the settings). The timer keeps counting with the card closed.
+
+- **Cycle**: 1 to 24 sessions, each a focus followed by a break. Durations are the same for every session (**Global**) or set per session (**Individual**). **Start automatically** begins the next focus after a break; breaks always start by themselves.
+- **Break screen**: every break covers each monitor with a wallpaper, a short instruction ("Stand up.", "Drink some water."…) and the time left. Pick one of four wallpapers or your own image (the **+** tile opens the desktop file chooser), and use **Test break** to see it without touching the cycle. The monitor with the focus takes the keyboard while the break screen is up.
+- **Leaving a break**: move the mouse to the top of the screen (or hold `Esc` for 2 seconds) to reveal **Skip break**, which ends the break right away, and **Emergency**, which asks first and then closes the screen while the break timer keeps running.
+- The settings are saved in `~/.config/island/settings.json` (`pomodoro`); the timer state, in `~/.local/state/island/state.json`.
+
+Activities for breaks (playing a link while you rest) aren't part of this version.
 
 ### Music
 
@@ -259,7 +271,7 @@ Opened by a click or a shortcut, and kept open until you:
 - Press `Esc`
 - Trigger something else
 
-Fixed modes: `stack` (notification list), `calendar`, `quick`, `wifi`, `bt`, `mixer`, `display`, `battery`, `ai`, `note`.
+Fixed modes: `stack` (notification list), `calendar`, `quick`, `wifi`, `bt`, `mixer`, `display`, `battery`, `ai`, `note`, `pomodoro`.
 
 ### Events don't interrupt what you opened
 

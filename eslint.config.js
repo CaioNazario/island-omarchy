@@ -12,7 +12,8 @@ const QML_MISSING_GLOBALS = ['Intl', 'TextDecoder', 'TextEncoder', 'fetch'].map(
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'node_modules/**', 'design/**'],
+    // `design-source/` é o protótipo do Claude Design como veio (inclui o runtime `support.js`).
+    ignores: ['dist/**', 'node_modules/**', 'design/**', 'design-source/**'],
   },
   ...tseslint.configs.recommended,
   {

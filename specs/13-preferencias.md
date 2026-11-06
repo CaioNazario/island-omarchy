@@ -23,12 +23,13 @@ O design v3 muda o padrão de `clickAction` para "Calendário compacto" e só ap
 | `theme` | `"Nocturne"` \| `"Alto contraste"` (outro valor cai no Nocturne) | `"Nocturne"` | spec 01 "Temas", spec 17 |
 | `appearance` | objeto com as opções da spec 19 ou `null` | `null` (= visual do design) | spec 19 |
 | `noteText` | string (até 80) | `""` | spec 16 |
+| `pomodoro` | objeto com as opções da spec 20 ou `null` | `null` (= ciclo 4 × 25/5 do protótipo) | spec 20 |
 | `countdownName` | string | `""` | spec 16 |
 | `countdownDate` | `"AAAA-MM-DD"` ou `""` | `""` | spec 16 |
 
 Listas lidas do arquivo chegam ao JS como objetos com `length` e índices em que `Array.isArray` dá `false` (o motor do QML, via `JsonAdapter`): o core as lê com `asList` (`environments.ts`). Quem validasse com `Array.isArray` jogaria fora o que o usuário guardou e a próxima gravação apagaria o arquivo. O `make smoke` semeia um `settings.json` com um ambiente próprio e falha se a barra não o carregar.
 
-Estado que não é preferência fica em `$XDG_STATE_HOME/island/state.json` (`StateStore.qml`): `doNotDisturb` (spec 04), `pomodoroState` (spec 16), `weatherHintShown` (spec 07), `takeoverPromptShown` (spec 04 "Quem cuida das notificações"). Quem cuida das notificações e do OSD não é preferência nem estado da Island: é o estado dos plugins do Omarchy, lido de `omarchy plugin list --json`.
+Estado que não é preferência fica em `$XDG_STATE_HOME/island/state.json` (`StateStore.qml`): `doNotDisturb` (spec 04), `pomodoroState` (spec 20), `weatherHintShown` (spec 07), `takeoverPromptShown` (spec 04 "Quem cuida das notificações"). Quem cuida das notificações e do OSD não é preferência nem estado da Island: é o estado dos plugins do Omarchy, lido de `omarchy plugin list --json`.
 
 As duas pastas, `$XDG_CONFIG_HOME/island` e `$XDG_STATE_HOME/island`, são privadas (0700, `PrivateDir.qml` com o script de `src/core/privateDir.ts`): a nota, os nomes dos ambientes e o estado não ficam legíveis por outros usuários da máquina. Os arquivos saem com o umask do usuário e a gravação atômica os recria a cada salvamento, então quem protege é a pasta; cada início também fecha a pasta de uma instalação antiga e põe os `.json` que já existem em 0600. O `make lint` roda o script de verdade contra uma pasta 0755 com JSON 0644 e uma nova (`scripts/check-private-dir.mjs`, na CI), e o `make smoke` confere o mesmo no motor real.
 

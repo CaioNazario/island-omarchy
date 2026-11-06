@@ -80,3 +80,9 @@ Os spikes resolvidos ficam aqui como registro; cada resultado já vale como regr
 - **Restrições encontradas**:
   - Na ilha aberta, a Aurora com força 0.55 apaga os textos `neutral-*` sobre o fundo claro (rótulos do `wifi` quase ilegíveis). A força do gradiente precisa de um teto calculado pelo contraste dos textos sobre a cor média do fundo (C4), ou um teto menor na ilha aberta.
   - O shader pinta a própria base (`base` com a opacidade). O brilho, o halo e a borda da `SoftSurface` precisam ficar por cima dele.
+
+## S11 · Atividade da pausa do Pomodoro (em aberto)
+
+- **Pergunta**: como tocar uma atividade durante a pausa (a URL do protótipo, de música ou foco, só áudio atrás do wallpaper, spec 20)?
+- **Por que está aberto**: o Quickshell não tem webview, e o protótipo carregava a URL num `<iframe>` escondido. Caminhos a medir antes de implementar: abrir a URL no navegador padrão (`xdg-open`, sem controle de autoplay nem de fechamento), áudio sem janela por `mpv --no-video` num `Process` morto ao sair da pausa (precisa de `mpv` e `yt-dlp`), ou controlar um player MPRIS já aberto.
+- **Decisão do usuário (2026-11-06)**: cortar do escopo da primeira versão do Pomodoro e voltar ao assunto depois. O plano e a configuração não guardam nome nem URL; ao implementar, a spec 20 ganha os campos, o chip "Tocando" da tela de pausa e a validação (só `http:`/`https:`).

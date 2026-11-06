@@ -46,6 +46,8 @@ O QML não entende `oklch()` nem `color-mix()`. Valores convertidos (alfa via `Q
 | Fundo do editor (spec 17) | `bg` 94% / fundo escurecido `bg` 50% | `rgba(22,24,38,0.94)` / `0.50` |
 | Divisor | `text` 16% | `rgba(233,233,237,0.16)` |
 | Ponta dos divisores em degradê | `neutral-800` 0% | `rgba(63,66,77,0)` |
+| Foco do Pomodoro (spec 20) | `oklch(0.79 0.135 62)` | `#f8a558` (`POMODORO_ACCENTS.focus`) |
+| Pausa do Pomodoro (spec 20) | `oklch(0.80 0.09 178)` | `#79d1be` (`POMODORO_ACCENTS.break`) |
 
 ## Tipografia
 
