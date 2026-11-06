@@ -20,9 +20,9 @@ Depois do divisor, na linha de controles de `quick`, `wifi` e `bt`:
   | Botão | Ícone | Ação |
   |---|---|---|
   | Suspender | `ph ph-moon-stars` | `systemctl suspend` |
-  | Reiniciar | `ph ph-arrow-clockwise` | `omarchy-system-reboot` |
-  | Desligar (texto `#ff958d`) | `ph-bold ph-power` | `omarchy-system-shutdown` |
-  | Sair | `ph ph-sign-out` | `omarchy-system-logout` |
+  | Reiniciar | `ph ph-arrow-clockwise` | `omarchy-system reboot` |
+  | Desligar (texto `#ff958d`) | `ph-bold ph-power` | `omarchy-system shutdown` |
+  | Sair | `ph ph-sign-out` | `omarchy-system logout` |
   | Bloquear | `ph ph-lock-simple` | `omarchy-system-lock` |
 
 - Qualquer ação fecha a ilha antes de executar.
@@ -31,7 +31,7 @@ Depois do divisor, na linha de controles de `quick`, `wifi` e `bt`:
 
 ## Fonte
 
-Os mesmos comandos do menu de sistema do Omarchy (`default/omarchy/omarchy-menu.jsonc`, entradas `system.*`). Suspender some quando o Omarchy o desligou (`omarchy-toggle-enabled suspend-off`), igual ao `when` do menu.
+Os mesmos comandos do menu de sistema do Omarchy (`default/omarchy/omarchy-menu.jsonc`, entradas `system.*`; no Omarchy 4.5 reiniciar, desligar e sair são `omarchy-system <ação>`, os `omarchy-system-reboot|shutdown|logout` antigos não existem mais, #40). Suspender some quando o Omarchy o desligou (`omarchy-toggle-enabled suspend-off`), igual ao `when` do menu.
 
 ## Critérios de aceite
 

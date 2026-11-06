@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Fixed
+
+- **Power off**, **Restart** and **Log out** did nothing on Omarchy 4.5, which no longer ships `omarchy-system-reboot`, `-shutdown` and `-logout`; a missing program fails silently, so the buttons looked dead. They now run `omarchy-system reboot|shutdown|logout`, the same commands as the Omarchy system menu. Closes #40.
+
 ## [0.9.0] - 2026-11-05
 
 ### Added
