@@ -78,7 +78,17 @@ Cada 120 unidades de rolagem (um entalhe; o touchpad acumula, inverter o sentido
 
 ## OSD do Omarchy
 
-As teclas de volume e brilho do Omarchy rodam `omarchy-audio-output-volume`/`omarchy-brightness-display`, que terminam em `omarchy-osd`. Com `omarchy.osd` desligado, a Island responde pelo alvo IPC `osd` (`show`, `close`, `state`, `ping`; spec 14, S7). Nenhum atalho muda.
+Até o Omarchy 4.4, as teclas de volume e brilho rodavam `omarchy-audio-output-volume`/`omarchy-brightness-display`, que terminam em `omarchy-osd`. Com `omarchy.osd` desligado, a Island responde pelo alvo IPC `osd` (`show`, `close`, `state`, `ping`; spec 14, S7).
+
+No 4.5 essas teclas viraram atalhos globais (`omarchy:audio.raise`, `omarchy:brightness.raise`…) que o shell trata por dentro e que chamam o OSD por `shell.summon("omarchy.osd")` (`plugins/services/media/Service.qml`), sem passar pelo alvo IPC. Com o plugin desligado, o shell só avisa `summon: plugin not enabled, not summoning: omarchy.osd` e o slider não abre. Por isso o `hypr/island.lua` refaz as cinco teclas (`XF86AudioRaiseVolume`, `XF86AudioLowerVolume`, `XF86AudioMute`, `XF86MonBrightnessUp`, `XF86MonBrightnessDown`), com `hl.unbind` antes do `o.bind`, para rodarem o comando antigo, que é também o fallback do `helpers.lua` do Omarchy:
+
+| Tecla | Comando |
+|---|---|
+| volume +/− | `omarchy-audio-output-volume raise` / `lower` |
+| mudo | `omarchy-audio-output-volume mute-toggle` |
+| brilho +/− | `omarchy-brightness-display +5%` / `5%-` |
+
+Rótulos e opções (`locked`, `repeating`) são os do Omarchy, e `make lint` confere os cinco binds (`scripts/check-hypr-binds.mjs`). O que o Omarchy 4.5 manda pelo `summon` por outros caminhos, como as mensagens de play/pause/próxima do serviço de mídia, a Island não recebe: a música aparece pelo modo `music` (spec 05).
 
 `src/core/osd.ts` traduz o payload (`{icon, message, value, progressText, max, duration}`, tudo string), com as regras de progresso do `OsdModel.stateForShow` do Omarchy:
 
@@ -164,6 +174,7 @@ A operação termina quando o script sai. O Quickshell não expõe o erro do `Pa
 
 - [ ] Arrastar os sliders de brilho/volume em `quick` muda o sistema em tempo real, e o valor volta certo após reabrir.
 - [ ] Tecla de volume com a ilha compacta abre `volume`; com `quick` aberto só move o slider; o OSD do Omarchy nunca aparece.
+- [ ] No Omarchy 4.5, as teclas de volume (subir, descer, mudo) e de brilho abrem `volume`/`brightness` na ilha, sem o aviso `summon: plugin not enabled` no log do shell.
 - [ ] Tiles de modo noturno e não perturbe refletem mudanças feitas por `omarchy toggle nightlight` e pelo IPC `notifications`.
 - [ ] Conectar numa rede WPA2 nova pela ilha funciona sem abrir diálogo nenhum; senha errada mostra "Senha incorreta" inline.
 - [ ] Senha de 7 caracteres mostra o erro local sem tentativa de conexão.

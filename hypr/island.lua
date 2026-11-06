@@ -15,3 +15,21 @@ o.bind("SUPER + CTRL + ALT + LEFT", "Island: ambiente anterior", "omarchy-shell 
 -- (repetir o gesto não alterna; spec 04).
 hl.gesture({ fingers = 3, direction = "down", action = function() hl.exec_cmd("omarchy-shell island openStack") end })
 hl.gesture({ fingers = 3, direction = "up", action = function() hl.exec_cmd("omarchy-shell island closeStack") end })
+
+-- Volume e brilho. No Omarchy 4.5 estas teclas são atalhos globais que o
+-- shell trata por dentro e chamam o OSD pelo `summon` direto, sem passar pelo
+-- alvo IPC `osd` que a Island atende: com `omarchy.osd` desligado só sai o
+-- aviso "summon: plugin not enabled" e o slider não abre. Aqui cada tecla roda o
+-- comando que o Omarchy usava até o 4.4 (e ainda é o fallback do helpers.lua),
+-- que termina em `omarchy-osd`. Rótulos e opções são os do Omarchy.
+local key_options = { locked = true, repeating = true }
+hl.unbind("XF86AudioRaiseVolume")
+o.bind("XF86AudioRaiseVolume", "Volume up", "omarchy-audio-output-volume raise", key_options)
+hl.unbind("XF86AudioLowerVolume")
+o.bind("XF86AudioLowerVolume", "Volume down", "omarchy-audio-output-volume lower", key_options)
+hl.unbind("XF86AudioMute")
+o.bind("XF86AudioMute", "Mute", "omarchy-audio-output-volume mute-toggle", { locked = true })
+hl.unbind("XF86MonBrightnessUp")
+o.bind("XF86MonBrightnessUp", "Brightness up", "omarchy-brightness-display +5%", key_options)
+hl.unbind("XF86MonBrightnessDown")
+o.bind("XF86MonBrightnessDown", "Brightness down", "omarchy-brightness-display 5%-", key_options)

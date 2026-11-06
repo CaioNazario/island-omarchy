@@ -24,6 +24,7 @@ lint: build
 	node scripts/check-ics-engine.mjs $(DIST)/core
 	node scripts/check-i18n.mjs $(DIST)/core
 	node scripts/check-qml-rules.mjs plugin
+	node scripts/check-hypr-binds.mjs hypr/island.lua
 	node scripts/check-private-dir.mjs $(DIST)/core
 	scripts/shaders-in-sync.sh
 	$(QMLLINT) --max-warnings 0 --uncreatable-type disable --signal-handler-parameters disable -I /usr/lib/qt6/qml $(QML_FILES)
