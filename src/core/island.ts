@@ -3,6 +3,7 @@
 // openFromBar/islandClick, linhas 94-104, 230-250, 384-392).
 
 import { MIXER_MAX_HEIGHT } from './mixer.js';
+import { POMODORO_COMPACT_HEIGHT, pomodoroPanelWidth } from './pomodoroPanel.js';
 
 export type Mode =
   | 'compact'
@@ -18,6 +19,7 @@ export type Mode =
   | 'ai'
   | 'env'
   | 'note'
+  | 'pomodoro'
   | 'osd'
   | 'mixer'
   | 'display'
@@ -42,7 +44,7 @@ function isTransient(mode: Mode): boolean {
   return mode in TRANSIENT_MS;
 }
 
-/** Modos fixos (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `mixer`, `display`, `battery`) tomam o foco de teclado (specs/03-ilha.md). */
+/** Modos fixos (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `pomodoro`, `mixer`, `display`, `battery`) tomam o foco de teclado (specs/03-ilha.md). */
 export function isFixedMode(mode: Mode): boolean {
   return mode !== 'compact' && !isTransient(mode);
 }
@@ -77,6 +79,10 @@ export interface SizeContext {
   displayBrightness?: boolean;
   /** Sem power-profiles-daemon, o `battery` perde a seção de perfis. */
   batteryProfiles?: boolean;
+  /** Configurações abertas no `pomodoro`: a ilha fica mais larga. */
+  pomodoroSettingsOpen?: boolean;
+  /** Altura do modo `pomodoro`, de `pomodoroPanelHeight` em pomodoroPanel.ts. */
+  pomodoroHeight?: number;
 }
 
 /** Largura do maior modo; a barra mede o espaço das laterais com ela. */
@@ -114,6 +120,12 @@ export function getSize(mode: Mode, ctx: SizeContext = {}): Size {
       return { width: 260, height: 32, radius: 16 };
     case 'note':
       return { width: 420, height: 132, radius: 24 };
+    case 'pomodoro':
+      return {
+        width: pomodoroPanelWidth(ctx.pomodoroSettingsOpen === true),
+        height: ctx.pomodoroHeight ?? POMODORO_COMPACT_HEIGHT,
+        radius: 24,
+      };
     case 'mixer':
       return { width: 440, height: ctx.mixerHeight ?? MIXER_MAX_HEIGHT, radius: 24 };
     case 'display':

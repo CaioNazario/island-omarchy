@@ -141,7 +141,8 @@ Item {
       ring: PomodoroCore.elapsedFraction(pomodoroState, pomodoroConfig, now)
       label: PomodoroCore.formatRemaining(PomodoroCore.remainingAt(pomodoroState, now))
       sub: PomodoroCore.phaseLabel(pomodoroState, I18n.language)
-      onClicked: slot.service.pomodoro.toggle()
+      // O card do Pomodoro é o modo `pomodoro` da ilha (specs/20).
+      onClicked: slot.open("pomodoro")
       onPomodoroStateChanged: now = Date.now()
 
       // Relógio de 1s só com o widget visível e o pomodoro rodando.

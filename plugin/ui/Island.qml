@@ -185,6 +185,14 @@ Item {
     }
 
     Layer {
+      layerId: "pomodoro"
+
+      PomodoroView {
+        bar: root.bar
+      }
+    }
+
+    Layer {
       layerId: "ai"
 
       AiView {

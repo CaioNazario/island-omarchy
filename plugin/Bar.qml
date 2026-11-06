@@ -16,6 +16,7 @@ import "core/environmentEditor.mjs" as EditorCore
 import "core/stackScroll.mjs" as StackScrollCore
 import "core/pluginWidgets.mjs" as PluginWidgetsCore
 import "core/barZoom.mjs" as BarZoomCore
+import "core/pomodoroPanel.mjs" as PomodoroPanelCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
 // este item a cada hot-reload; o que precisa sobreviver mora no Service.qml.
@@ -52,6 +53,18 @@ Item {
   // DNS personalizado, que soma 38px à ilha (specs/08 "Modo `wifi`").
   property string wifiView: "stats"
   property bool wifiDnsEditing: false
+
+  // Configurações abertas no `pomodoro` (spec 20): a ilha fica mais larga e alta.
+  property bool pomodoroSettingsOpen: false
+  // Altura que a lista de configurações pede, medida por ela mesma.
+  property real pomodoroListHeight: 0
+  // Altura de tela do alvo, no tamanho do design: limita a lista de configurações.
+  readonly property real pomodoroAvailableHeight: {
+    for (const screen of Quickshell.screens) {
+      if (screen.name === targetScreen) return screen.height / Tokens.zoomFor(screen.width, screen.height);
+    }
+    return 1080;
+  }
 
   // Notificações (specs/04): conteúdo do `notif`, banner e destaque no `stack`.
   readonly property alias notifEntry: router.notifEntry
@@ -104,6 +117,8 @@ Item {
       }),
       btOn: sources.bluetooth.radioOn,
       calendarView: calendarView,
+      pomodoroSettingsOpen: pomodoroSettingsOpen,
+      pomodoroHeight: PomodoroPanelCore.pomodoroPanelHeight(pomodoroSettingsOpen, pomodoroAvailableHeight, pomodoroListHeight),
       aiHeight: AgentCore.aiPanelHeight({
         providers: sources.ai.providers.length,
         days: sources.ai.current !== null && sources.ai.current.record !== null && sources.ai.current.record.days.length > 0,
@@ -229,6 +244,7 @@ Item {
     cardOpen = islandState.cardOpen;
     fixed = islandState.fixed || islandState.cardOpen;
     powerOpen = islandState.powerOpen;
+    if (mode !== "pomodoro") pomodoroSettingsOpen = false;
     // Regra 1 da spec 03: sair de `wifi` fecha o painel de senha; a vista e o
     // DNS personalizado voltam ao início e o teste de velocidade para.
     if (mode !== "wifi") {
@@ -320,6 +336,47 @@ Item {
   function togglePassword(ssid) {
     wifiPasswordError = "";
     wifiPasswordFor = wifiPasswordFor === ssid ? "" : ssid;
+  }
+
+  function togglePomodoroSettings() {
+    pomodoroSettingsOpen = !pomodoroSettingsOpen;
+  }
+
+  /** "Testar pausa": mostra a tela de pausa sem mexer no ciclo; fecha a ilha. */
+  function pomodoroTestBreak() {
+    if (service) service.pomodoro.startPreview();
+  }
+
+  /** "+" do wallpaper: a ilha fecha para o diálogo de arquivos receber o teclado. */
+  function pomodoroPickWallpaper() {
+    if (!service) return;
+    service.pomodoro.pickWallpaper(I18n.tr("Pick an image"));
+    closeAll();
+  }
+
+  // Pausa com bloqueio (ou pré-visualização): a ilha e o editor saem do caminho
+  // e o monitor do foco passa a ser o alvo, dono do teclado (spec 20). Também
+  // vale quando o serviço só é achado depois (barra recriada no hot-reload).
+  function closeForBreak() {
+    if (!service || !service.pomodoro.breakActive) return;
+    closeAll();
+    targetFocusedScreen();
+  }
+
+  onServiceChanged: closeForBreak()
+
+  Connections {
+    target: root.service ? root.service.pomodoro : null
+    function onBreakActiveChanged() {
+      root.closeForBreak();
+    }
+    // Voltar às configurações depois do seletor de arquivos, se nada mais abriu.
+    function onWallpaperPickFinished() {
+      if (root.mode !== "compact") return;
+      root.pomodoroSettingsOpen = true;
+      root.targetFocusedScreen();
+      root.islandState.openFromTrigger("pomodoro");
+    }
   }
 
   /** Botões QR e velocidade do cabeçalho do `wifi`: abrem a vista ou voltam às estatísticas. */

@@ -455,6 +455,36 @@ describe('IslandState note', () => {
   });
 });
 
+describe('IslandState pomodoro', () => {
+  it('specs/20: pomodoro é fixo, sem timer, e o mesmo gatilho fecha', () => {
+    const scheduler = new FakeScheduler();
+    const state = new IslandState(scheduler);
+    state.openFromTrigger('pomodoro');
+    expect(state.mode).toBe('pomodoro');
+    expect(state.fixed).toBe(true);
+    expect(scheduler.pendingCount).toBe(0);
+    state.openFromTrigger('pomodoro');
+    expect(state.mode).toBe('compact');
+  });
+
+  it('specs/20: evento automático não tira a ilha de pomodoro', () => {
+    const state = new IslandState(new FakeScheduler());
+    state.openFromTrigger('pomodoro');
+    expect(state.openAutomatic('music')).toBe(false);
+    state.volumeKey();
+    expect(state.mode).toBe('pomodoro');
+  });
+
+  it('specs/20: tamanho do card e da ilha com as configurações abertas', () => {
+    expect(getSize('pomodoro')).toEqual({ width: 300, height: 128, radius: 24 });
+    expect(getSize('pomodoro', { pomodoroSettingsOpen: true, pomodoroHeight: 622 })).toEqual({
+      width: 340,
+      height: 622,
+      radius: 24,
+    });
+  });
+});
+
 describe('IslandState music fixado', () => {
   it('spec 05: abre sem timer, fica com hover e sem hover, e o mesmo clique fecha', () => {
     const scheduler = new FakeScheduler();
@@ -508,7 +538,7 @@ describe('IslandState music fixado', () => {
 });
 
 describe('isFixedMode', () => {
-  it('só stack, calendar, quick, wifi, bt, ai e note tomam foco de teclado', () => {
+  it('só stack, calendar, quick, wifi, bt, ai, note e pomodoro tomam foco de teclado', () => {
     expect(isFixedMode('compact')).toBe(false);
     expect(isFixedMode('notif')).toBe(false);
     expect(isFixedMode('music')).toBe(false);
@@ -522,6 +552,7 @@ describe('isFixedMode', () => {
     expect(isFixedMode('bt')).toBe(true);
     expect(isFixedMode('ai')).toBe(true);
     expect(isFixedMode('note')).toBe(true);
+    expect(isFixedMode('pomodoro')).toBe(true);
   });
 });
 
@@ -541,6 +572,7 @@ describe('getSize', () => {
       'ai',
       'env',
       'note',
+      'pomodoro',
       'mixer',
       'display',
       'battery',

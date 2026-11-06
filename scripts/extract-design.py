@@ -44,6 +44,10 @@ EXTRA_ICONS = {
     ("regular", "info"),
     # specs/16-widgets.md "Widgets de plugins": widget de outro plugin no editor.
     ("regular", "puzzle-piece"),
+    # specs/20-pomodoro.md: reiniciar e o relógio das sessões; o resto do
+    # modo `pomodoro` usa ícones que o design já tem.
+    ("regular", "arrow-counter-clockwise"),
+    ("regular", "clock"),
 }
 
 ICON_CLASS = re.compile(r"\bph(?:-(bold|fill))? ph-([a-z0-9-]+)")
