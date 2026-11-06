@@ -6,6 +6,7 @@ import {
   isLight,
   luminance,
   mix,
+  oklch,
   parseHex,
   toHex,
 } from './color.js';
@@ -101,5 +102,32 @@ describe('blackOrWhiteOn', () => {
   it('quase branco sobre fundo escuro, quase preto sobre fundo claro', () => {
     expect(toHex(blackOrWhiteOn(parseHex('#161826')))).toBe('#f2f2f2');
     expect(toHex(blackOrWhiteOn(parseHex('#ffffff')))).toBe('#141414');
+  });
+});
+
+describe('oklch', () => {
+  it('branco e preto', () => {
+    expect(toHex(oklch(1, 0, 0))).toBe('#ffffff');
+    expect(toHex(oklch(0, 0, 0))).toBe('#000000');
+  });
+
+  // Referências: as conversões que o Tokens.qml já documenta ao lado de cada cor.
+  it('bate com as conversões do design (alerta, texto de alerta, desligar)', () => {
+    expect(toHex(oklch(0.68, 0.19, 25))).toBe('#f75d59');
+    expect(toHex(oklch(0.72, 0.17, 25))).toBe('#fd736d');
+    expect(toHex(oklch(0.78, 0.13, 25))).toBe('#ff958d');
+  });
+
+  it('carrega o alfa', () => {
+    expect(oklch(0.5, 0.1, 100, 0.25).a).toBe(0.25);
+    expect(toHex(oklch(1, 0, 0, 0.5))).toBe('#80ffffff');
+  });
+
+  it('cor fora do gamut sRGB é cortada, sem passar de 0 a 1', () => {
+    const color = oklch(0.7, 0.4, 150);
+    for (const channel of [color.r, color.g, color.b]) {
+      expect(channel).toBeGreaterThanOrEqual(0);
+      expect(channel).toBeLessThanOrEqual(1);
+    }
   });
 });

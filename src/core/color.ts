@@ -110,3 +110,28 @@ export function blackOrWhiteOn(backdrop: Rgb): Rgb {
   const dark = contrastRatio(NEAR_BLACK, backdrop);
   return dark >= contrastRatio(NEAR_WHITE, backdrop) ? NEAR_BLACK : NEAR_WHITE;
 }
+
+const encodeSrgb = (linear: number): number => {
+  const value = Math.min(1, Math.max(0, linear));
+  return value <= 0.0031308 ? 12.92 * value : 1.055 * Math.pow(value, 1 / 2.4) - 0.055;
+};
+
+/**
+ * `oklch(l c h / a)` do CSS (`h` em graus) em sRGB. Matriz de Björn Ottosson
+ * (bottosson.github.io/posts/oklab); fora do gamut, cada canal é cortado
+ * em 0..1, como o navegador faz no `oklch()` sem mapeamento de gamut.
+ */
+export function oklch(l: number, c: number, hue: number, alpha = 1): Rgb {
+  const rad = (hue * Math.PI) / 180;
+  const a = c * Math.cos(rad);
+  const b = c * Math.sin(rad);
+  const l3 = Math.pow(l + 0.3963377774 * a + 0.2158037573 * b, 3);
+  const m3 = Math.pow(l - 0.1055613458 * a - 0.0638541728 * b, 3);
+  const s3 = Math.pow(l - 0.0894841775 * a - 1.291485548 * b, 3);
+  return {
+    r: encodeSrgb(4.0767416621 * l3 - 3.3077115913 * m3 + 0.2309699292 * s3),
+    g: encodeSrgb(-1.2684380046 * l3 + 2.6097574011 * m3 - 0.3413193965 * s3),
+    b: encodeSrgb(-0.0041960863 * l3 - 0.7034186147 * m3 + 1.707614701 * s3),
+    a: alpha,
+  };
+}
