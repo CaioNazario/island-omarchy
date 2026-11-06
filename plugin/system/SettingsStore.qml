@@ -63,6 +63,9 @@ Scope {
       // appearance.ts). Null = o visual do design.
       property var appearance: null
       property string noteText: ""
+      // Configuração do Pomodoro (spec 20; `sanitizePomodoroConfig` em
+      // pomodoroConfig.ts). Null = o padrão.
+      property var pomodoro: null
       property string countdownName: ""
       // `AAAA-MM-DD` ou vazio.
       property string countdownDate: ""

@@ -91,6 +91,7 @@ Item {
     id: pomodoro
 
     store: persistedState
+    settings: settingsStore
     feed: notificationFeed
     language: root.language
   }

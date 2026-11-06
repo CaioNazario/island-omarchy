@@ -5,6 +5,7 @@ import "../core/calendar.mjs" as CalendarCore
 import "../core/countdown.mjs" as CountdownCore
 import "../core/dayProgress.mjs" as DayProgress
 import "../core/pomodoro.mjs" as PomodoroCore
+import "../core/pomodoroConfig.mjs" as PomodoroConfigCore
 import "../core/environments.mjs" as EnvironmentsCore
 import "../core/github.mjs" as GithubCore
 
@@ -131,11 +132,13 @@ Item {
     TopbarWidget {
       id: pomodoro
 
-      readonly property var pomodoroState: slot.service ? slot.service.pomodoro.current : PomodoroCore.initialPomodoro()
+      readonly property var source: slot.service ? slot.service.pomodoro : null
+      readonly property var pomodoroConfig: source ? source.applied : PomodoroConfigCore.defaultPomodoroConfig()
+      readonly property var pomodoroState: source ? source.current : PomodoroCore.initialPomodoro(pomodoroConfig, Date.now())
       property real now: Date.now()
 
       clickable: slot.service !== null
-      ring: PomodoroCore.elapsedFraction(pomodoroState, now)
+      ring: PomodoroCore.elapsedFraction(pomodoroState, pomodoroConfig, now)
       label: PomodoroCore.formatRemaining(PomodoroCore.remainingAt(pomodoroState, now))
       sub: PomodoroCore.phaseLabel(pomodoroState, I18n.language)
       onClicked: slot.service.pomodoro.toggle()
