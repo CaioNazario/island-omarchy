@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "caionazario.island",
+  "id": "island-desktop",
   "name": "Island Desktop",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "author": "Caio Nazario",
   "license": "GPL-3.0-or-later",
   "description": "A Dynamic Island for your Omarchy bar. Three floating pills expand into panels for media, calendar, notifications, volume and per-app audio, Wi-Fi and network stats, battery and power profiles, quick toggles, and Claude/Codex AI usage. Themed from your Omarchy colors, with selectable palettes.",

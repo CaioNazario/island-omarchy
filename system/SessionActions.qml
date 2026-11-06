@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../core/powerCommands.mjs" as PowerCore
 
 // Configurações e linha de energia (specs/09-sessao-energia.md) pelos mesmos
 // comandos do menu de sistema do Omarchy (default/omarchy/omarchy-menu.jsonc,
@@ -12,18 +13,8 @@ Scope {
 
   property bool canSuspend: false
 
-  readonly property var commands: ({
-      suspend: ["systemctl", "suspend"],
-      reboot: ["omarchy-system-reboot"],
-      shutdown: ["omarchy-system-shutdown"],
-      logout: ["omarchy-system-logout"],
-      lock: ["omarchy-system-lock"]
-    })
-
   function run(action) {
-    const command = commands[action];
-    if (!command) throw new Error("unknown power action '" + action + "', expected one of " + Object.keys(commands).join(", "));
-    Quickshell.execDetached(command);
+    Quickshell.execDetached(PowerCore.powerCommand(action));
   }
 
   function openSettings() {
