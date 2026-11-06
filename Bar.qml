@@ -80,7 +80,7 @@ Item {
   // Editor de ambientes (specs/17): aberto no monitor-alvo, com a pílula onde
   // o catálogo adiciona e o widget selecionado na barra.
   property bool editorOpen: false
-  // Aba do editor: `environments` ou `appearance` (specs 17 e 19).
+  // Aba do editor: `environments`, `appearance`, `weather` ou `settings` (specs 17, 19, 07 e 04).
   property string editorPage: "environments"
   property string editorTarget: "left"
   property string editorSelected: ""
@@ -136,7 +136,7 @@ Item {
     ai.claudeEnabled: root.service ? root.service.settings.values.aiClaudeEnabled : true
     ai.codexEnabled: root.service ? root.service.settings.values.aiCodexEnabled : true
     github.polling: root.activeWidgets.includes("github")
-    weather.preferredLocation: root.service ? root.service.settings.values.weatherLocation : null
+    weather.preferredLocation: root.service ? root.service.weatherLocation : null
   }
 
   QmlScheduler {
@@ -475,6 +475,19 @@ Item {
     return editorOpen && targetScreen === screenName;
   }
 
+  /** Abre o editor já numa aba (a dica do clima abre `weather`). */
+  function openEditorPage(page) {
+    editorPage = page;
+    if (!editorOpen) toggleEditor("");
+  }
+
+  /** Clique numa notificação da ilha: roda a ação dela e a tira da lista. */
+  function activateEntry(entry) {
+    hideBanner();
+    closeAll();
+    if (service && entry) service.notifications.activate(entry.key);
+  }
+
   function closeEditor() {
     editorOpen = false;
     editorSelected = "";
@@ -581,6 +594,19 @@ Item {
       // O player sumir fecha o `music` fixado.
       if (!sources.music.active && root.islandState.musicPinned) root.closeAll();
     }
+  }
+
+  WeatherHint {
+    weather: sources.weather
+    feed: root.service ? root.service.notifications : null
+    store: root.service ? root.service.stateStore : null
+    language: I18n.language
+    bar: root
+  }
+
+  TakeoverHint {
+    feed: root.service ? root.service.notifications : null
+    bar: root
   }
 
   NotificationRouter {

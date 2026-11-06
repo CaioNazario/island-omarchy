@@ -107,6 +107,8 @@ Click the environment button, at the start of the left pill, to open the editor.
 
 Every change is saved right away. **Done**, `Esc`, a click on the dimmed background or another click on the environment button closes the editor.
 
+The other tabs are **Appearance** (see [Appearance](#appearance)), **Weather** (choose your city, see [Weather](#weather)) and **Settings** (who handles notifications and the OSD, see [Notifications](#notifications)).
+
 ### Language
 
 The interface is in English by default. The **Language** switch in the footer of the editor's Environments tab changes it to Portuguese (Brazil) and back, right away (`language` in `settings.json`). Environment names you've edited stay as you wrote them.
@@ -141,11 +143,25 @@ When it lands, auto-hide will be off by default and switched on in the environme
 
 ### Notifications
 
-The Island is the session's notification server, in place of Omarchy's toasts. Notifications appear in the Island and are kept in a list.
+The Island can be the session's notification server and show the volume and brightness overlay (the OSD), in place of Omarchy's own toasts and OSD. Turning Omarchy's `omarchy.notifications` and `omarchy.osd` plugins off changes your Omarchy configuration, so the Island never does it without your say-so:
+
+- **Until you agree**, the Island is only a bar. Omarchy keeps showing notifications and the OSD, and its shortcuts (`Super+,`…) keep working.
+- **The first time**, if those plugins are still on, a notification in the Island asks whether it should take over. It shows once. Click it to open the **Settings** tab of the editor; nothing changes until you flip the switch.
+- **To turn it on:** open the editor (the environment button, at the start of the left pill) → **Settings** → **Island handles notifications and OSD**. The switch runs `omarchy plugin disable omarchy.notifications` and `omarchy plugin disable omarchy.osd` for you.
+- **To turn it off:** flip the same switch. The Island lets go first and then runs `omarchy plugin enable` on both, so Omarchy's toasts and OSD come back.
+- **Dismissed the question by mistake?** It doesn't come back, but the switch is always in the **Settings** tab.
+- **Already turned both plugins off yourself** (or installed from source with `./install.sh`)? The Island handles them from the start and doesn't ask.
+- If you run `omarchy plugin enable|disable` by hand, the Island notices within a minute and follows.
+
+Each switch takes a few seconds, and the shell can freeze meanwhile: Omarchy rebuilds every plugin panel whenever a plugin is turned on or off, and the Island can't speed that up. The switch is locked until it's done. A notification that arrives in the instant of the switch can be lost.
+
+The switch only covers notifications and the volume/brightness overlay. Music (a video playing in your browser, for instance) and the other widgets show up in the Island either way.
+
+Once the Island handles them, notifications appear in it and are kept in a list.
 
 In Chrome, Brave and other Chromium browsers, web notifications show the service they came from, such as WhatsApp, Discord or YouTube. Firefox doesn't send that information, so its notifications just say Firefox.
 
-There is also **Do not disturb**, and Omarchy's notification shortcuts and scripts (`Super+,`, `omarchy toggle notification-silencing`…) keep working.
+There is also **Do not disturb**, and Omarchy's notification shortcuts and scripts (`Super+,`, `omarchy toggle notification-silencing`…) keep working: they talk to the Island while it handles notifications.
 
 ### Music
 
@@ -169,12 +185,15 @@ Single, all-day and recurring events (`RRULE`, `EXDATE`) are supported, as well 
 
 ### Weather
 
-From Open-Meteo, with no API key. The city comes from:
+From Open-Meteo, with no API key. The city comes from, in this order:
 
-- `weatherLocation` in `~/.config/island/settings.json`
-- Omarchy's city (`omarchy weather location`)
+1. The city you chose in the **Weather** tab (saved as `weatherLocation` in `~/.config/island/settings.json`)
+2. Omarchy's city (`omarchy weather location`)
+3. Automatic detection from your IP (wttr.in, then ipwho.is if wttr.in is down)
 
-Without a city, the weather disappears from the Island (there's no IP geolocation).
+**The Weather tab.** Open the editor (the environment button, at the start of the left pill) → **Weather**. It shows the city in use and where it comes from (*Chosen here*, *From Omarchy* or *Automatic*), searches cities by name (up to 20 results) and has **Clear**, which drops your choice and goes back to Omarchy's city or the automatic one. A city you pick applies right away.
+
+**The city hint.** If none of those finds a city, and the weather services answered (being offline doesn't count) twice in a row, a notification says "Couldn't find your city. Click to choose one." It shows once; clicking it opens the Weather tab. Until there's a city, the weather is hidden from the Island.
 
 ### Quick controls
 
@@ -315,12 +334,7 @@ omarchy plugin add https://github.com/CaioNazario/island-omarchy.git
 omarchy plugin enable caionazario.island
 ```
 
-The Island takes over notifications and the OSD. Disable the Omarchy plugins that do the same, so two servers don't compete for the same IPC targets:
-
-```bash
-omarchy plugin disable omarchy.notifications
-omarchy plugin disable omarchy.osd
-```
+That's all. There's no manual step for notifications: the Island starts as a bar only, and Omarchy's notifications and OSD keep working. The first time, a notification asks whether the Island should take them over; you can also decide any time in the editor's **Settings** tab, and turn it back off there (see [Notifications](#notifications)).
 
 ### Shortcuts and gestures
 
@@ -338,7 +352,7 @@ Since the file lives inside the plugin, `omarchy plugin update` updates the shor
 
 ### Settings
 
-Settings live in `~/.config/island/settings.json` (a settings window isn't available yet). Changes to the file apply right away.
+Most settings are in the editor's tabs: environments, appearance, the weather city, and who handles notifications and the OSD. The rest live in `~/.config/island/settings.json`, and changes to the file apply right away.
 
 ### From source
 
@@ -370,7 +384,7 @@ omarchy plugin update caionazario.island
 
 ## Uninstalling
 
-Remove the plugin, then bring back Omarchy's bar, notifications and OSD:
+Remove the plugin, then bring back Omarchy's bar. If you let the Island take over notifications and the OSD, bring those back too (turn the switch off in the editor's **Settings** tab before removing it, or run the commands below):
 
 ```bash
 omarchy plugin remove caionazario.island
@@ -404,7 +418,7 @@ Without a CLI login, the widget is still there but only shows **"AI"**. To stop 
 
 Currently:
 
-- Not built yet: auto-hide (the rules exist in the core, but the bar doesn't use them) and the settings window (settings are edited in `settings.json`).
+- Not built yet: auto-hide (the rules exist in the core, but the bar doesn't use them) and a complete settings window (some settings are only in `settings.json`).
 - The calendar is read-only (ICS feed): it doesn't create or edit events. It doesn't support `RDATE`, or `RRULE` with `BYSETPOS`, `BYWEEKNO`, `BYYEARDAY`, `WKST` (weeks always start on Monday), a `BYDAY` ordinal beyond ±5 (it counts within the month) or a frequency below daily: those events only show their first occurrence. In a feed's time zone definitions (`VTIMEZONE`), only the 32 most recent observances are used, and an observance whose rule is heavier than a daylight saving rule is ignored. At most 10,000 events that may fall in the visible days are read from a feed; any beyond that are skipped.
 - The hardware widget reads AMD and Intel GPUs. NVIDIA doesn't show up.
 - Firefox notifications don't show the web service they came from.

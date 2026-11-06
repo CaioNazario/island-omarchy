@@ -102,6 +102,7 @@ Item {
         rightPadding: 12
         gap: 12
         onClosed: banner.bar.hideBanner()
+        onActivated: banner.bar.activateEntry(banner.shownEntry)
       }
     }
   }

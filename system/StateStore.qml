@@ -47,6 +47,9 @@ Scope {
       property string pomodoroState: ""
       // A dica "Configure sua cidade" já apareceu (spec 07).
       property bool weatherHintShown: false
+      // A pergunta "a Island cuida das notificações e do OSD?" já apareceu
+      // (spec 04); depois dela, só os ajustes ligam e desligam.
+      property bool takeoverPromptShown: false
     }
     // qmllint enable unresolved-type
   }

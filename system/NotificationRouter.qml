@@ -31,7 +31,7 @@ Scope {
   function showNotif(entry) {
     bar.targetForAutomatic();
     notifEntry = entry;
-    bar.islandState.openNotification(entry.critical, entry.fromBrowser);
+    bar.islandState.openNotification(entry.critical, entry.fromBrowser, entry.holdMs ? entry.holdMs : null);
   }
 
   function flash(entry) {
@@ -41,6 +41,7 @@ Scope {
 
   function showBanner(entry) {
     bannerEntry = entry;
+    bannerTimer.interval = entry.holdMs ? entry.holdMs : 2600;
     bannerTimer.restart();
   }
 

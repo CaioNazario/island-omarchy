@@ -1,3 +1,4 @@
+import { tr } from './i18n.mjs';
 // Clima da ilha compacta (specs/07-clima.md): exibição, resposta do
 // Open-Meteo e a localização.
 /** Falha de rede: o último valor vale por até 3h; depois o clima some. */
@@ -121,4 +122,64 @@ export function areaSources(name) {
     if (name === '')
         sources.push({ url: IP_GEO_URL, parse: parseIpGeo });
     return sources;
+}
+export function weatherOrigin(preferred, omarchy, detected) {
+    if (preferred)
+        return 'island';
+    if (omarchy)
+        return 'omarchy';
+    return detected ? 'auto' : 'none';
+}
+/** Cidades que a busca por nome devolve, no máximo (spec 13 "Clima"). */
+export const MAX_SEARCH_RESULTS = 20;
+/** Geocodificação do Open-Meteo, sem chave, como o resto do clima. */
+export function geocodingUrl(query) {
+    return ('https://geocoding-api.open-meteo.com/v1/search' +
+        `?name=${encodeURIComponent(query.trim())}&count=${MAX_SEARCH_RESULTS}&language=en&format=json`);
+}
+function textPart(value) {
+    return typeof value === 'string' ? value.trim().slice(0, MAX_AREA_NAME) : '';
+}
+/** `results` do geocoding; item sem nome ou coordenadas válidas é descartado. */
+export function parseGeocoding(body) {
+    const root = parseJson(body);
+    if (!isRecord(root) || !Array.isArray(root.results))
+        return [];
+    const cities = [];
+    for (const item of root.results.slice(0, MAX_SEARCH_RESULTS)) {
+        if (!isRecord(item))
+            continue;
+        const name = textPart(item.name);
+        const latitude = coordinate(item.latitude, 90);
+        const longitude = coordinate(item.longitude, 180);
+        if (name === '' || latitude === null || longitude === null)
+            continue;
+        const parts = [name, textPart(item.admin1), textPart(item.country)].filter((part, i, all) => part !== '' && all.indexOf(part) === i);
+        cities.push({ label: parts.join(', '), location: { name, latitude, longitude } });
+    }
+    return cities;
+}
+/**
+ * A dica "Configure sua cidade" (spec 07): só uma vez, e só se a cadeia
+ * inteira falhou sem cidade nenhuma.
+ */
+export function shouldShowHint(hintShown, origin, detectionFailed) {
+    return !hintShown && origin === 'none' && detectionFailed;
+}
+/** Texto da notificação de dica, no idioma da interface. */
+export function hintMessage(lang) {
+    return {
+        title: tr(lang, 'Weather'),
+        body: tr(lang, "Couldn't find your city. Click to choose one."),
+    };
+}
+/** Rodadas seguidas de detecção que alcançaram um servidor e mesmo assim não deram cidade. */
+export const HINT_AFTER_ROUNDS = 2;
+/**
+ * O `curl` falou com um servidor? Saída 0 (resposta) ou 22 (`-f`: erro HTTP)
+ * sim; DNS (6), conexão (7), tempo esgotado (28) e TLS não: sem rede não é
+ * "cidade desconhecida" e não gasta a dica (spec 07).
+ */
+export function reachedServer(exitCode) {
+    return exitCode === 0 || exitCode === 22;
 }

@@ -41,6 +41,9 @@ Item {
     return place.mapToItem(null, 0, 0);
   }
 
+  // Posição inteira da faixa; o resto da fração fica no item dentro dela.
+  readonly property int stripX: Math.floor(origin.x)
+
   implicitWidth: widget && widget.visible ? widget.implicitWidth : 0
   implicitHeight: 22
 
@@ -56,11 +59,19 @@ Item {
 
     screen: place.overlay ? place.overlay.screen : null
     visible: place.visible && place.widgetComponent !== null
+    // A faixa acompanha o lugar movendo a própria janela (margem), não o
+    // item dentro dela: uma janela movida é recomitada, já o item movido
+    // por uma troca de largura de irmão ficava com o quadro antigo na
+    // tela (issue #39).
     anchors {
       top: true
       left: true
-      right: true
     }
+    // O qmllint não resolve o tipo de valor `Margins` do Quickshell.
+    // qmllint disable unqualified unresolved-type
+    margins.left: place.stripX
+    // qmllint enable unqualified unresolved-type
+    implicitWidth: Math.ceil(frame.width * place.zoom) + 1
     implicitHeight: Math.ceil(Tokens.barReserved * place.zoom)
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
@@ -81,7 +92,7 @@ Item {
     Item {
       id: frame
 
-      x: place.origin.x
+      x: place.origin.x - place.stripX
       y: place.origin.y + (place.height - height) * place.zoom / 2
       width: place.widget ? place.widget.implicitWidth : 0
       height: place.widget ? place.widget.implicitHeight : 0

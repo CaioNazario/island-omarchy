@@ -69,6 +69,7 @@ RoundButton 1.0 RoundButton.qml
 ScreenBar 1.0 ScreenBar.qml
 SegmentedSwitch 1.0 SegmentedSwitch.qml
 SettingRow 1.0 SettingRow.qml
+SettingsPage 1.0 SettingsPage.qml
 SettingsSection 1.0 SettingsSection.qml
 SliderPill 1.0 SliderPill.qml
 SliderRow 1.0 SliderRow.qml
@@ -87,6 +88,7 @@ TodayEvents 1.0 TodayEvents.qml
 ToggleSwitch 1.0 ToggleSwitch.qml
 singleton Tokens 1.0 Tokens.qml
 TopbarWidget 1.0 TopbarWidget.qml
+WeatherPage 1.0 WeatherPage.qml
 WidgetArea 1.0 WidgetArea.qml
 WidgetFrame 1.0 WidgetFrame.qml
 WidgetSlot 1.0 WidgetSlot.qml

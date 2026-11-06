@@ -86,6 +86,7 @@ export class IslandState {
         this.hovering = false;
         this.notifSticky = false;
         this.notifFromBrowser = false;
+        this.notifHoldMs = null;
         this.osdMs = null;
         this.timerId = null;
         this.scheduler = scheduler;
@@ -148,11 +149,14 @@ export class IslandState {
     /**
      * Notificação roteada para `notif` (specs/04-notificacoes.md): abre ou
      * troca o conteúdo e rearma o timer. Crítica não fecha sozinha; a de
-     * navegador fecha em 2100ms.
+     * navegador fecha em 2100ms. `holdMs` é a duração que o próprio aviso pede
+     * (a pergunta "a Island cuida das notificações?" fica 5000ms, para dar
+     * tempo de ler e clicar) e vale só para ele.
      */
-    openNotification(critical, fromBrowser = false) {
+    openNotification(critical, fromBrowser = false, holdMs = null) {
         this.notifSticky = critical;
         this.notifFromBrowser = fromBrowser;
+        this.notifHoldMs = holdMs;
         this.setMode('notif');
     }
     /** Tecla de volume/brilho: regra 4. */
@@ -273,6 +277,8 @@ export class IslandState {
         }, ms);
     }
     transientMs(mode) {
+        if (mode === 'notif' && this.notifHoldMs !== null)
+            return this.notifHoldMs;
         if (mode === 'notif' && this.notifFromBrowser)
             return BROWSER_NOTIF_MS;
         if (mode === 'osd' && this.osdMs !== null)

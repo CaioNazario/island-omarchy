@@ -7,6 +7,7 @@ import "system"
 import "core/environments.mjs" as EnvironmentsCore
 import "core/appearance.mjs" as AppearanceCore
 import "core/i18n.mjs" as I18nCore
+import "core/weather.mjs" as WeatherCore
 
 // Entrada `service` do plugin (keepLoaded: specs/14-spikes.md, S6). Vive até
 // o shell reiniciar: guarda o estado visível que não pode se perder quando a
@@ -26,6 +27,8 @@ Item {
   readonly property alias settings: settingsStore
   readonly property alias stateStore: persistedState
   readonly property alias pomodoro: pomodoro
+  // Quem cuida das notificações e do OSD, e a escolha do usuário (spec 04).
+  readonly property alias takeover: notificationTakeover
   // Idioma da interface (specs/13 "Idioma"), saneado. A barra o passa ao
   // `I18n`; o que vive aqui (pomodoro, ambientes iniciais) lê direto.
   readonly property string language: I18nCore.sanitizeLanguage(settingsStore.values.language)
@@ -34,6 +37,8 @@ Item {
   readonly property int environmentIndex: EnvironmentsCore.sanitizeIndex(settingsStore.values.environmentIndex, environments.length)
   // Aparência (spec 19), saneada a cada leitura como os ambientes.
   readonly property var appearance: AppearanceCore.sanitizeAppearance(settingsStore.values.appearance)
+  // Cidade escolhida (spec 07), saneada a cada leitura; `null` usa a cadeia de fallback.
+  readonly property var weatherLocation: WeatherCore.parseWeatherLocation(JSON.stringify(settingsStore.values.weatherLocation))
   readonly property bool doNotDisturb: persistedState.values.doNotDisturb
   readonly property bool hasUnread: notificationFeed.hasUnread
 
@@ -55,6 +60,10 @@ Item {
 
   function setLanguage(id) {
     settingsStore.values.language = I18nCore.sanitizeLanguage(id);
+  }
+
+  function setWeatherLocation(location) {
+    settingsStore.values.weatherLocation = location ? { name: location.name, latitude: location.latitude, longitude: location.longitude } : null;
   }
 
   function setEnvironments(list) {
@@ -88,12 +97,26 @@ Item {
 
   NotificationFeed {
     id: notificationFeed
+
+    serverEnabled: notificationTakeover.claimsNotifications
+  }
+
+  NotificationTakeover {
+    id: notificationTakeover
+
+    store: persistedState
+    feed: notificationFeed
+    language: root.language
   }
 
   // Mesmo contrato do `plugins/notifications/Service.qml` do Omarchy 4.0.4:
   // os scripts `omarchy-*` e os atalhos `SUPER + vírgula` chamam estes nomes.
+  // Os dois alvos só valem com o plugin do Omarchy desligado: com ele ligado
+  // o último handler registrado vence e o "não perturbe" ia para o lado
+  // errado (specs/14-spikes.md, S7).
   IpcHandler {
     target: "notifications"
+    enabled: notificationTakeover.claimsNotifications
 
     function dndState(): string {
       return root.doNotDisturb ? "on" : "off";
@@ -146,6 +169,7 @@ Item {
   // Mesmo contrato do `plugins/osd/Osd.qml` do Omarchy 4.0.4.
   IpcHandler {
     target: "osd"
+    enabled: notificationTakeover.claimsOsd
 
     function show(payloadJson: string): string {
       root.osdRequested(payloadJson);
