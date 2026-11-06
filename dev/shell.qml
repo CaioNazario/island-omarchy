@@ -321,7 +321,10 @@ ShellRoot {
         count: items.length,
         opened: widget.opened,
         popupY: widget.popupY,
-        active: bar.pluginWidgets.activePopout === widget // qmllint disable missing-property
+        active: bar.pluginWidgets.activePopout === widget, // qmllint disable missing-property
+        // A margem que o QML pediu à janela da faixa (`stripX`): o smoke a compara
+        // com onde o compositor pôs a janela.
+        marginLeft: widget.anchorWindow.margins.left // qmllint disable missing-property unqualified unresolved-type
       });
     }
 

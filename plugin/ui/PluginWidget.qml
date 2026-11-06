@@ -44,7 +44,56 @@ Item {
   // Posição inteira da faixa; o resto da fração fica no item dentro dela.
   readonly property int stripX: Math.floor(origin.x)
 
-  implicitWidth: widget && widget.visible ? widget.implicitWidth : 0
+  // A janela da faixa fica onde a primeira mudança de margem de uma rajada a
+  // deixou: quando o slot de um irmão muda de largura duas vezes em poucos
+  // milissegundos (a música entrando), `margins.left` vai para o valor
+  // intermediário e o final nunca chega ao compositor, nem com repintura,
+  // mudança de tamanho ou reenvio da margem (medido no harness: o QML calcula
+  // o `stripX` certo, `hyprctl layers` mostra a janela no intermediário). Uma
+  // janela recém-mapeada já nasce na margem certa, então, depois que a
+  // posição assenta, a faixa é desmapeada e mapeada de novo. Durante isso o
+  // slot segura a largura: sem ela o widget some com a janela, o layout muda
+  // e a posição nunca assenta.
+  property bool remapping: false
+  property real heldWidth: 0
+  // Mudanças logo depois de criada são o layout inicial, que a janela já
+  // pega certo ao ser mapeada.
+  property bool armed: false
+
+  Timer {
+    interval: 400
+    running: true
+    onTriggered: place.armed = true
+  }
+
+  Timer {
+    id: settle
+
+    interval: 120
+    onTriggered: {
+      // Mapear de novo fecha o painel do widget: espera ele fechar.
+      if (place.host.activePopout) {
+        settle.restart();
+        return;
+      }
+      place.heldWidth = place.implicitWidth;
+      place.remapping = true;
+      unmap.start();
+    }
+  }
+
+  Timer {
+    id: unmap
+
+    interval: 30
+    onTriggered: place.remapping = false
+  }
+
+  onStripXChanged: {
+    if (armed && !remapping) settle.restart();
+  }
+
+  implicitWidth: remapping ? heldWidth : (widget && widget.visible ? widget.implicitWidth : 0)
   implicitHeight: 22
 
   TransformWatcher {
@@ -58,7 +107,7 @@ Item {
     id: strip
 
     screen: place.overlay ? place.overlay.screen : null
-    visible: place.visible && place.widgetComponent !== null
+    visible: place.visible && place.widgetComponent !== null && !place.remapping
     // A faixa acompanha o lugar movendo a própria janela (margem), não o
     // item dentro dela: uma janela movida é recomitada, já o item movido
     // por uma troca de largura de irmão ficava com o quadro antigo na

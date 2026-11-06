@@ -93,6 +93,17 @@ notifications_owned() {
     org.freedesktop.DBus NameHasOwner s org.freedesktop.Notifications 2>/dev/null | awk '{print $2}'
 }
 
+# Onde o compositor pôs a janela da faixa do widget de plugin, em pixels do
+# monitor virtual (o `hyprctl layers` dá coordenadas globais).
+strip_window_x() {
+  # shellcheck source=/dev/null
+  source "$STATE"
+  local offset
+  offset="$(HYPRLAND_INSTANCE_SIGNATURE="$NESTED_INSTANCE" hyprctl monitors -j | jq -r '.[] | select(.name=="HEADLESS-ISLAND") | .x')"
+  HYPRLAND_INSTANCE_SIGNATURE="$NESTED_INSTANCE" hyprctl layers -j |
+    jq -r --argjson offset "$offset" '.["HEADLESS-ISLAND"].levels | to_entries[] | .value[] | select(.namespace == "island-plugin-widget") | .x - $offset'
+}
+
 harness_status() {
   harness_ipc status || true
 }
@@ -116,7 +127,7 @@ log_errors() {
 # (spec 19) vai junto: um objeto aninhado do arquivo, com uma opção inválida.
 seed_settings() {
   mkdir -p "$DIST/xdg/config/island"
-  printf '{"environments": [["Semente","coffee",["pomodoro","note"],["hw","plugin:dev.fake"]]], "environmentIndex": 0, "appearance": {"shape": "square", "fill": "xadrez"}}\n' \
+  printf '{"environments": [["Semente","coffee",["pomodoro","note"],["hw","plugin:dev.fake"]],["Faixa","code",["plugin:dev.fake","music"],["hw"]]], "environmentIndex": 0, "appearance": {"shape": "square", "fill": "xadrez"}}\n' \
     >"$DIST/xdg/config/island/settings.json"
 }
 
@@ -204,6 +215,27 @@ smoke() {
   }
   notify "after second takeover" >/dev/null
   wait_for '[[ "$(harness_ipc takeover status)" == *"\"entries\":2"* ]]' "one entry per notification after taking over again"
+  # Regressão: a janela da faixa de um widget de plugin ficava onde a primeira
+  # mudança de margem de uma rajada a deixou. Com a música entrando à direita
+  # dele, a largura do slot muda duas vezes em 12ms; a janela aceitava a
+  # primeira, perdia a segunda e o widget era desenhado por cima do título. O
+  # QML sempre calculou a posição certa (`marginLeft`): quem erra é a janela.
+  # Vem antes da aparência de vidro (o blur repinta a janela o tempo todo e
+  # esconde o problema) e depois do bloco de notificações, cujos tempos (o
+  # aviso de 5s) não aceitam um passo longo no meio.
+  harness_ipc editorDo switch 1 >/dev/null
+  wait_for '[[ "$(harness_ipc pluginWidget status)" == *"\"opened\":false"* ]]' "the plugin widget on the environment with music"
+  # A janela recém-criada ainda recebe mudanças de margem: o problema aparece
+  # com ela parada, como na barra de quem abre um vídeo depois de um tempo.
+  timeout 3 tail -f /dev/null || true
+  DBUS_SESSION_BUS_ADDRESS="$(cat "$DIST/bus")" python3 "$ROOT/dev/fake-mpris.py" >/dev/null 2>&1 &
+  local mpris_pid=$!
+  timeout 2 tail -f /dev/null || true
+  wait_for '[[ "$(strip_window_x)" == "$(harness_ipc pluginWidget status | jq -r .marginLeft)" ]]' "the plugin widget window to follow its slot when the music starts"
+  kill "$mpris_pid"
+  timeout 2 tail -f /dev/null || true
+  wait_for '[[ "$(strip_window_x)" == "$(harness_ipc pluginWidget status | jq -r .marginLeft)" ]]' "the plugin widget window to follow its slot when the music stops"
+  harness_ipc editorDo switch 0 >/dev/null
   # Aparência fora do padrão nos hot-reloads (spec 19): os shaders de
   # gradiente e grão, os cantos quadrados e as regiões de blur.
   harness_ipc editorDo preset glass >/dev/null

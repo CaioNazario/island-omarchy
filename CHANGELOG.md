@@ -6,6 +6,7 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ### Fixed
 
+- Widgets from other plugins were drawn over the music title when a video started: the window that holds them stayed at an intermediate position while the music widget changed width, and the final position never reached the compositor. The strip is now mapped again once its position settles, so it lands in the right place. The widget blinks for a moment after it moves.
 - The volume and brightness keys didn't open the slider in the Island on Omarchy 4.5, which handles them inside the shell and asks its own OSD plugin, turned off while the Island takes over. `hypr/island.lua` now rebinds the five keys (volume up, down and mute, brightness up and down) to the commands that reach the Island. To get it, run `./install.sh` again, or update the plugin and reload Hyprland. Media key messages (play, pause, next) still come only from Omarchy's own OSD, so the Island doesn't show them.
 
 ## [0.10.0] - 2026-11-06
