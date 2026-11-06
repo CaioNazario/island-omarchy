@@ -35,6 +35,12 @@ export const PT_BR: Readonly<Record<string, string>> = {
   'Short break · {n} min': 'Pausa curta · {n} min',
   'Long break · {n} min': 'Pausa longa · {n} min',
   Night: 'Noite',
+  Emergency: 'Urgência',
+  'Stop the break?': 'Interromper a pausa?',
+  'The break screen closes and the break timer keeps running.':
+    'A tela de pausa fecha e o temporizador da pausa continua correndo.',
+  'Stay on break': 'Continuar na pausa',
+  'Confirm emergency': 'Confirmar urgência',
   Graphite: 'Grafite',
   'Your image': 'Sua imagem',
   'Shut down': 'Desligar',

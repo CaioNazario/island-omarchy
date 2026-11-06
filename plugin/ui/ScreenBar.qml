@@ -26,6 +26,18 @@ Scope {
   readonly property real zoom: screen ? Tokens.zoomFor(screen.width, screen.height) : 1
   readonly property int reserved: Math.ceil(Tokens.barReserved * zoom)
 
+  // Tela de pausa do Pomodoro (spec 20): uma janela por monitor, só enquanto
+  // há pausa com bloqueio ou a pré-visualização.
+  LazyLoader {
+    active: screenBar.bar.service !== null && screenBar.bar.service.pomodoro.breakActive
+
+    PomodoroBreakScreen {
+      screen: screenBar.screen
+      pomodoro: screenBar.bar.service.pomodoro
+      keyboardOwner: screenBar.isTarget
+    }
+  }
+
   PanelWindow {
     screen: screenBar.screen
     anchors {
