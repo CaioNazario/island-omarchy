@@ -26,8 +26,18 @@ Depois do divisor, na linha de controles de `quick`, `wifi` e `bt`:
   | Bloquear | `ph ph-lock-simple` | `omarchy-system-lock` |
 
 - Qualquer ação fecha a ilha antes de executar.
-- Sem diálogo de encerramento: Reiniciar, Desligar e Sair fecham as janelas e agem em ~2s, como no menu de sistema do Omarchy. O OSD "Shutting down"/"Rebooting"/"Logging out" que os scripts mandam aparece na ilha (modo `osd`, spec 08).
+- Suspender e Bloquear rodam na hora. Reiniciar, Desligar e Sair pedem confirmação (abaixo); confirmados, fecham as janelas e agem em ~2s, como no menu de sistema do Omarchy. O OSD "Shutting down"/"Rebooting"/"Logging out" que os scripts mandam aparece na ilha (modo `osd`, spec 08).
 - Trocar de modo, Esc ou clique fora fecham a linha de energia.
+
+## Confirmação
+
+Como o diálogo do GNOME: antes de reiniciar, desligar ou sair, a Island pergunta, e se ninguém responder a ação roda sozinha em 60s (`CONFIRM_SECONDS`, `src/core/powerConfirm.ts`).
+
+- O clique troca os 5 botões, dentro dos mesmos 48px (a ilha não muda de altura), por: ícone de energia `#ff958d` + texto da contagem ("Shutting down in 60s", "Restarting in 60s", "Logging out in 60s"), **Cancelar** (`neutral-900`, hover `neutral-800`) e o botão da ação (texto `#ff958d`, fundo `#932b2a`), 36px de raio 12, ambos com largura do texto + 28px.
+- A contagem segue o relógio (`Date.now()`), não tiques contados: um tique atrasado não alonga a espera. O texto atualiza a cada segundo e mostra 0 só no instante em que a ação roda.
+- Confirmar (botão) ou chegar a 0 fecha a ilha e roda a ação, como qualquer outra.
+- **Cancelar**, Esc, clique fora ou troca de modo fecham a linha de energia e **cancelam**: a contagem não pode seguir correndo escondida, com a tela sem aviso de que a máquina vai desligar. Cancelar pelo botão volta aos cinco botões, com a linha aberta.
+- Recarregar o plugin (hot-reload) também cancela, porque a contagem vive na árvore da barra.
 
 ## Fonte
 
@@ -38,3 +48,6 @@ Os mesmos comandos do menu de sistema do Omarchy (`default/omarchy/omarchy-menu.
 - [ ] Configurações abre o menu Setup do Omarchy e fecha a ilha.
 - [ ] Energia alterna a linha, com a altura animando 46 ↔ 94 em `quick`.
 - [ ] Cada botão roda o comando da tabela; Suspender some com `suspend-off` ligado.
+- [ ] Reiniciar, Desligar e Sair não rodam no clique: mostram a confirmação com 60s; Suspender e Bloquear rodam na hora.
+- [ ] Sem resposta, a ação roda em 60s; o botão da ação roda na hora.
+- [ ] Cancelar, Esc, clique fora e troca de modo cancelam, sem a ação rodar depois.

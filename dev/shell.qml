@@ -232,6 +232,14 @@ ShellRoot {
       });
     }
 
+    // Botão Energia: abre/fecha a linha de energia (spec 09); só vale em `quick`/`wifi`/`bt`.
+    function power(): string {
+      const bar = barLoader.item; // qmllint disable missing-property
+      if (!bar) return "no bar";
+      bar.islandState.togglePower(); // qmllint disable missing-property
+      return bar.powerOpen ? "open" : "closed"; // qmllint disable missing-property
+    }
+
     // Clique na ilha do monitor capturado (regra 5 da spec 03).
     function click(): string {
       const bar = barLoader.item; // qmllint disable missing-property

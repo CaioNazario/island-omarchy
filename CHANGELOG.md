@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Added
+
+- **Restart**, **Power off** and **Log out** now ask first, like the GNOME dialog: the power row turns into a confirmation with a 60 second countdown, and the action runs by itself if you do not answer. **Cancel**, Esc, a click outside or switching the island mode cancels it. Suspend and Lock still run right away.
+
 ### Fixed
 
 - **Power off**, **Restart** and **Log out** did nothing on Omarchy 4.5, which no longer ships `omarchy-system-reboot`, `-shutdown` and `-logout`; a missing program fails silently, so the buttons looked dead. They now run `omarchy-system reboot|shutdown|logout`, the same commands as the Omarchy system menu. Closes #40.
