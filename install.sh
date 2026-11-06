@@ -4,8 +4,11 @@
 # respondem pelos mesmos alvos IPC ficam desligados enquanto ela estiver ativa.
 set -euo pipefail
 
-PLUGIN_ID="caionazario.island"
+PLUGIN_ID="island-desktop"
 TARGET_DIR="$HOME/.config/omarchy/plugins/$PLUGIN_ID"
+# Id até a 0.9: a 0.10 o trocou por `island-desktop`. Quem instalou antes tem as
+# duas pastas até o install.sh apagar a velha.
+LEGACY_DIR="$HOME/.config/omarchy/plugins/caionazario.island"
 REPLACED_PLUGINS=(omarchy.notifications omarchy.osd)
 # Atalhos e gestos (hypr/island.lua): módulo próprio, ligado por uma linha no
 # hyprland.lua. O resto da config do usuário fica intocado.
@@ -49,6 +52,14 @@ uninstall_hypr() {
   hyprctl reload >/dev/null
 }
 
+# Apaga a pasta do id antigo (0.9 ou anterior); sem ela, o Omarchy listaria
+# duas "Island Desktop".
+remove_legacy() {
+  [[ -d "$LEGACY_DIR" ]] || return 0
+  rm -rf "$LEGACY_DIR"
+  echo "Removido o id antigo: $LEGACY_DIR"
+}
+
 uninstall() {
   require_shell
   # A barra volta primeiro: sem ela, o shell cairia na padrão de qualquer jeito.
@@ -58,6 +69,7 @@ uninstall() {
     rm -rf "$TARGET_DIR"
     echo "Removido: $TARGET_DIR"
   fi
+  remove_legacy
   omarchy-shell shell rescanPlugins >/dev/null
   uninstall_hypr
 }
@@ -76,6 +88,8 @@ install() {
 
   for id in "${REPLACED_PLUGINS[@]}"; do omarchy plugin disable "$id"; done
   omarchy plugin enable "$PLUGIN_ID"
+  remove_legacy
+  omarchy-shell shell rescanPlugins >/dev/null
   # Sem `Qt.clearComponentCache` (Qt 6.11), o hot-reload do shell recria a
   # barra com os componentes da instalação anterior: só um shell novo carrega
   # o build copiado.

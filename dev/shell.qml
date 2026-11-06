@@ -12,7 +12,7 @@ ShellRoot {
   id: host
 
   readonly property string pluginDir: Quickshell.env("ISLAND_PLUGIN_DIR")
-  readonly property string pluginId: "caionazario.island"
+  readonly property string pluginId: "island-desktop"
   property bool reloading: false
   property int reloads: 0
 

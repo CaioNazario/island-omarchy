@@ -10,7 +10,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST="$ROOT/dist"
-PLUGIN_DIR="$DIST/caionazario.island"
+PLUGIN_DIR="$DIST/island-desktop"
 HARNESS="$ROOT/dev/shell.qml"
 STATE="$DIST/nested.env"
 LOG="$DIST/dev.log"

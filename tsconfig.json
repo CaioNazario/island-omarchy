@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
     "useDefineForClassFields": false,
-    "outDir": "dist/caionazario.island/core",
+    "outDir": "dist/island-desktop/core",
     "rootDir": "src/core",
     "declaration": false,
     "sourceMap": false,

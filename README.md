@@ -331,7 +331,7 @@ design/         Design reference extracted from the prototype
 
 ```bash
 omarchy plugin add https://github.com/CaioNazario/island-omarchy.git
-omarchy plugin enable caionazario.island
+omarchy plugin enable island-desktop
 ```
 
 That's all. There's no manual step for notifications: the Island starts as a bar only, and Omarchy's notifications and OSD keep working. The first time, a notification asks whether the Island should take them over; you can also decide any time in the editor's **Settings** tab, and turn it back off there (see [Notifications](#notifications)).
@@ -341,7 +341,7 @@ That's all. There's no manual step for notifications: the Island starts as a bar
 The plugin ships the Island's shortcuts and gestures in `hypr/island.lua`. To turn them on, add this to the end of `~/.config/hypr/hyprland.lua`:
 
 ```lua
-dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/caionazario.island/hypr/island.lua")
+dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/island-desktop/hypr/island.lua")
 ```
 
 - `Super+S`: quick controls (takes this key away from Omarchy's scratchpad)
@@ -366,7 +366,7 @@ npm ci
 ./install.sh
 ```
 
-`install.sh` builds the plugin, copies it to `~/.config/omarchy/plugins/caionazario.island/`, turns off Omarchy's notifications and OSD, and switches the bar. The shell reloads by itself, without logging out.
+`install.sh` builds the plugin, copies it to `~/.config/omarchy/plugins/island-desktop/`, turns off Omarchy's notifications and OSD, and switches the bar. The shell reloads by itself, without logging out.
 
 It also installs the shortcuts and gestures: it copies `hypr/island.lua` to `~/.config/hypr/island.lua` and adds `require("hypr.island")` to the end of `~/.config/hypr/hyprland.lua`, with a backup. `./install.sh --uninstall` removes the line and the file, goes back to Omarchy's bar and turns its notifications and OSD back on.
 
@@ -377,8 +377,20 @@ To update a source install: `git pull`, `npm ci` and `./install.sh` again.
 ## Updating
 
 ```bash
-omarchy plugin update caionazario.island
+omarchy plugin update island-desktop
 ```
+
+### Coming from 0.9 or earlier
+
+Version 0.10 renamed the plugin id from `caionazario.island` to `island-desktop`. **Don't run `omarchy plugin update caionazario.island`**: it would pull the new files into the old folder and leave the plugin half-registered, with the bar switched back to Omarchy's. Reinstall instead:
+
+```bash
+omarchy plugin remove caionazario.island
+omarchy plugin add https://github.com/CaioNazario/island-omarchy.git
+omarchy plugin enable island-desktop
+```
+
+Your environments and settings live in `~/.config/island/` and are kept. If you added the shortcuts by hand, change the path in `~/.config/hypr/hyprland.lua` from `plugins/caionazario.island/` to `plugins/island-desktop/`. A source install just needs `./install.sh` again: it removes the old folder.
 
 ---
 
@@ -387,7 +399,7 @@ omarchy plugin update caionazario.island
 Remove the plugin, then bring back Omarchy's bar. If you let the Island take over notifications and the OSD, bring those back too (turn the switch off in the editor's **Settings** tab before removing it, or run the commands below):
 
 ```bash
-omarchy plugin remove caionazario.island
+omarchy plugin remove island-desktop
 omarchy plugin enable omarchy.bar
 omarchy plugin enable omarchy.notifications
 omarchy plugin enable omarchy.osd
@@ -434,7 +446,7 @@ Currently:
 npm ci
 make test    # Vitest on src/core
 make lint    # ESLint, Prettier, tsc, the core modules in the QML engine, and qmllint
-make build   # dist/caionazario.island/
+make build   # dist/island-desktop/
 make dev     # nested Hyprland in a window, running the plugin through the dev/ harness
 make smoke   # the same without interaction: 5 hot reloads, fails on any error in the log
 ```

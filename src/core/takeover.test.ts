@@ -28,7 +28,7 @@ describe('enabledBuiltins', () => {
       entry('omarchy.notifications', true),
       entry('omarchy.osd', false),
       entry('omarchy.clipboard', true),
-      entry('caionazario.island', true),
+      entry('island-desktop', true),
     );
     expect(enabledBuiltins(json)).toEqual(['omarchy.notifications']);
   });

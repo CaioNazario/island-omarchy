@@ -25,7 +25,7 @@ Quando o design mudar, rode `python3 scripts/extract-design.py` e atualize as sp
 ## Stack
 
 - Omarchy 4+ (`omarchy-shell`), Quickshell 0.3+, Qt 6.11+, Hyprland. Nenhum código assume caminho, pacote ou driver do Arch fora do que o próprio Omarchy instala.
-- A Island é um plugin `kind: "bar"` + `kind: "service"` carregado de `~/.config/omarchy/plugins/caionazario.island/`. O contrato de plugin está em `/usr/share/omarchy/shell/README.md` e `services/PluginRegistry.qml`. Leia, nunca edite `/usr/share/omarchy/`.
+- A Island é um plugin `kind: "bar"` + `kind: "service"` carregado de `~/.config/omarchy/plugins/island-desktop/`. O contrato de plugin está em `/usr/share/omarchy/shell/README.md` e `services/PluginRegistry.qml`. Leia, nunca edite `/usr/share/omarchy/`.
 - UI em QML (QtQuick + módulos `Quickshell.*`). Antes de usar uma API do Quickshell, confira em `/usr/lib/qt6/qml/Quickshell/**/*.qmltypes` ou em quickshell.org/docs na versão instalada (`qs --version`).
 - Lógica em TypeScript (`src/core`), compilada com `tsc` para módulos ES (`.mjs`) que o QML importa (`import "../core/island.mjs" as IslandCore`). O motor JS do QML (V4) não é navegador nem Node: sem DOM, `fetch`, `setTimeout`, `TextDecoder`, `Intl` nem class fields do ES2022. Por isso o core compila com `target: ES2017` (spec 14, S5).
 - HTTP via `XMLHttpRequest` do QML, arquivos via `FileView`, processos via `Process` (`Quickshell.Io`). D-Bus sem módulo dedicado no Quickshell vai por `busctl`/`gdbus` em `Process`.
@@ -64,11 +64,11 @@ O host recria o `Bar.qml` a cada hot-reload de plugin (qualquer arquivo salvo em
 |---|---|
 | `make test` | Vitest em `src/core` |
 | `make lint` | ESLint + Prettier + `tsc --noEmit` + `qmllint` no plugin |
-| `make build` | core → `.mjs` + plugin + ícones em `dist/caionazario.island/` |
+| `make build` | core → `.mjs` + plugin + ícones em `dist/island-desktop/` |
 | `make dev` | build + Hyprland aninhado numa janela, com o harness `dev/` rodando o plugin dentro dele |
 | `make smoke` | build + Hyprland aninhado sem interação: carrega o plugin, força 5 hot-reloads e falha se o log do Quickshell tiver `ERROR` ou `TypeError` |
 | `scripts/shaders-in-sync.sh [--write]` | confere (no `make lint`) ou recompila os `.qsb` de `plugin/shaders/` depois de editar um `.frag`; precisa do `qt6-shadertools` |
-| `./install.sh` / `./install.sh --uninstall` | copia o build para `~/.config/omarchy/plugins/caionazario.island/`, troca a barra, desliga/religa `omarchy.notifications` e `omarchy.osd` e instala/remove os atalhos e gestos (`hypr/island.lua` → `~/.config/hypr/island.lua` + `require` no `hyprland.lua`) |
+| `./install.sh` / `./install.sh --uninstall` | copia o build para `~/.config/omarchy/plugins/island-desktop/`, troca a barra, desliga/religa `omarchy.notifications` e `omarchy.osd` e instala/remove os atalhos e gestos (`hypr/island.lua` → `~/.config/hypr/island.lua` + `require` no `hyprland.lua`) |
 
 - Logs do harness: `dist/dev.log`. Logs do omarchy-shell real: `qs log -p /usr/share/omarchy/shell`.
 - Captura do Hyprland aninhado: `make shot` (grim no socket do aninhado) grava `dist/shot.png`.

@@ -31,7 +31,7 @@ Item {
   // Catálogo de widgets de barra dos plugins (specs/16 "Widgets de plugins").
   property var barWidgetRegistry: null
 
-  readonly property string pluginId: "caionazario.island"
+  readonly property string pluginId: "island-desktop"
   property var service: null
   readonly property alias system: sources
   readonly property alias pluginWidgets: pluginHost
