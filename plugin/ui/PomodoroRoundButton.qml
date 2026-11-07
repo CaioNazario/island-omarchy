@@ -14,6 +14,8 @@ Rectangle {
   property int diameter: 32
   property int iconSize: 13
   property bool primary: false
+  // O brilho do primário; some nos botões pequenos da barra, onde a área corta.
+  property bool glow: primary
   property color accent: Tokens.pomodoroFocus
   property color iconColor: Tokens.neutral300
 
@@ -39,7 +41,7 @@ Rectangle {
 
   // Brilho do primário: `0 10px 24px -6px` na cor da etapa a 55%.
   RectangularShadow {
-    visible: button.primary
+    visible: button.glow
     z: -1
     anchors.fill: parent
     anchors.margins: 6

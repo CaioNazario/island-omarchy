@@ -344,6 +344,8 @@ ShellRoot {
       else if (action === "preview") source.startPreview();
       else if (action === "endPreview") source.endPreview();
       else if (action === "settings") bar.togglePomodoroSettings(); // qmllint disable missing-property
+      // A engrenagem do widget da barra: abre o card já nas configurações.
+      else if (action === "barSettings") bar.openPomodoroSettings(host.captureScreen()); // qmllint disable missing-property
       else if (action === "config") source.setConfig(JSON.parse(arg));
       return JSON.stringify({
         phase: source.current.phase,

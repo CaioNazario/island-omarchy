@@ -303,6 +303,18 @@ smoke() {
     exit 1
   }
   harness_ipc pomodoro restart "" >/dev/null
+  # Engrenagem do widget com controles (spec 20): abre o card nas configurações
+  # e, com ele já aberto, não o fecha.
+  harness_ipc pomodoro barSettings "" >/dev/null
+  [[ "$(harness_ipc pomodoro "" "")" == *"\"mode\":\"pomodoro\""*"\"settingsOpen\":true"* ]] || {
+    echo "smoke: the widget gear did not open the Pomodoro settings: $(harness_ipc pomodoro "" "")" >&2
+    exit 1
+  }
+  harness_ipc pomodoro barSettings "" >/dev/null
+  [[ "$(harness_ipc pomodoro "" "")" == *"\"mode\":\"pomodoro\""*"\"settingsOpen\":true"* ]] || {
+    echo "smoke: the widget gear closed the island that was already open: $(harness_ipc pomodoro "" "")" >&2
+    exit 1
+  }
   [[ "$(harness_ipc pomodoro "" "")" == *"\"plan\":[{\"focusMin\":45,\"breakMin\":9},{\"focusMin\":15,\"breakMin\":3}]"* ]] || {
     echo "smoke: the pomodoro plan changed across hot-reloads: $(harness_ipc pomodoro "" "")" >&2
     exit 1

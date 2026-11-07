@@ -338,6 +338,13 @@ Item {
     wifiPasswordFor = wifiPasswordFor === ssid ? "" : ssid;
   }
 
+  /** Engrenagem do widget da barra: abre o card já nas configurações, sem fechar se já está aberto. */
+  function openPomodoroSettings(screenName) {
+    targetScreen = screenName;
+    if (mode !== "pomodoro") islandState.openFromTrigger("pomodoro");
+    pomodoroSettingsOpen = true;
+  }
+
   function togglePomodoroSettings() {
     pomodoroSettingsOpen = !pomodoroSettingsOpen;
   }

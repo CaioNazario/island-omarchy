@@ -15,6 +15,7 @@ Substitui o ciclo fixo 25/5 do widget `pomodoro` da spec 16. O widget continua n
 | Contagem a cada 100 ms | Horário de término (`endsAt`), um timeout até o fim da etapa |
 | `completedToday` fixo em 4 (demonstração) | Contador do dia, zerado na virada (`localDay`) |
 | "Testar pausa" avança o ciclo e conta o foco | Pré-visualização: mostra a pausa da sessão atual, cheia e parada, **sem** mexer em sessão, etapa nem contador |
+| Pílula minimizada | Widget da barra, estilo compacto; o estilo com controles é o card adaptado aos 22px da pílula |
 | Foco e pausa em âmbar e teal | Mantidos (`Tokens.pomodoroFocus`/`pomodoroBreak`), independentes do realce da Island |
 | Fonte Outfit | A fonte da Island (Inter); o relógio ainda desenha cada caractere num bloco de largura fixa |
 
@@ -45,6 +46,7 @@ Não há opção de "movimento reduzido" na Island (o protótipo a pede no RNF-0
 | `breakMin` | int | `5` | 1–60, passo 1 |
 | `plan` | `[{focusMin, breakMin}]` | pausas `5, 5, 10, 20` | sempre `cycleLen` linhas, mesmos limites |
 | `autoStart` | bool | `true` | |
+| `barControls` | bool | `false` | widget da barra com controles (abaixo) |
 | `wallpaper` | `noite` \| `aurora` \| `brasa` \| `grafite` \| `custom` | `noite` | `custom` só com `wallpaperPath` |
 | `wallpaperPath` | caminho | `""` | guardado ao trocar para um preset |
 
@@ -95,7 +97,20 @@ Ao **fim do tempo** (nunca ao pular), uma notificação interna (`ph-timer`, spe
 
 ## Widget da barra
 
-`pomodoro` (spec 16): anel (fração decorrida), `mm:ss` e "Foco"/"Pausa"/"Pausado". **O clique abre/fecha o modo `pomodoro`** (antes alternava rodando/pausado); iniciar e pausar é o botão do card ou `Espaço`.
+`pomodoro` (spec 16), `PomodoroBarWidget.qml`, em dois estilos que `barControls` escolhe (a linha "Controles na barra" das configurações). Os dois lêem o mesmo motor e usam a cor da etapa (âmbar no foco, teal na pausa).
+
+**Pílula compacta** (padrão; o protótipo minimizado): ponto de status de 7px, `mm:ss` (13px/500, dígitos de largura fixa) e uma mini barra de progresso de 26×3 (trilho `text` a 14%). O ponto "respira" (`opacity .45 → .9 → .45`, 3.4s) só com o timer rodando; parado, fica fixo e mais apagado. **O clique abre/fecha o modo `pomodoro` da ilha.**
+
+**Com controles** (o card do protótipo adaptado aos 22px da pílula): grip (só desenho, a barra não arrasta) · `Foco · 1/4` (11.5px) · relógio `mm:ss` (15px/200) · mini barra de 28×3 · Reiniciar (18px) · Pular (18px) · Iniciar/Pausar (22px, na cor da etapa, sem brilho: a área corta) · engrenagem e minimizar (16px).
+
+| Controle | Efeito |
+|---|---|
+| etapa, relógio e barra | abre/fecha o modo `pomodoro` da ilha |
+| Reiniciar, Pular, Iniciar/Pausar | os mesmos do card, direto no motor |
+| engrenagem | abre o card **já nas configurações**, no island central; com o card aberto, só abre as configurações (não fecha) |
+| minimizar | `barControls = false`: volta à pílula compacta |
+
+Sem espaço (spec 16 "Quando não cabe"): o estilo com controles cai para a pílula compacta e esta, para só o ponto. A largura natural vem das linhas que existem sempre, não do estado colapsado (senão o encaixe oscilaria). O relógio de 1s só roda com o widget visível e o Pomodoro rodando. Voltar aos controles é pela linha "Controles na barra" nas configurações do card.
 
 ## Modo `pomodoro` da ilha
 
@@ -131,6 +146,8 @@ Uma lista rolável, separada do card por um traço de 1px. Seções, em ordem:
 3. **Wallpaper da pausa** (`PomodoroWallpaperSettings.qml`): à direita, o link "Testar pausa". Grade de seis colunas (gap 6) com as miniaturas (raio 14, borda de 2px: clara na escolhida, `.06` nas outras; o protótipo usa 1.5px, e o `ClippingRectangle` só aceita inteiros), "Sua imagem" quando há um caminho guardado e, no fim, o "+" tracejado.
 
 **Testar pausa** abre a pré-visualização (tela de pausa abaixo) e fecha a ilha. **"+"** roda `omarchy-file-select --extensions "png jpg jpeg webp bmp gif"` num `Process` do `Service.qml` e fecha a ilha antes: com o foco exclusivo da ilha o diálogo não receberia o teclado. Ao terminar (escolhendo ou não), a ilha reabre nas configurações se nada mais abriu. Só um caminho absoluto de uma linha vira `custom`; cancelar não muda nada. Imagem que não abre (arquivo apagado) cai no preset Noite.
+
+**Tirar a imagem própria**: com o mouse sobre a miniatura "Sua imagem" aparece um "×" no canto (16px, "Remover imagem"). Ele só esquece o caminho (`withoutCustomWallpaper`): o arquivo do usuário não é tocado, a miniatura some, e se ela era o wallpaper escolhido volta o Noite. Escolher outro arquivo pelo "+" substitui a imagem.
 
 ## Tela de pausa
 
@@ -176,6 +193,7 @@ Atividades nas pausas (nome, URL, áudio, chip "Tocando"; spike S11), arrasto e 
 - [x] A tela de pausa abre com a sequência de entrada, mostra "Pausa curta"/"Pausa longa" e a frase certa, e sobrevive ao hot-reload sem refazer a entrada (`make smoke` confere a janela `island-break` e a captura).
 - [x] "Testar pausa" não muda sessão, etapa nem contador e fecha a ilha; Urgência fecha a tela sem parar o tempo (`make smoke`). Reiniciar na pausa remove o bloqueio e deixa a pausa parada e cheia (teste do motor).
 - [x] O plano do `settings.json` sobrevive ao hot-reload (`make smoke`).
+- [x] A engrenagem do widget com controles abre o card nas configurações e não fecha o card já aberto (`make smoke`); os dois estilos aparecem na barra (capturas no `make dev`).
 - [ ] O diálogo de arquivos abre e devolve a imagem na sessão real (o harness não tem portal de arquivos).
 - [ ] Segurar `Esc` por 2 s revela a zona de Urgência e a ilha não segura o teclado do diálogo de arquivos (precisa de teclado real; o aninhado não simula).
 - [ ] Na sessão real, o teclado não chega aos apps de baixo durante a pausa e o lock do Omarchy cobre a tela de pausa.

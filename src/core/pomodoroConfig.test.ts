@@ -9,6 +9,8 @@ import {
   stepGlobalMinutes,
   stepPlanMinutes,
   withAutoStart,
+  withBarControls,
+  withoutCustomWallpaper,
   withCycleLength,
   withDurationMode,
   withWallpaper,
@@ -142,6 +144,24 @@ describe('total do ciclo', () => {
   });
 });
 
+describe('controles na barra', () => {
+  it('começa desligado: o widget da barra é a pílula compacta', () => {
+    expect(defaultPomodoroConfig().barControls).toBe(false);
+  });
+
+  it('liga e desliga sem mexer no resto', () => {
+    const on = withBarControls(defaultPomodoroConfig(), true);
+    expect(on.barControls).toBe(true);
+    expect(withBarControls(on, false)).toEqual(defaultPomodoroConfig());
+  });
+
+  it('lê só booleano; o resto volta ao padrão', () => {
+    expect(sanitizePomodoroConfig({ barControls: true }).barControls).toBe(true);
+    expect(sanitizePomodoroConfig({ barControls: 'sim' }).barControls).toBe(false);
+    expect(sanitizePomodoroConfig({}).barControls).toBe(false);
+  });
+});
+
 describe('opções simples', () => {
   it('início automático e wallpaper', () => {
     expect(withAutoStart(defaultPomodoroConfig(), false).autoStart).toBe(false);
@@ -161,6 +181,27 @@ describe('opções simples', () => {
     const preset = withWallpaper(custom, 'grafite', '');
     expect(preset.wallpaper).toBe('grafite');
     expect(preset.wallpaperPath).toBe('/home/u/foto.jpg');
+  });
+});
+
+describe('withoutCustomWallpaper', () => {
+  const custom = withWallpaper(defaultPomodoroConfig(), 'custom', '/home/u/foto.jpg');
+
+  it('esquece o caminho e, se a imagem estava escolhida, volta ao padrão', () => {
+    const cleared = withoutCustomWallpaper(custom);
+    expect(cleared.wallpaperPath).toBe('');
+    expect(cleared.wallpaper).toBe('noite');
+  });
+
+  it('com um preset escolhido, só esquece o caminho guardado', () => {
+    const preset = withWallpaper(custom, 'brasa', '');
+    const cleared = withoutCustomWallpaper(preset);
+    expect(cleared.wallpaper).toBe('brasa');
+    expect(cleared.wallpaperPath).toBe('');
+  });
+
+  it('não mexe no resto da configuração', () => {
+    expect(withoutCustomWallpaper(custom)).toEqual(defaultPomodoroConfig());
   });
 });
 

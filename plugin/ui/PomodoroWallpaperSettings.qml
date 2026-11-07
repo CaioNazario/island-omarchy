@@ -98,6 +98,49 @@ ColumnLayout {
           cursorShape: Qt.PointingHandCursor
           onClicked: section.pomodoro.setConfig(ConfigCore.withWallpaper(section.config, thumb.modelData, section.config.wallpaperPath))
         }
+
+        HoverHandler {
+          id: thumbHover
+        }
+
+        // Tirar a imagem própria: o "×" aparece com o mouse em cima da miniatura.
+        // Só esquece o caminho; o arquivo do usuário não é tocado.
+        Rectangle {
+          visible: thumb.modelData === "custom"
+          opacity: thumbHover.hovered ? 1 : 0
+          anchors.top: parent.top
+          anchors.right: parent.right
+          anchors.margins: 4
+          width: 16
+          height: 16
+          radius: 8
+          color: removePointer.containsMouse ? Qt.alpha("#000000", 0.85) : Qt.alpha("#000000", 0.6)
+          Accessible.role: Accessible.Button
+          Accessible.name: I18n.tr("Remove image")
+
+          Behavior on opacity {
+            NumberAnimation {
+              duration: 140
+            }
+          }
+
+          PhIcon {
+            anchors.centerIn: parent
+            glyph: "x"
+            size: 9
+            color: "#ffffff"
+          }
+
+          MouseArea {
+            id: removePointer
+
+            anchors.fill: parent
+            enabled: parent.opacity > 0
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: section.pomodoro.setConfig(ConfigCore.withoutCustomWallpaper(section.config))
+          }
+        }
       }
     }
 

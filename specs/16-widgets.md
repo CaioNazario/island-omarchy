@@ -29,7 +29,7 @@ Widgets ocupam as pílulas laterais conforme o ambiente ativo (spec 15). Visual 
 A área de widgets nunca empurra a ilha nem os botões fixos. Decisão por medida do espaço, não por breakpoint:
 
 1. O `hw` perde blocos na ordem **NET → GPU → TEMP** (CPU e RAM ficam).
-2. Ainda sem espaço: os widgets com ring ou ícone na frente (nota, progresso do dia, GitHub, evento, pomodoro, contagem, música) **colapsam para só o ícone**, primeiro o mais longe da ilha (na esquerda, o primeiro da lista; na direita, o último). O `ai`, o `hw` e os widgets de plugins não colapsam.
+2. Ainda sem espaço: os widgets com ring ou ícone na frente (nota, progresso do dia, GitHub, evento, contagem, música) **colapsam para só o ícone**; o `pomodoro` cai do estilo com controles para a pílula compacta e dela para só o ponto, primeiro o mais longe da ilha (na esquerda, o primeiro da lista; na direita, o último). O `ai`, o `hw` e os widgets de plugins não colapsam.
 3. Ainda sem espaço com todos colapsados: somem widgets **inteiros**, também do mais longe. Nunca corta um widget pela metade, diferente do design.
 
 Cada slot reserva só a largura que o widget ocupa (o `hw` encolhido ou o ícone colapsado), para os seguintes não passarem do fim da área e irem para baixo dos botões fixos (issue #36). O zoom da barra (spec 02 "Tamanho") escala tudo junto, e a área é medida no tamanho do design.
@@ -57,7 +57,7 @@ Linha de 22px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 | `ai` | spec 12 | abre/fecha `ai` |
 | `hw` | spec 10 | abre/fecha `quick` |
 | `event` | ícone `ph-calendar-blank` · rótulo (máx. 130px) · sub | abre `calendar` |
-| `pomodoro` | anel · rótulo `mm:ss` · sub | abre/fecha `pomodoro` (spec 20) |
+| `pomodoro` | ponto · `mm:ss` · mini barra, ou o card em linha com controles | abre/fecha `pomodoro` (spec 20) |
 | `music` | ícone da fonte (spec 05) `accent-400` · título (máx. 120px) · sub artista · ícone final `ph-fill ph-play`/`ph-pause` do estado | com player: abre/fecha `music` fixado |
 | `github` | ícone `ph-fill ph-github-logo` · rótulo · sub | nenhum |
 | `progress` | ícone `ph-hourglass-medium` · "Dia" · barra · sub `%` | nenhum |
@@ -77,8 +77,8 @@ Linha de 22px, padding 0 9px, gap 6px, 12px/500, `text`, dígitos tabulares, sem
 
 Comportamento completo na [spec 20](20-pomodoro.md): ciclo de sessões com durações configuráveis, tela de pausa e o modo `pomodoro` da ilha. Aqui, só o widget da barra:
 
-- Visual: anel (fração decorrida da etapa) · rótulo `mm:ss` (tempo restante) · sub "Foco" ou "Pausa" rodando, "Pausado" parado.
-- Clique: abre/fecha o modo `pomodoro` da ilha (o card com relógio, Reiniciar/Pular/Iniciar e as configurações). Antes, alternava rodando/pausado; agora isso é o botão do card.
+- Visual: dois estilos (spec 20 "Widget da barra"): a pílula compacta (ponto de status · `mm:ss` · mini barra de progresso) e, com `barControls`, o card do protótipo em linha (grip · `Foco · 1/4` · relógio · Reiniciar, Pular, Iniciar/Pausar · engrenagem · minimizar).
+- Clique: abre/fecha o modo `pomodoro` da ilha (o card com relógio, Reiniciar/Pular/Iniciar e as configurações); no estilo com controles, os botões agem direto no motor e a engrenagem abre o card nas configurações. Antes, o clique alternava rodando/pausado.
 - Estado inicial: Foco 1/4, 25:00, pausado.
 - Ao fim do tempo de uma etapa, uma notificação da Island entra pelo roteamento da spec 04, com ícone `ph ph-timer`, com os minutos da etapa que começa.
 - Roda no `Service.qml`: continua no hot-reload da barra e no bloqueio de tela (o Omarchy não descarrega a barra ao bloquear). Estado em `state.json` `pomodoroState`, configuração em `settings.json` `pomodoro` (spec 13); ao reiniciar o shell volta parado.

@@ -302,4 +302,49 @@ ColumnLayout {
       onClicked: sessions.apply(ConfigCore.withAutoStart(sessions.config, !sessions.config.autoStart))
     }
   }
+
+  // Estilo do widget da barra: pílula compacta ou com os controles (spec 20).
+  Rectangle {
+    Layout.fillWidth: true
+    Layout.leftMargin: 4
+    Layout.rightMargin: 4
+    implicitHeight: 38
+    radius: 14
+    color: barPointer.containsMouse ? Qt.alpha(Tokens.text, 0.07) : "transparent"
+
+    RowLayout {
+      anchors.fill: parent
+      anchors.leftMargin: 8
+      anchors.rightMargin: 8
+      spacing: 11
+
+      PhIcon {
+        glyph: "sliders-horizontal"
+        size: 14
+        color: Tokens.neutral300
+      }
+
+      IslandText {
+        Layout.fillWidth: true
+        text: I18n.tr("Controls in the bar")
+        px: 13
+        font.weight: Tokens.weightBody
+        color: Tokens.neutral200
+      }
+
+      ToggleSwitch {
+        on: sessions.config.barControls
+        onClicked: sessions.apply(ConfigCore.withBarControls(sessions.config, !sessions.config.barControls))
+      }
+    }
+
+    MouseArea {
+      id: barPointer
+
+      anchors.fill: parent
+      hoverEnabled: true
+      cursorShape: Qt.PointingHandCursor
+      onClicked: sessions.apply(ConfigCore.withBarControls(sessions.config, !sessions.config.barControls))
+    }
+  }
 }

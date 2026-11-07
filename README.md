@@ -76,7 +76,7 @@ To switch environments:
 | AI usage | Session and weekly limits | Opens the AI card |
 | Hardware | CPU, RAM, GPU, temperature and network | Opens the quick controls |
 | Next event | Today's next event | Opens the calendar |
-| Pomodoro | Time left and the current stage (focus, break or paused) | Opens the Pomodoro card |
+| Pomodoro | A status dot, the time left and a progress bar, or (optionally) the full controls | Opens the Pomodoro card |
 | Music | What's playing now | Opens the music player |
 | GitHub | Your open PRs and how many wait for your review | — |
 | Day progress | How much of the day has passed | — |
@@ -166,10 +166,12 @@ There is also **Do not disturb**, and Omarchy's notification shortcuts and scrip
 
 ### Pomodoro
 
-Click the Pomodoro widget to open its card: the clock, **Restart**, **Skip** and **Start/Pause** buttons, and a progress bar. The gear opens the settings right inside the Island (shortcuts while the card is open: `Space` starts or pauses, `R` restarts, `S` skips, `M` toggles the settings). The timer keeps counting with the card closed.
+The Pomodoro widget in the bar is a small pill: a status dot in the color of the stage, the time left and a progress bar. Turn on **Controls in the bar** in the settings and it becomes a row with Restart, Skip, Start/Pause, a gear (opens the settings in the Island) and a minimize button (back to the small pill). When the bar is short on space, it shrinks back to the pill and then to the dot.
+
+Click the widget to open the card: the clock, **Restart**, **Skip** and **Start/Pause** buttons, and a progress bar. The gear opens the settings right inside the Island (shortcuts while the card is open: `Space` starts or pauses, `R` restarts, `S` skips, `M` toggles the settings). The timer keeps counting with the card closed.
 
 - **Cycle**: 1 to 24 sessions, each a focus followed by a break. Durations are the same for every session (**Global**) or set per session (**Individual**). **Start automatically** begins the next focus after a break; breaks always start by themselves.
-- **Break screen**: every break covers each monitor with a wallpaper, a short instruction ("Stand up.", "Drink some water."…) and the time left. Pick one of four wallpapers or your own image (the **+** tile opens the desktop file chooser), and use **Test break** to see it without touching the cycle. The monitor with the focus takes the keyboard while the break screen is up.
+- **Break screen**: every break covers each monitor with a wallpaper, a short instruction ("Stand up.", "Drink some water."…) and the time left. Pick one of four wallpapers or your own image (the **+** tile opens the desktop file chooser; hover your image and click its **×** to remove it, which leaves the file alone), and use **Test break** to see it without touching the cycle. The monitor with the focus takes the keyboard while the break screen is up.
 - **Leaving a break**: move the mouse to the top of the screen (or hold `Esc` for 2 seconds) to reveal **Skip break**, which ends the break right away, and **Emergency**, which asks first and then closes the screen while the break timer keeps running.
 - The settings are saved in `~/.config/island/settings.json` (`pomodoro`); the timer state, in `~/.local/state/island/state.json`.
 

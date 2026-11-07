@@ -37,6 +37,8 @@ export interface PomodoroConfig {
   plan: SessionPlan[];
   /** Inicia o foco sozinho depois da pausa; a pausa sempre começa correndo. */
   autoStart: boolean;
+  /** Widget da barra com os controles (Reiniciar, Pular, Iniciar) em vez da pílula compacta. */
+  barControls: boolean;
   wallpaper: WallpaperId;
   /** Arquivo da imagem própria; vale só com `wallpaper: 'custom'`, mas fica guardado ao trocar de preset. */
   wallpaperPath: string;
@@ -55,6 +57,7 @@ export function defaultPomodoroConfig(): PomodoroConfig {
     breakMin: DEFAULT_BREAK,
     plan: DEFAULT_BREAKS.map((breakMin) => ({ focusMin: DEFAULT_FOCUS, breakMin })),
     autoStart: true,
+    barControls: false,
     wallpaper: 'noite',
     wallpaperPath: '',
   };
@@ -129,6 +132,10 @@ export function withAutoStart(config: PomodoroConfig, autoStart: boolean): Pomod
   return { ...config, autoStart };
 }
 
+export function withBarControls(config: PomodoroConfig, barControls: boolean): PomodoroConfig {
+  return { ...config, barControls };
+}
+
 /**
  * Wallpaper da pausa. `custom` só vale com o caminho da imagem; um id
  * desconhecido deixa tudo como estava. Trocar para um preset guarda o
@@ -140,6 +147,16 @@ export function withWallpaper(config: PomodoroConfig, id: string, path: string):
   if (known !== 'custom') return { ...config, wallpaper: known };
   if (path === '') return config;
   return { ...config, wallpaper: 'custom', wallpaperPath: path };
+}
+
+/**
+ * Esquece a imagem própria (só o caminho: o arquivo do usuário não é tocado).
+ * Se ela era o wallpaper escolhido, volta ao padrão.
+ */
+export function withoutCustomWallpaper(config: PomodoroConfig): PomodoroConfig {
+  const wallpaper =
+    config.wallpaper === 'custom' ? defaultPomodoroConfig().wallpaper : config.wallpaper;
+  return { ...config, wallpaper, wallpaperPath: '' };
 }
 
 /** Soma de foco e pausa de todas as linhas do plano. */
@@ -208,6 +225,7 @@ export function sanitizePomodoroConfig(value: unknown): PomodoroConfig {
     // protótipo só vem do padrão, quando não há nada guardado.
     plan: sanePlan(value.plan, cycleLen, focusMin, breakMin),
     autoStart: typeof value.autoStart === 'boolean' ? value.autoStart : base.autoStart,
+    barControls: typeof value.barControls === 'boolean' ? value.barControls : base.barControls,
     ...savedWallpaper(value.wallpaper, path, base),
   };
 }
