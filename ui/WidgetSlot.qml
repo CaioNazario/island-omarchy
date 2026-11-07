@@ -4,7 +4,6 @@ import QtQuick
 import "../core/calendar.mjs" as CalendarCore
 import "../core/countdown.mjs" as CountdownCore
 import "../core/dayProgress.mjs" as DayProgress
-import "../core/pomodoro.mjs" as PomodoroCore
 import "../core/environments.mjs" as EnvironmentsCore
 import "../core/github.mjs" as GithubCore
 
@@ -27,9 +26,9 @@ Item {
 
   readonly property var system: bar.system
   readonly property var service: bar.service
-  readonly property real naturalWidth: !loader.item ? 0 : widgetId === "hw" ? (loader.item as HwWidget).fullWidth : (loader.item as Item).implicitWidth
+  readonly property real naturalWidth: !loader.item ? 0 : widgetId === "hw" ? (loader.item as HwWidget).fullWidth : widgetId === "pomodoro" ? (loader.item as PomodoroBarWidget).fullWidth : (loader.item as Item).implicitWidth
   // Largura só com o ícone, dos widgets de `TopbarWidget` com ring ou ícone.
-  readonly property real iconWidth: (loader.item as TopbarWidget)?.compactWidth ?? 0
+  readonly property real iconWidth: (loader.item as TopbarWidget)?.compactWidth ?? (loader.item as PomodoroBarWidget)?.compactWidth ?? 0
   // Colapsado: a área deu menos que a natural a um widget que não é o `hw`.
   readonly property bool collapsed: widgetId !== "hw" && iconWidth > 0 && budget > 0 && budget < naturalWidth
   readonly property real minWidth: loader.item && widgetId === "hw" ? Math.min(naturalWidth, (loader.item as HwWidget).minWidth) : naturalWidth
@@ -74,6 +73,13 @@ Item {
 
   Binding {
     target: loader.item as TopbarWidget
+    property: "compact"
+    value: true
+    when: slot.collapsed
+  }
+
+  Binding {
+    target: loader.item as PomodoroBarWidget
     property: "compact"
     value: true
     when: slot.collapsed
@@ -128,26 +134,11 @@ Item {
   Component {
     id: pomodoroWidget
 
-    TopbarWidget {
-      id: pomodoro
-
-      readonly property var pomodoroState: slot.service ? slot.service.pomodoro.current : PomodoroCore.initialPomodoro()
-      property real now: Date.now()
-
-      clickable: slot.service !== null
-      ring: PomodoroCore.elapsedFraction(pomodoroState, now)
-      label: PomodoroCore.formatRemaining(PomodoroCore.remainingAt(pomodoroState, now))
-      sub: PomodoroCore.phaseLabel(pomodoroState, I18n.language)
-      onClicked: slot.service.pomodoro.toggle()
-      onPomodoroStateChanged: now = Date.now()
-
-      // Relógio de 1s só com o widget visível e o pomodoro rodando.
-      Timer {
-        interval: 1000
-        repeat: true
-        running: pomodoro.pomodoroState.endsAt !== null
-        onTriggered: pomodoro.now = Date.now()
-      }
+    // Pílula compacta ou com controles, conforme `barControls` (specs/20).
+    PomodoroBarWidget {
+      source: slot.service ? slot.service.pomodoro : null
+      onOpenRequested: slot.open("pomodoro")
+      onSettingsRequested: slot.bar.openPomodoroSettings(slot.screenName)
     }
   }
 

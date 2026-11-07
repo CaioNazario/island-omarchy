@@ -2,6 +2,7 @@
 // semântica de transição replica design/logic.js (setMode/arm/closeAll/
 // openFromBar/islandClick, linhas 94-104, 230-250, 384-392).
 import { MIXER_MAX_HEIGHT } from './mixer.mjs';
+import { POMODORO_COMPACT_HEIGHT, pomodoroPanelWidth } from './pomodoroPanel.mjs';
 const TRANSIENT_MS = {
     notif: 2500,
     music: 2500,
@@ -17,14 +18,14 @@ const POWER_MODES = new Set(['quick', 'wifi', 'bt']);
 function isTransient(mode) {
     return mode in TRANSIENT_MS;
 }
-/** Modos fixos (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `mixer`, `display`, `battery`) tomam o foco de teclado (specs/03-ilha.md). */
+/** Modos fixos (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `pomodoro`, `mixer`, `display`, `battery`) tomam o foco de teclado (specs/03-ilha.md). */
 export function isFixedMode(mode) {
     return mode !== 'compact' && !isTransient(mode);
 }
 /** Largura do maior modo; a barra mede o espaço das laterais com ela. */
 export const MAX_ISLAND_WIDTH = 660;
 export function getSize(mode, ctx = {}) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     switch (mode) {
         case 'compact':
             return { width: 240, height: 26, radius: 13 };
@@ -57,8 +58,14 @@ export function getSize(mode, ctx = {}) {
             return { width: 260, height: 32, radius: 16 };
         case 'note':
             return { width: 420, height: 132, radius: 24 };
+        case 'pomodoro':
+            return {
+                width: pomodoroPanelWidth(ctx.pomodoroSettingsOpen === true),
+                height: (_c = ctx.pomodoroHeight) !== null && _c !== void 0 ? _c : POMODORO_COMPACT_HEIGHT,
+                radius: 24,
+            };
         case 'mixer':
-            return { width: 440, height: (_c = ctx.mixerHeight) !== null && _c !== void 0 ? _c : MIXER_MAX_HEIGHT, radius: 24 };
+            return { width: 440, height: (_d = ctx.mixerHeight) !== null && _d !== void 0 ? _d : MIXER_MAX_HEIGHT, radius: 24 };
         case 'display':
             // Seção de brilho: rótulo 18 + 6 + slider 20 + divisor 1 + 2×10.
             return { width: 440, height: ctx.displayBrightness === false ? 212 : 277, radius: 24 };
@@ -66,7 +73,7 @@ export function getSize(mode, ctx = {}) {
             // Seção de perfis: divisor 12 + 1 + 10, rótulo 18 + 6, botões 36.
             return { width: 440, height: ctx.batteryProfiles === false ? 142 : 225, radius: 24 };
         case 'ai':
-            return { width: 480, height: (_d = ctx.aiHeight) !== null && _d !== void 0 ? _d : 56, radius: 24 };
+            return { width: 480, height: (_e = ctx.aiHeight) !== null && _e !== void 0 ? _e : 56, radius: 24 };
     }
 }
 /**

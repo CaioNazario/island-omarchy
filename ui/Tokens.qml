@@ -7,6 +7,7 @@ import "../core/gradients.mjs" as GradientCore
 import "../core/surfaceStyle.mjs" as SurfaceCore
 import "../core/shapes.mjs" as ShapeCore
 import "../core/barZoom.mjs" as BarZoomCore
+import "../core/pomodoroWallpapers.mjs" as PomodoroTheme
 
 // Tokens Nocturne (design/tokens.css, bloco `:root`) e as cores que o design
 // calcula em oklch()/color-mix(), já convertidas. specs/01-design-tokens.md
@@ -109,6 +110,14 @@ QtObject {
   readonly property color powerOffText: "#ff958d" // oklch(0.78 0.13 25)
   readonly property color recordOnBg: "#d73337" // oklch(0.58 0.2 25)
   readonly property color passwordErrorBorder: "#bd413f" // oklch(0.55 0.16 25)
+
+  // Acentos do Pomodoro (specs/20 "Cores"): âmbar no foco, teal na pausa, com o
+  // texto escuro do protótipo por cima. Não seguem o realce da Island: a
+  // troca de cor é o que diz em que etapa o ciclo está.
+  readonly property color pomodoroFocus: PomodoroTheme.POMODORO_ACCENTS.focus
+  readonly property color pomodoroBreak: PomodoroTheme.POMODORO_ACCENTS.break
+  readonly property color pomodoroOnAccent: "#100b05"
+  readonly property color pomodoroBreakBase: "#050506"
 
   readonly property color volumeThumbGlow: Qt.alpha(accent, 0.60)
   readonly property color btnPrimaryHover: Qt.alpha(accent, 0.12)
