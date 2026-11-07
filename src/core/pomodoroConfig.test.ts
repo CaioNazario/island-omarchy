@@ -10,6 +10,7 @@ import {
   stepPlanMinutes,
   withAutoStart,
   withBarControls,
+  withBreakSound,
   withoutCustomWallpaper,
   withCycleLength,
   withDurationMode,
@@ -159,6 +160,26 @@ describe('controles na barra', () => {
     expect(sanitizePomodoroConfig({ barControls: true }).barControls).toBe(true);
     expect(sanitizePomodoroConfig({ barControls: 'sim' }).barControls).toBe(false);
     expect(sanitizePomodoroConfig({}).barControls).toBe(false);
+  });
+});
+
+describe('som do fim da pausa', () => {
+  it('o padrão é o toque suave', () => {
+    expect(defaultPomodoroConfig().breakSound).toBe('chime');
+  });
+
+  it('troca sem mexer no resto', () => {
+    const bell = withBreakSound(defaultPomodoroConfig(), 'bell');
+    expect(bell.breakSound).toBe('bell');
+    expect(withBreakSound(bell, 'chime')).toEqual(defaultPomodoroConfig());
+  });
+
+  it('lê só um id conhecido; o resto volta ao padrão', () => {
+    expect(sanitizePomodoroConfig({ breakSound: 'off' }).breakSound).toBe('off');
+    expect(sanitizePomodoroConfig({ breakSound: 'alarm' }).breakSound).toBe('alarm');
+    expect(sanitizePomodoroConfig({ breakSound: 'foghorn' }).breakSound).toBe('chime');
+    expect(sanitizePomodoroConfig({ breakSound: 3 }).breakSound).toBe('chime');
+    expect(sanitizePomodoroConfig({}).breakSound).toBe('chime');
   });
 });
 

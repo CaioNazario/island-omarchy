@@ -330,7 +330,7 @@ ShellRoot {
 
     // Pomodoro (spec 20): `toggle`, `skip`, `restart`, `release` (Urgência),
     // `preview`/`endPreview` (Testar pausa) e `settings` (engrenagem) agem como
-    // os botões; `config <json>` grava a configuração. Devolve o estado.
+    // os botões; `sound <id>` pré-ouve um toque; `config <json>` grava a configuração. Devolve o estado.
     function pomodoro(action: string, arg: string): string {
       const bar = barLoader.item; // qmllint disable missing-property
       const service = serviceLoader.item; // qmllint disable missing-property
@@ -347,6 +347,8 @@ ShellRoot {
       // A engrenagem do widget da barra: abre o card já nas configurações.
       else if (action === "barSettings") bar.openPomodoroSettings(host.captureScreen()); // qmllint disable missing-property
       else if (action === "config") source.setConfig(JSON.parse(arg));
+      // Pré-ouvir um toque do fim da pausa (`bell`, `off`...), como o segmentado das configurações.
+      else if (action === "sound") source.previewSound(arg);
       return JSON.stringify({
         phase: source.current.phase,
         session: source.current.session,

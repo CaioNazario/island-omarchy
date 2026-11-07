@@ -47,6 +47,7 @@ Não há opção de "movimento reduzido" na Island (o protótipo a pede no RNF-0
 | `plan` | `[{focusMin, breakMin}]` | pausas `5, 5, 10, 20` | sempre `cycleLen` linhas, mesmos limites |
 | `autoStart` | bool | `true` | |
 | `barControls` | bool | `false` | widget da barra com controles (abaixo) |
+| `breakSound` | `off` \| `chime` \| `bell` \| `alarm` | `chime` | som no fim da pausa ("Som", abaixo) |
 | `wallpaper` | `noite` \| `aurora` \| `brasa` \| `grafite` \| `custom` | `noite` | `custom` só com `wallpaperPath` |
 | `wallpaperPath` | caminho | `""` | guardado ao trocar para um preset |
 
@@ -94,6 +95,23 @@ O motor vive no `Service.qml` (`PomodoroSource.qml`): continua no hot-reload da 
 ### Notificação
 
 Ao **fim do tempo** (nunca ao pular), uma notificação interna (`ph-timer`, spec 04): fim do foco, "Hora da pausa" / "`{n}` min de pausa"; fim da pausa, "Hora de focar" / "`{n}` min de foco", com os minutos da etapa que começa.
+
+### Som
+
+Ao **fim da pausa** por tempo (quando começa o foco; nunca ao pular nem ao sair pela Urgência), a Island toca o toque de `breakSound`. O fim do foco fica em silêncio: a tela de pausa que cobre tudo já avisa.
+
+| `breakSound` | Arquivo (tema de sons do freedesktop) | Nome |
+|---|---|---|
+| `chime` | `bell.oga` | Suave |
+| `bell` | `complete.oga` | Sino |
+| `alarm` | `alarm-clock-elapsed.oga` | Alarme |
+| `off` | — | Desligado |
+
+(Os nomes dos arquivos do tema não combinam com o som: o `bell.oga` é o mais suave e o `complete.oga` é o que soa como sino.)
+
+- Quem toca é o `PomodoroSource.qml`: `pw-play <arquivo>` (PipeWire), com `paplay` de reserva, num `Process` com o caminho como argumento do `sh` (nunca dentro do comando). A tabela de arquivos é fixa (`pomodoroSound.ts`): um valor do `settings.json` que não esteja nela não vira caminho. Sem o tema de sons ou sem os dois players, fica em silêncio, sem erro.
+- **Atraso**: só toca se o disparo veio até 10 s depois do horário (`MAX_SOUND_LATE_MS`). Depois de uma suspensão o fim da pausa já é passado, e um som horas depois só assusta.
+- Um som já tocando não é cortado.
 
 ## Widget da barra
 
@@ -143,7 +161,9 @@ Uma lista rolável, separada do card por um traço de 1px. Seções, em ordem:
    - **Global**: "Todas as sessões" (`N min`, passo 5) e "Todas as pausas" (`N min`, passo 1).
    - **Individual**: cabeçalho Sessão / Foco / Pausa; uma linha por sessão (steppers de 20px, `Nm`), a sessão atual com ponto âmbar e fundo `.055`; "Total do ciclo · Xh Ym".
 2. traço
-3. **Wallpaper da pausa** (`PomodoroWallpaperSettings.qml`): à direita, o link "Testar pausa". Grade de seis colunas (gap 6) com as miniaturas (raio 14, borda de 2px: clara na escolhida, `.06` nas outras; o protótipo usa 1.5px, e o `ClippingRectangle` só aceita inteiros), "Sua imagem" quando há um caminho guardado e, no fim, o "+" tracejado.
+3. **Som do fim da pausa** (`PomodoroSoundSettings.qml`): segmentado Desligado / Suave / Sino / Alarme. Escolher um toque grava e já o toca, para ouvir antes de decidir.
+4. traço
+5. **Wallpaper da pausa** (`PomodoroWallpaperSettings.qml`): à direita, o link "Testar pausa". Grade de seis colunas (gap 6) com as miniaturas (raio 14, borda de 2px: clara na escolhida, `.06` nas outras; o protótipo usa 1.5px, e o `ClippingRectangle` só aceita inteiros), "Sua imagem" quando há um caminho guardado e, no fim, o "+" tracejado.
 
 **Testar pausa** abre a pré-visualização (tela de pausa abaixo) e fecha a ilha. **"+"** roda `omarchy-file-select --extensions "png jpg jpeg webp bmp gif"` num `Process` do `Service.qml` e fecha a ilha antes: com o foco exclusivo da ilha o diálogo não receberia o teclado. Ao terminar (escolhendo ou não), a ilha reabre nas configurações se nada mais abriu. Só um caminho absoluto de uma linha vira `custom`; cancelar não muda nada. Imagem que não abre (arquivo apagado) cai no preset Noite.
 
@@ -194,6 +214,8 @@ Atividades nas pausas (nome, URL, áudio, chip "Tocando"; spike S11), arrasto e 
 - [x] "Testar pausa" não muda sessão, etapa nem contador e fecha a ilha; Urgência fecha a tela sem parar o tempo (`make smoke`). Reiniciar na pausa remove o bloqueio e deixa a pausa parada e cheia (teste do motor).
 - [x] O plano do `settings.json` sobrevive ao hot-reload (`make smoke`).
 - [x] A engrenagem do widget com controles abre o card nas configurações e não fecha o card já aberto (`make smoke`); os dois estilos aparecem na barra (capturas no `make dev`).
+- [x] Testes puros do som (`pomodoroSound`, `breakSound` em `pomodoroConfig`): tabela de arquivos, id desconhecido sem arquivo, só o fim da pausa toca, desligado e atraso acima de 10 s ficam em silêncio. O `make smoke` confere, com um `pw-play` falso, que escolher o Sino chama o player com `complete.oga` e que Desligado não chama.
+- [ ] O som sai pelo alto-falante na sessão real, no fim de uma pausa de verdade (o harness não tem áudio).
 - [ ] O diálogo de arquivos abre e devolve a imagem na sessão real (o harness não tem portal de arquivos).
 - [ ] Segurar `Esc` por 2 s revela a zona de Urgência e a ilha não segura o teclado do diálogo de arquivos (precisa de teclado real; o aninhado não simula).
 - [ ] Na sessão real, o teclado não chega aos apps de baixo durante a pausa e o lock do Omarchy cobre a tela de pausa.

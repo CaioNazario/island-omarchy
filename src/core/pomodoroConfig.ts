@@ -11,6 +11,8 @@ export type DurationMode = 'global' | 'individual';
 export const DURATION_MODES: readonly DurationMode[] = ['global', 'individual'];
 export const WALLPAPER_IDS = ['noite', 'aurora', 'brasa', 'grafite', 'custom'] as const;
 export type WallpaperId = (typeof WALLPAPER_IDS)[number];
+export const BREAK_SOUND_IDS = ['off', 'chime', 'bell', 'alarm'] as const;
+export type BreakSoundId = (typeof BREAK_SOUND_IDS)[number];
 
 /** Limites e passos da spec 06 do protótipo: sessões 1–24, foco 5–180 (de 5 em 5), pausa 1–60. */
 export const CYCLE_LIMITS = { min: 1, max: 24 } as const;
@@ -39,6 +41,8 @@ export interface PomodoroConfig {
   autoStart: boolean;
   /** Widget da barra com os controles (Reiniciar, Pular, Iniciar) em vez da pílula compacta. */
   barControls: boolean;
+  /** Som no fim da pausa (a hora de voltar a focar); `off` fica em silêncio. */
+  breakSound: BreakSoundId;
   wallpaper: WallpaperId;
   /** Arquivo da imagem própria; vale só com `wallpaper: 'custom'`, mas fica guardado ao trocar de preset. */
   wallpaperPath: string;
@@ -58,6 +62,7 @@ export function defaultPomodoroConfig(): PomodoroConfig {
     plan: DEFAULT_BREAKS.map((breakMin) => ({ focusMin: DEFAULT_FOCUS, breakMin })),
     autoStart: true,
     barControls: false,
+    breakSound: 'chime',
     wallpaper: 'noite',
     wallpaperPath: '',
   };
@@ -130,6 +135,10 @@ export function stepPlanMinutes(
 
 export function withAutoStart(config: PomodoroConfig, autoStart: boolean): PomodoroConfig {
   return { ...config, autoStart };
+}
+
+export function withBreakSound(config: PomodoroConfig, breakSound: BreakSoundId): PomodoroConfig {
+  return { ...config, breakSound };
 }
 
 export function withBarControls(config: PomodoroConfig, barControls: boolean): PomodoroConfig {
@@ -226,6 +235,7 @@ export function sanitizePomodoroConfig(value: unknown): PomodoroConfig {
     plan: sanePlan(value.plan, cycleLen, focusMin, breakMin),
     autoStart: typeof value.autoStart === 'boolean' ? value.autoStart : base.autoStart,
     barControls: typeof value.barControls === 'boolean' ? value.barControls : base.barControls,
+    breakSound: BREAK_SOUND_IDS.find((id) => id === value.breakSound) ?? base.breakSound,
     ...savedWallpaper(value.wallpaper, path, base),
   };
 }

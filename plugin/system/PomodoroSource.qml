@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import "../core/pomodoro.mjs" as PomodoroCore
 import "../core/pomodoroConfig.mjs" as ConfigCore
+import "../core/pomodoroSound.mjs" as SoundCore
 
 // Pomodoro (specs/20-pomodoro.md). Vive no Service.qml: segue rodando no
 // hot-reload da barra e no lock (o Omarchy não descarrega a barra ao
@@ -112,10 +113,33 @@ Scope {
       if (running) armDeadline();
       return;
     }
+    // Quanto o disparo passou do horário: depois de uma suspensão o som já não cabe.
+    const late = Date.now() - current.endsAt;
     update(result.state);
+    const sound = SoundCore.breakEndSound(applied, result.started, late);
+    if (sound !== null) playSound(sound);
     const minutes = ConfigCore.minutesFor(applied, result.started, result.state.session);
     const message = PomodoroCore.phaseNotification(result.started, minutes, pomodoro.language);
     feed.pushInternal(message.title, message.body, "timer");
+  }
+
+  // Toca um arquivo do tema de sons pelo PipeWire (`pw-play`), com `paplay` de
+  // reserva. O caminho vai como argumento do `sh`, não dentro do comando. Um som
+  // já tocando não é cortado: o toque repetido (pré-ouvir) espera o anterior.
+  function playSound(file) {
+    if (player.running) return;
+    player.command = ["sh", "-c", 'pw-play "$1" 2>/dev/null || paplay "$1"', "sh", file];
+    player.running = true;
+  }
+
+  // Pré-ouvir o toque escolhido nas configurações.
+  function previewSound(id) {
+    const file = SoundCore.breakSoundFile(id);
+    if (file !== null) playSound(file);
+  }
+
+  Process {
+    id: player
   }
 
   // Um timeout único até o fim da etapa, esteja o widget visível ou não.

@@ -142,6 +142,12 @@ seed_settings() {
 smoke() {
   trap stop EXIT
   seed_settings
+  # `pw-play` falso (spec 20 "Som"): guarda o arquivo pedido, sem tocar nada.
+  mkdir -p "$DIST/stub-bin"
+  : >"$DIST/sound.log"
+  printf '#!/bin/sh\necho "$1" >>"%s"\n' "$DIST/sound.log" >"$DIST/stub-bin/pw-play"
+  chmod +x "$DIST/stub-bin/pw-play"
+  export PATH="$DIST/stub-bin:$PATH"
   start
   wait_for '[[ "$(harness_status)" == *"\"bar\":true"* ]]' "the bar to load"
   wait_for '[[ "$(harness_ipc environments)" == *"\"name\":\"Semente\""*"\"left\":[\"pomodoro\",\"note\"]"* ]]' "the environments saved in settings.json to load"
@@ -303,6 +309,15 @@ smoke() {
     exit 1
   }
   harness_ipc pomodoro restart "" >/dev/null
+  # Som do fim da pausa (spec 20): escolher um toque o pré-ouve pelo `pw-play`;
+  # "Desligado" fica em silêncio.
+  harness_ipc pomodoro sound bell >/dev/null
+  wait_for '[[ "$(cat "$DIST/sound.log")" == */complete.oga ]]' "the bell sound to reach pw-play"
+  harness_ipc pomodoro sound off >/dev/null
+  [[ "$(wc -l <"$DIST/sound.log")" == 1 ]] || {
+    echo "smoke: the 'off' sound played something: $(cat "$DIST/sound.log")" >&2
+    exit 1
+  }
   # Engrenagem do widget com controles (spec 20): abre o card nas configurações
   # e, com ele já aberto, não o fecha.
   harness_ipc pomodoro barSettings "" >/dev/null

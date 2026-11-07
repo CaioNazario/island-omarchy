@@ -42,6 +42,21 @@ Flickable {
       color: Qt.alpha(Tokens.text, 0.08)
     }
 
+    PomodoroSoundSettings {
+      Layout.fillWidth: true
+      pomodoro: settings.pomodoro
+    }
+
+    Rectangle {
+      Layout.fillWidth: true
+      Layout.leftMargin: 10
+      Layout.rightMargin: 10
+      Layout.topMargin: 7
+      Layout.bottomMargin: 7
+      implicitHeight: 1
+      color: Qt.alpha(Tokens.text, 0.08)
+    }
+
     PomodoroWallpaperSettings {
       Layout.fillWidth: true
       pomodoro: settings.pomodoro
