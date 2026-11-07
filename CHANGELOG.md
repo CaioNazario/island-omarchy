@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-06
+
 ### Added
 
 - A full **Pomodoro**, from the Pomodoro Desktop v7 prototype. Clicking the Pomodoro widget now opens a card in the Island with the clock, **Restart**, **Skip** and **Start/Pause** buttons and a progress bar (`Space`, `R`, `S` and `M` work while it is open). The gear opens the settings inside the card: 1 to 24 sessions per cycle, one duration for every session (**Global**) or one per session (**Individual**), **Start automatically**, and the break wallpaper (four presets or your own image, picked with the desktop file chooser). Settings apply at once and live in `settings.json` (`pomodoro`).
