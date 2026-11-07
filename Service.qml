@@ -21,7 +21,7 @@ Item {
   property var shell: null
   property var manifest: null
 
-  readonly property string pluginId: "island-desktop"
+  readonly property string pluginId: "caionazario.island"
 
   readonly property alias notifications: notificationFeed
   readonly property alias settings: settingsStore
