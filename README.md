@@ -33,15 +33,15 @@ Only one mode is open at a time.
 
 | Music and calendar | AI usage |
 |---|---|
-| ![The center card with music and the calendar](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/center-card.png) | ![AI usage](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/ai.png) |
+| ![The center card with music](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/gifs/music.gif)<br>![The calendar](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/gifs/calendar.gif) | ![AI usage](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/gifs/ai-usage.gif) |
 
 | Wi‑Fi | Bluetooth |
 |---|---|
-| ![Quick controls with the Wi‑Fi panel](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/quick-wifi.png) | ![Quick controls with the Bluetooth panel](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/bluetooth.png) |
+| ![Quick controls with the Wi‑Fi panel](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/gifs/wifi.gif) | ![Quick controls with the Bluetooth panel](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/gifs/bluetooth.gif) |
 
 | Volume mixer | Battery |
 |---|---|
-| ![Volume mixer](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/mixer.png) | ![Battery](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/screenshots/battery.png) |
+| ![Volume mixer](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/gifs/mixer.gif) | ![Battery](https://raw.githubusercontent.com/CaioNazario/island-omarchy/dev/docs/gifs/battery.gif) |
 
 ### Environments
 
