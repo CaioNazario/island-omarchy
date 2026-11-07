@@ -1,4 +1,4 @@
-PLUGIN_ID := island-desktop
+PLUGIN_ID := caionazario.island
 DIST := dist/$(PLUGIN_ID)
 # qmllint precisa ver os módulos do Quickshell e os tipos gerados no build.
 # `uncreatable-type` desligado: o qmltypes do Quickshell 0.3.1 marca

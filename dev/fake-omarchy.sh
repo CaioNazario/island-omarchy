@@ -27,7 +27,7 @@ list() {
   entry omarchy.notifications
   printf ','
   entry omarchy.osd
-  printf ',{"id":"island-desktop","name":"Island Desktop","kinds":["bar","service"],"enabled":true,"active":true,"canDisable":false,"firstParty":false,"clonedFrom":""}]\n'
+  printf ',{"id":"caionazario.island","name":"Island Desktop","kinds":["bar","service"],"enabled":true,"active":true,"canDisable":false,"firstParty":false,"clonedFrom":""}]\n'
 }
 
 toggle() {

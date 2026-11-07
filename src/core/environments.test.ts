@@ -126,7 +126,7 @@ describe('sanitizeEnvironments', () => {
 describe('plugin widget ids', () => {
   it('builds the id from the manifest id', () => {
     expect(pluginWidgetId('omaplug')).toBe('plugin:omaplug');
-    expect(pluginWidgetId('island-desktop')).toBe('plugin:island-desktop');
+    expect(pluginWidgetId('caionazario.island')).toBe('plugin:caionazario.island');
   });
 
   it.each(['', '.hidden', 'a/b', 'a b', 'x'.repeat(65)])('refuses the plugin id %j', (id) => {

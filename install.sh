@@ -4,11 +4,11 @@
 # respondem pelos mesmos alvos IPC ficam desligados enquanto ela estiver ativa.
 set -euo pipefail
 
-PLUGIN_ID="island-desktop"
+PLUGIN_ID="caionazario.island"
 TARGET_DIR="$HOME/.config/omarchy/plugins/$PLUGIN_ID"
-# Id até a 0.9: a 0.10 o trocou por `island-desktop`. Quem instalou antes tem as
-# duas pastas até o install.sh apagar a velha.
-LEGACY_DIR="$HOME/.config/omarchy/plugins/caionazario.island"
+# A 0.10.0 e a 0.10.1 usaram o id `island-desktop`; a 0.10.2 voltou a este.
+# Quem instalou uma delas tem as duas pastas até o install.sh apagar a outra.
+LEGACY_DIR="$HOME/.config/omarchy/plugins/island-desktop"
 REPLACED_PLUGINS=(omarchy.notifications omarchy.osd)
 # Atalhos e gestos (hypr/island.lua): módulo próprio, ligado por uma linha no
 # hyprland.lua. O resto da config do usuário fica intocado.

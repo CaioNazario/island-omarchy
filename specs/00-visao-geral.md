@@ -2,7 +2,7 @@
 
 ## O produto
 
-A Island é um plugin de barra do Omarchy (Quickshell sobre Hyprland) que substitui a barra padrão por três pílulas flutuantes. No manifest e no marketplace do Omarchy ela se chama **Island Desktop** (id `island-desktop`), porque já há outros plugins chamados "Island"; a imagem do card é `docs/preview.png`, que a release copia para a raiz da `main`. A do meio, a **ilha**, muda de tamanho conforme o contexto (estilo Dynamic Island) e concentra estados transitórios e controles. Usuário-alvo: dev em Omarchy que quer ver estado do sistema e uso de IA sem clicar, e alcançar volume, brilho, Wi‑Fi, Bluetooth e energia em um clique ou atalho.
+A Island é um plugin de barra do Omarchy (Quickshell sobre Hyprland) que substitui a barra padrão por três pílulas flutuantes. No manifest e no marketplace do Omarchy ela se chama **Island Desktop** (id `caionazario.island`, o id permanente da listagem no marketplace; a 0.10.0 e a 0.10.1 o trocaram por `island-desktop` e a 0.10.2 desfez), porque já há outros plugins chamados "Island"; a imagem do card é `docs/preview.png`, que a release copia para a raiz da `main`. A do meio, a **ilha**, muda de tamanho conforme o contexto (estilo Dynamic Island) e concentra estados transitórios e controles. Usuário-alvo: dev em Omarchy que quer ver estado do sistema e uso de IA sem clicar, e alcançar volume, brilho, Wi‑Fi, Bluetooth e energia em um clique ou atalho.
 
 ## Glossário
 
