@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.11.1] - 2026-11-08
+
 ### Changed
 
 - Island is now under the **MIT license** (it was GPL-3.0-or-later). The manifest, `LICENSE`, `plugin/NOTICE` and the README say so.
