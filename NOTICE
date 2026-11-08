@@ -1,7 +1,7 @@
 Third-party code in Island
 ==========================
 
-Island is GPL-3.0-or-later (LICENSE at the root of the repository). Parts of
+Island is MIT (LICENSE at the root of the repository). Parts of
 the appearance options (specs/19-aparencia.md) come from omadock
 (https://github.com/thepathless/omadock; taken from the clone
 https://github.com/priard/omadock at commit 16492e5), under the MIT license

@@ -493,6 +493,6 @@ Harness logs: `dist/dev.log`.
 
 ## License
 
-GPL-3.0-or-later
+MIT
 
 The shaders and part of the appearance formulas come from [omadock](https://github.com/thepathless/omadock) (MIT); the license notice is in [`plugin/NOTICE`](https://github.com/CaioNazario/island-omarchy/blob/dev/plugin/NOTICE).
