@@ -6,6 +6,7 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ### Fixed
 
+- Widgets from other plugins no longer show up over a fullscreen video or game when a notification arrives. Under a fullscreen window the whole bar, plugin widgets included, now stays hidden and takes no clicks, even when Hyprland raises it back above the window.
 - A plugin widget that hides itself (the QCY one with no earbuds connected) no longer takes the clicks meant for the widgets next to it.
 
 ## [0.11.1] - 2026-11-08

@@ -25,6 +25,10 @@ Scope {
   // barra desenha fica dentro de `zoomed`, medido no tamanho do design.
   readonly property real zoom: screen ? Tokens.zoomFor(screen.width, screen.height) : 1
   readonly property int reserved: Math.ceil(Tokens.barReserved * zoom)
+  // Janela em tela cheia neste monitor (specs/02-barra.md "Tela cheia e
+  // lock"): a camada some e não pega clique. Escondida, ela desmapeia junto as
+  // faixas dos widgets de plugin (`place.visible` em PluginWidget.qml).
+  readonly property bool underFullscreen: bar.fullscreenOn(screenName)
 
   // Tela de pausa do Pomodoro (spec 20): uma janela por monitor, só enquanto
   // há pausa com bloqueio ou a pré-visualização.
@@ -67,10 +71,12 @@ Scope {
     color: "transparent"
     WlrLayershell.namespace: "island"
     WlrLayershell.layer: WlrLayer.Top
-    WlrLayershell.keyboardFocus: screenBar.holdsFocus ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    WlrLayershell.keyboardFocus: screenBar.holdsFocus && !screenBar.underFullscreen ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
     // Com modo fixo aberto, a camada inteira recebe o clique fora e o consome
-    // (specs/02-barra.md "Clique fora"); senão, só pílulas e ilha.
-    mask: screenBar.holdsFocus ? null : barRegion
+    // (specs/02-barra.md "Clique fora"); senão, só pílulas e ilha. Sob tela
+    // cheia, nada: o Hyprland pode levantar a camada acima da janela, e ela
+    // pegaria os cliques do topo do vídeo.
+    mask: screenBar.underFullscreen ? noInput : screenBar.holdsFocus ? null : barRegion
     // Blur do compositor só sob as superfícies (specs/14-spikes.md, S9;
     // spec 19 "Blur"): uma regra de camada borraria a camada de tela cheia
     // inteira, sombras incluídas.
@@ -100,6 +106,10 @@ Scope {
     }
 
     Region {
+      id: noInput
+    }
+
+    Region {
       id: barRegion
 
       Region {
@@ -126,7 +136,7 @@ Scope {
     // barra fica por cima e continua clicável.
     Rectangle {
       anchors.fill: parent
-      visible: screenBar.editing
+      visible: screenBar.editing && !screenBar.underFullscreen
       color: Tokens.editorDim
 
       MouseArea {
@@ -138,6 +148,7 @@ Scope {
     Item {
       id: zoomed
 
+      visible: !screenBar.underFullscreen
       width: parent.width / scale
       height: parent.height / scale
       scale: screenBar.zoom

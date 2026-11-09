@@ -17,6 +17,7 @@ import "core/stackScroll.mjs" as StackScrollCore
 import "core/pluginWidgets.mjs" as PluginWidgetsCore
 import "core/barZoom.mjs" as BarZoomCore
 import "core/pomodoroPanel.mjs" as PomodoroPanelCore
+import "core/fullscreen.mjs" as FullscreenCore
 
 // Entrada `bar` do plugin (specs/14-spikes.md, S6). O omarchy-shell recria
 // este item a cada hot-reload; o que precisa sobreviver mora no Service.qml.
@@ -97,6 +98,14 @@ Item {
   property string editorPage: "environments"
   property string editorTarget: "left"
   property string editorSelected: ""
+
+  // Monitores sob janela em tela cheia de verdade (specs/02-barra.md "Tela
+  // cheia e lock"). O Hyprland 0.56 desenha acima da tela cheia toda camada
+  // `Top` recém-mapeada (`m_aboveFullscreen = true` em LayerSurface.hpp) e
+  // levanta as camadas do monitor quando uma janela de outro workspace sai da
+  // tela cheia: confiar na ordem de camadas deixava as faixas dos widgets de
+  // plugin, que se remapeiam, por cima do vídeo.
+  readonly property var fullscreenScreens: FullscreenCore.fullscreenMonitors(Hyprland.monitors.values, Hyprland.toplevels.values)
 
   // Conteúdo do modo `osd` (specs/08 "OSD do Omarchy").
   property var osd: ({ glyph: "info", text: "", percent: 0 })
@@ -257,6 +266,15 @@ Item {
     if (mode === "stack") hideBanner();
     // Um painel por vez: modo fixo da ilha fecha o painel de plugin aberto.
     if (fixed) pluginHost.closePopout();
+  }
+
+  // A lista de janelas do Quickshell não acompanha a tela cheia sozinha
+  // (como plugins/bar/Bar.qml do Omarchy 4, que relê no mesmo evento).
+  Connections {
+    target: Hyprland
+    function onRawEvent(event) {
+      if (event && String(event.name) === "fullscreen") Hyprland.refreshToplevels();
+    }
   }
 
   PluginWidgetHost {
@@ -532,6 +550,11 @@ Item {
     editorTarget = "left";
     editorSelected = "";
     editorOpen = true;
+  }
+
+  /** Este monitor tem uma janela em tela cheia: a barra dele some. */
+  function fullscreenOn(screenName) {
+    return fullscreenScreens.indexOf(screenName) !== -1;
   }
 
   /** A barra deste monitor está em edição (widgets selecionáveis, pílula-alvo). */

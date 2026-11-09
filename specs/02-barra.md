@@ -68,7 +68,7 @@ Uma superfície só não serve: ancorada nas quatro bordas (para a ilha crescer 
 
 ## Tela cheia e lock
 
-- Monitor com janela em tela cheia: a barra daquele monitor some. O Hyprland desenha a janela em tela cheia acima da camada `Top`.
+- Monitor com janela em tela cheia: a barra daquele monitor some. Não basta a ordem de camadas: o Hyprland 0.56 desenha acima da tela cheia toda camada `Top` recém-mapeada (`m_aboveFullscreen` em `LayerSurface.hpp`) e levanta as do monitor quando uma janela de outro workspace sai da tela cheia. Por isso a Island detecta a tela cheia como a barra do Omarchy (`fullscreenOn` em plugins/bar/BarModel.js): janela no workspace ativo do monitor com o bit 2 de `fullscreen` (o 1 é janela maximizada, que não esconde nada), relendo os toplevels a cada evento `fullscreen` do Hyprland. Regra em `src/core/fullscreen.ts`. Sob tela cheia, a camada `island` esconde o conteúdo, não pega clique nem teclado, e as faixas dos widgets de plugin (spec 16) ficam desmapeadas.
 - Tela de bloqueio: o `WlSessionLock` do Omarchy cobre tudo, a barra continua carregada por baixo e nada dela aparece.
 
 ## Espaço reservado
@@ -86,6 +86,8 @@ Com modo fixo (`stack`, `calendar`, `quick`, `wifi`, `bt`, `ai`, `note`, `music`
 - [ ] Em 1280px lógicos com a ilha em `wifi` (660px) e o ambiente Trabalho, nenhum texto da barra é cortado (widgets somem inteiros, spec 16).
 - [ ] Conectar/desconectar um segundo monitor cria/remove a barra dele sem reiniciar o shell.
 - [ ] Uma janela em tela cheia esconde a barra só no monitor dela.
+- [x] Sob uma janela em tela cheia, uma notificação não traz a faixa de um widget de plugin para cima dela (`make smoke`, com `foot --fullscreen`).
+- [x] Testes de `fullscreen`: monitor com tela cheia no workspace ativo, maximizada (1) ignorada, bit 2, workspace inativo, toplevel sem workspace/objeto IPC e listas do Quickshell que não são `Array`.
 - [ ] Clique fora de um modo fixo fecha a ilha e não ativa a janela clicada.
 - [x] Testes de `barZoom`: fator de cada tamanho, Automático por monitor, corte para caber em 1280×720 e passo de 0.05.
 - [x] Pequena e grande mudam barra, ilha aberta e editor na hora, com ícones nítidos (capturas no aninhado de 1600×900).

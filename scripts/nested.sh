@@ -104,6 +104,40 @@ strip_window_x() {
     jq -r --argjson offset "$offset" '.["HEADLESS-ISLAND"].levels | to_entries[] | .value[] | select(.namespace == "island-plugin-widget") | .x - $offset'
 }
 
+# Faixas de widget de plugin mapeadas no monitor virtual.
+strip_count() {
+  # shellcheck source=/dev/null
+  source "$STATE"
+  HYPRLAND_INSTANCE_SIGNATURE="$NESTED_INSTANCE" hyprctl layers -j |
+    jq -r '[.["HEADLESS-ISLAND"].levels | to_entries[] | .value[] | select(.namespace == "island-plugin-widget")] | length'
+}
+
+# Regressão: sob uma janela em tela cheia, uma notificação muda a largura da
+# ilha, a faixa do widget de plugin se remapeia (#39) e o Hyprland 0.56 desenha
+# a camada recém-mapeada acima da tela cheia (`m_aboveFullscreen`): o widget
+# aparecia por cima do vídeo. Sob tela cheia a faixa fica desmapeada.
+fullscreen_check() {
+  command -v foot >/dev/null || {
+    echo "smoke: foot missing, skipping the fullscreen check" >&2
+    return 0
+  }
+  # shellcheck source=/dev/null
+  source "$STATE"
+  wait_for '[[ "$(strip_count)" == 1 ]]' "the plugin widget strip before fullscreen"
+  WAYLAND_DISPLAY="$NESTED_SOCKET" foot --fullscreen >/dev/null 2>&1 &
+  local foot_pid=$!
+  wait_for '[[ "$(strip_count)" == 0 ]]' "the plugin widget strip to unmap under a fullscreen window"
+  notify -t 3000 "during fullscreen" >/dev/null
+  timeout 2 tail -f /dev/null || true
+  [[ "$(strip_count)" == 0 ]] || {
+    echo "smoke: a notification brought the plugin widget above the fullscreen window" >&2
+    kill "$foot_pid"
+    exit 1
+  }
+  kill "$foot_pid"
+  wait_for '[[ "$(strip_count)" == 1 ]]' "the plugin widget strip back after fullscreen"
+}
+
 # Janelas da tela de pausa do Pomodoro (spec 20) no monitor virtual.
 break_layers() {
   # shellcheck source=/dev/null
@@ -253,6 +287,7 @@ smoke() {
   kill "$mpris_pid"
   timeout 2 tail -f /dev/null || true
   wait_for '[[ "$(strip_window_x)" == "$(harness_ipc pluginWidget status | jq -r .marginLeft)" ]]' "the plugin widget window to follow its slot when the music stops"
+  fullscreen_check
   harness_ipc editorDo switch 0 >/dev/null
   # Aparência fora do padrão nos hot-reloads (spec 19): os shaders de
   # gradiente e grão, os cantos quadrados e as regiões de blur.
