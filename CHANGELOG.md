@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Fixed
+
+- A plugin widget that hides itself (the QCY one with no earbuds connected) no longer takes the clicks meant for the widgets next to it.
+
 ## [0.11.1] - 2026-11-08
 
 ### Changed

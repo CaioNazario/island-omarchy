@@ -146,6 +146,7 @@ Problema já encontrado e sua solução. Adicione aqui toda vez que algo custar 
 - `qmllint` (`Quick.layout-positioning`) recusa `y` num item filho de `Layout`, inclusive o `y` de uma `Translate` dele e de um `Behavior on y`. Para animar a subida de um bloco de layout, o bloco é um `Item` simples e o `y` é do `ColumnLayout` de dentro (`Reveal` em `PomodoroBreakScreen.qml`).
 - O `Timer` do Qt é grosso (±5% do intervalo, medido em ciclos de 25 min) e pode disparar antes do vencimento: quem arma um timeout até um horário confere `Date.now()` ao disparar e reagenda, senão a etapa nunca vence (`PomodoroSource.settle`).
 - A barra recriada pelo hot-reload leva até 250ms para achar o serviço (`findService`): um `Connections` sobre `root.service` nasce sem alvo e perde o sinal que chegou nesse intervalo, e um comando do harness que passa pela barra (em vez de ir direto ao serviço) some sem erro. Reaja também ao `onServiceChanged` (`Bar.closeForBreak`), e no `make smoke` use `wait_for` depois de um reload.
+- O `visible` de um item dentro de uma `PanelWindow` desmapeada é `false`: não condicione o mapeamento da janela ao `visible` do conteúdo dela, senão ela nunca volta.
 - Senha ou lista de servidores para um comando vai pela entrada padrão (`stdinEnabled`, `write()` no `onStarted`, depois `stdinEnabled = false` fecha a entrada), nunca pela linha de comando.
 
 ## Antes de dizer que terminou
