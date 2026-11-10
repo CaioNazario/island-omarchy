@@ -126,7 +126,11 @@ Item {
     color: "transparent"
     WlrLayershell.namespace: "island-plugin-widget"
     WlrLayershell.layer: WlrLayer.Top
-    mask: place.editing ? noInput : widgetInput
+    // Widget que se esconde sozinho (o do QCY sem fone conectado) deixa a
+    // faixa mapeada com a largura dele por cima dos vizinhos: sem entrada,
+    // senão ela come o clique deles. A faixa não se desmapeia por isso porque,
+    // desmapeada, o `visible` do widget fica `false` e ela nunca voltaria.
+    mask: place.editing || !place.widget || !place.widget.visible ? noInput : widgetInput
 
     Region {
       id: noInput
