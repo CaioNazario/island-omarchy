@@ -129,6 +129,21 @@ export function tick(state: PomodoroState, config: PomodoroConfig, now: number):
   return { state: next, started: next.phase };
 }
 
+/**
+ * Teto de cada espera do `PomodoroSource` até o vencimento. O `Timer` do Qt
+ * conta no relógio monotônico, que para na suspensão: um timeout único até o
+ * fim da etapa disparava atrasado pelo tempo dormido, com o relógio em 00:00 e
+ * a pausa sem começar (#43). Esperando no máximo isto, o disparo seguinte à
+ * volta confere o relógio de parede e troca a etapa.
+ */
+export const DEADLINE_CHECK_MS = 1000;
+
+/** Quanto esperar até conferir o vencimento de novo; `null` parado. */
+export function deadlineDelay(state: PomodoroState, now: number): number | null {
+  if (state.endsAt === null) return null;
+  return Math.min(DEADLINE_CHECK_MS, Math.max(1, state.endsAt - now));
+}
+
 /** "Testar pausa": a pausa da sessão atual, cheia e parada, sem tocar no estado real (specs/20). */
 export function previewBreak(state: PomodoroState, config: PomodoroConfig): PomodoroState {
   return {

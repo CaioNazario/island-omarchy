@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Fixed
+
+- The Pomodoro now starts the break as soon as the timer reaches zero after the computer wakes from sleep. Before, the clock sat at 00:00 and the break only began after as long as the computer had slept (#43).
+
 ## [0.11.2] - 2026-11-09
 
 ### Fixed

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   cycleLabel,
+  DEADLINE_CHECK_MS,
+  deadlineDelay,
   elapsedFraction,
   formatRemaining,
   initialPomodoro,
@@ -138,6 +140,36 @@ describe('fim da etapa (tick)', () => {
     const stalled = tick(state, config, T0 + 40 * MIN);
     expect(stalled.started).toBe('break');
     expect(remainingAt(stalled.state, T0 + 40 * MIN)).toBe(5 * MIN);
+  });
+});
+
+describe('espera até o vencimento (deadlineDelay)', () => {
+  it('parado não espera nada', () => {
+    expect(deadlineDelay(initialPomodoro(config, T0), T0)).toBeNull();
+  });
+
+  it('nunca espera mais que DEADLINE_CHECK_MS, por mais longa que seja a etapa', () => {
+    const state = running(initialPomodoro(config, T0), T0);
+    expect(deadlineDelay(state, T0)).toBe(DEADLINE_CHECK_MS);
+  });
+
+  it('perto do fim espera só o que falta, e vencido dispara logo', () => {
+    const state = running(initialPomodoro(config, T0), T0);
+    expect(deadlineDelay(state, T0 + 25 * MIN - 300)).toBe(300);
+    expect(deadlineDelay(state, T0 + 25 * MIN)).toBe(1);
+    expect(deadlineDelay(state, T0 + 30 * MIN)).toBe(1);
+  });
+
+  // #43: o `Timer` do Qt conta no relógio monotônico, parado na suspensão. Um
+  // timeout único até o fim deixava o relógio em 00:00 e a pausa sem começar
+  // pelo tempo que o computador dormiu.
+  it('suspensão no meio do foco: o próximo disparo já enxerga o fim, sem esperar o tempo dormido', () => {
+    const state = running(initialPomodoro(config, T0), T0);
+    const armedAt = T0 + 10 * MIN;
+    const wokeAt = armedAt + 20 * MIN;
+    const firesAt = wokeAt + (deadlineDelay(state, armedAt) ?? Infinity);
+    expect(firesAt).toBeLessThanOrEqual(wokeAt + DEADLINE_CHECK_MS);
+    expect(tick(state, config, firesAt).started).toBe('break');
   });
 });
 

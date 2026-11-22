@@ -12,7 +12,7 @@ Substitui o ciclo fixo 25/5 do widget `pomodoro` da spec 16. O widget continua n
 | Janela de tela cheia dentro do app | Uma janela `layer-shell` na camada `overlay` por monitor, só enquanto há pausa com bloqueio |
 | Atividade da pausa (URL tocando só áudio) | **Fora de escopo por enquanto** (spike S11). Sem campos de nome/URL, sem chip "Tocando" |
 | Imagem própria por `<input type=file>`, reduzida a 1920px e regravada em JPEG | `omarchy-file-select` (portal de arquivos do desktop); a Island guarda o **caminho** e a `Image` do QML decodifica com o maior lado em 1920px, sem ampliar. Nenhuma cópia nem reencode |
-| Contagem a cada 100 ms | Horário de término (`endsAt`), um timeout até o fim da etapa |
+| Contagem a cada 100 ms | Horário de término (`endsAt`), conferido no máximo a cada `DEADLINE_CHECK_MS` (1 s) até o fim da etapa |
 | `completedToday` fixo em 4 (demonstração) | Contador do dia, zerado na virada (`localDay`) |
 | "Testar pausa" avança o ciclo e conta o foco | Pré-visualização: mostra a pausa da sessão atual, cheia e parada, **sem** mexer em sessão, etapa nem contador |
 | Pílula minimizada | Widget da barra, estilo compacto; o estilo com controles é o card adaptado aos 22px da pílula |
@@ -90,7 +90,7 @@ Avançar (`advance`): `próxima = outra etapa`; a sessão sobe ao voltar ao foco
 - **Pausa guardada volta como o foco da mesma sessão, cheio e parado**, e sem bloqueio: a tela de pausa não reaparece ao reiniciar o shell.
 - Valor vazio, inválido ou do formato antigo (só `phase` e `remainingMs`) cai no padrão ou é lido com o que tiver.
 
-O motor vive no `Service.qml` (`PomodoroSource.qml`): continua no hot-reload da barra e no lock. Um `Timer` de disparo único espera o fim da etapa, esteja a ilha aberta ou não; o `Timer` do Qt é grosso (±5% do intervalo) e pode disparar antes da hora, então o disparo cedo reagenda em vez de ficar parado.
+O motor vive no `Service.qml` (`PomodoroSource.qml`): continua no hot-reload da barra e no lock. Um `Timer` de disparo único espera o fim da etapa, esteja a ilha aberta ou não, mas nunca mais que `DEADLINE_CHECK_MS` (1 s, `deadlineDelay`): cada disparo confere `endsAt` no relógio de parede e, se a etapa não venceu, reagenda. O `Timer` do Qt é grosso (±5% do intervalo) e pode disparar antes da hora, e conta no relógio monotônico, que para na suspensão: um timeout único até o fim deixava o relógio em 00:00 e a pausa sem começar pelo tempo que o computador dormiu (#43). Ao acordar, a troca vem em até 1 s, sem som se passou de `MAX_SOUND_LATE_MS` ("Som").
 
 ### Notificação
 
@@ -208,7 +208,7 @@ Atividades nas pausas (nome, URL, áudio, chip "Tocando"; spike S11), arrasto e 
 
 ## Critérios de aceite
 
-- [x] Testes puros (`pomodoroConfig`, `pomodoro`, `pomodoroBreak`, `pomodoroWallpapers`, `pomodoroPanel`, `oklch`): limites e passos, `30` → 24, plano truncado e estendido, lista tipo array do `JsonAdapter`, progressão do ciclo (8 pulos voltam a Foco 1/4), `autoStart` desligado, reiniciar na pausa, atraso e suspensão, `reconcile` de cada tipo de mudança, restauração (pausa volta ao foco), virada do dia, estágios da entrada.
+- [x] Testes puros (`pomodoroConfig`, `pomodoro`, `pomodoroBreak`, `pomodoroWallpapers`, `pomodoroPanel`, `oklch`): limites e passos, `30` → 24, plano truncado e estendido, lista tipo array do `JsonAdapter`, progressão do ciclo (8 pulos voltam a Foco 1/4), `autoStart` desligado, reiniciar na pausa, atraso e suspensão, espera até o vencimento com teto de 1 s (`deadlineDelay`, #43), `reconcile` de cada tipo de mudança, restauração (pausa volta ao foco), virada do dia, estágios da entrada.
 - [x] `pomodoro` é modo fixo e tem as medidas da tabela, e o card cresce com a lista (capturas no `make dev`).
 - [x] A tela de pausa abre com a sequência de entrada, mostra "Pausa curta"/"Pausa longa" e a frase certa, e sobrevive ao hot-reload sem refazer a entrada (`make smoke` confere a janela `island-break` e a captura).
 - [x] "Testar pausa" não muda sessão, etapa nem contador e fecha a ilha; Urgência fecha a tela sem parar o tempo (`make smoke`). Reiniciar na pausa remove o bloqueio e deixa a pausa parada e cheia (teste do motor).

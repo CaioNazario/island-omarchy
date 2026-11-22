@@ -110,6 +110,7 @@ Scope {
     const result = PomodoroCore.tick(current, applied, Date.now());
     if (!result.started) {
       // O `Timer` do Qt é grosso (5% do intervalo) e pode disparar antes da hora.
+      // Também é a conferência periódica de `armDeadline`: ainda não venceu, espera de novo.
       if (running) armDeadline();
       return;
     }
@@ -142,11 +143,14 @@ Scope {
     id: player
   }
 
-  // Um timeout único até o fim da etapa, esteja o widget visível ou não.
+  // Confere o fim da etapa a cada `deadlineDelay`, esteja o widget visível ou
+  // não. Não é um timeout único até o fim: o `Timer` do Qt para na suspensão
+  // e a pausa começava atrasada pelo tempo dormido (#43).
   function armDeadline() {
     deadline.stop();
-    if (!running) return;
-    deadline.interval = Math.max(1, current.endsAt - Date.now());
+    const delay = PomodoroCore.deadlineDelay(current, Date.now());
+    if (delay === null) return;
+    deadline.interval = delay;
     deadline.start();
   }
 
