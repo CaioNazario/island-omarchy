@@ -153,6 +153,7 @@ Linha de controles · linha de energia (opcional) · divisor · seção (padding
 
 - **Cabeçalho** 26px: `ph-bold ph-bluetooth` 14px, "Bluetooth" 13px/500, status ("2 conectados" / "1 conectado" / "0 conectados" / "Desligado") e switch (mesmo estilo do Wi‑Fi) que liga/desliga o rádio.
 - Fonte: `Quickshell.Bluetooth` (adaptador padrão, dispositivos, bateria). Rádio e ações pelos scripts do Omarchy: `omarchy-bluetooth-power on|off` (lida com rfkill) e `omarchy-bluetooth-device pair|connect|disconnect <endereço>` (confia, conecta, timeout de 20s).
+- **Estado do rádio** (#42): na volta da suspensão o adaptador USB é resetado e o BlueZ recria o `hci0`; o `adapter.enabled` do Quickshell pode ficar preso em `false` com o rádio ligado, e o switch só mandaria "on". O estado vem de `omarchy-bluetooth-power is-on` (`probedOn`), relido ao carregar, ao trocar de adaptador, quando `enabled` muda, ao abrir `bt`, quando o comando de ligar/desligar termina e na volta da suspensão (salto do relógio num timer de 30 s, como o `CalendarEvents.qml`). Sem leitura ainda, vale o `adapter.enabled`. Um comando de rádio por vez: clique com um rodando é ignorado.
 - **Meus dispositivos** (pareados, conectados primeiro) e **Disponíveis** (não pareados e com nome anunciado, com `ph ph-circle-notch` 11px girando 1.2s; sem nome, a busca só teria o endereço e o dispositivo não aparece): rótulos 10.5px maiúsculos, `letter-spacing .06em`, `neutral-500`.
 - A busca (discovery) roda **só enquanto `bt` está aberto**. Liga e desliga por timers presos ao estado confirmado do BlueZ (`adapter.discovering`), como o painel de Bluetooth do Omarchy: o Quickshell ignora escrita igual ao último estado confirmado, e uma busca esquecida ligada engasga o áudio A2DP.
 - Linha 38px raio 10, padding 0 8px, gap 10px: ícone `ph-fill` 17px (`accent` se conectado, senão `neutral-300`) · nome 12.5px · bateria (`ph-fill ph-battery-medium` 13px + `72%` 11px `neutral-400`, só conectado e com nível em porcentagem; o nível aproximado do `battery_type` `COARSE` não aparece) · status 11px à direita. Conectado com fundo `accent-900`. Alturas fixas; listas longas rolam.
@@ -180,6 +181,7 @@ A operação termina quando o script sai. O Quickshell não expõe o erro do `Pa
 - [ ] Senha de 7 caracteres mostra o erro local sem tentativa de conexão.
 - [ ] Rede 802.1X abre o `nmtui` no terminal flutuante.
 - [ ] Parear um mouse Bluetooth sem PIN pela ilha funciona; a busca para ao fechar `bt`.
+- [ ] Depois de suspender e voltar (adaptador USB resetado), o switch do `bt` mostra o estado real do rádio e liga/desliga.
 - [x] `wifi` mostra estatísticas reais (ping, taxas, IP, gateway), o DNS atual e a rede conhecida (visto no `make dev`).
 - [x] A vista QR desenha a matriz do `omarchy-network-qr` com a senha mascarada (visto no `make dev`).
 - [ ] O teste de velocidade mede download e depois upload, 5s cada, e para ao sair da vista.

@@ -7,6 +7,7 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 ### Fixed
 
 - The Pomodoro now starts the break as soon as the timer reaches zero after the computer wakes from sleep. Before, the clock sat at 00:00 and the break only began after as long as the computer had slept (#43).
+- After a suspend, the Bluetooth switch in the Island shows whether the radio is really on and can turn it on and off again. Before, when the USB adapter was reset on resume, it could show Bluetooth as off while it was on, and every click did nothing (#42).
 
 ## [0.11.2] - 2026-11-09
 

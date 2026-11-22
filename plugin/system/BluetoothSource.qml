@@ -17,7 +17,14 @@ Scope {
   readonly property var adapter: Bluetooth.defaultAdapter // o qmltypes do Quickshell 0.3.1 não resolve BluetoothAdapter
   // qmllint enable unresolved-type
   readonly property bool available: adapter !== null
-  readonly property bool radioOn: available && adapter.enabled
+  // Depois de uma suspensão o adaptador USB é resetado e o BlueZ recria o
+  // `hci0`; o `adapter.enabled` do Quickshell pode ficar preso em `false` com
+  // o rádio ligado, e o switch passa a mandar só "on". O estado real vem de
+  // `omarchy-bluetooth-power is-on` (`probedOn`); `null` = ainda sem leitura.
+  property var probedOn: null
+  // `adapter`, não `available`: quando o adaptador some na volta da suspensão,
+  // este binding pode rodar antes do de `available` e lia `enabled` de null.
+  readonly property bool radioOn: adapter !== null && (probedOn !== null ? probedOn : adapter.enabled)
   readonly property var devices: adapter ? adapter.devices.values : []
   property var operation: null
   property bool searching: false
@@ -46,7 +53,67 @@ Scope {
   }
 
   function setRadio(on) {
-    Quickshell.execDetached(["omarchy-bluetooth-power", on ? "on" : "off"]);
+    if (power.running) return;
+    power.command = ["omarchy-bluetooth-power", on ? "on" : "off"];
+    power.running = true;
+  }
+
+  /** Relê o estado real; uma leitura por vez, a pedida no meio roda depois. */
+  function probe() {
+    if (prober.running) prober.pending = true;
+    else prober.running = true;
+  }
+
+  onAdapterChanged: {
+    probedOn = null;
+    probe();
+  }
+  onSearchingChanged: if (searching) probe()
+  Component.onCompleted: probe()
+
+  Process {
+    id: power
+
+    onExited: bluetooth.probe()
+  }
+
+  Process {
+    id: prober
+
+    property bool pending: false
+
+    command: ["omarchy-bluetooth-power", "is-on"]
+    onExited: exitCode => {
+      bluetooth.probedOn = exitCode === 0;
+      if (pending) {
+        pending = false;
+        running = true;
+      }
+    }
+  }
+
+  // A mudança notificada pelo BlueZ vale na hora; a leitura só confirma.
+  Connections {
+    target: bluetooth.adapter
+    function onEnabledChanged() {
+      bluetooth.probedOn = null;
+      bluetooth.probe();
+    }
+  }
+
+  // Volta da suspensão: um salto no relógio maior que o tique (como em
+  // CalendarEvents.qml).
+  Timer {
+    property real lastTick: Date.now()
+
+    interval: 30000
+    repeat: true
+    running: true
+    onTriggered: {
+      const now = Date.now();
+      if (now - lastTick > 2 * interval) bluetooth.probe();
+      lastTick = now;
+    }
   }
 
   /** Clique numa linha: `btClickAction` decide; ocupado, nada acontece. */
