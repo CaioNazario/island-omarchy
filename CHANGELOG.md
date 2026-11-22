@@ -4,6 +4,10 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Changed
+
+- The battery in the bar is a little larger (28×14) and drawn with a light gray outline and number instead of black, so it reads better on the dark pill.
+
 ### Fixed
 
 - The Pomodoro now starts the break as soon as the timer reaches zero after the computer wakes from sleep. Before, the clock sat at 00:00 and the break only began after as long as the computer had slept (#43).

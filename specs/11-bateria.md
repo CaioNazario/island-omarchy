@@ -10,9 +10,9 @@ Origem: `design/markup.html` botão `openSystem` na pílula direita; `design/log
 
 Botão 24px de altura, padding 0 10px, gap 4px, clique abre o modo `battery`. No design v3 o ícone Phosphor + `78%` virou um desenho de bateria, depois afinado:
 
-- **Corpo**: 26×12, borda 1px preta, raio 3, fundo `neutral-600` na parte vazia, conteúdo cortado.
+- **Corpo**: 28×14, borda 1px cinza-claro (`#d4d4d4`), raio 3, fundo `neutral-600` na parte vazia, conteúdo cortado.
 - **Preenchimento**: largura = nível %, colado na borda, cor sólida da bateria, raio 2 só à esquerda (nos quatro cantos quando cheio), transição de largura 300ms.
-- **Número**: nível sem `%`, centralizado sobre o corpo, 8px/600, `letter-spacing −0.02em`, dígitos tabulares, preto.
+- **Número**: nível sem `%`, centralizado sobre o corpo, 8px/600, `letter-spacing −0.02em`, dígitos tabulares, mesma cor da borda (`#d4d4d4`).
 - **Polo**: 2×4 colado à direita do corpo (gap 1px), raio 0 1 1 0, `neutral-600` (preto sumiria no fundo da pílula).
 - **Raio de carga**: `ph-fill ph-lightning` 11px na cor da bateria, depois do polo, só carregando.
 

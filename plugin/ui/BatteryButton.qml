@@ -2,9 +2,9 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
-// Bateria (specs/11-bateria.md): corpo 26×12 com borda 1px preta e raio 3,
+// Bateria (specs/11-bateria.md): corpo 28×14 com borda 1px cinza-claro e raio 3,
 // fundo `neutral-600` na parte vazia; preenchimento sólido na cor do nível;
-// número 8px/600 preto centralizado; polo 2×4; raio de carga 11px.
+// número 8px/600 cinza-claro centralizado; polo 2×4; raio de carga 11px.
 BarButton {
   id: button
 
@@ -27,8 +27,8 @@ BarButton {
       Rectangle {
         id: body
 
-        width: 26
-        height: 12
+        width: 28
+        height: 14
         radius: 3
         color: Tokens.neutral600
         border.width: 1
@@ -38,13 +38,13 @@ BarButton {
           x: 1
           y: 1
           height: parent.height - 2
-          width: Math.round(24 * button.display.fill)
+          width: Math.round(26 * button.display.fill)
           color: button.tone
           // Raio interno = raio do corpo − borda; a ponta direita só cheia.
           topLeftRadius: 2
           bottomLeftRadius: 2
-          topRightRadius: width >= 24 ? 2 : 0
-          bottomRightRadius: width >= 24 ? 2 : 0
+          topRightRadius: width >= 26 ? 2 : 0
+          bottomRightRadius: width >= 26 ? 2 : 0
 
           Behavior on width {
             NumberAnimation {
