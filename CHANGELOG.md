@@ -4,6 +4,8 @@ Island releases, the Omarchy bar plugin. Format from [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [0.11.3] - 2026-11-22
+
 ### Changed
 
 - The battery in the bar is a little larger (28×14) and drawn with a light gray outline and number instead of black, so it reads better on the dark pill.
